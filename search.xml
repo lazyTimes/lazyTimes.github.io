@@ -1,6 +1,275 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Go语言学习笔记（一）</title>
+    <url>/2020/07/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="Go语言学习笔记（一）"><a href="#Go语言学习笔记（一）" class="headerlink" title="Go语言学习笔记（一）"></a>Go语言学习笔记（一）</h1><h2 id="Go语言是什么？"><a href="#Go语言是什么？" class="headerlink" title="Go语言是什么？"></a>Go语言是什么？</h2><p><em>Go 编程语言是一个使得程序员更加有效率的开源项目。Go 是有表达力、简洁、清晰和有效率的。它的并行机制使其很容易编写多核和网络应用,而新奇的类型系统允许构建有弹性的模块化程序。Go 编译到机器码非常快速,同时具有便利的垃圾回收和强大的运行时反射。它是快速的、静态类型编译语言,但是感觉上是动态类型的,解释型语言。</em></p>
+<a id="more"></a>
+
+<h2 id="GO能做什么？"><a href="#GO能做什么？" class="headerlink" title="GO能做什么？"></a>GO能做什么？</h2><p><a href="https://www.zhihu.com/question/57404512" target="_blank" rel="noopener">https://www.zhihu.com/question/57404512</a> 知乎回答</p>
+<h2 id="为什么要学习Go"><a href="#为什么要学习Go" class="headerlink" title="为什么要学习Go?"></a>为什么要学习Go?</h2><p>客观原因：</p>
+<ol>
+<li>GO 可以非常高效的完成一些JAVA需要很多功夫完成的操作</li>
+</ol>
+<p>例如：</p>
+<ul>
+<li>管理日志</li>
+<li>IO监控</li>
+<li>生成模板代码</li>
+</ul>
+<ol>
+<li>近两年GO诞生的框架越来越多，他的便捷性得到认可</li>
+<li>技多不压身</li>
+</ol>
+<p>主管原因：</p>
+<ol>
+<li>想用GO完成一些工作上重复干的活儿</li>
+<li>编写一些工具帮助日常开发</li>
+</ol>
+<h2 id="如何学习？"><a href="#如何学习？" class="headerlink" title="如何学习？"></a>如何学习？</h2><p><a href="https://www.zhihu.com/question/23486344" target="_blank" rel="noopener">https://www.zhihu.com/question/23486344</a> 知乎第二个</p>
+<p><a href="https://tour.go-zh.org/list" target="_blank" rel="noopener">https://tour.go-zh.org/list</a> 快速入门（需要翻墙）</p>
+<p><a href="https://mikespook.com/learning-go/" target="_blank" rel="noopener">https://mikespook.com/learning-go/</a> 《学习GO语言》中文版，不过出版比较早，最好自我实践</p>
+<p><a href="https://gobyexample.com/" target="_blank" rel="noopener">https://gobyexample.com/</a> 一些基础的语代码</p>
+<h1 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h1><h2 id="安装GO"><a href="#安装GO" class="headerlink" title="安装GO"></a>安装GO</h2><p>进入官网：<a href="https://golang.org/" target="_blank" rel="noopener">https://golang.org/</a></p>
+<p>（因为不可抗力的原因，这个房子国内没法访问。。。也可能是我联通网的问题）</p>
+<p>window下载地址（注意32位和64位的区别）：</p>
+<p><a href="https://dl.google.com/go/go1.13.8.windows-amd64.msi" target="_blank" rel="noopener">https://dl.google.com/go/go1.13.8.windows-amd64.msi</a></p>
+<p><a href="https://dl.google.com/go/go1.13.8.windows-386.msi" target="_blank" rel="noopener">https://dl.google.com/go/go1.13.8.windows-386.msi</a></p>
+<p>Linux下载地址（注意32位和64位的区别）：</p>
+<p><a href="https://dl.google.com/go/go1.13.8.src.tar.gz" target="_blank" rel="noopener">https://dl.google.com/go/go1.13.8.src.tar.gz</a></p>
+<p><a href="https://dl.google.com/go/go1.13.8.darwin-amd64.tar.gz" target="_blank" rel="noopener">https://dl.google.com/go/go1.13.8.darwin-amd64.tar.gz</a></p>
+<h2 id="Go语言的特点"><a href="#Go语言的特点" class="headerlink" title="Go语言的特点"></a>Go语言的特点</h2><blockquote>
+<p>并行 Go 让函数很容易成为 非常 轻量的线程。这些线程在 Go 中被叫做 goroutines</p>
+</blockquote>
+<blockquote>
+<p>Channel 这些 goroutines 之间的通讯由 channel[18, 25] 完成；</p>
+</blockquote>
+<blockquote>
+<p>快速 编译很快，执行也很快。目标是跟 C 一样快。编译时间用秒计算；</p>
+</blockquote>
+<blockquote>
+<p>安全 当转换一个类型到另一个类型的时候需要显式的转换并遵循严格的规则。Go 有垃圾收集，在 Go 中无须 free() ，语言会处理这一切；</p>
+</blockquote>
+<blockquote>
+<p>标准格式化 Go 程序可以被格式化为程序员希望的（几乎）任何形式，但是官方格式是存在的。标准也非常简单： gofmt 的输出就是 官方认可的格式 ；</p>
+</blockquote>
+<blockquote>
+<p>类型后置 类型在变量名的 后面 ，像这样 var a int ，来代替 C 中的 int a ；UTF-8 任何地方都是 UTF-8 的，包括字符串 以及 程序代码。你可以在代码中使用 Φ = Φ + 1 ；</p>
+</blockquote>
+<blockquote>
+<p>开源 Go 的许可证是完全开源的，参阅 Go 发布的源码中的 LICENSE 文件；</p>
+</blockquote>
+<blockquote>
+<p>开心 用 Go 写程序会非常开心！</p>
+</blockquote>
+<h2 id="IDEA-配置GO语言支持"><a href="#IDEA-配置GO语言支持" class="headerlink" title="IDEA 配置GO语言支持"></a>IDEA 配置GO语言支持</h2><ol>
+<li>打开<code>Setting</code></li>
+<li>选择<code>Setting</code>，输入<code>GO</code></li>
+<li>安装<code>GO</code>语言支持</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/20200216135342.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>同时安装GO的Template的插件</li>
+<li>重启IDEA</li>
+</ol>
+<h2 id="IDEA-创建GO项目"><a href="#IDEA-创建GO项目" class="headerlink" title="IDEA 创建GO项目"></a>IDEA 创建GO项目</h2><p>完成上一步的操作之后，我们可以实现IDEA创建GO项目</p>
+<ol>
+<li>打开IDEA，左上角<code>File</code>，New-&gt;选择GO工程</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/20200216145822.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>自定义一个项目名称</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/20200216145942.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>创建一个HelloWorld包</li>
+<li>写入如下代码</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	fmt.Print(&quot;hello&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>写好之后，便可以直接右上角运行</li>
+</ol>
+<p>以上便是一个最简单的GO语言Helloworld代码，感觉比较懵逼，工具做了哪些事情？</p>
+<h3 id="使用原始的方式构建一个helloword"><a href="#使用原始的方式构建一个helloword" class="headerlink" title="使用原始的方式构建一个helloword"></a>使用原始的方式构建一个helloword</h3><p>使用原始的GO语言方式需要满足前提条件：<strong>环境变量是否设置</strong></p>
+<ol>
+<li>在指定的目录比如<code>D:\java\GO\go-study\helloword</code>下面创建一个<code>hello.go</code>的文件</li>
+<li>使用<code>NotePad++</code>编写脚本</li>
+<li>和上面的代码一样，照抄或者复制粘贴，这里直接复制了上面的代码</li>
+<li>打开<code>cmd</code>，进入对应的目录<code>cd D:\java\GO\go-study\helloword</code>，<strong>注意切换一下盘符</strong></li>
+<li>执行命令<code>go run hello.go</code>，即可看到结果</li>
+</ol>
+<blockquote>
+<p>早期的GO语言需要类似<code>javac</code>的编译动作，但是现在没有这个必要了</p>
+<p>其他情况：</p>
+<ul>
+<li>Go 被安装在 ˜/go ，而 $GOROOT 被设置为 GOROOT=˜/go ；</li>
+<li>希望编译的 Go 代码放在 ˜<strong>/g/src</strong> 而 $GOPATH 设置为 <strong>GOPATH=˜/g</strong> 。在使用包的 时候需要用到这个变量（参阅第 3 章）。</li>
+</ul>
+</blockquote>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项:"></a>注意事项:</h2><ol>
+<li><code>package main</code>必须首先出现，紧跟着是<code>import</code></li>
+<li>首行这个是必须的。所有的 Go 文件以 <code>package &lt;something&gt;</code>开头，对于独立运行的执行文件必须是 <code>package main</code>；</li>
+</ol>
+<h1 id="了解GO语言"><a href="#了解GO语言" class="headerlink" title="了解GO语言"></a>了解GO语言</h1><h2 id="变量定义"><a href="#变量定义" class="headerlink" title="变量定义"></a>变量定义</h2><ul>
+<li>需要先声明类型，注意和JAVA完全不一样：例如<code>var a int</code></li>
+<li>紧接着<code>:=</code>方式设置变量，l例如：<code>a := 15</code></li>
+</ul>
+<blockquote>
+<p>Golang 在变量定义的时候设置了默认值，和JAVA的区别在于使用默认赋值</p>
+<p>同时要注意一下：如果在函数体内部定义变量不使用GO会产生一个报错</p>
+</blockquote>
+<p>注意：</p>
+<ul>
+<li><code>dd:=1</code>这种形式只能在函数体内部</li>
+<li><code>ar ss = &quot;sssdd&quot;</code> 会根据赋值猜测变量类型</li>
+</ul>
+<h3 id="定义多个变量"><a href="#定义多个变量" class="headerlink" title="定义多个变量"></a>定义多个变量</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var (</span><br><span class="line">	x int</span><br><span class="line">	b bool</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="平行声明和赋值"><a href="#平行声明和赋值" class="headerlink" title="平行声明和赋值"></a>平行声明和赋值</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 平行声明</span><br><span class="line">var a,b int </span><br><span class="line">&#x2F;&#x2F; 平行赋值</span><br><span class="line">a,b :&#x3D; 34, 35</span><br></pre></td></tr></table></figure>
+
+<h3 id="明确变量长度"><a href="#明确变量长度" class="headerlink" title="明确变量长度"></a>明确变量长度</h3><p>如果你希望明确其长度，可以使用如下的定义</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var df int32 &#x3D; 55;</span><br></pre></td></tr></table></figure>
+
+<p>注意：默认的通用int会根据硬件去判断32位还是64位</p>
+<p>其他定义举例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int8 ， int16 ， int32 ， int64 和 byte ， uint8 ， uint16 ， uint32 ，uint64</span><br></pre></td></tr></table></figure>
+
+<p><strong>其中byte 是 uint8 的别名</strong></p>
+<h3 id="可以混合使用类型吗？"><a href="#可以混合使用类型吗？" class="headerlink" title="可以混合使用类型吗？"></a>可以混合使用类型吗？</h3><p>来看下面的定义</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1 package main</span><br><span class="line">2</span><br><span class="line">3 func main() &#123;</span><br><span class="line">4 	var a int ← 通用整数类型</span><br><span class="line">5 	var b int32 ← 32 位整数类型</span><br><span class="line">6 	a &#x3D; 15</span><br><span class="line">7 	b &#x3D; a + a ← 混合这些类型是非法的</span><br><span class="line">8 	b &#x3D; b + 5 ← 5 是一个（未定义类型的）常量，所以这没?问题</span><br><span class="line">9 &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>types.go:7: cannot use a + a (type int) as type int32 in assignment</code> 赋值非法的时候运行会报错，编译器会提示语法错误</p>
+<h2 id="常量定义"><a href="#常量定义" class="headerlink" title="常量定义"></a>常量定义</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const (</span><br><span class="line">    a &#x3D; iota</span><br><span class="line">    b &#x3D; iota</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>第一个 iota 表示为 0，因此 a 等于 0，当 iota 再次在新的一行使用时，它的值增加了 1，因此 b 的值是 1</p>
+<p>省略重复的<code>iota</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const (</span><br><span class="line">    a &#x3D; iota</span><br><span class="line">    b</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>指定确切的类型</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const (</span><br><span class="line">    a &#x3D; 0 ← Is an int now</span><br><span class="line">    b string &#x3D; &quot;0&quot;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><p><code>：</code>在 Go 中字符串是不可变的，字符串的修改需要如下方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">s :&#x3D; &quot;hello&quot; </span><br><span class="line">c :&#x3D; [] rune (s) &#x2F;&#x2F; 转换 s 为 rune 数组</span><br><span class="line">c[0] &#x3D; &#39;c&#39;&#x2F;&#x2F; 修改数组的第一个元素</span><br><span class="line">s2 :&#x3D; string (c) &#x2F;&#x2F;创建 新的 字符串 s2 保存修改</span><br><span class="line">fmt.Printf(&quot;%s\n&quot;, s2) &#x2F;&#x2F;用 fmt.Printf 函数输出字符串</span><br></pre></td></tr></table></figure>
+
+<p>多行文本的写法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">s:&#x3D; &quot;sdsdadsa &quot;+ </span><br><span class="line">&quot;asdsad&quot; + </span><br><span class="line">&quot;sddsd&quot;</span><br></pre></td></tr></table></figure>
+
+<p>注意<code>&quot;+&quot;</code>号必须在末尾</p>
+<h3 id="复数"><a href="#复数" class="headerlink" title="复数"></a>复数</h3><p>Go 原生支持复数，写法如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var c complex64 &#x3D; 5+5i ; </span><br><span class="line">fmt.Printf(&quot;Value is: %v&quot;, c)</span><br></pre></td></tr></table></figure>
+
+<h3 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h3><p>在GO里面，错误也被当做类型处理，声明的方式如下:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var e error</span><br></pre></td></tr></table></figure>
+
+<p>默认为<code>null</code>， 本质上是一个接口</p>
+<h2 id="运算符和内建函数"><a href="#运算符和内建函数" class="headerlink" title="运算符和内建函数"></a>运算符和内建函数</h2><p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/20200216193505.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<blockquote>
+<p>Go <strong>不支持</strong>运算符重载</p>
+</blockquote>
+<h2 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h2><p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/20200216193610.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>先做个大概了解，详细使用的时候在记录笔记</p>
+<h2 id="控制语句"><a href="#控制语句" class="headerlink" title="控制语句"></a>控制语句</h2><h3 id="if-else"><a href="#if-else" class="headerlink" title="if-else"></a>if-else</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (true &amp;&amp; true) </span><br><span class="line">&#123;</span><br><span class="line">    fmt.Print(&quot;hello&quot;)</span><br><span class="line">    return</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意格式，这种写法是不被允许的，需要将第一个左括号放到<code>if</code>的同一行</p>
+<h3 id="goto"><a href="#goto" class="headerlink" title="goto"></a>goto</h3><p>写法如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func myfunc() &#123;</span><br><span class="line">	i :&#x3D; 0</span><br><span class="line">Here: ← 这行的第一个词，以分号结束作为标签</span><br><span class="line">    println(i)</span><br><span class="line">    i++</span><br><span class="line">    goto Here ← 跳转</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>标签<strong>大小写敏感</strong></p>
+<h3 id="for"><a href="#for" class="headerlink" title="for"></a>for</h3><p>写法分成三种</p>
+<p>第一种：一般的for循环</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var i &#x3D; 5</span><br><span class="line">Tag:</span><br><span class="line">    if i &#x3D;&#x3D; 0 &#123;</span><br><span class="line">        return</span><br><span class="line">    &#125;</span><br><span class="line">for i :&#x3D; 0; i&lt;10 ; i++ &#123;</span><br><span class="line">    fmt.Println(i);</span><br><span class="line">&#125;</span><br><span class="line">i--</span><br><span class="line">goto Tag</span><br></pre></td></tr></table></figure>
+
+<p>第二种：相当于while</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var z &#x3D; 6</span><br><span class="line">for z &gt; 5 &#123;</span><br><span class="line">    z++</span><br><span class="line">    if z &gt; 7 &#123;</span><br><span class="line">        break</span><br><span class="line">    &#125;</span><br><span class="line">    print(&quot;hello wolrd&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第三种：表示死循环</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">for &#123;</span><br><span class="line">    .....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意下面的写法是固定的，不能使用逗号表达式，只能使用平行赋值的方式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">for i, j :&#x3D; 0, len (a)-1 ; i &lt; j ; i, j &#x3D; i+1, j-1 &#123;</span><br><span class="line">	a[i], a[j] &#x3D; a[j], a[i] ← 平行赋值</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意GO 里面是没有while语句的</p>
+<p>只能使用for进行书写while的循环</p>
+</blockquote>
+<h3 id="range"><a href="#range" class="headerlink" title="range"></a>range</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">list :&#x3D; []string&#123;&quot;aaa&quot;, &quot;vvv&quot;, &quot;ccc&quot;, &quot;ddd&quot;, &quot;eeee&quot;&#125;</span><br><span class="line">	for k,v :&#x3D; range list &#123;</span><br><span class="line">		print(k, &quot;-&quot;, v)</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子是如下运转的：</p>
+<ol>
+<li>k 表示为 下标， v为值， range 代表了迭代器</li>
+<li>迭代元素从 0 到 4 ，元素从 aaa…eeee 迭代</li>
+</ol>
+<p>也可以在字符串上直接使用 range ，看下面的案例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="switch"><a href="#switch" class="headerlink" title="switch"></a>switch</h2><p>switch非常的灵活，可以在case里面写上表达式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func unhex(c byte ) byte &#123;</span><br><span class="line">    switch &#123;</span><br><span class="line">    case &#39;0&#39; &lt;&#x3D; c &amp;&amp; c &lt;&#x3D; &#39;9&#39;:</span><br><span class="line">    return c - &#39;0&#39;</span><br><span class="line">    case &#39;a&#39; &lt;&#x3D; c &amp;&amp; c &lt;&#x3D; &#39;f&#39;:</span><br><span class="line">    return c - &#39;a&#39; + 10</span><br><span class="line">    case &#39;A&#39; &lt;&#x3D; c &amp;&amp; c &lt;&#x3D; &#39;F&#39;:</span><br><span class="line">    return c - &#39;A&#39; + 10</span><br><span class="line">    &#125;</span><br><span class="line">    return 0</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它不会匹配失败后自动向下尝试，但是可以使用 fallthrough 使其这样做</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">switch i &#123;</span><br><span class="line">case 0: fallthrough</span><br><span class="line">case 1:</span><br><span class="line">f() &#x2F;&#x2F; 当 i &#x3D;&#x3D; 0 时， f 会被调用！</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>还可以使用下面这张写法，逗号分隔多个条件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">case &#39; &#39;, &#39;?&#39;, &#39;&amp;&#39;, &#39;&#x3D;&#39;, &#39;#&#39;, &#39;+&#39;: ← , as ”or”</span><br><span class="line">return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="内建函数"><a href="#内建函数" class="headerlink" title="内建函数"></a>内建函数</h2><p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/20200216204755.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="array、slices-和-map"><a href="#array、slices-和-map" class="headerlink" title="array、slices 和 map"></a>array、slices 和 map</h3><h4 id="array"><a href="#array" class="headerlink" title="array"></a>array</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var arr &#x3D; [3]int&#123;&#125;</span><br><span class="line">for item :&#x3D; range arr&#123;</span><br><span class="line">    print(item);</span><br><span class="line">&#125;</span><br><span class="line">ss :&#x3D; [...] int&#123;1,2,2,3,4,4&#125;</span><br><span class="line">&#x2F;&#x2F; 初始化</span><br><span class="line">a :&#x3D; [3] int&#123; 1, 2, 3&#125;</span><br><span class="line">ff :&#x3D; [3][2] int &#123; &#123; 1,2 &#125; , &#123; 3,4 &#125; , &#123; 5,6 &#125; &#125;</span><br><span class="line">bb :&#x3D; [3][2] int &#123; [2] int &#123; 1,2 &#125; , [2] int &#123; 3,4 &#125; , [2] int &#123; 5,6 &#125; &#125;</span><br><span class="line">print(a, bb, ss);</span><br></pre></td></tr></table></figure>
+
+<h4 id="slices"><a href="#slices" class="headerlink" title="slices"></a>slices</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">slice&#96;总是指向底层的一个&#96;array</span><br></pre></td></tr></table></figure>
+
+<p>总体来说go的语法基本和java相符，但是部分内容需要小心对待，个人不是很爽go语言的部分奇葩语法</p>
+<p>slice 总是与一个固定长度的 array 成对出现。其影响 slice 的容量和长度</p>
+<p>slice： slice := array[0:n]</p>
+<p>对比图；</p>
+<p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/20200217221715.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h5 id="扩展-slice"><a href="#扩展-slice" class="headerlink" title="扩展 slice"></a>扩展 slice</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">append&#96; 和 &#96;copy</span><br></pre></td></tr></table></figure>
+
+<p>函数<code>append</code> 向<code>slice s</code>追加零值或其他 <code>x</code>值，并且返回追加后的新的、与 s 有相同类型的<code>slice</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">s0 :&#x3D; [] int &#123; 0, 0 &#125;  </span><br><span class="line">s1 :&#x3D; append (s0, 2) &#x2F;&#x2F;追加一个元素， s1 &#x3D;&#x3D; []int&#123;0, 0, 2&#125; ；</span><br><span class="line">s2 :&#x3D; append (s1, 3, 5, 7) &#x2F;&#x2F;追加多个元素， s2 &#x3D;&#x3D; []int&#123;0, 0, 2, 3, 5, 7&#125; ；</span><br><span class="line">s3 :&#x3D; append (s2, s0...) &#x2F;&#x2F; 追加一个 slice， s3 &#x3D;&#x3D; []int&#123;0, 0, 2, 3, 5, 7, 0, 0&#125; 。注意这三个点！</span><br></pre></td></tr></table></figure>
+
+<p>函数 copy 从源 slice src 复制元素到目标 dst ，并且返回复制的元素的个数。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var a &#x3D; [...] int &#123; 0, 1, 2, 3, 4, 5, 6, 7 &#125;</span><br><span class="line">var s &#x3D; make ([] int , 6)</span><br><span class="line">n1 :&#x3D; copy (s, a[0:]) ← n1 &#x3D;&#x3D; 6, s &#x3D;&#x3D; []int&#123;0, 1, 2, 3, 4, 5&#125;</span><br><span class="line">n2 :&#x3D; copy (s, s[2:]) ← n2 &#x3D;&#x3D; 4, s &#x3D;&#x3D; []int&#123;2, 3, 4, 5, 4, 5&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><p>案例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">monthdays :&#x3D; map [ string ] int &#123;</span><br><span class="line">&quot;Jan&quot;: 31, &quot;Feb&quot;: 28, &quot;Mar&quot;: 31,</span><br><span class="line">&quot;Apr&quot;: 30, &quot;May&quot;: 31, &quot;Jun&quot;: 30,</span><br><span class="line">&quot;Jul&quot;: 31, &quot;Aug&quot;: 31, &quot;Sep&quot;: 30,</span><br><span class="line">&quot;Oct&quot;: 31, &quot;Nov&quot;: 30, &quot;Dec&quot;: 31, ← 逗号是必须的</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>只做声明的时候：<code>monthdays := make ( map[ string ] int )</code></p>
+<p>如何使用：<code>monthdays[&quot;Dec&quot;]</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">for _, days :&#x3D; range monthdays &#123; ← 键没有使用，因此用 _, days</span><br><span class="line">year +&#x3D; days</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>检查元素是否存在</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var value int</span><br><span class="line">var present bool</span><br><span class="line">value, present &#x3D; monthdays[&quot;Jan&quot;] ← 如果存在， present 则有值 true</span><br><span class="line">← 或者更接近 Go 的方式</span><br><span class="line">v, ok :&#x3D; monthdays[&quot;Jan&quot;] ← “逗号 ok ”形式</span><br></pre></td></tr></table></figure>
+
+<h1 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h1><h2 id="Q1-0-For-loop"><a href="#Q1-0-For-loop" class="headerlink" title="Q1. (0) For-loop"></a>Q1. (0) For-loop</h2><ol>
+<li>创建一个基于 for 的简单的循环。使其循环 10 次，并且使用 fmt 包打印出计数 器的值。</li>
+<li>用 goto 改写 1 的循环。关键字 for 不可使用。</li>
+<li>再次改写这个循环，使其遍历一个 array，并将这个 array 打印到屏幕上。</li>
+</ol>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0-func 1-(p mytype) 2-funcname(3- q int ) (r,s int ) &#123; return 0,0 &#125;</span><br></pre></td></tr></table></figure>
+
+<p>. . 0 关键字 func 用于定义一个函数； . . 1 函数可以绑定到特定的类型上。这叫做 接收者 。有接收者的函数被称作 method。 第 5 章将对其进行说明； . . 2 funcname 是你函数的名字； . . 3 int 类型的变量 q 作为输入参数。参数用 pass-by-value 方式传递，意味着它们会 被复制； . . 4 变量 r 和 s 是这个函数的 命名返回值。在 Go 的函数中可以返回多个值。参阅 第 28 页的 “多值返回”。如果不想对返回的参数命名，只需要提供类型： ( int , int ) 。 如果只有一个返回值，可以省略圆括号。如果函数是一个子过程，并且没有任何 返回值，也可以省略这些内容； . . 5 这是函数体。注意 return 是一个语句，所以包裹参数的括号是可选的。</p>
+]]></content>
+      <categories>
+        <category>golang</category>
+      </categories>
+      <tags>
+        <tag>go</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hello-world</title>
+    <url>/2020/07/25/hello-world/</url>
+    <content><![CDATA[<hr>
+<p>title: 实战hexo部署<br>date: 2020-01-24 15:16:48<br>tags: </p>
+<ul>
+<li>PS3</li>
+<li>Games<br>updated: 2020-01-24 17:00:00<br>comments: true #开启评论的功能<br>categories: </li>
+<li>游戏<br>#- PS游戏 #会成为游戏的子分类，注意注意！！<br>#- [游戏，PS游戏] #如果想要多个分类需要这般操作</li>
+</ul>
+<hr>
+]]></content>
+  </entry>
+  <entry>
     <title>Maven私服Nexus搭建教程</title>
     <url>/2020/07/26/Maven%E7%A7%81%E6%9C%8DNexus%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/</url>
     <content><![CDATA[<h1 id="Nexus-私服搭建基本流程"><a href="#Nexus-私服搭建基本流程" class="headerlink" title="Nexus 私服搭建基本流程"></a>Nexus 私服搭建基本流程</h1><h2 id="Nexus-是什么？"><a href="#Nexus-是什么？" class="headerlink" title="Nexus 是什么？"></a>Nexus 是什么？</h2><p>用于实现Maven构建私人仓库的一个工具。</p>
@@ -283,16 +552,118 @@
       </tags>
   </entry>
   <entry>
-    <title>hello-world</title>
-    <url>/2020/07/25/hello-world/</url>
-    <content><![CDATA[<hr>
-<p>title: 实战hexo部署<br>date: 2020-01-24 15:16:48<br>tags: </p>
-<ul>
-<li>PS3</li>
-<li>Games<br>updated: 2020-01-24 17:00:00<br>comments: true #开启评论的功能<br>categories: </li>
-<li>游戏<br>#- PS游戏 #会成为游戏的子分类，注意注意！！<br>#- [游戏，PS游戏] #如果想要多个分类需要这般操作</li>
+    <title>PicGo和码云实现自建图床</title>
+    <url>/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/</url>
+    <content><![CDATA[<h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<a href="https://zhuanlan.zhihu.com/p/102594554" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102594554</a></p>
+<h2 id="测试图床链接："><a href="#测试图床链接：" class="headerlink" title="测试图床链接："></a>测试图床链接：</h2><p>链接1 ：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png</a></p>
+<p>链接2：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png</a></p>
+<p>链接3：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png</a></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959" alt="最终结果1"></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959" alt="最终结果2"></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959" alt="最终结果3"></p>
+<a id="more"></a>
+
+<h2 id="为什么要使用码云代替图床"><a href="#为什么要使用码云代替图床" class="headerlink" title="为什么要使用码云代替图床"></a>为什么要使用码云代替图床</h2><ul>
+<li>github毕竟是外国服务器，上传过程中因为网络问题有可能会无法使用的情况</li>
+<li>码云作为国内的“github”，访问和上传速度更快，所以使用码云更为方便</li>
+<li>目前<code>PicGo 2.0</code>之后已经有人集成了插件，使用和github一样简单好用</li>
 </ul>
-<hr>
+<h2 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h2><h3 id="1-下载PicGo"><a href="#1-下载PicGo" class="headerlink" title="1. 下载PicGo"></a>1. 下载PicGo</h3><p>官网地址：<a href="https://molunerfinn.com/PicGo/" target="_blank" rel="noopener">https://molunerfinn.com/PicGo/</a></p>
+<p>Github 快捷网址：<a href="https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2</a> 选择对应的版本下载即可</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131933.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>更多信息访问Github：<a href="https://github.com/Molunerfinn/PicGo" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo</a></p>
+<h3 id="2-安装PicGo"><a href="#2-安装PicGo" class="headerlink" title="2. 安装PicGo"></a>2. 安装PicGo</h3><p>安装过程就忽略了，安装完成之后打开软件</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132027.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="3-PicGo-安装gitee-插件"><a href="#3-PicGo-安装gitee-插件" class="headerlink" title="3. PicGo 安装gitee 插件"></a>3. PicGo 安装gitee 插件</h3><p>前提条件：<strong>注意PicGo安装的前提条件是2.0版本之后新增的插件功能！！！</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132225.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>将鼠标滚轮滚到最下面，会发现有一个插件设置</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132358.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>选择安装 <code>gitee-uploader 1.1.2</code>这个插件</p>
+<blockquote>
+<p><strong>安装失败如何解决</strong>？</p>
+<p>注意该插件需要node.js 的环境，Node.js的安装如下</p>
+<p><a href="http://nodejs.cn/download/" target="_blank" rel="noopener">http://nodejs.cn/download/</a></p>
+<p>进入中文官网之后，安装对应的版本即可</p>
+<p>window 下面的exe程序安装之后会自动的配置环境变量，这时候我们可以使用命令查一下是否有Node环境</p>
+<ol>
+<li>win 键 + R 打开<strong>运行</strong>窗口</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132719.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>输入命令<code>node -v</code></li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132750.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>如果出现如上所示的内容则证明安装成功</li>
+</ol>
+</blockquote>
+<h3 id="4-码云搭建图床仓库"><a href="#4-码云搭建图床仓库" class="headerlink" title="4. 码云搭建图床仓库"></a>4. 码云搭建图床仓库</h3><ol>
+<li>进入自己的码云：<a href="https://gitee.com/lazyTimes/projects" target="_blank" rel="noopener">https://gitee.com/lazyTimes/projects</a> 这是我的码云地址</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133220.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择右上角有一个 <code>&quot;+&quot;</code>号，选择新建仓库</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133327.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>填写基本信息，页面翻到最下面，选择保存</li>
+</ol>
+<p><img src="http://null/" alt="image-20200319133550209"></p>
+<ol>
+<li>新建仓库成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133836.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="5-获取gitee私人令牌"><a href="#5-获取gitee私人令牌" class="headerlink" title="5. 获取gitee私人令牌"></a>5. 获取gitee私人令牌</h3><p>和github一样，在最终设置之前我们需要获取一下gitee令牌用于上传</p>
+<ol>
+<li>登录gitee之后，右上角选择</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214555.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“私人令牌”</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214625.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“生成令牌”，进入到令牌到创建页面</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214721.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>勾选如图到内容，一般只需要用到前面几项就可以满足我们到需求。按要求输入密码即可生成成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214905.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>生成令牌成功，将令牌内容保存在自己到笔记，防止忘记</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215102.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>经过如上步骤之后，我们基本就算是大功告成了，现在只需要在PicGo里面配置一下即可</p>
+<h3 id="6-PicGo-配置"><a href="#6-PicGo-配置" class="headerlink" title="6. PicGo 配置"></a>6. PicGo 配置</h3><ul>
+<li>repo：必填，填写gitee上面的仓库名称</li>
+<li>branch：一般默认master 即可，有需要可以建立自己到分支</li>
+<li>tolken：要用到上一节所述到私人令牌，如果忘记了可以进入页面之后重新获取一下新令牌</li>
+<li>path：写上文件存放到位置，一般写上<code>img</code>即可</li>
+<li>customPath：定义传输到格式，一般可以不用管</li>
+<li>customUrl：自定义上传到链接</li>
+</ul>
+<blockquote>
+<p>不知道怎么获取repo地址？</p>
+<ol>
+<li>进入自己到图床仓库到主页，复制地址栏到内容</li>
+<li>复制下方到用户和项目名称</li>
+</ol>
+<p><strong>注意中间到内容不要存在空格，删除注意不要多删除字符造成上传失败</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215400.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+</blockquote>
+<p>最终到配置结果如下所示</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131435.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于github存在限制加上外网访问普遍较慢到问题，如果网速不给力并且没有科学上网工具建议使用gitee作为图形仓库。可以在1S内上传，非常方便。赶紧把gitee用起来把</p>
 ]]></content>
+      <categories>
+        <category>博客</category>
+      </categories>
+      <tags>
+        <tag>PicGo</tag>
+      </tags>
   </entry>
 </search>

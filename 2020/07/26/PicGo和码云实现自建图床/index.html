@@ -24,30 +24,54 @@
     var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="随遇而安">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LazyTimes的博客">
-<meta property="og:url" content="http://lazytime.site/index.html">
+  <meta name="description" content="自建图床">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PicGo和码云实现自建图床">
+<meta property="og:url" content="http://lazytime.site/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/index.html">
 <meta property="og:site_name" content="LazyTimes的博客">
-<meta property="og:description" content="随遇而安">
+<meta property="og:description" content="自建图床">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131933.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132027.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132225.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132358.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132719.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132750.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133220.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133327.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="http://null/">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133836.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214555.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214625.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214721.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214905.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215102.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215400.png?ynotemdtimestamp=1595729096959">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131435.png?ynotemdtimestamp=1595729096959">
+<meta property="article:published_time" content="2020-07-26T03:30:10.000Z">
+<meta property="article:modified_time" content="2020-07-26T03:32:09.898Z">
 <meta property="article:author" content="阿东">
+<meta property="article:tag" content="PicGo和码云实现自建图床">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959">
 
-<link rel="canonical" href="http://lazytime.site/">
+<link rel="canonical" href="http://lazytime.site/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>LazyTimes的博客</title>
+  <title>PicGo和码云实现自建图床 | LazyTimes的博客</title>
   
 
 
@@ -186,113 +210,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lazytime.site/2020/07/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LazyTimes的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" class="post-title-link" itemprop="url">Go语言学习笔记（一）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-07-26 11:33:37 / 修改时间：11:35:22" itemprop="dateCreated datePublished" datetime="2020-07-26T11:33:37+08:00">2020-07-26</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/golang/" itemprop="url" rel="index"><span itemprop="name">golang</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>7.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-            <div class="post-description">go语言学习</div>
-
-        </div>
-      </header>
 
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Go语言学习笔记（一）"><a href="#Go语言学习笔记（一）" class="headerlink" title="Go语言学习笔记（一）"></a>Go语言学习笔记（一）</h1><h2 id="Go语言是什么？"><a href="#Go语言是什么？" class="headerlink" title="Go语言是什么？"></a>Go语言是什么？</h2><p><em>Go 编程语言是一个使得程序员更加有效率的开源项目。Go 是有表达力、简洁、清晰和有效率的。它的并行机制使其很容易编写多核和网络应用,而新奇的类型系统允许构建有弹性的模块化程序。Go 编译到机器码非常快速,同时具有便利的垃圾回收和强大的运行时反射。它是快速的、静态类型编译语言,但是感觉上是动态类型的,解释型语言。</em></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -308,10 +229,9 @@
       <meta itemprop="name" content="LazyTimes的博客">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/" class="post-title-link" itemprop="url">PicGo和码云实现自建图床</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          PicGo和码云实现自建图床
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -334,6 +254,13 @@
             </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
   <span class="post-meta-item">
     
@@ -373,7 +300,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<a href="https://zhuanlan.zhihu.com/p/102594554" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102594554</a></p>
+        <h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<a href="https://zhuanlan.zhihu.com/p/102594554" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102594554</a></p>
 <h2 id="测试图床链接："><a href="#测试图床链接：" class="headerlink" title="测试图床链接："></a>测试图床链接：</h2><p>链接1 ：</p>
 <p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png</a></p>
 <p>链接2：</p>
@@ -383,233 +310,155 @@
 <p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959" alt="最终结果1"></p>
 <p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959" alt="最终结果2"></p>
 <p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959" alt="最终结果3"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
+<a id="more"></a>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lazytime.site/2020/07/26/Maven%E7%A7%81%E6%9C%8DNexus%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LazyTimes的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/Maven%E7%A7%81%E6%9C%8DNexus%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/" class="post-title-link" itemprop="url">Maven私服Nexus搭建教程</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-07-26 11:16:10 / 修改时间：11:17:30" itemprop="dateCreated datePublished" datetime="2020-07-26T11:16:10+08:00">2020-07-26</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/Maven%E7%A7%81%E6%9C%8DNexus%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/Maven%E7%A7%81%E6%9C%8DNexus%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
-            </span>
-            <div class="post-description">使用maven搭建私服</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Nexus-私服搭建基本流程"><a href="#Nexus-私服搭建基本流程" class="headerlink" title="Nexus 私服搭建基本流程"></a>Nexus 私服搭建基本流程</h1><h2 id="Nexus-是什么？"><a href="#Nexus-是什么？" class="headerlink" title="Nexus 是什么？"></a>Nexus 是什么？</h2><p>用于实现Maven构建私人仓库的一个工具。</p>
-<p>可以使用nexus 统一管理我们到依赖，不再需要再从中央仓库下载对应的jar包</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/26/Maven%E7%A7%81%E6%9C%8DNexus%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lazytime.site/2020/07/25/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LazyTimes的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/25/hello-world/" class="post-title-link" itemprop="url">hello-world</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-25 22:35:18" itemprop="dateCreated datePublished" datetime="2020-07-25T22:35:18+08:00">2020-07-25</time>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/25/hello-world/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/25/hello-world/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>159</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <hr>
-<p>title: 实战hexo部署<br>date: 2020-01-24 15:16:48<br>tags: </p>
-<ul>
-<li>PS3</li>
-<li>Games<br>updated: 2020-01-24 17:00:00<br>comments: true #开启评论的功能<br>categories: </li>
-<li>游戏<br>#- PS游戏 #会成为游戏的子分类，注意注意！！<br>#- [游戏，PS游戏] #如果想要多个分类需要这般操作</li>
+<h2 id="为什么要使用码云代替图床"><a href="#为什么要使用码云代替图床" class="headerlink" title="为什么要使用码云代替图床"></a>为什么要使用码云代替图床</h2><ul>
+<li>github毕竟是外国服务器，上传过程中因为网络问题有可能会无法使用的情况</li>
+<li>码云作为国内的“github”，访问和上传速度更快，所以使用码云更为方便</li>
+<li>目前<code>PicGo 2.0</code>之后已经有人集成了插件，使用和github一样简单好用</li>
 </ul>
-<hr>
+<h2 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h2><h3 id="1-下载PicGo"><a href="#1-下载PicGo" class="headerlink" title="1. 下载PicGo"></a>1. 下载PicGo</h3><p>官网地址：<a href="https://molunerfinn.com/PicGo/" target="_blank" rel="noopener">https://molunerfinn.com/PicGo/</a></p>
+<p>Github 快捷网址：<a href="https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2</a> 选择对应的版本下载即可</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131933.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>更多信息访问Github：<a href="https://github.com/Molunerfinn/PicGo" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo</a></p>
+<h3 id="2-安装PicGo"><a href="#2-安装PicGo" class="headerlink" title="2. 安装PicGo"></a>2. 安装PicGo</h3><p>安装过程就忽略了，安装完成之后打开软件</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132027.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="3-PicGo-安装gitee-插件"><a href="#3-PicGo-安装gitee-插件" class="headerlink" title="3. PicGo 安装gitee 插件"></a>3. PicGo 安装gitee 插件</h3><p>前提条件：<strong>注意PicGo安装的前提条件是2.0版本之后新增的插件功能！！！</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132225.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>将鼠标滚轮滚到最下面，会发现有一个插件设置</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132358.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>选择安装 <code>gitee-uploader 1.1.2</code>这个插件</p>
+<blockquote>
+<p><strong>安装失败如何解决</strong>？</p>
+<p>注意该插件需要node.js 的环境，Node.js的安装如下</p>
+<p><a href="http://nodejs.cn/download/" target="_blank" rel="noopener">http://nodejs.cn/download/</a></p>
+<p>进入中文官网之后，安装对应的版本即可</p>
+<p>window 下面的exe程序安装之后会自动的配置环境变量，这时候我们可以使用命令查一下是否有Node环境</p>
+<ol>
+<li>win 键 + R 打开<strong>运行</strong>窗口</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132719.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>输入命令<code>node -v</code></li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132750.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>如果出现如上所示的内容则证明安装成功</li>
+</ol>
+</blockquote>
+<h3 id="4-码云搭建图床仓库"><a href="#4-码云搭建图床仓库" class="headerlink" title="4. 码云搭建图床仓库"></a>4. 码云搭建图床仓库</h3><ol>
+<li>进入自己的码云：<a href="https://gitee.com/lazyTimes/projects" target="_blank" rel="noopener">https://gitee.com/lazyTimes/projects</a> 这是我的码云地址</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133220.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择右上角有一个 <code>&quot;+&quot;</code>号，选择新建仓库</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133327.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>填写基本信息，页面翻到最下面，选择保存</li>
+</ol>
+<p><img src="http://null/" alt="image-20200319133550209"></p>
+<ol>
+<li>新建仓库成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133836.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="5-获取gitee私人令牌"><a href="#5-获取gitee私人令牌" class="headerlink" title="5. 获取gitee私人令牌"></a>5. 获取gitee私人令牌</h3><p>和github一样，在最终设置之前我们需要获取一下gitee令牌用于上传</p>
+<ol>
+<li>登录gitee之后，右上角选择</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214555.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“私人令牌”</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214625.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“生成令牌”，进入到令牌到创建页面</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214721.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>勾选如图到内容，一般只需要用到前面几项就可以满足我们到需求。按要求输入密码即可生成成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214905.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>生成令牌成功，将令牌内容保存在自己到笔记，防止忘记</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215102.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>经过如上步骤之后，我们基本就算是大功告成了，现在只需要在PicGo里面配置一下即可</p>
+<h3 id="6-PicGo-配置"><a href="#6-PicGo-配置" class="headerlink" title="6. PicGo 配置"></a>6. PicGo 配置</h3><ul>
+<li>repo：必填，填写gitee上面的仓库名称</li>
+<li>branch：一般默认master 即可，有需要可以建立自己到分支</li>
+<li>tolken：要用到上一节所述到私人令牌，如果忘记了可以进入页面之后重新获取一下新令牌</li>
+<li>path：写上文件存放到位置，一般写上<code>img</code>即可</li>
+<li>customPath：定义传输到格式，一般可以不用管</li>
+<li>customUrl：自定义上传到链接</li>
+</ul>
+<blockquote>
+<p>不知道怎么获取repo地址？</p>
+<ol>
+<li>进入自己到图床仓库到主页，复制地址栏到内容</li>
+<li>复制下方到用户和项目名称</li>
+</ol>
+<p><strong>注意中间到内容不要存在空格，删除注意不要多删除字符造成上传失败</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215400.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+</blockquote>
+<p>最终到配置结果如下所示</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131435.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于github存在限制加上外网访问普遍较慢到问题，如果网速不给力并且没有科学上网工具建议使用gitee作为图形仓库。可以在1S内上传，非常方便。赶紧把gitee用起来把</p>
 
-      
     </div>
 
     
     
     
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://lazytime.site/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/" title="PicGo和码云实现自建图床">http://lazytime.site/2020/07/26/PicGo和码云实现自建图床/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
+          <div class="post-tags">
+              <a href="/tags/PicGo/" rel="tag"># PicGo</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/26/Maven%E7%A7%81%E6%9C%8DNexus%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/" rel="prev" title="Maven私服Nexus搭建教程">
+      <i class="fa fa-chevron-left"></i> Maven私服Nexus搭建教程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" rel="next" title="Go语言学习笔记（一）">
+      Go语言学习笔记（一） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -656,6 +505,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PicGo和码云实现自建图床"><span class="nav-number">1.</span> <span class="nav-text">PicGo和码云实现自建图床</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#最好的教程"><span class="nav-number">1.1.</span> <span class="nav-text">最好的教程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试图床链接："><span class="nav-number">1.2.</span> <span class="nav-text">测试图床链接：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要使用码云代替图床"><span class="nav-number">1.3.</span> <span class="nav-text">为什么要使用码云代替图床</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#步骤："><span class="nav-number">1.4.</span> <span class="nav-text">步骤：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-下载PicGo"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 下载PicGo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-安装PicGo"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 安装PicGo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-PicGo-安装gitee-插件"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. PicGo 安装gitee 插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-码云搭建图床仓库"><span class="nav-number">1.4.4.</span> <span class="nav-text">4. 码云搭建图床仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-获取gitee私人令牌"><span class="nav-number">1.4.5.</span> <span class="nav-text">5. 获取gitee私人令牌</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-PicGo-配置"><span class="nav-number">1.4.6.</span> <span class="nav-text">6. PicGo 配置</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
