@@ -257,6 +257,159 @@
       </tags>
   </entry>
   <entry>
+    <title>Hexo 迁移备份</title>
+    <url>/2020/07/26/Hexo-%E8%BF%81%E7%A7%BB%E5%A4%87%E4%BB%BD/</url>
+    <content><![CDATA[<h1 id="创建Git分支将Hexo博客迁移到其它电脑"><a href="#创建Git分支将Hexo博客迁移到其它电脑" class="headerlink" title="创建Git分支将Hexo博客迁移到其它电脑"></a>创建Git分支将Hexo博客迁移到其它电脑</h1><h2 id="迁移前准备：安装hexo博客必要的软件"><a href="#迁移前准备：安装hexo博客必要的软件" class="headerlink" title="迁移前准备：安装hexo博客必要的软件"></a>迁移前准备：安装hexo博客必要的软件</h2><ul>
+<li>下载安装Git客户端</li>
+<li>安装node js</li>
+<li>从git 仓库拉去原来的项目</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="采取方式"><a href="#采取方式" class="headerlink" title="采取方式"></a>采取方式</h2><ol>
+<li>采取新建仓库的方式</li>
+<li>分支存放源代码</li>
+</ol>
+<blockquote>
+<p>git clone <a href="https://github.com/lazyTimes/lazyTimes.github.io.git" target="_blank" rel="noopener">https://github.com/lazyTimes/lazyTimes.github.io.git</a></p>
+</blockquote>
+<h2 id="必备文件"><a href="#必备文件" class="headerlink" title="必备文件"></a>必备文件</h2><table>
+<thead>
+<tr>
+<th align="left">文件(夹)</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">scaffolds/</td>
+<td align="left">博客文章模板</td>
+</tr>
+<tr>
+<td align="left">source/</td>
+<td align="left">所有的博客文章</td>
+</tr>
+<tr>
+<td align="left">themes/</td>
+<td align="left">网站主题</td>
+</tr>
+<tr>
+<td align="left">.gitignore</td>
+<td align="left">push时需忽略的文件</td>
+</tr>
+<tr>
+<td align="left">_config.yml</td>
+<td align="left">站点配置文件</td>
+</tr>
+<tr>
+<td align="left">package.json</td>
+<td align="left">依赖包的名称和版本号</td>
+</tr>
+</tbody></table>
+<h2 id="备份流程"><a href="#备份流程" class="headerlink" title="备份流程"></a>备份流程</h2><h3 id="1-拉取已经部署上去的项目"><a href="#1-拉取已经部署上去的项目" class="headerlink" title="1. 拉取已经部署上去的项目"></a>1. 拉取已经部署上去的项目</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;lazyTimes&#x2F;lazyTimes.github.io.git</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-拷贝需要备份的元数据"><a href="#2-拷贝需要备份的元数据" class="headerlink" title="2. 拷贝需要备份的元数据"></a>2. 拷贝需要备份的<code>元数据</code></h3><p>具体查看上方的必备文件</p>
+<p>参考截图:</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200726154723.png" alt=""></p>
+<h3 id="3-删除主题的-git-配置"><a href="#3-删除主题的-git-配置" class="headerlink" title="3. 删除主题的.git 配置"></a>3. 删除主题的.git 配置</h3><p>执行如下命令删除不必要的内容</p>
+<p><code>rm -rf thems/next/.git*</code></p>
+<h3 id="4-创建名为hexo的分支"><a href="#4-创建名为hexo的分支" class="headerlink" title="4. 创建名为hexo的分支"></a>4. 创建名为hexo的分支</h3><p><code>git checkout -b hexo</code></p>
+<h3 id="5-把文件存放到暂存区"><a href="#5-把文件存放到暂存区" class="headerlink" title="5. 把文件存放到暂存区"></a>5. 把文件存放到暂存区</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add --all</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-提交变更"><a href="#6-提交变更" class="headerlink" title="6. 提交变更"></a>6. 提交变更</h3><p>先提交所有的改动内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git commit -m &quot;hexo-2&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后使用如下命令把内容推送到分支</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git push --set-upstream origin hexo</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果没有在Git config 设置用户名和密码，推送的时候会提示设置，根据提示设置用户名和密码即可</p>
+</blockquote>
+<h3 id="7-源码推到分支上"><a href="#7-源码推到分支上" class="headerlink" title="7. 源码推到分支上"></a>7. 源码推到分支上</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add .</span><br><span class="line">$ git commit -m &quot;xxxx&quot;</span><br><span class="line">$ git push origin hexo</span><br></pre></td></tr></table></figure>
+
+<h2 id="更加推荐的方式"><a href="#更加推荐的方式" class="headerlink" title="更加推荐的方式"></a>更加推荐的方式</h2><p>为了保证我们的源码的一些敏感配置不泄露，建议使用私有仓库进行存储，接下来说一下私有仓库的配置方式</p>
+]]></content>
+      <categories>
+        <category>博客</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo 搭建思维导图以及使用</title>
+    <url>/2020/07/26/Hexo-%E6%90%AD%E5%BB%BA%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="Hexo-搭建思维导图以及使用"><a href="#Hexo-搭建思维导图以及使用" class="headerlink" title="Hexo 搭建思维导图以及使用"></a>Hexo 搭建思维导图以及使用</h1><h2 id="1-Hexo-如何搭建"><a href="#1-Hexo-如何搭建" class="headerlink" title="1. Hexo 如何搭建"></a>1. Hexo 如何搭建</h2><ul>
+<li>详细查看Hexo学习博客：</li>
+</ul>
+<h2 id="2-选择："><a href="#2-选择：" class="headerlink" title="2. 选择："></a>2. 选择：</h2><ul>
+<li>百度的kitmap<ul>
+<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
+</ul>
+</li>
+<li><h2 id="Hexo-思维导图插件"><a href="#Hexo-思维导图插件" class="headerlink" title="Hexo 思维导图插件"></a>Hexo 思维导图插件</h2></li>
+<li>为什么使用百度的kityminder<ul>
+<li>使用简单</li>
+<li>百度开发，使用国内插件</li>
+</ul>
+</li>
+<li>使用hexo思维导图插件的原因<ul>
+<li>简单好用</li>
+</ul>
+</li>
+<li>什么是Kityminder<ul>
+<li>分成两部分<ul>
+<li>kity-core</li>
+<li>kity-editor</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>如何学习kityminder<ul>
+<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
+</ul>
+</li>
+<li>如何学习hexo 思维导图插件<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/75467441" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/75467441</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="3-使用hexo-插件构建思维导图"><a href="#3-使用hexo-插件构建思维导图" class="headerlink" title="3. 使用hexo 插件构建思维导图"></a>3. 使用hexo 插件构建思维导图</h2><ul>
+<li><p>跳转到hexo的目录下面，执行如下命令</p>
+<ul>
+<li><code>npm install hexo-simple-mindmap</code></li>
+</ul>
+</li>
+<li><p>在博客内部加入如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;% pullquote mindmap mindmap-md %&#125;</span><br><span class="line">[Hexo 的思维导图插件](https:&#x2F;&#x2F;hunterx.xyz&#x2F;hexo-simple-mindmap-plugin-intro.html)</span><br><span class="line">- 前言</span><br><span class="line">- 使用方法</span><br><span class="line">&#123;% endpullquote %&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="4-查看效果"><a href="#4-查看效果" class="headerlink" title="4. 查看效果"></a>4. 查看效果</h2><p>进入文章，即可渲染出对应的思维导图</p>
+<h1 id="推荐其他的方式"><a href="#推荐其他的方式" class="headerlink" title="推荐其他的方式"></a>推荐其他的方式</h1><ul>
+<li>使用xmind 话思维导图<ul>
+<li>为什么？<ul>
+<li>软件画图，可以一键生成图片</li>
+<li>样式可以调整，不需要切换</li>
+<li>简单好用，相对于Markdown编写更为直观</li>
+</ul>
+</li>
+<li>怎么使用xmind<ul>
+<li>百度搜索xmind 进入</li>
+<li>推荐使用xmind 的升级版本</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>博客</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JDK源码解读</title>
     <url>/2020/07/26/JDK%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</url>
     <content><![CDATA[<h1 id="深入理解JVM虚拟机-JDK源码解读"><a href="#深入理解JVM虚拟机-JDK源码解读" class="headerlink" title="深入理解JVM虚拟机 - JDK源码解读"></a>深入理解JVM虚拟机 - JDK源码解读</h1><p>《深入理解JVM虚拟机》看过了好几遍了，对于编译一个JDK源码有很强的冲动。这里主要实战使用<strong>阿里云</strong>进行编译实战</p>
@@ -418,156 +571,220 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Hexo 迁移备份</title>
-    <url>/2020/07/26/Hexo-%E8%BF%81%E7%A7%BB%E5%A4%87%E4%BB%BD/</url>
-    <content><![CDATA[<h1 id="创建Git分支将Hexo博客迁移到其它电脑"><a href="#创建Git分支将Hexo博客迁移到其它电脑" class="headerlink" title="创建Git分支将Hexo博客迁移到其它电脑"></a>创建Git分支将Hexo博客迁移到其它电脑</h1><h2 id="迁移前准备：安装hexo博客必要的软件"><a href="#迁移前准备：安装hexo博客必要的软件" class="headerlink" title="迁移前准备：安装hexo博客必要的软件"></a>迁移前准备：安装hexo博客必要的软件</h2><ul>
-<li>下载安装Git客户端</li>
-<li>安装node js</li>
-<li>从git 仓库拉去原来的项目</li>
-</ul>
+    <title>Neo4j + VIS 数据可视化问题汇总</title>
+    <url>/2020/07/26/Neo4j-VIS-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>被前端整的有点发虚，这里记录一下自己干的一些（蠢）事</p>
+<blockquote>
+<p>PS：这种无力感真的希望不要再有，在自己不怎么擅长的领域班门弄斧就是浪费时间</p>
+</blockquote>
 <a id="more"></a>
 
-<h2 id="采取方式"><a href="#采取方式" class="headerlink" title="采取方式"></a>采取方式</h2><ol>
-<li>采取新建仓库的方式</li>
-<li>分支存放源代码</li>
+<h2 id="重要资料："><a href="#重要资料：" class="headerlink" title="重要资料："></a>重要资料：</h2><h2 id="VIS-DataSet-使用："><a href="#VIS-DataSet-使用：" class="headerlink" title="VIS DataSet 使用："></a>VIS DataSet 使用：</h2><p><a href="https://visjs.github.io/vis-data/data/dataset.html" target="_blank" rel="noopener">dataSet使用</a></p>
+<p>这段时间做表标签库，内容还是比较多的，这里记录一下个人遇到的一些需求汇总问题</p>
+<p><a href="https://zhuanlan.zhihu.com/p/36404872" target="_blank" rel="noopener">什么是neo4j</a></p>
+<h1 id="Q：页面初始化如何控制节点的距离大小"><a href="#Q：页面初始化如何控制节点的距离大小" class="headerlink" title="Q：页面初始化如何控制节点的距离大小"></a>Q：页面初始化如何控制节点的距离大小</h1><p>A： 官方文档： <a href="https://visjs.github.io/vis-network/docs/network/physics.html" target="_blank" rel="noopener">VIS的节点物理效果</a></p>
+<p>需要调整如下参数</p>
+<p>在<code>options</code>调整如下变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> &#x2F;&#x2F;力导向图效果</span><br><span class="line">physics: &#123;</span><br><span class="line">    enabled: true,   &#x2F;&#x2F; 是否开启vis引擎配置</span><br><span class="line">        barnesHut: &#123; &#x2F;&#x2F; 基于四叉树的重力模型，非分布式性能最好的求值器</span><br><span class="line">            gravitationalConstant: -4000, &#x2F;&#x2F;此参数确定了合并的远程力和各个短程力之间的边界。要过分简化，较高的值会更快，但是会产生更多的错误，较低的值会很慢，但是会减少错误。</span><br><span class="line">            centralGravity: 0.3, &#x2F;&#x2F;有一个中央引力吸引器，可将整个网络拉回到中心。</span><br><span class="line">            springLength: 120, &#x2F;&#x2F; 边缘被建模为弹簧。这里的springLength是弹簧的其余长度。</span><br><span class="line">            springConstant: 0.04, &#x2F;&#x2F;这就是弹簧的强度。值越高，表示弹簧越强。</span><br><span class="line">            damping: 0.09, &#x2F;&#x2F; 接受范围：[0 .. 1]。阻尼因子是前一次物理模拟迭代中有多少速度会延续到下一次迭代中。</span><br><span class="line">            avoidOverlap: 0 &#x2F;&#x2F; 接受范围：[0 .. 1]。大于0时，将考虑节点的大小。对于两个重力模型，将从节点的包围圆的半径计算距离。值1是最大避免重叠。</span><br><span class="line">		&#125;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<p>根据上面的值基本可以确定整个页面的物理引擎效果</p>
+<h1 id="Q：要实现鼠标悬停到页面变为小手的样式"><a href="#Q：要实现鼠标悬停到页面变为小手的样式" class="headerlink" title="Q：要实现鼠标悬停到页面变为小手的样式"></a>Q：要实现鼠标悬停到页面变为小手的样式</h1><p>A：</p>
+<p>官方案例：<a href="https://visjs.github.io/vis-network/examples/network/other/cursorChange.html" target="_blank" rel="noopener">https://visjs.github.io/vis-network/examples/network/other/cursorChange.html</a></p>
+<p>参考博客：<a href="https://www.thinbug.com/q/40532596" target="_blank" rel="noopener">博客地址</a></p>
+<p>步骤：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var networkCanvas &#x3D; document.getElementById(&quot;network_id&quot;).getElementsByTagName(&quot;canvas&quot;)[0];</span><br></pre></td></tr></table></figure>
+
+<p>增加一个配置</p>
+<p>最终解决方案：</p>
+<p>在vis初始化<code>network</code> 之后,加入如下事件绑定代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var cursor &#x3D;  network.canvas.body.container.style.cursor; &#x2F;&#x2F; 获取netword的cursor</span><br><span class="line">network.on(&quot;hoverNode&quot;, function (params) &#123;</span><br><span class="line">    cursor &#x3D; &#39;grab&#39;</span><br><span class="line">&#125;);</span><br><span class="line">network.on(&quot;blurNode&quot;, function() &#123;</span><br><span class="line">    cursor &#x3D; &#39;default&#39;</span><br><span class="line">&#125;);</span><br><span class="line">network.on(&quot;hoverEdge&quot;, function() &#123;</span><br><span class="line">    cursor &#x3D; &#39;grab&#39;</span><br><span class="line">&#125;);</span><br><span class="line">network.on(&quot;blurEdge&quot;, function() &#123;</span><br><span class="line">    cursor &#x3D; &#39;default&#39;</span><br><span class="line">&#125;);</span><br><span class="line">network.on(&quot;dragStart&quot;, function() &#123;</span><br><span class="line">    cursor &#x3D; &#39;grabbing&#39;</span><br><span class="line">&#125;);</span><br><span class="line">network.on(&quot;dragging&quot;, function() &#123;</span><br><span class="line">    cursor &#x3D; &#39;grabbing&#39;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h1 id="Q：如何模仿Neo4j-用vis实现节点的展开和多层折叠"><a href="#Q：如何模仿Neo4j-用vis实现节点的展开和多层折叠" class="headerlink" title="Q：如何模仿Neo4j 用vis实现节点的展开和多层折叠"></a>Q：如何模仿Neo4j 用vis实现节点的展开和多层折叠</h1><p>参考：<a href="https://www.jianshu.com/p/b22727c8fe60" target="_blank" rel="noopener">简书地址</a></p>
+<p>个人需求：</p>
+<p>实现节点可以扩展和缩放，双击扩展，扩展之后再次双击为收缩</p>
+<p>难点：如何实现多层节点收缩</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var nodes &#x3D; [</span><br><span class="line">  &#123;id: 1, subids: [2, 3],allsubids:[2,3,4,5]&#125;,</span><br><span class="line">  &#123;id: 2, pid: 1&#125;,</span><br><span class="line">  &#123;id: 3, subids: [4],pid: 1,allsubids:[4,5]&#125;</span><br><span class="line">  &#123;id: 4, subids: [5],pid: 3&#125;</span><br><span class="line">  &#123;id: 5, pid: 4&#125;</span><br><span class="line">];</span><br><span class="line">var edges &#x3D; [</span><br><span class="line">  &#123;from:1,to:2&#125;,</span><br><span class="line">  &#123;from:1,to:3&#125;,</span><br><span class="line">  &#123;from:3,to:4&#125;,</span><br><span class="line">  &#123;from:4,to:5&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h2 id="个人实现："><a href="#个人实现：" class="headerlink" title="个人实现："></a>个人实现：</h2><p>目前经过查找资料发现以下代码加上</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*</span><br><span class="line">     *获取所有子节点</span><br><span class="line">     * network ：图形对象</span><br><span class="line">     * _thisNode ：单击的节点（父节点）</span><br><span class="line">     * _Allnodes ：用来装子节点ID的数组</span><br><span class="line">     * *&#x2F;</span><br><span class="line">    function getAllChilds(network,_thisNode,_Allnodes)&#123;</span><br><span class="line">        var _nodes &#x3D; network.getConnectedNodes(_thisNode);</span><br><span class="line">        if(_nodes.length &gt; 0)&#123;</span><br><span class="line">            for(var i&#x3D;0;i&lt;_nodes.length;i++)&#123;</span><br><span class="line">                &#x2F;&#x2F; getAllChilds(network,_nodes[i],_Allnodes);</span><br><span class="line">                _Allnodes.push(_nodes[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return _Allnodes</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>增加两个<code>Array</code>的方法：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Array.prototype.indexOf &#x3D; function(val) &#123;</span><br><span class="line">       for (var i &#x3D; 0; i &lt; this.length; i++) &#123;</span><br><span class="line">           if (this[i] &#x3D;&#x3D; val) return i;</span><br><span class="line">       &#125;</span><br><span class="line">       return -1;</span><br><span class="line">   &#125;;</span><br><span class="line"></span><br><span class="line">   &#x2F;&#x2F;code from http:&#x2F;&#x2F;caibaojian.com&#x2F;js-splice-element.html</span><br><span class="line">   Array.prototype.remove &#x3D; function(val) &#123;</span><br><span class="line">       var index &#x3D; this.indexOf(val);</span><br><span class="line">       if (index &gt; -1) &#123;</span><br><span class="line">           this.splice(index, 1);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>具体判断逻辑如下：</p>
+<ol>
+<li>设置一个标志位，第一次为true，表示扩展该节点。扩展之后将该节点的id放到一个全局的扩展节点array里面维护</li>
+<li>如果再次点击，该标志位变成false, 执行步骤又可以分为以下几点<ul>
+<li>使用vis.js的api获取当前节点的<code>连接</code>节点，<code>network.getConnectedNodes(_thisNode);</code>的<code>_thisNode</code>，为当前操作节点的唯一标识id（此方法还有很多的可选条件参数）</li>
+<li>获取<code>连接</code>节点之后，调用<code>nodes.remove(_allChild)</code>，删除关联节点，此操作会直接干掉被删除节点所有的关联关系</li>
+<li>删除完成之后，全局表的<code>已扩展</code>节点删除当前点击节点，方便下次再次扩展</li>
+</ul>
+</li>
 </ol>
-<blockquote>
-<p>git clone <a href="https://github.com/lazyTimes/lazyTimes.github.io.git" target="_blank" rel="noopener">https://github.com/lazyTimes/lazyTimes.github.io.git</a></p>
-</blockquote>
-<h2 id="必备文件"><a href="#必备文件" class="headerlink" title="必备文件"></a>必备文件</h2><table>
-<thead>
-<tr>
-<th align="left">文件(夹)</th>
-<th align="left">说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">scaffolds/</td>
-<td align="left">博客文章模板</td>
-</tr>
-<tr>
-<td align="left">source/</td>
-<td align="left">所有的博客文章</td>
-</tr>
-<tr>
-<td align="left">themes/</td>
-<td align="left">网站主题</td>
-</tr>
-<tr>
-<td align="left">.gitignore</td>
-<td align="left">push时需忽略的文件</td>
-</tr>
-<tr>
-<td align="left">_config.yml</td>
-<td align="left">站点配置文件</td>
-</tr>
-<tr>
-<td align="left">package.json</td>
-<td align="left">依赖包的名称和版本号</td>
-</tr>
-</tbody></table>
-<h2 id="备份流程"><a href="#备份流程" class="headerlink" title="备份流程"></a>备份流程</h2><h3 id="1-拉取已经部署上去的项目"><a href="#1-拉取已经部署上去的项目" class="headerlink" title="1. 拉取已经部署上去的项目"></a>1. 拉取已经部署上去的项目</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;lazyTimes&#x2F;lazyTimes.github.io.git</span><br></pre></td></tr></table></figure>
+<h1 id="Q：双向两条箭头合并为一个单向双箭头"><a href="#Q：双向两条箭头合并为一个单向双箭头" class="headerlink" title="Q：双向两条箭头合并为一个单向双箭头"></a>Q：双向两条箭头合并为一个单向双箭头</h1><p>这个需求是比较特殊的例子，涉及到业务的内容不予描述</p>
+<p>思路：</p>
+<ol>
+<li>拿到当前记录，获取当前记录的<code>from</code>和<code>to</code></li>
+<li>使用两层循环嵌套，第一层遍历所有的节点一次，第二层遍历当前节点的后面节点，类似冒泡</li>
+<li>如果当前节点的<code>from</code> == 其他节点的<code>to</code>，并且当前节点的<code>to</code> == 其他节点的<code>from</code></li>
+</ol>
+<p>具体代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 手动筛选掉双向关联的数据</span><br><span class="line">    function delrepeatinfo(arrName) &#123;</span><br><span class="line">        arrName &#x3D; arrName.edges;</span><br><span class="line">        if (arrName &#x3D;&#x3D; null || arrName.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">        var repeat &#x3D; [];</span><br><span class="line">        for (var i &#x3D; 0; i &lt; arrName.length; i++) &#123;</span><br><span class="line">            var item &#x3D; arrName[i];</span><br><span class="line">            if(item.skip)&#123;</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line">            var fromId &#x3D; item.edgeFrom;</span><br><span class="line">            var toId &#x3D; item.edgeTo;</span><br><span class="line">            for (var j &#x3D; i+1; j &lt; arrName.length; j++) &#123;</span><br><span class="line">                var next &#x3D; arrName[j];</span><br><span class="line">                if(next.edgeTo &#x3D;&#x3D; fromId &amp;&amp; next.edgeFrom &#x3D;&#x3D; toId)&#123;</span><br><span class="line">                    repeat.push(item);</span><br><span class="line">                    next.skip &#x3D; true;</span><br><span class="line">                    break;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return repeat;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="2-拷贝需要备份的元数据"><a href="#2-拷贝需要备份的元数据" class="headerlink" title="2. 拷贝需要备份的元数据"></a>2. 拷贝需要备份的<code>元数据</code></h3><p>具体查看上方的必备文件</p>
-<p>参考截图:</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200726154723.png" alt=""></p>
-<h3 id="3-删除主题的-git-配置"><a href="#3-删除主题的-git-配置" class="headerlink" title="3. 删除主题的.git 配置"></a>3. 删除主题的.git 配置</h3><p>执行如下命令删除不必要的内容</p>
-<p><code>rm -rf thems/next/.git*</code></p>
-<h3 id="4-创建名为hexo的分支"><a href="#4-创建名为hexo的分支" class="headerlink" title="4. 创建名为hexo的分支"></a>4. 创建名为hexo的分支</h3><p><code>git checkout -b hexo</code></p>
-<h3 id="5-把文件存放到暂存区"><a href="#5-把文件存放到暂存区" class="headerlink" title="5. 把文件存放到暂存区"></a>5. 把文件存放到暂存区</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add --all</span><br></pre></td></tr></table></figure>
+<h1 id="Q：如果自定义画图"><a href="#Q：如果自定义画图" class="headerlink" title="Q：如果自定义画图"></a>Q：如果自定义画图</h1><p>需求：</p>
+<p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/%E6%A0%87%E7%AD%BE%E5%BA%93%E9%9C%80%E6%B1%82.png?ynotemdtimestamp=1595748679079" alt="img"></p>
+<p>A：个人无法处理，需要寻找建哥处理按钮的绘画以及按钮的事件触发操作</p>
+<p>处理方式：</p>
+<ol>
+<li>使用canvas在 点击标签之后绘制对应的按钮</li>
+<li>监听坐标，当点击了坐标内的按钮触发事件，显示对应的菜单</li>
+</ol>
+<p>那个多出两个自定义按钮的解决办法如下：</p>
+<ol>
+<li>利用canvas前端画图技术绘制按钮</li>
+<li>监听鼠标的点击坐标，查看是否在绘制的按钮坐标内，对应的触发事件</li>
+<li>触发相关操作</li>
+</ol>
+<p>VIS绘制辅助线条的办法：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">context &#x3D; ctx || $(&#39;#network_id&#39;)[0].getContext(&quot;2d&quot;)</span><br><span class="line">context.lineWidth &#x3D; 1;</span><br><span class="line">context.strokeStyle &#x3D; &quot;#CECBCE&quot;;</span><br><span class="line">context.setLineDash([5]);</span><br><span class="line">var offset &#x3D; 800;</span><br><span class="line">var padding &#x3D; 50;</span><br><span class="line">for (var i &#x3D; 0; i &lt; 30; i++) &#123;</span><br><span class="line">    context.beginPath();</span><br><span class="line">    context.moveTo(offset * -1, i * padding - offset)</span><br><span class="line">    context.lineTo(2000, i * padding - offset)</span><br><span class="line">    context.stroke();</span><br><span class="line"></span><br><span class="line">    context.beginPath();</span><br><span class="line">    context.moveTo(i * padding - offset, offset * -1)</span><br><span class="line">    context.lineTo(i * padding - offset, 2000)</span><br><span class="line">    context.stroke();</span><br><span class="line">&#125;</span><br><span class="line">context.setLineDash([]);</span><br></pre></td></tr></table></figure>
 
-<h3 id="6-提交变更"><a href="#6-提交变更" class="headerlink" title="6. 提交变更"></a>6. 提交变更</h3><p>先提交所有的改动内容</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git commit -m &quot;hexo-2&quot;</span><br></pre></td></tr></table></figure>
-
-<p>然后使用如下命令把内容推送到分支</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git push --set-upstream origin hexo</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>如果没有在Git config 设置用户名和密码，推送的时候会提示设置，根据提示设置用户名和密码即可</p>
-</blockquote>
-<h3 id="7-源码推到分支上"><a href="#7-源码推到分支上" class="headerlink" title="7. 源码推到分支上"></a>7. 源码推到分支上</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add .</span><br><span class="line">$ git commit -m &quot;xxxx&quot;</span><br><span class="line">$ git push origin hexo</span><br></pre></td></tr></table></figure>
-
-<h2 id="更加推荐的方式"><a href="#更加推荐的方式" class="headerlink" title="更加推荐的方式"></a>更加推荐的方式</h2><p>为了保证我们的源码的一些敏感配置不泄露，建议使用私有仓库进行存储，接下来说一下私有仓库的配置方式</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>neo4j 的资料还是太少太少，多查查官方文档才是硬道理</p>
+<p>个人接到的需求如下</p>
+<ol>
+<li>标签之间都是双向箭头，需要改成一条直线，或者只有单项的。</li>
+</ol>
+<p>无法自定义，因为数据的展示强制需要 头和尾两个参数，数据本身就是会存在互相关联的情况，所以无法实现</p>
+<ol>
+<li>标签之间的连接线点击不要有效果，就是颜色不要加深</li>
+</ol>
+<p>只需要去掉inter``</p>
+<ol>
+<li>标签展开后能再点击折叠收回映射关系吗？</li>
+<li>所有图例鼠标放到上面都变成小手形状</li>
+<li>初始化页面这些标签过于分散，需要集中一些，根据屏幕情况集中在一屏展示</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/%E6%A0%87%E7%AD%BE%E5%BA%93%E9%9C%80%E6%B1%82.png?ynotemdtimestamp=1595748679079" alt="img"></p>
 ]]></content>
       <categories>
-        <category>博客</category>
+        <category>Neo4j</category>
       </categories>
       <tags>
-        <tag>Hexo</tag>
+        <tag>Neo4j</tag>
       </tags>
   </entry>
   <entry>
-    <title>Hexo 搭建思维导图以及使用</title>
-    <url>/2020/07/26/Hexo-%E6%90%AD%E5%BB%BA%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="Hexo-搭建思维导图以及使用"><a href="#Hexo-搭建思维导图以及使用" class="headerlink" title="Hexo 搭建思维导图以及使用"></a>Hexo 搭建思维导图以及使用</h1><h2 id="1-Hexo-如何搭建"><a href="#1-Hexo-如何搭建" class="headerlink" title="1. Hexo 如何搭建"></a>1. Hexo 如何搭建</h2><ul>
-<li>详细查看Hexo学习博客：</li>
-</ul>
-<h2 id="2-选择："><a href="#2-选择：" class="headerlink" title="2. 选择："></a>2. 选择：</h2><ul>
-<li>百度的kitmap<ul>
-<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
-</ul>
-</li>
-<li><h2 id="Hexo-思维导图插件"><a href="#Hexo-思维导图插件" class="headerlink" title="Hexo 思维导图插件"></a>Hexo 思维导图插件</h2></li>
-<li>为什么使用百度的kityminder<ul>
-<li>使用简单</li>
-<li>百度开发，使用国内插件</li>
-</ul>
-</li>
-<li>使用hexo思维导图插件的原因<ul>
-<li>简单好用</li>
-</ul>
-</li>
-<li>什么是Kityminder<ul>
-<li>分成两部分<ul>
-<li>kity-core</li>
-<li>kity-editor</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>如何学习kityminder<ul>
-<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
-</ul>
-</li>
-<li>如何学习hexo 思维导图插件<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/75467441" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/75467441</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="3-使用hexo-插件构建思维导图"><a href="#3-使用hexo-插件构建思维导图" class="headerlink" title="3. 使用hexo 插件构建思维导图"></a>3. 使用hexo 插件构建思维导图</h2><ul>
-<li><p>跳转到hexo的目录下面，执行如下命令</p>
-<ul>
-<li><code>npm install hexo-simple-mindmap</code></li>
-</ul>
-</li>
-<li><p>在博客内部加入如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;% pullquote mindmap mindmap-md %&#125;</span><br><span class="line">[Hexo 的思维导图插件](https:&#x2F;&#x2F;hunterx.xyz&#x2F;hexo-simple-mindmap-plugin-intro.html)</span><br><span class="line">- 前言</span><br><span class="line">- 使用方法</span><br><span class="line">&#123;% endpullquote %&#125;</span><br></pre></td></tr></table></figure>
+    <title>PicGo和码云实现自建图床</title>
+    <url>/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/</url>
+    <content><![CDATA[<h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<a href="https://zhuanlan.zhihu.com/p/102594554" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102594554</a></p>
+<h2 id="测试图床链接："><a href="#测试图床链接：" class="headerlink" title="测试图床链接："></a>测试图床链接：</h2><p>链接1 ：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png</a></p>
+<p>链接2：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png</a></p>
+<p>链接3：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png</a></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959" alt="最终结果1"></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959" alt="最终结果2"></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959" alt="最终结果3"></p>
+<a id="more"></a>
 
-</li>
+<h2 id="为什么要使用码云代替图床"><a href="#为什么要使用码云代替图床" class="headerlink" title="为什么要使用码云代替图床"></a>为什么要使用码云代替图床</h2><ul>
+<li>github毕竟是外国服务器，上传过程中因为网络问题有可能会无法使用的情况</li>
+<li>码云作为国内的“github”，访问和上传速度更快，所以使用码云更为方便</li>
+<li>目前<code>PicGo 2.0</code>之后已经有人集成了插件，使用和github一样简单好用</li>
 </ul>
-<h2 id="4-查看效果"><a href="#4-查看效果" class="headerlink" title="4. 查看效果"></a>4. 查看效果</h2><p>进入文章，即可渲染出对应的思维导图</p>
-<h1 id="推荐其他的方式"><a href="#推荐其他的方式" class="headerlink" title="推荐其他的方式"></a>推荐其他的方式</h1><ul>
-<li>使用xmind 话思维导图<ul>
-<li>为什么？<ul>
-<li>软件画图，可以一键生成图片</li>
-<li>样式可以调整，不需要切换</li>
-<li>简单好用，相对于Markdown编写更为直观</li>
+<h2 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h2><h3 id="1-下载PicGo"><a href="#1-下载PicGo" class="headerlink" title="1. 下载PicGo"></a>1. 下载PicGo</h3><p>官网地址：<a href="https://molunerfinn.com/PicGo/" target="_blank" rel="noopener">https://molunerfinn.com/PicGo/</a></p>
+<p>Github 快捷网址：<a href="https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2</a> 选择对应的版本下载即可</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131933.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>更多信息访问Github：<a href="https://github.com/Molunerfinn/PicGo" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo</a></p>
+<h3 id="2-安装PicGo"><a href="#2-安装PicGo" class="headerlink" title="2. 安装PicGo"></a>2. 安装PicGo</h3><p>安装过程就忽略了，安装完成之后打开软件</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132027.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="3-PicGo-安装gitee-插件"><a href="#3-PicGo-安装gitee-插件" class="headerlink" title="3. PicGo 安装gitee 插件"></a>3. PicGo 安装gitee 插件</h3><p>前提条件：<strong>注意PicGo安装的前提条件是2.0版本之后新增的插件功能！！！</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132225.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>将鼠标滚轮滚到最下面，会发现有一个插件设置</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132358.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>选择安装 <code>gitee-uploader 1.1.2</code>这个插件</p>
+<blockquote>
+<p><strong>安装失败如何解决</strong>？</p>
+<p>注意该插件需要node.js 的环境，Node.js的安装如下</p>
+<p><a href="http://nodejs.cn/download/" target="_blank" rel="noopener">http://nodejs.cn/download/</a></p>
+<p>进入中文官网之后，安装对应的版本即可</p>
+<p>window 下面的exe程序安装之后会自动的配置环境变量，这时候我们可以使用命令查一下是否有Node环境</p>
+<ol>
+<li>win 键 + R 打开<strong>运行</strong>窗口</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132719.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>输入命令<code>node -v</code></li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132750.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>如果出现如上所示的内容则证明安装成功</li>
+</ol>
+</blockquote>
+<h3 id="4-码云搭建图床仓库"><a href="#4-码云搭建图床仓库" class="headerlink" title="4. 码云搭建图床仓库"></a>4. 码云搭建图床仓库</h3><ol>
+<li>进入自己的码云：<a href="https://gitee.com/lazyTimes/projects" target="_blank" rel="noopener">https://gitee.com/lazyTimes/projects</a> 这是我的码云地址</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133220.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择右上角有一个 <code>&quot;+&quot;</code>号，选择新建仓库</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133327.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>填写基本信息，页面翻到最下面，选择保存</li>
+</ol>
+<p><img src="http://null/" alt="image-20200319133550209"></p>
+<ol>
+<li>新建仓库成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133836.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="5-获取gitee私人令牌"><a href="#5-获取gitee私人令牌" class="headerlink" title="5. 获取gitee私人令牌"></a>5. 获取gitee私人令牌</h3><p>和github一样，在最终设置之前我们需要获取一下gitee令牌用于上传</p>
+<ol>
+<li>登录gitee之后，右上角选择</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214555.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“私人令牌”</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214625.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“生成令牌”，进入到令牌到创建页面</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214721.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>勾选如图到内容，一般只需要用到前面几项就可以满足我们到需求。按要求输入密码即可生成成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214905.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>生成令牌成功，将令牌内容保存在自己到笔记，防止忘记</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215102.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>经过如上步骤之后，我们基本就算是大功告成了，现在只需要在PicGo里面配置一下即可</p>
+<h3 id="6-PicGo-配置"><a href="#6-PicGo-配置" class="headerlink" title="6. PicGo 配置"></a>6. PicGo 配置</h3><ul>
+<li>repo：必填，填写gitee上面的仓库名称</li>
+<li>branch：一般默认master 即可，有需要可以建立自己到分支</li>
+<li>tolken：要用到上一节所述到私人令牌，如果忘记了可以进入页面之后重新获取一下新令牌</li>
+<li>path：写上文件存放到位置，一般写上<code>img</code>即可</li>
+<li>customPath：定义传输到格式，一般可以不用管</li>
+<li>customUrl：自定义上传到链接</li>
 </ul>
-</li>
-<li>怎么使用xmind<ul>
-<li>百度搜索xmind 进入</li>
-<li>推荐使用xmind 的升级版本</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+<blockquote>
+<p>不知道怎么获取repo地址？</p>
+<ol>
+<li>进入自己到图床仓库到主页，复制地址栏到内容</li>
+<li>复制下方到用户和项目名称</li>
+</ol>
+<p><strong>注意中间到内容不要存在空格，删除注意不要多删除字符造成上传失败</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215400.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+</blockquote>
+<p>最终到配置结果如下所示</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131435.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于github存在限制加上外网访问普遍较慢到问题，如果网速不给力并且没有科学上网工具建议使用gitee作为图形仓库。可以在1S内上传，非常方便。赶紧把gitee用起来把</p>
 ]]></content>
       <categories>
         <category>博客</category>
       </categories>
       <tags>
-        <tag>Hexo</tag>
+        <tag>PicGo</tag>
       </tags>
   </entry>
   <entry>
@@ -883,118 +1100,122 @@
       </tags>
   </entry>
   <entry>
-    <title>PicGo和码云实现自建图床</title>
-    <url>/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/</url>
-    <content><![CDATA[<h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<a href="https://zhuanlan.zhihu.com/p/102594554" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102594554</a></p>
-<h2 id="测试图床链接："><a href="#测试图床链接：" class="headerlink" title="测试图床链接："></a>测试图床链接：</h2><p>链接1 ：</p>
-<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png</a></p>
-<p>链接2：</p>
-<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png</a></p>
-<p>链接3：</p>
-<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png</a></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959" alt="最终结果1"></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959" alt="最终结果2"></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959" alt="最终结果3"></p>
+    <title>《Spring 实战》解读</title>
+    <url>/2020/07/26/%E3%80%8ASpring-%E5%AE%9E%E6%88%98%E3%80%8B%E8%A7%A3%E8%AF%BB/</url>
+    <content><![CDATA[<h1 id="《Spring-实战》解读"><a href="#《Spring-实战》解读" class="headerlink" title="《Spring 实战》解读"></a>《Spring 实战》解读</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>DI：依赖反转</p>
+<p>AOP：切面编程</p>
 <a id="more"></a>
 
-<h2 id="为什么要使用码云代替图床"><a href="#为什么要使用码云代替图床" class="headerlink" title="为什么要使用码云代替图床"></a>为什么要使用码云代替图床</h2><ul>
-<li>github毕竟是外国服务器，上传过程中因为网络问题有可能会无法使用的情况</li>
-<li>码云作为国内的“github”，访问和上传速度更快，所以使用码云更为方便</li>
-<li>目前<code>PicGo 2.0</code>之后已经有人集成了插件，使用和github一样简单好用</li>
-</ul>
-<h2 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h2><h3 id="1-下载PicGo"><a href="#1-下载PicGo" class="headerlink" title="1. 下载PicGo"></a>1. 下载PicGo</h3><p>官网地址：<a href="https://molunerfinn.com/PicGo/" target="_blank" rel="noopener">https://molunerfinn.com/PicGo/</a></p>
-<p>Github 快捷网址：<a href="https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2</a> 选择对应的版本下载即可</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131933.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>更多信息访问Github：<a href="https://github.com/Molunerfinn/PicGo" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo</a></p>
-<h3 id="2-安装PicGo"><a href="#2-安装PicGo" class="headerlink" title="2. 安装PicGo"></a>2. 安装PicGo</h3><p>安装过程就忽略了，安装完成之后打开软件</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132027.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<h3 id="3-PicGo-安装gitee-插件"><a href="#3-PicGo-安装gitee-插件" class="headerlink" title="3. PicGo 安装gitee 插件"></a>3. PicGo 安装gitee 插件</h3><p>前提条件：<strong>注意PicGo安装的前提条件是2.0版本之后新增的插件功能！！！</strong></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132225.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>将鼠标滚轮滚到最下面，会发现有一个插件设置</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132358.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>选择安装 <code>gitee-uploader 1.1.2</code>这个插件</p>
-<blockquote>
-<p><strong>安装失败如何解决</strong>？</p>
-<p>注意该插件需要node.js 的环境，Node.js的安装如下</p>
-<p><a href="http://nodejs.cn/download/" target="_blank" rel="noopener">http://nodejs.cn/download/</a></p>
-<p>进入中文官网之后，安装对应的版本即可</p>
-<p>window 下面的exe程序安装之后会自动的配置环境变量，这时候我们可以使用命令查一下是否有Node环境</p>
+<h3 id="Spring应用上下文"><a href="#Spring应用上下文" class="headerlink" title="Spring应用上下文"></a>Spring应用上下文</h3><p><strong>AnnotationConfigApplicationContext</strong> ：从一个或多个基于 Java 的配置类中加载 Spring 应用上下文。</p>
+<p><strong>AnnotationConfigWebApplicationContext</strong> ：从一个或多个基于 Java 的配置类中加载 Spring Web 应用上下文。</p>
+<p><strong>ClassPathXmlApplicationContext</strong> ：从类路径下的一个或多个 XML 配置文件中加载上下文定义，把应用上下文的定义文件作为类资源。</p>
+<p><strong>FileSystemXmlapplicationcontext</strong> ：从文件系统下的一个或多个 XML 配置文件中加载上下文定义。</p>
+<p><strong>XmlWebApplicationContext</strong> ：从 Web 应用下的一个或多个 XML 配置文件中加载上下文定义。</p>
+<h3 id="Spring的生命周期"><a href="#Spring的生命周期" class="headerlink" title="Spring的生命周期"></a>Spring的生命周期</h3><p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/20200213191203.png?ynotemdtimestamp=1595748679079" alt="Spring生命周期"></p>
 <ol>
-<li>win 键 + R 打开<strong>运行</strong>窗口</li>
+<li>Spring 对 bean 进行实例化；</li>
+<li>Spring 将值和 bean 的引用注入到 bean 对应的属性中；</li>
+<li>如果 bean 实现了 BeanNameAware 接口， Spring 将 bean 的 ID 传递给 setBean-Name() 方法；</li>
+<li>如果 bean 实现了 BeanFactoryAware 接口， Spring 将调用 setBeanFactory() 方法，将 BeanFactory 容器实例传入；</li>
+<li>如果 bean 实现了 ApplicationContextAware 接口， Spring 将调用 setApplicationContext() 方法，将 bean 所在的应用上下文的引用传入进来；</li>
+<li>如果 bean 实现了 BeanPostProcessor 接口， Spring 将调用它们的 post-ProcessBeforeInitialization() 方法；</li>
+<li>如果 bean 实现了 InitializingBean 接口， Spring 将调用它们的 after-PropertiesSet() 方法。类似地，如果 bean 使用 init- method 声明了初始化方法，该方法也会被调用；</li>
+<li>如果 bean 实现了 BeanPostProcessor 接口， Spring 将调用它们的 post-ProcessAfterInitialization() 方法；</li>
+<li>此时， bean 已经准备就绪，可以被应用程序使用了，它们将一直驻留在应用上下文中，直到该应用上下文被销毁；</li>
+<li>如果 bean 实现了 DisposableBean 接口， Spring 将调用它的 destroy() 接口方法。同样，如果 bean 使用 destroy-method 声明了销 毁方法，该方法也会被调用</li>
 </ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132719.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>输入命令<code>node -v</code></li>
+<h3 id="Spring-模块-（4-0为例）"><a href="#Spring-模块-（4-0为例）" class="headerlink" title="Spring 模块 （4.0为例）"></a>Spring 模块 （4.0为例）</h3><p><img src="https://raw.githubusercontent.com/lazyTimes/imageRepository/master/img/20200213191506.png?ynotemdtimestamp=1595748679079" alt="Spring模块"></p>
+<h3 id="版本新特性"><a href="#版本新特性" class="headerlink" title="版本新特性"></a>版本新特性</h3><p>3.1 ： 注解编程</p>
+<p>3.2：增强SpringMVC，加入更多的支持</p>
+<p>4.0：Websocket加入，JDK1.8的支持以及Lambada表达式</p>
+<h2 id="Spring的Bean"><a href="#Spring的Bean" class="headerlink" title="Spring的Bean"></a>Spring的Bean</h2><h3 id="装配Bean的三种方式："><a href="#装配Bean的三种方式：" class="headerlink" title="装配Bean的三种方式："></a>装配Bean的三种方式：</h3><ol>
+<li>自动装配（扫描）</li>
+<li>XML装配</li>
+<li>通过JAVA代码</li>
 </ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132750.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>如果出现如上所示的内容则证明安装成功</li>
-</ol>
+<h3 id="自动装配"><a href="#自动装配" class="headerlink" title="自动装配"></a>自动装配</h3><blockquote>
+<p>Q：<strong>为Bean命名有什么影响？</strong></p>
+<p>A： <strong>@Inject</strong> 和 <strong>@Autowired</strong> 的注入会受到影响</p>
+<p>Q：<strong>Bean默认的命名规则？</strong></p>
+<p>A：类名的首字母小写</p>
+<p>Q：除了@Bean定义名称之外的办法？</p>
+<p>A：<strong>@Named</strong></p>
 </blockquote>
-<h3 id="4-码云搭建图床仓库"><a href="#4-码云搭建图床仓库" class="headerlink" title="4. 码云搭建图床仓库"></a>4. 码云搭建图床仓库</h3><ol>
-<li>进入自己的码云：<a href="https://gitee.com/lazyTimes/projects" target="_blank" rel="noopener">https://gitee.com/lazyTimes/projects</a> 这是我的码云地址</li>
+<h3 id="JAVA配置"><a href="#JAVA配置" class="headerlink" title="JAVA配置"></a>JAVA配置</h3><p>需要注意Bean是单例的，如果引用对象也存在引用，那么对应的引用对象也是单利的</p>
+<h3 id="XML配置"><a href="#XML配置" class="headerlink" title="XML配置"></a>XML配置</h3><ol>
+<li>使用 <constructor-arg> 元素进行构造器参数的注入</li>
+<li>由于xml 配置非常的繁琐，推荐Java配置</li>
 </ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133220.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>选择右上角有一个 <code>&quot;+&quot;</code>号，选择新建仓库</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133327.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>填写基本信息，页面翻到最下面，选择保存</li>
-</ol>
-<p><img src="http://null/" alt="image-20200319133550209"></p>
-<ol>
-<li>新建仓库成功</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133836.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<h3 id="5-获取gitee私人令牌"><a href="#5-获取gitee私人令牌" class="headerlink" title="5. 获取gitee私人令牌"></a>5. 获取gitee私人令牌</h3><p>和github一样，在最终设置之前我们需要获取一下gitee令牌用于上传</p>
-<ol>
-<li>登录gitee之后，右上角选择</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214555.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>选择“私人令牌”</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214625.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>选择“生成令牌”，进入到令牌到创建页面</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214721.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>勾选如图到内容，一般只需要用到前面几项就可以满足我们到需求。按要求输入密码即可生成成功</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214905.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>生成令牌成功，将令牌内容保存在自己到笔记，防止忘记</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215102.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>经过如上步骤之后，我们基本就算是大功告成了，现在只需要在PicGo里面配置一下即可</p>
-<h3 id="6-PicGo-配置"><a href="#6-PicGo-配置" class="headerlink" title="6. PicGo 配置"></a>6. PicGo 配置</h3><ul>
-<li>repo：必填，填写gitee上面的仓库名称</li>
-<li>branch：一般默认master 即可，有需要可以建立自己到分支</li>
-<li>tolken：要用到上一节所述到私人令牌，如果忘记了可以进入页面之后重新获取一下新令牌</li>
-<li>path：写上文件存放到位置，一般写上<code>img</code>即可</li>
-<li>customPath：定义传输到格式，一般可以不用管</li>
-<li>customUrl：自定义上传到链接</li>
-</ul>
+<h2 id="更高级的Bean装配"><a href="#更高级的Bean装配" class="headerlink" title="更高级的Bean装配"></a>更高级的Bean装配</h2><h3 id="profile-Bean"><a href="#profile-Bean" class="headerlink" title="profile Bean"></a>profile Bean</h3><p><code>@Profile</code> 注解指定某个 bean 属于哪一个 profile</p>
 <blockquote>
-<p>不知道怎么获取repo地址？</p>
-<ol>
-<li>进入自己到图床仓库到主页，复制地址栏到内容</li>
-<li>复制下方到用户和项目名称</li>
-</ol>
-<p><strong>注意中间到内容不要存在空格，删除注意不要多删除字符造成上传失败</strong></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215400.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>3.2之前：@profile只能作用于类</p>
 </blockquote>
-<p>最终到配置结果如下所示</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131435.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于github存在限制加上外网访问普遍较慢到问题，如果网速不给力并且没有科学上网工具建议使用gitee作为图形仓库。可以在1S内上传，非常方便。赶紧把gitee用起来把</p>
+<h3 id="激活profile"><a href="#激活profile" class="headerlink" title="激活profile"></a>激活profile</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">spring.profiles.active&#96; 和 &#96;spring.profiles.default</span><br></pre></td></tr></table></figure>
+
+<p>通常情况下会选择<code>dev</code></p>
+<h3 id="条件化-Bean"><a href="#条件化-Bean" class="headerlink" title="条件化 Bean"></a>条件化 Bean</h3><p><strong>@Conditional</strong>：SpringBoot的核心</p>
+<p>运作基本原理：</p>
+<p>它通过给定的 <code>ConditionContext</code>对象进而得到<code>Environment</code>对象，并使用这个对象检查环境中是否存在名为 magic 的环境属性</p>
+<blockquote>
+<p>通过 ConditionContext ，我们可以做到如下几点：</p>
+<ul>
+<li>借助 <code>getRegistry()</code> 返回的 BeanDefinitionRegistry 检查 bean 定义；</li>
+<li>借助 <code>getBeanFactory()</code>返回的 ConfigurableListableBeanFactory 检查 bean 是否存在，甚至探查 bean 的属性；</li>
+<li>借助 <code>getEnvironment()</code> 返回的 Environment 检查环境变量是否存在以及它的值是什么；</li>
+<li>读取并探查 <code>getResourceLoader()</code> 返回的 ResourceLoader 所加载的资源；</li>
+<li>借助 <code>getClassLoader()</code>返回的 ClassLoader 加载并检查类是否存在。</li>
+</ul>
+</blockquote>
+<h4 id="标示首选的-bean"><a href="#标示首选的-bean" class="headerlink" title="标示首选的 bean"></a>标示首选的 bean</h4><p><code>@Primary</code>：当自动装配Bean遇到歧义的时候可以设置首选Bean</p>
+<h4 id="限定自动装配的-bean"><a href="#限定自动装配的-bean" class="headerlink" title="限定自动装配的 bean"></a>限定自动装配的 bean</h4><p><code>@Qualifier</code>：注解是使用限定符的主要方式</p>
+<p>注意：另一种使用方式是定义一个注解然后使用限定装配符号实现自己标记</p>
+<h2 id="Bean的作用域"><a href="#Bean的作用域" class="headerlink" title="Bean的作用域"></a>Bean的作用域</h2><p>单例（ Singleton ）：在整个应用中，只创建 bean 的一个实例。</p>
+<p>原型（ Prototype ）：每次注入或者通过 Spring 应用上下文获取的时候，都会创建一个新的 bean 实例。</p>
+<p>会话（ Session ）：在 Web 应用中，为每个会话创建一个 bean 实例。</p>
+<p>请求（ Rquest ）：在 Web 应用中，为每个请求创建一个 bean 实例。</p>
+<p>配置方式：<code>@Scope</code></p>
+<p>注意在创建时候使用的是代理而不是真正的New 一个对象</p>
+<h2 id="运行时注入"><a href="#运行时注入" class="headerlink" title="运行时注入"></a>运行时注入</h2><p>Spring提供了两种办法来实现属性注入</p>
+<ul>
+<li>属性占位符（ Property placeholder ）</li>
+<li>Spring 表达式语言（ SpEL ）</li>
+</ul>
+<h1 id="SpringMVC"><a href="#SpringMVC" class="headerlink" title="SpringMVC"></a>SpringMVC</h1><h3 id="DispatcherServelet"><a href="#DispatcherServelet" class="headerlink" title="DispatcherServelet"></a>DispatcherServelet</h3><p>DispatcherServlet 是 Spring MVC 的核心。在这里请求会第一次接触到框架，它要负责将请求路由到其他的组件之中。</p>
+<p><code>AbstractAnnotationConfigDispatcherServletInitializer</code>核心实现类</p>
+<h2 id="Spring-Web-Flow"><a href="#Spring-Web-Flow" class="headerlink" title="Spring Web Flow"></a>Spring Web Flow</h2><h2 id="是什么："><a href="#是什么：" class="headerlink" title="是什么："></a>是什么：</h2><p>一种基于会话的流程式框架</p>
+<h2 id="为什么会有web-Flow"><a href="#为什么会有web-Flow" class="headerlink" title="为什么会有web Flow"></a>为什么会有web Flow</h2><p>在解决web与用户的交互流程方面做了很大的帮助和改进，能够实现一种类似OA的流程式业务</p>
+<h2 id="怎么做："><a href="#怎么做：" class="headerlink" title="怎么做："></a>怎么做：</h2><ol>
+<li>看官网：<a href="https://projects.spring.io/spring-webflow/" target="_blank" rel="noopener">https://projects.spring.io/spring-webflow/</a></li>
+<li>简书博客：<a href="https://www.jianshu.com/p/6c44902a8e4e" target="_blank" rel="noopener">https://www.jianshu.com/p/6c44902a8e4e</a></li>
+<li>对比：<a href="https://www.cnblogs.com/Piers/p/6588290.html" target="_blank" rel="noopener">https://www.cnblogs.com/Piers/p/6588290.html</a></li>
+</ol>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>由于大量的XML配置已经不适合当前时代的发展了，还是建议使用MVC吧</p>
+<p>某些一对一的服务下面可能会有奇效</p>
+<h1 id="Spring-Security"><a href="#Spring-Security" class="headerlink" title="Spring Security"></a>Spring Security</h1><h2 id="是什么？"><a href="#是什么？" class="headerlink" title="是什么？"></a>是什么？</h2><p>保护web 应用程序的权限，以及保护程序安全的一个框架</p>
+<h2 id="为什么？"><a href="#为什么？" class="headerlink" title="为什么？"></a>为什么？</h2><p>防止非法用户的攻击行为，对于用户的权限进行限定</p>
+<h2 id="同类产品比较："><a href="#同类产品比较：" class="headerlink" title="同类产品比较："></a>同类产品比较：</h2><p><strong>Apach Shiro</strong>：Spring4 之后倾向于使用Apach Shiro的支持，因为该框架配置更加灵活，实现更加简单，最关键是不仅仅限制在Web框架！！！</p>
+<h2 id="怎么做：-1"><a href="#怎么做：-1" class="headerlink" title="怎么做："></a>怎么做：</h2><ol>
+<li>看官网：<a href="https://spring.io/projects/spring-security" target="_blank" rel="noopener">https://spring.io/projects/spring-security</a></li>
+<li>百度或者谷歌查看案例实战</li>
+</ol>
+<p>此框架只有遇到实际应用才能掌握，不做详细笔记</p>
+<h2 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h2><ul>
+<li>配置用户存储；</li>
+<li>指定哪些请求需要认证，哪些请求不需要认证，以及所需要的权限；</li>
+<li>提供一个自定义的登录页面，替代原来简单的默认登录页。</li>
+</ul>
+<h1 id="AMQP"><a href="#AMQP" class="headerlink" title="AMQP"></a>AMQP</h1><h2 id="是什么？-1"><a href="#是什么？-1" class="headerlink" title="是什么？"></a>是什么？</h2><p>一种新的消息通信协议，不同于JMS，提供更加灵活的方式进行JAVA的消息推送</p>
+<h2 id="和JMS的区别"><a href="#和JMS的区别" class="headerlink" title="和JMS的区别"></a>和JMS的区别</h2><p>不同于使用“通道”的概念，AMQP使用<code>Exchange</code>作为消息的暂存区域</p>
+<blockquote>
+<p>Exchange的类型：</p>
+<p>Direct ：如果消息的 routing key 与 binding 的 routing key 直接匹配的话，消息将会路由到该队列上； Topic ：如果消息的 routing key 与 binding 的 routing key 符合通配符匹配的话，消息将会路由到该队列上； Headers ：如果消息参数表中的头信息和值都与 bingding 参数表中相匹配，消息将会路由到该队列上； Fanout ：不管消息的 routing key 和参数表的头信息 / 值是什么，消息将会路由到所有队列上。</p>
+</blockquote>
 ]]></content>
       <categories>
-        <category>博客</category>
+        <category>Spring</category>
       </categories>
       <tags>
-        <tag>PicGo</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
@@ -1008,6 +1229,222 @@
       </categories>
       <tags>
         <tag>实用技巧</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Window 下面使用代办清单软件</title>
+    <url>/2020/07/26/Window-%E4%B8%8B%E9%9D%A2%E4%BD%BF%E7%94%A8%E4%BB%A3%E5%8A%9E%E6%B8%85%E5%8D%95%E8%BD%AF%E4%BB%B6/</url>
+    <content><![CDATA[<h1 id="windows-代办清单软件"><a href="#windows-代办清单软件" class="headerlink" title="windows 代办清单软件"></a>windows 代办清单软件</h1><h2 id="为什么要使用待办任务软件"><a href="#为什么要使用待办任务软件" class="headerlink" title="为什么要使用待办任务软件"></a>为什么要使用待办任务软件</h2><ul>
+<li>人的记忆是靠不住的</li>
+<li>琐事繁杂，列出清单能更好的</li>
+</ul>
+<h2 id="使用代办清单的好处"><a href="#使用代办清单的好处" class="headerlink" title="使用代办清单的好处"></a>使用代办清单的好处</h2><ul>
+<li>理清思路</li>
+<li>把事情拆分，一条条处理</li>
+<li>今日事，今日毕</li>
+<li>保持良好的时间管理习惯，防止懈怠</li>
+<li>可以结合番茄工作法</li>
+</ul>
+<h2 id="怎么使用代办清单软件"><a href="#怎么使用代办清单软件" class="headerlink" title="怎么使用代办清单软件"></a>怎么使用代办清单软件</h2><ul>
+<li><p>使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">奇妙清单</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>地址：<a href="https://www.wunderlist.com/" target="_blank" rel="noopener">https://www.wunderlist.com/</a></li>
+<li>目前已经被收购</li>
+</ul>
+</li>
+<li><p>微软的TODO List，实现简单</p>
+<ul>
+<li>地址：<a href="https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab" target="_blank" rel="noopener">https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab</a></li>
+</ul>
+</li>
+<li><p>滴答清单</p>
+<ul>
+<li>地址：<a href="https://www.dida365.com/about/download" target="_blank" rel="noopener">https://www.dida365.com/about/download</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="滴答清单的使用"><a href="#滴答清单的使用" class="headerlink" title="滴答清单的使用"></a>滴答清单的使用</h2><ul>
+<li>使用对应的账号关联登陆，这里使用个人的微信账号</li>
+<li>在左侧清单<ul>
+<li>任务清单的名称</li>
+</ul>
+</li>
+<li>在指定清单创建任务</li>
+<li>选择每一条任务，设置优先级</li>
+<li>右侧设置日期</li>
+</ul>
+]]></content>
+      <categories>
+        <category>待办任务</category>
+      </categories>
+      <tags>
+        <tag>TODOs</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>整理一下个人收集到的一些好网站（持续收集）</title>
+    <url>/2020/07/26/%E6%95%B4%E7%90%86%E4%B8%80%E4%B8%8B%E4%B8%AA%E4%BA%BA%E6%94%B6%E9%9B%86%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A5%BD%E7%BD%91%E7%AB%99%EF%BC%88%E6%8C%81%E7%BB%AD%E6%94%B6%E9%9B%86%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="解决日常工作问题网站"><a href="#解决日常工作问题网站" class="headerlink" title="解决日常工作问题网站"></a>解决日常工作问题网站</h1><h2 id="前端问题"><a href="#前端问题" class="headerlink" title="前端问题"></a>前端问题</h2><h3 id="thinbug"><a href="#thinbug" class="headerlink" title="thinbug"></a><a href="https://www.thinbug.com/" target="_blank" rel="noopener">thinbug</a></h3><blockquote>
+<p>一个前端技术问题的收集网站</p>
+<p>推荐原因：</p>
+<ol>
+<li>没有广告，页面简洁</li>
+<li>问题以及回答的质量都很不错</li>
+<li>针对工作的一些细节问题很实用</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>搜索不是很友善</li>
+<li>过于简单，以至于不知道怎么发文章。。。。</li>
+</ol>
+</blockquote>
+<h2 id="其他："><a href="#其他：" class="headerlink" title="其他："></a>其他：</h2><h3 id="算法网"><a href="#算法网" class="headerlink" title="算法网"></a><a href="http://ddrv.cn/" target="_blank" rel="noopener">算法网</a></h3><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>干货多</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>作者也要恰饭，微信公众号可以理解</li>
+</ol>
+</blockquote>
+<h3 id="谷歌"><a href="#谷歌" class="headerlink" title="谷歌"></a><a href="https://www.google.com/" target="_blank" rel="noopener">谷歌</a></h3><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>比某度真好了不止一个度</li>
+<li>各方面无可挑剔，没有之一</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>国内需要科学上网</li>
+</ol>
+</blockquote>
+<h1 id="优秀博客"><a href="#优秀博客" class="headerlink" title="优秀博客"></a>优秀博客</h1><h2 id="猎人杂货铺"><a href="#猎人杂货铺" class="headerlink" title="猎人杂货铺"></a><a href="https://hunterx.xyz/" target="_blank" rel="noopener">猎人杂货铺</a></h2><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>有些东西写的真的很不错</li>
+<li>十分钦佩每一位敢于创业的人</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>人都要恰饭，有点广告很正常</li>
+</ol>
+</blockquote>
+<h2 id="遇见西门"><a href="#遇见西门" class="headerlink" title="遇见西门"></a><a href="https://www.simon96.online/" target="_blank" rel="noopener">遇见西门</a></h2><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>写得东西比较实用</li>
+<li>页面非常简单，但是非常实用</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>产量比较低</li>
+</ol>
+</blockquote>
+<h2 id="年轻"><a href="#年轻" class="headerlink" title="年轻"></a><a href="http://www.thomasyoung.cn/" target="_blank" rel="noopener">年轻</a></h2><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>写得东西比较实用</li>
+<li>页面非常简单，但是非常实用</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>加载网站较慢，原因未知</li>
+</ol>
+</blockquote>
+<h2 id="嘟嘟"><a href="#嘟嘟" class="headerlink" title="嘟嘟"></a><a href="http://tengj.top/" target="_blank" rel="noopener">嘟嘟</a></h2><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>也是干货比较多，特点是在书籍整理这一块针对花了心血</li>
+<li>做的副业不错，目前自己也入了，现在的想法是做着玩</li>
+<li>一些工具推荐个人觉得很受用</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>说实话页面个人感觉花哨了些</li>
+</ol>
+</blockquote>
+<h2 id="周记杂货铺"><a href="#周记杂货铺" class="headerlink" title="周记杂货铺"></a><a href="https://zhouchangju.com/" target="_blank" rel="noopener">周记杂货铺</a></h2><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>东西写的很多也很好，并且产量也很高</li>
+<li>虽然偏向于前端，但是很多东西对于后端到我来说也很有启发</li>
+<li>特别感谢vis,js的一些问题解答对我的开发帮助良多</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>后悔没早点知道，哈哈哈</li>
+</ol>
+</blockquote>
+<h2 id="时鹏亮的blog"><a href="#时鹏亮的blog" class="headerlink" title="时鹏亮的blog"></a><a href="https://shipengliang.com/" target="_blank" rel="noopener">时鹏亮的blog</a></h2><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>原本是来找资源到，意外发现也是技术人HHHHH</li>
+<li>个人比较喜欢界面风格</li>
+<li>东西比较基础实用</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>存在广告</li>
+<li>干活不多</li>
+</ol>
+</blockquote>
+<h2 id="一个学习的日常"><a href="#一个学习的日常" class="headerlink" title="一个学习的日常"></a><a href="http://www.xihootech.com/" target="_blank" rel="noopener">一个学习的日常</a></h2><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>里面很多“鸡汤”挺值得思考到</li>
+<li>到目前个人认为个人品牌做得最好到一个博客，很有个人特色</li>
+<li>一个十分有特色的博客</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>样式排版个人不是十分喜欢，内容有点点臃肿</li>
+<li>部分分享资源存在收费行为，不过可以理解</li>
+</ol>
+</blockquote>
+<h2 id="公众号-后端进阶（目前博客已关闭）"><a href="#公众号-后端进阶（目前博客已关闭）" class="headerlink" title="公众号[后端进阶（目前博客已关闭）]"></a><a href="https://objcoding.com/" target="_blank" rel="noopener">公众号[后端进阶（目前博客已关闭）]</a></h2><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>博客的内容写得都非常到清晰</li>
+<li>着重先实战后讲原理</li>
+<li>少数能认真看完一篇长文章的博客</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>更新不是很频繁</li>
+</ol>
+</blockquote>
+<h1 id="电影资源网站"><a href="#电影资源网站" class="headerlink" title="电影资源网站"></a>电影资源网站</h1><h2 id="人人电影网"><a href="#人人电影网" class="headerlink" title="人人电影网"></a><a href="http://www.renrendianyingwang.cn/" target="_blank" rel="noopener">人人电影网</a></h2><blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>免费的电影资源分享</li>
+<li>没有恶心的套路，有就是有，没有就是没有</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>还是存在许多电影找不到的情况</li>
+</ol>
+</blockquote>
+<h2 id="80S手机电影"><a href="#80S手机电影" class="headerlink" title="80S手机电影"></a><strong><a href="http://www.y80s.com/" target="_blank" rel="noopener">80S手机电影</a></strong></h2><p>百度直接所有80s即可</p>
+<blockquote>
+<p>推荐原因：</p>
+<ol>
+<li>大部分的电影还是可以看得</li>
+<li>比较适合手机党看电影，资源都是比较小的</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>受制于版权很多电影还是不能看</li>
+</ol>
+</blockquote>
+]]></content>
+      <categories>
+        <category>博客</category>
+      </categories>
+      <tags>
+        <tag>实用</tag>
       </tags>
   </entry>
   <entry>
@@ -1136,58 +1573,6 @@
       </categories>
       <tags>
         <tag>鸡汤</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Window 下面使用代办清单软件</title>
-    <url>/2020/07/26/Window-%E4%B8%8B%E9%9D%A2%E4%BD%BF%E7%94%A8%E4%BB%A3%E5%8A%9E%E6%B8%85%E5%8D%95%E8%BD%AF%E4%BB%B6/</url>
-    <content><![CDATA[<h1 id="windows-代办清单软件"><a href="#windows-代办清单软件" class="headerlink" title="windows 代办清单软件"></a>windows 代办清单软件</h1><h2 id="为什么要使用待办任务软件"><a href="#为什么要使用待办任务软件" class="headerlink" title="为什么要使用待办任务软件"></a>为什么要使用待办任务软件</h2><ul>
-<li>人的记忆是靠不住的</li>
-<li>琐事繁杂，列出清单能更好的</li>
-</ul>
-<h2 id="使用代办清单的好处"><a href="#使用代办清单的好处" class="headerlink" title="使用代办清单的好处"></a>使用代办清单的好处</h2><ul>
-<li>理清思路</li>
-<li>把事情拆分，一条条处理</li>
-<li>今日事，今日毕</li>
-<li>保持良好的时间管理习惯，防止懈怠</li>
-<li>可以结合番茄工作法</li>
-</ul>
-<h2 id="怎么使用代办清单软件"><a href="#怎么使用代办清单软件" class="headerlink" title="怎么使用代办清单软件"></a>怎么使用代办清单软件</h2><ul>
-<li><p>使用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">奇妙清单</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>地址：<a href="https://www.wunderlist.com/" target="_blank" rel="noopener">https://www.wunderlist.com/</a></li>
-<li>目前已经被收购</li>
-</ul>
-</li>
-<li><p>微软的TODO List，实现简单</p>
-<ul>
-<li>地址：<a href="https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab" target="_blank" rel="noopener">https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab</a></li>
-</ul>
-</li>
-<li><p>滴答清单</p>
-<ul>
-<li>地址：<a href="https://www.dida365.com/about/download" target="_blank" rel="noopener">https://www.dida365.com/about/download</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="滴答清单的使用"><a href="#滴答清单的使用" class="headerlink" title="滴答清单的使用"></a>滴答清单的使用</h2><ul>
-<li>使用对应的账号关联登陆，这里使用个人的微信账号</li>
-<li>在左侧清单<ul>
-<li>任务清单的名称</li>
-</ul>
-</li>
-<li>在指定清单创建任务</li>
-<li>选择每一条任务，设置优先级</li>
-<li>右侧设置日期</li>
-</ul>
-]]></content>
-      <categories>
-        <category>待办任务</category>
-      </categories>
-      <tags>
-        <tag>TODOs</tag>
       </tags>
   </entry>
   <entry>
