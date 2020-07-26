@@ -1,6 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>JDK源码解读</title>
+    <url>/2020/07/26/JDK%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</url>
+    <content><![CDATA[<h1 id="深入理解JVM虚拟机-JDK源码解读"><a href="#深入理解JVM虚拟机-JDK源码解读" class="headerlink" title="深入理解JVM虚拟机 - JDK源码解读"></a>深入理解JVM虚拟机 - JDK源码解读</h1><p>《深入理解JVM虚拟机》看过了好几遍了，对于编译一个JDK源码有很强的冲动。这里主要实战使用<strong>阿里云</strong>进行编译实战</p>
+<ul>
+<li>为什么使用阿里云？<ul>
+<li>个人电脑奋斗四年了，装虚拟机莫名其妙的死机</li>
+<li>阿里云带宽1M，只能用来干些LInux学习的工作</li>
+</ul>
+</li>
+<li>参考博客：<a href="https://juejin.im/post/5c6b9a476fb9a049c30bcebd" target="_blank" rel="noopener">https://juejin.im/post/5c6b9a476fb9a049c30bcebd</a></li>
+</ul>
+<a id="more"></a>
+
+<h2 id="JDK源码下载-openJDK7u75"><a href="#JDK源码下载-openJDK7u75" class="headerlink" title="JDK源码下载 - openJDK7u75"></a>JDK源码下载 - openJDK7u75</h2><ul>
+<li>地址：<a href="https://download.java.net/openjdk/jdk7u75/ri/openjdk-7u75-src-b13-18_dec_2014.zip" target="_blank" rel="noopener">https://download.java.net/openjdk/jdk7u75/ri/openjdk-7u75-src-b13-18_dec_2014.zip</a></li>
+</ul>
+<h2 id="Bootstrap-JDK"><a href="#Bootstrap-JDK" class="headerlink" title="Bootstrap JDK"></a>Bootstrap JDK</h2><ul>
+<li><p>编译OpenJDK7需要 Bootstrap JDK U14 之后的版本</p>
+</li>
+<li><p>地址：</p>
+<p><a href="https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html" target="_blank" rel="noopener">https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html</a></p>
+<ul>
+<li>下载 <code>linux.tag.gz包</code></li>
+</ul>
+</li>
+<li><p>有条件尽量科学上网下载比较慢</p>
+</li>
+</ul>
+<h2 id="Apach-Ant-1-7-1版本"><a href="#Apach-Ant-1-7-1版本" class="headerlink" title="Apach Ant 1.7.1版本"></a>Apach Ant 1.7.1版本</h2><ul>
+<li>地址：<a href="https://ant.apache.org/bindownload.cgi" target="_blank" rel="noopener">https://ant.apache.org/bindownload.cgi</a></li>
+<li>还需要一个apach ant 1.7.1 版本</li>
+<li>这里选择了: 1.9.14版本</li>
+</ul>
+<h2 id="前置依赖："><a href="#前置依赖：" class="headerlink" title="前置依赖："></a>前置依赖：</h2><ul>
+<li>OpenJDK要用到很多的gcc，java，c的库函数，需要进行前置准备</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum -y install build-essential gawk m4 openjdk6-jdk libasound2-print-dev binutils libmotif3 libmotif-dev ant</span><br><span class="line">yum install libX* #有可能会缺失的库，先提前安装</span><br></pre></td></tr></table></figure>
+
+<h2 id="首次编译"><a href="#首次编译" class="headerlink" title="首次编译"></a>首次编译</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 进入到openjdk的目录</span><br><span class="line">cd openjdk所在目录</span><br><span class="line"># 解压</span><br><span class="line">unzip openjdk</span><br><span class="line"># 编译</span><br><span class="line">cd open jdk</span><br><span class="line"># 第一次编译，输出到对应文件</span><br><span class="line">make sanity &gt; error.txt</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>不出所料，编译失败了，我们可以根据错误日志来进行调整</li>
+<li>根据错误，整理一下错误点</li>
+<li>下面参考书籍的内容进行设置</li>
+</ul>
+<h2 id="设置环境变量"><a href="#设置环境变量" class="headerlink" title="设置环境变量"></a>设置环境变量</h2><ul>
+<li><p>gcc 4.3 版本以上</p>
+</li>
+<li><p>必须设置两个</p>
+<ul>
+<li>LANG：编译语言</li>
+<li>ALT_BOOTDIR：Bootstrap JDK 1.7 的版本</li>
+</ul>
+</li>
+<li><p>设置环境变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;C</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk1.7.0_80</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>去掉原本的JDK环境变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="OpenJDK-错误处理"><a href="#OpenJDK-错误处理" class="headerlink" title="OpenJDK 错误处理"></a>OpenJDK 错误处理</h2><h3 id="错误1：-缺少打印-Cups-依赖"><a href="#错误1：-缺少打印-Cups-依赖" class="headerlink" title="错误1： 缺少打印 Cups 依赖"></a>错误1： 缺少打印 Cups 依赖</h3><p>错误信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: You do not have access to valid Cups header files. </span><br><span class="line">       Please check your access to </span><br><span class="line">           &#x2F;usr&#x2F;include&#x2F;cups&#x2F;cups.h </span><br><span class="line">       and&#x2F;or check your value of ALT_CUPS_HEADERS_PATH, </span><br><span class="line">       CUPS is frequently pre-installed on many systems, </span><br><span class="line">       or may be downloaded from http:&#x2F;&#x2F;www.cups.org</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<p>缺少<code>cups</code>打印框架，解决：</p>
+<ol>
+<li>可以根据如下命令查找</li>
+</ol>
+<p><code>yum search cups</code> 查找对应依赖</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: cups &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">apcupsd-cgi.x86_64 : Web interface for apcupsd</span><br><span class="line">apcupsd-gui.x86_64 : GUI interface for apcupsd</span><br><span class="line">bluez-cups.x86_64 : CUPS printer backend for Bluetooth printers</span><br><span class="line">cups.x86_64 : CUPS printing system</span><br><span class="line">cups-bjnp.x86_64 : CUPS backend for the Canon BJNP network printers</span><br><span class="line">cups-client.x86_64 : CUPS printing system - client programs</span><br><span class="line">cups-devel.i686 : CUPS printing system - development environment</span><br><span class="line">cups-devel.x86_64 : CUPS printing system - development environment</span><br><span class="line">cups-filesystem.noarch : CUPS printing system - directory layout</span><br><span class="line">cups-filters.x86_64 : OpenPrinting CUPS filters and backends</span><br><span class="line">cups-filters-devel.i686 : OpenPrinting CUPS filters and backends - development environment</span><br><span class="line">cups-filters-devel.x86_64 : OpenPrinting CUPS filters and backends - development environment</span><br><span class="line">cups-filters-libs.i686 : OpenPrinting CUPS filters and backends - cupsfilters and fontembed libraries</span><br><span class="line">cups-filters-libs.x86_64 : OpenPrinting CUPS filters and backends - cupsfilters and fontembed libraries</span><br><span class="line">cups-ipptool.x86_64 : CUPS printing system - tool for performing IPP requests</span><br><span class="line">cups-libs.x86_64 : CUPS printing system - libraries</span><br><span class="line">cups-libs.i686 : CUPS printing system - libraries</span><br><span class="line">cups-lpd.x86_64 : CUPS printing system - lpd emulation</span><br><span class="line">cups-pdf.x86_64 : Extension for creating pdf-Files with CUPS</span><br><span class="line">cups-x2go.noarch : CUPS backend for printing from X2Go</span><br><span class="line">dymo-cups-drivers.x86_64 : DYMO LabelWriter Drivers for CUPS</span><br><span class="line">ghostscript-cups.x86_64 : CUPS filter for interpreting PostScript and PDF</span><br><span class="line">gutenprint-cups.x86_64 : CUPS drivers for Canon, Epson, HP and compatible printers</span><br><span class="line">perl-Net-CUPS.x86_64 : Perl bindings to the CUPS C API Interface</span><br><span class="line">python-cups.x86_64 : Python bindings for CUPS</span><br><span class="line">python-cups-doc.x86_64 : Documentation for python-cups</span><br><span class="line">python3-cups-doc.x86_64 : Documentation for python-cups</span><br><span class="line">python34-cups.x86_64 : Python 3 bindings for CUPS API, known as pycups</span><br><span class="line">python36-cups.x86_64 : Python 3 bindings for CUPS API, known as pycups</span><br><span class="line">apcupsd.x86_64 : APC UPS Power Control Daemon</span><br><span class="line">cups-pk-helper.x86_64 : A helper that makes system-config-printer use PolicyKit</span><br><span class="line">foomatic-filters.x86_64 : CUPS print filters for the foomatic package</span><br><span class="line">samba-krb5-printing.x86_64 : Samba CUPS backend for printing with Kerberos</span><br><span class="line"></span><br><span class="line">  Name and summary matches only, use &quot;search all&quot; for everything.</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>安装Cups</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install cups-devel.x86_64</span><br></pre></td></tr></table></figure>
+
+<h3 id="错误2：-缺少-Freetype-依赖"><a href="#错误2：-缺少-Freetype-依赖" class="headerlink" title="错误2： 缺少 Freetype 依赖"></a>错误2： 缺少 Freetype 依赖</h3><p>报错情况：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: FreeType version  2.3.0  or higher is required. </span><br><span class="line"> make[2]: 进入目录“&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk&#x2F;make&#x2F;tools&#x2F;freetypecheck”</span><br><span class="line">&#x2F;bin&#x2F;mkdir -p &#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64&#x2F;btbins</span><br><span class="line">rm -f &#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64&#x2F;btbins&#x2F;freetype_versioncheck</span><br><span class="line">make[2]: 离开目录“&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk&#x2F;make&#x2F;tools&#x2F;freetypecheck”</span><br><span class="line">Failed to build freetypecheck.</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<ol>
+<li><code>yum search freetype</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: freetype &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">freetype-demos.x86_64 : A collection of FreeType demos</span><br><span class="line">freetype-devel.i686 : FreeType development libraries and header files</span><br><span class="line">freetype-devel.x86_64 : FreeType development libraries and header files</span><br><span class="line">mingw32-freetype-static.noarch : Static version of the MinGW Windows Freetype library</span><br><span class="line">mingw64-freetype-static.noarch : Static version of the MinGW Windows Freetype library</span><br><span class="line">python-freetype.noarch : Freetype python bindings</span><br><span class="line">freetype.x86_64 : A free and portable font rendering engine</span><br><span class="line">freetype.i686 : A free and portable font rendering engine</span><br><span class="line">ftgl.x86_64 : OpenGL frontend to Freetype 2</span><br><span class="line">mingw32-freetype.noarch : Free and portable font rendering engine</span><br><span class="line">mingw64-freetype.noarch : Free and portable font rendering engine</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>执行命令<code>yum install freetype-devel.x86_64 -y</code></li>
+</ol>
+<h3 id="错误3：缺少声卡Alsa依赖，需要安装"><a href="#错误3：缺少声卡Alsa依赖，需要安装" class="headerlink" title="错误3：缺少声卡Alsa依赖，需要安装"></a>错误3：缺少声卡Alsa依赖，需要安装</h3><p>错误信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: You seem to not have installed ALSA 0.9.1 or higher. </span><br><span class="line">       Please install ALSA (drivers and lib). You can download the </span><br><span class="line">       source distribution from http:&#x2F;&#x2F;www.alsa-project.org or go to </span><br><span class="line">       http:&#x2F;&#x2F;www.freshrpms.net&#x2F;docs&#x2F;alsa&#x2F; for precompiled RPM packages.</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<ol>
+<li><code>yum search alsa</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> * updates: mirrors.aliyun.com</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: alsa &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">alsa-firmware.noarch : Firmware for several ALSA-supported sound cards</span><br><span class="line">alsa-lib.x86_64 : The Advanced Linux Sound Architecture (ALSA) library</span><br><span class="line">alsa-lib.i686 : The Advanced Linux Sound Architecture (ALSA) library</span><br><span class="line">alsa-lib-devel.i686 : Development files from the ALSA library</span><br><span class="line">alsa-lib-devel.x86_64 : Development files from the ALSA library</span><br><span class="line">alsa-plugins-arcamav.i686 : Arcam AV amplifier plugin for ALSA</span><br><span class="line">alsa-plugins-arcamav.x86_64 : Arcam AV amplifier plugin for ALSA</span><br><span class="line">alsa-plugins-maemo.i686 : Maemo plugin for ALSA</span><br><span class="line">alsa-plugins-maemo.x86_64 : Maemo plugin for ALSA</span><br><span class="line">alsa-plugins-oss.i686 : Oss PCM output plugin for ALSA</span><br><span class="line">alsa-plugins-oss.x86_64 : Oss PCM output plugin for ALSA</span><br><span class="line">alsa-plugins-pulseaudio.i686 : Alsa to PulseAudio backend</span><br><span class="line">alsa-plugins-pulseaudio.x86_64 : Alsa to PulseAudio backend</span><br><span class="line">alsa-plugins-samplerate.i686 : External rate converter plugin for ALSA</span><br><span class="line">alsa-plugins-samplerate.x86_64 : External rate converter plugin for ALSA</span><br><span class="line">alsa-plugins-upmix.i686 : Upmixer channel expander plugin for ALSA</span><br><span class="line">alsa-plugins-upmix.x86_64 : Upmixer channel expander plugin for ALSA</span><br><span class="line">alsa-plugins-usbstream.i686 : USB stream plugin for ALSA</span><br><span class="line">alsa-plugins-usbstream.x86_64 : USB stream plugin for ALSA</span><br><span class="line">alsa-plugins-vdownmix.i686 : Downmixer to stereo plugin for ALSA</span><br><span class="line">alsa-plugins-vdownmix.x86_64 : Downmixer to stereo plugin for ALSA</span><br><span class="line">alsa-tools.x86_64 : Specialist tools for ALSA</span><br><span class="line">alsa-tools-firmware.x86_64 : ALSA tools for uploading firmware to some soundcards</span><br><span class="line">alsa-utils.x86_64 : Advanced Linux Sound Architecture (ALSA) utilities</span><br><span class="line">alsa-plugins-speex.i686 : Rate Converter Plugin Using Speex Resampler</span><br><span class="line">alsa-plugins-speex.x86_64 : Rate Converter Plugin Using Speex Resampler</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>安装依赖：<code>yum -y install alsa-lib* alsa-util*</code></li>
+</ol>
+<h3 id="错误4：缺少Ant依赖"><a href="#错误4：缺少Ant依赖" class="headerlink" title="错误4：缺少Ant依赖"></a>错误4：缺少Ant依赖</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: The version of ant being used is older than </span><br><span class="line">       the required version of &#39;1.7.1&#39;. </span><br><span class="line">       The version of ant found was &#39;&#39;.</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install ant -y</span><br></pre></td></tr></table></figure>
+
+<h3 id="错误5：缺少C语言环境变量"><a href="#错误5：缺少C语言环境变量" class="headerlink" title="错误5：缺少C语言环境变量"></a>错误5：缺少C语言环境变量</h3><p>错误信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WARNING: LANG has been set to zh_CN.UTF-8, this can cause build failures. </span><br><span class="line">         Try setting LANG to &#39;C&#39;.</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<ol>
+<li><code>export LANG=C</code>设置C语言环境</li>
+</ol>
+<h2 id="第二次编译"><a href="#第二次编译" class="headerlink" title="第二次编译"></a>第二次编译</h2><p>需要再次输入命令<code>make santify</code> ，知道看到如下信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Sanity check passed.</span><br></pre></td></tr></table></figure>
+
+<h2 id="编写启动脚本"><a href="#编写启动脚本" class="headerlink" title="编写启动脚本"></a>编写启动脚本</h2><ul>
+<li>经过上面的测试，再根据JVM虚拟机的内容，编写了下面一个通用的命令脚本</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line"># 语言选项，必须设置，否者编译之后会出现一个HashTable槽的错误的NPE的错</span><br><span class="line">export LANG&#x3D;C</span><br><span class="line"># Bootstrap JDK 的安装路径</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk1.7.0_80</span><br><span class="line"># 允许自动下载数据</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line">#并行编译的线程数，设置为和CPU内核数量一致即可</span><br><span class="line"></span><br><span class="line">export HOTSPOT_BUILD_JOBS&#x3D;6</span><br><span class="line"></span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;6</span><br><span class="line"></span><br><span class="line">#比较本次build出来的映像与先前版本的差异。这对我们来说没有意义，</span><br><span class="line"></span><br><span class="line">#必须设置为false，否则sanity检查会报缺少先前版本JDK的映像的错误提示。</span><br><span class="line"></span><br><span class="line">#如果已经设置dev或者DEV_ONLY&#x3D;true，这个不显式设置也行</span><br><span class="line"></span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line"></span><br><span class="line">#使用预编译头文件，不加这个编译会更慢一些</span><br><span class="line"></span><br><span class="line">export USE_PRECOMPILED_HEADER&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的内容</span><br><span class="line"></span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true</span><br><span class="line"></span><br><span class="line">#export BUILD_JAXP&#x3D;false</span><br><span class="line"></span><br><span class="line">#export BUILD_JAXWS&#x3D;false</span><br><span class="line"></span><br><span class="line">#export BUILD_CORBA&#x3D;false</span><br><span class="line"></span><br><span class="line">export BUILD_HOTSPOT&#x3D;true</span><br><span class="line"></span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的版本</span><br><span class="line"></span><br><span class="line">#export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line"></span><br><span class="line">#export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line"></span><br><span class="line">#export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">#把它设置为false可以避开javaws和浏览器Java插件之类的部分的build</span><br><span class="line"></span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line"></span><br><span class="line">#把它设置为false就不会build出安装包。因为安装包里有些奇怪的依赖，</span><br><span class="line"></span><br><span class="line">#但即便不build出它也已经能得到完整的JDK映像，所以还是别build它好了</span><br><span class="line"></span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">#编译结果所存放的路径</span><br><span class="line"></span><br><span class="line">export ALT_OUTPUTDIR&#x3D;&#x2F;Users&#x2F;IcyFenix&#x2F;Develop&#x2F;JVM&#x2F;jdkBuild&#x2F;openjdk_7u4&#x2F;build</span><br><span class="line"></span><br><span class="line">#这两个环境变量必须去掉，不然会有很诡异的事情发生（我没有具体查过这些&quot;诡异的</span><br><span class="line">#事情&quot;，Makefile脚本检查到有这2个变量就会提示警告）</span><br><span class="line"></span><br><span class="line">unset JAVA_HOME</span><br><span class="line"></span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2＞＆1|tee $ALT_OUTPUTDIR&#x2F;build.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动脚本参考："><a href="#启动脚本参考：" class="headerlink" title="启动脚本参考："></a>启动脚本参考：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#语言选项，这个必须设置，否则编译好后会出现一个HashTable的NPE错</span><br><span class="line">export LANG&#x3D;C</span><br><span class="line"></span><br><span class="line">#Bootstrap JDK的安装路径。必须设置。 </span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;java&#x2F;jdk1.7.0_04</span><br><span class="line"></span><br><span class="line">#允许自动下载依赖</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line"></span><br><span class="line">#并行编译的线程数，设置为和CPU内核数量一致即可</span><br><span class="line">export HOTSPOT_BUILD_JOBS&#x3D;4</span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;4</span><br><span class="line"></span><br><span class="line">#比较本次build出来的映像与先前版本的差异。这个对我们来说没有意义，必须设置为false，否则sanity检查会报缺少先前版本JDK的映像。如果有设置dev或者DEV_ONLY&#x3D;true的话这个不显式设置也行。 </span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line"></span><br><span class="line">#使用预编译头文件，不加这个编译会更慢一些</span><br><span class="line">export USE_PRECOMPILED_HEADER&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的内容</span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true </span><br><span class="line">#export BUILD_JAXP&#x3D;false</span><br><span class="line">#export BUILD_JAXWS&#x3D;false </span><br><span class="line">#export BUILD_CORBA&#x3D;false</span><br><span class="line">export BUILD_HOTSPOT&#x3D;true </span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的版本</span><br><span class="line">#export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line">#export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line">#export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">#把它设置为false可以避开javaws和浏览器Java插件之类的部分的build。 </span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line"></span><br><span class="line">#把它设置为false就不会build出安装包。因为安装包里有些奇怪的依赖，但即便不build出它也已经能得到完整的JDK映像，所以还是别build它好了。</span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">#这两个环境变量必须去掉，不然会有很诡异的事情发生（我没有具体查过这些“”诡异的事情”，Makefile脚本检查到有这2个变量就会提示警告“）</span><br><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2&gt;&amp;1 | tee $ALT_OUTPUTDIR&#x2F;build.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="个人版本"><a href="#个人版本" class="headerlink" title="个人版本:"></a>个人版本:</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;C</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;jdk1.7</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line">export HOTSPOT_BUILD_JOBDS&#x3D;1</span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;1</span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line">export USE_PRECOMPLIED_HEADER&#x3D;true</span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true</span><br><span class="line">export BUILD_JAXP&#x3D;false</span><br><span class="line">export BUILD_JAXWS&#x3D;false</span><br><span class="line">export BUILD_CORBA&#x3D;false</span><br><span class="line">export BUILD_HOTSPOT&#x3D;true</span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line">export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line">export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2&gt;&amp;1 | tee &#x2F;usr&#x2F;local&#x2F;software&#x2F;build.log</span><br></pre></td></tr></table></figure>
+
+<h2 id="开始编译"><a href="#开始编译" class="headerlink" title="开始编译"></a>开始编译</h2><ul>
+<li><p>使用上一节写好的脚本</p>
+</li>
+<li><p>运行下面的命令</p>
+<ul>
+<li><code>chmod +x run.sh</code></li>
+<li><code>./run.sh</code></li>
+</ul>
+</li>
+<li><p>经过多次尝试，现在出现如下报错：</p>
+<p><code>g++: internal compiler error: Killed (program cc1plus)</code></p>
+</li>
+<li><p>处理方式</p>
+<ul>
+<li>内存不足，需要扩充内存</li>
+</ul>
+</li>
+</ul>
+<h2 id="问题收集："><a href="#问题收集：" class="headerlink" title="问题收集："></a>问题收集：</h2><h3 id="1-编译过程突然报错，报错信息如下"><a href="#1-编译过程突然报错，报错信息如下" class="headerlink" title="1. 编译过程突然报错，报错信息如下"></a>1. 编译过程突然报错，报错信息如下</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">g++: internal compiler error: Killed (program cc1plus)</span><br><span class="line">Please submit a full bug report,</span><br><span class="line">with preprocessed source if appropriate.</span><br><span class="line">See &lt;http:&#x2F;&#x2F;bugzilla.redhat.com&#x2F;bugzilla&gt; for instructions.</span><br><span class="line">make[7]: *** [ad_x86_64.o] Error 4</span><br><span class="line">make[7]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#x2F;linux_amd64_compiler2&#x2F;jvmg&#39;</span><br><span class="line">make[6]: *** [the_vm] Error 2</span><br><span class="line">make[6]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#x2F;linux_amd64_compiler2&#x2F;jvmg&#39;</span><br><span class="line">make[5]: *** [jvmg] Error 2</span><br><span class="line">make[5]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#39;</span><br><span class="line">make[4]: *** [generic_build2] Error 2</span><br><span class="line">make[4]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;hotspot&#x2F;make&#39;</span><br><span class="line">make[3]: *** [jvmg] Error 2</span><br><span class="line">make[3]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;hotspot&#x2F;make&#39;</span><br><span class="line">make[2]: *** [hotspot-build] Error 2</span><br><span class="line">make[2]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#39;</span><br><span class="line">make[1]: *** [generic_debug_build] Error 2</span><br><span class="line">make[1]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#39;</span><br><span class="line">make: *** [build_debug_image] Error 2</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>分析原因：</p>
+<ol>
+<li>可能是阿里云买的最低配，导致编译的时候内存爆了</li>
+<li>Bootstrap JDK版本和书本的不一致，尝试按照书本一模一样的方式处理</li>
+<li>脚本建议手敲，复制黏贴容易错误</li>
+</ol>
+</blockquote>
+<h2 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h2><p><a href="https://blog.csdn.net/zitong_ccnu/article/details/50149757" target="_blank" rel="noopener">https://blog.csdn.net/zitong_ccnu/article/details/50149757</a> CenterOS7 编译OpenJDK7</p>
+<p><a href="https://www.bbsmax.com/A/GBJrKLa50e/" target="_blank" rel="noopener">https://www.bbsmax.com/A/GBJrKLa50e/</a> 案例2</p>
+<p><a href="https://hllvm-group.iteye.com/group/topic/35803" target="_blank" rel="noopener">https://hllvm-group.iteye.com/group/topic/35803</a> JVM的一些讨论，值得看看</p>
+<h1 id="处理问题的几个套路"><a href="#处理问题的几个套路" class="headerlink" title="处理问题的几个套路"></a>处理问题的几个套路</h1><h2 id="套路一：缺少依赖，却不知道安装的具体内容"><a href="#套路一：缺少依赖，却不知道安装的具体内容" class="headerlink" title="套路一：缺少依赖，却不知道安装的具体内容"></a>套路一：缺少依赖，却不知道安装的具体内容</h2><p>当提示缺少依赖，而你不知道要<code>yum install</code>什么时，你可以根据提示关键字搜一下<code>yum search</code>，然后在搜出的结果列表中，对有着相同前缀的依赖使用后缀通配符一键下载</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Maven私服Nexus搭建教程</title>
     <url>/2020/07/26/Maven%E7%A7%81%E6%9C%8DNexus%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/</url>
     <content><![CDATA[<h1 id="Nexus-私服搭建基本流程"><a href="#Nexus-私服搭建基本流程" class="headerlink" title="Nexus 私服搭建基本流程"></a>Nexus 私服搭建基本流程</h1><h2 id="Nexus-是什么？"><a href="#Nexus-是什么？" class="headerlink" title="Nexus 是什么？"></a>Nexus 是什么？</h2><p>用于实现Maven构建私人仓库的一个工具。</p>
@@ -283,6 +444,363 @@
       </tags>
   </entry>
   <entry>
+    <title>PicGo和码云实现自建图床</title>
+    <url>/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/</url>
+    <content><![CDATA[<h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<a href="https://zhuanlan.zhihu.com/p/102594554" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102594554</a></p>
+<h2 id="测试图床链接："><a href="#测试图床链接：" class="headerlink" title="测试图床链接："></a>测试图床链接：</h2><p>链接1 ：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png</a></p>
+<p>链接2：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png</a></p>
+<p>链接3：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png</a></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959" alt="最终结果1"></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959" alt="最终结果2"></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959" alt="最终结果3"></p>
+<a id="more"></a>
+
+<h2 id="为什么要使用码云代替图床"><a href="#为什么要使用码云代替图床" class="headerlink" title="为什么要使用码云代替图床"></a>为什么要使用码云代替图床</h2><ul>
+<li>github毕竟是外国服务器，上传过程中因为网络问题有可能会无法使用的情况</li>
+<li>码云作为国内的“github”，访问和上传速度更快，所以使用码云更为方便</li>
+<li>目前<code>PicGo 2.0</code>之后已经有人集成了插件，使用和github一样简单好用</li>
+</ul>
+<h2 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h2><h3 id="1-下载PicGo"><a href="#1-下载PicGo" class="headerlink" title="1. 下载PicGo"></a>1. 下载PicGo</h3><p>官网地址：<a href="https://molunerfinn.com/PicGo/" target="_blank" rel="noopener">https://molunerfinn.com/PicGo/</a></p>
+<p>Github 快捷网址：<a href="https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2</a> 选择对应的版本下载即可</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131933.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>更多信息访问Github：<a href="https://github.com/Molunerfinn/PicGo" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo</a></p>
+<h3 id="2-安装PicGo"><a href="#2-安装PicGo" class="headerlink" title="2. 安装PicGo"></a>2. 安装PicGo</h3><p>安装过程就忽略了，安装完成之后打开软件</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132027.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="3-PicGo-安装gitee-插件"><a href="#3-PicGo-安装gitee-插件" class="headerlink" title="3. PicGo 安装gitee 插件"></a>3. PicGo 安装gitee 插件</h3><p>前提条件：<strong>注意PicGo安装的前提条件是2.0版本之后新增的插件功能！！！</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132225.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>将鼠标滚轮滚到最下面，会发现有一个插件设置</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132358.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>选择安装 <code>gitee-uploader 1.1.2</code>这个插件</p>
+<blockquote>
+<p><strong>安装失败如何解决</strong>？</p>
+<p>注意该插件需要node.js 的环境，Node.js的安装如下</p>
+<p><a href="http://nodejs.cn/download/" target="_blank" rel="noopener">http://nodejs.cn/download/</a></p>
+<p>进入中文官网之后，安装对应的版本即可</p>
+<p>window 下面的exe程序安装之后会自动的配置环境变量，这时候我们可以使用命令查一下是否有Node环境</p>
+<ol>
+<li>win 键 + R 打开<strong>运行</strong>窗口</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132719.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>输入命令<code>node -v</code></li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132750.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>如果出现如上所示的内容则证明安装成功</li>
+</ol>
+</blockquote>
+<h3 id="4-码云搭建图床仓库"><a href="#4-码云搭建图床仓库" class="headerlink" title="4. 码云搭建图床仓库"></a>4. 码云搭建图床仓库</h3><ol>
+<li>进入自己的码云：<a href="https://gitee.com/lazyTimes/projects" target="_blank" rel="noopener">https://gitee.com/lazyTimes/projects</a> 这是我的码云地址</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133220.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择右上角有一个 <code>&quot;+&quot;</code>号，选择新建仓库</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133327.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>填写基本信息，页面翻到最下面，选择保存</li>
+</ol>
+<p><img src="http://null/" alt="image-20200319133550209"></p>
+<ol>
+<li>新建仓库成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133836.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="5-获取gitee私人令牌"><a href="#5-获取gitee私人令牌" class="headerlink" title="5. 获取gitee私人令牌"></a>5. 获取gitee私人令牌</h3><p>和github一样，在最终设置之前我们需要获取一下gitee令牌用于上传</p>
+<ol>
+<li>登录gitee之后，右上角选择</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214555.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“私人令牌”</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214625.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“生成令牌”，进入到令牌到创建页面</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214721.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>勾选如图到内容，一般只需要用到前面几项就可以满足我们到需求。按要求输入密码即可生成成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214905.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>生成令牌成功，将令牌内容保存在自己到笔记，防止忘记</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215102.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>经过如上步骤之后，我们基本就算是大功告成了，现在只需要在PicGo里面配置一下即可</p>
+<h3 id="6-PicGo-配置"><a href="#6-PicGo-配置" class="headerlink" title="6. PicGo 配置"></a>6. PicGo 配置</h3><ul>
+<li>repo：必填，填写gitee上面的仓库名称</li>
+<li>branch：一般默认master 即可，有需要可以建立自己到分支</li>
+<li>tolken：要用到上一节所述到私人令牌，如果忘记了可以进入页面之后重新获取一下新令牌</li>
+<li>path：写上文件存放到位置，一般写上<code>img</code>即可</li>
+<li>customPath：定义传输到格式，一般可以不用管</li>
+<li>customUrl：自定义上传到链接</li>
+</ul>
+<blockquote>
+<p>不知道怎么获取repo地址？</p>
+<ol>
+<li>进入自己到图床仓库到主页，复制地址栏到内容</li>
+<li>复制下方到用户和项目名称</li>
+</ol>
+<p><strong>注意中间到内容不要存在空格，删除注意不要多删除字符造成上传失败</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215400.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+</blockquote>
+<p>最终到配置结果如下所示</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131435.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于github存在限制加上外网访问普遍较慢到问题，如果网速不给力并且没有科学上网工具建议使用gitee作为图形仓库。可以在1S内上传，非常方便。赶紧把gitee用起来把</p>
+]]></content>
+      <categories>
+        <category>博客</category>
+      </categories>
+      <tags>
+        <tag>PicGo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo 搭建思维导图以及使用</title>
+    <url>/2020/07/26/Hexo-%E6%90%AD%E5%BB%BA%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="Hexo-搭建思维导图以及使用"><a href="#Hexo-搭建思维导图以及使用" class="headerlink" title="Hexo 搭建思维导图以及使用"></a>Hexo 搭建思维导图以及使用</h1><h2 id="1-Hexo-如何搭建"><a href="#1-Hexo-如何搭建" class="headerlink" title="1. Hexo 如何搭建"></a>1. Hexo 如何搭建</h2><ul>
+<li>详细查看Hexo学习博客：</li>
+</ul>
+<h2 id="2-选择："><a href="#2-选择：" class="headerlink" title="2. 选择："></a>2. 选择：</h2><ul>
+<li>百度的kitmap<ul>
+<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
+</ul>
+</li>
+<li><h2 id="Hexo-思维导图插件"><a href="#Hexo-思维导图插件" class="headerlink" title="Hexo 思维导图插件"></a>Hexo 思维导图插件</h2></li>
+<li>为什么使用百度的kityminder<ul>
+<li>使用简单</li>
+<li>百度开发，使用国内插件</li>
+</ul>
+</li>
+<li>使用hexo思维导图插件的原因<ul>
+<li>简单好用</li>
+</ul>
+</li>
+<li>什么是Kityminder<ul>
+<li>分成两部分<ul>
+<li>kity-core</li>
+<li>kity-editor</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>如何学习kityminder<ul>
+<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
+</ul>
+</li>
+<li>如何学习hexo 思维导图插件<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/75467441" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/75467441</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="3-使用hexo-插件构建思维导图"><a href="#3-使用hexo-插件构建思维导图" class="headerlink" title="3. 使用hexo 插件构建思维导图"></a>3. 使用hexo 插件构建思维导图</h2><ul>
+<li><p>跳转到hexo的目录下面，执行如下命令</p>
+<ul>
+<li><code>npm install hexo-simple-mindmap</code></li>
+</ul>
+</li>
+<li><p>在博客内部加入如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;% pullquote mindmap mindmap-md %&#125;</span><br><span class="line">[Hexo 的思维导图插件](https:&#x2F;&#x2F;hunterx.xyz&#x2F;hexo-simple-mindmap-plugin-intro.html)</span><br><span class="line">- 前言</span><br><span class="line">- 使用方法</span><br><span class="line">&#123;% endpullquote %&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="4-查看效果"><a href="#4-查看效果" class="headerlink" title="4. 查看效果"></a>4. 查看效果</h2><p>进入文章，即可渲染出对应的思维导图</p>
+<h1 id="推荐其他的方式"><a href="#推荐其他的方式" class="headerlink" title="推荐其他的方式"></a>推荐其他的方式</h1><ul>
+<li>使用xmind 话思维导图<ul>
+<li>为什么？<ul>
+<li>软件画图，可以一键生成图片</li>
+<li>样式可以调整，不需要切换</li>
+<li>简单好用，相对于Markdown编写更为直观</li>
+</ul>
+</li>
+<li>怎么使用xmind<ul>
+<li>百度搜索xmind 进入</li>
+<li>推荐使用xmind 的升级版本</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>博客</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Window 下面使用代办清单软件</title>
+    <url>/2020/07/26/Window-%E4%B8%8B%E9%9D%A2%E4%BD%BF%E7%94%A8%E4%BB%A3%E5%8A%9E%E6%B8%85%E5%8D%95%E8%BD%AF%E4%BB%B6/</url>
+    <content><![CDATA[<h1 id="windows-代办清单软件"><a href="#windows-代办清单软件" class="headerlink" title="windows 代办清单软件"></a>windows 代办清单软件</h1><h2 id="为什么要使用待办任务软件"><a href="#为什么要使用待办任务软件" class="headerlink" title="为什么要使用待办任务软件"></a>为什么要使用待办任务软件</h2><ul>
+<li>人的记忆是靠不住的</li>
+<li>琐事繁杂，列出清单能更好的</li>
+</ul>
+<h2 id="使用代办清单的好处"><a href="#使用代办清单的好处" class="headerlink" title="使用代办清单的好处"></a>使用代办清单的好处</h2><ul>
+<li>理清思路</li>
+<li>把事情拆分，一条条处理</li>
+<li>今日事，今日毕</li>
+<li>保持良好的时间管理习惯，防止懈怠</li>
+<li>可以结合番茄工作法</li>
+</ul>
+<h2 id="怎么使用代办清单软件"><a href="#怎么使用代办清单软件" class="headerlink" title="怎么使用代办清单软件"></a>怎么使用代办清单软件</h2><ul>
+<li><p>使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">奇妙清单</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>地址：<a href="https://www.wunderlist.com/" target="_blank" rel="noopener">https://www.wunderlist.com/</a></li>
+<li>目前已经被收购</li>
+</ul>
+</li>
+<li><p>微软的TODO List，实现简单</p>
+<ul>
+<li>地址：<a href="https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab" target="_blank" rel="noopener">https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab</a></li>
+</ul>
+</li>
+<li><p>滴答清单</p>
+<ul>
+<li>地址：<a href="https://www.dida365.com/about/download" target="_blank" rel="noopener">https://www.dida365.com/about/download</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="滴答清单的使用"><a href="#滴答清单的使用" class="headerlink" title="滴答清单的使用"></a>滴答清单的使用</h2><ul>
+<li>使用对应的账号关联登陆，这里使用个人的微信账号</li>
+<li>在左侧清单<ul>
+<li>任务清单的名称</li>
+</ul>
+</li>
+<li>在指定清单创建任务</li>
+<li>选择每一条任务，设置优先级</li>
+<li>右侧设置日期</li>
+</ul>
+]]></content>
+      <categories>
+        <category>待办任务</category>
+      </categories>
+      <tags>
+        <tag>TODOs</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Springboot 打包的一些学习</title>
+    <url>/2020/07/26/Springboot-%E6%89%93%E5%8C%85%E7%9A%84%E4%B8%80%E4%BA%9B%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<p><a href="https://blog.csdn.net/u012702547/article/details/95180256" target="_blank" rel="noopener">https://blog.csdn.net/u012702547/article/details/95180256</a></p>
+<p><a href="https://blog.csdn.net/weixin_38187317/article/details/82688906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82688906</a></p>
+<p>制作七牛-spring-boot-starter并上传中央仓库 <a href="https://blog.csdn.net/weixin_38187317/article/details/82723758" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82723758</a></p>
+<blockquote>
+<p>说明： 依照七牛云自己实现了一个springboot，已上传中央仓库 来源博客： <a href="https://blog.csdn.net/weixin_38187317/article/details/82688906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82688906</a> 目的：学习一下如何springboot 引入另一个springboot 的service层，</p>
+</blockquote>
+<h1 id="Spring-Boot-打包成的可执行-jar-，为什么不能被其他项目依赖？"><a href="#Spring-Boot-打包成的可执行-jar-，为什么不能被其他项目依赖？" class="headerlink" title="Spring Boot 打包成的可执行 jar ，为什么不能被其他项目依赖？"></a>Spring Boot 打包成的可执行 jar ，为什么不能被其他项目依赖？</h1><p><a href="https://blog.csdn.net/u012702547/article/details/95180256" target="_blank" rel="noopener">https://blog.csdn.net/u012702547/article/details/95180256</a></p>
+<blockquote>
+<p>说明：这里解读了为什么不能使用springboot 的插件打包</p>
+</blockquote>
+<h1 id="SpringBoot-如何手动引入本地的jar包-并利用maven成功打包"><a href="#SpringBoot-如何手动引入本地的jar包-并利用maven成功打包" class="headerlink" title="SpringBoot 如何手动引入本地的jar包 并利用maven成功打包"></a>SpringBoot 如何手动引入本地的jar包 并利用maven成功打包</h1><ul>
+<li>参考博客 <a href="https://www.javatt.com/p/84969" target="_blank" rel="noopener">https://www.javatt.com/p/84969</a></li>
+<li>需要执行如下命令： <code>mvn install:install-file -Dfile=./qiniu-spring-boot-starter-0.2-RELEASE.jar -DgroupId=com.zxd -DartifactId=myquartz -Dversion=8 -Dpackaging=jar</code></li>
+<li>Maven将自己的jar包引入本地库中 <a href="https://www.jianshu.com/p/cef1bc65584d" target="_blank" rel="noopener">https://www.jianshu.com/p/cef1bc65584d</a></li>
+</ul>
+<h1 id="Spring-Boot-制作一个自己的-Starter"><a href="#Spring-Boot-制作一个自己的-Starter" class="headerlink" title="Spring Boot 制作一个自己的 Starter"></a>Spring Boot 制作一个自己的 Starter</h1><p><a href="https://blog.csdn.net/wo18237095579/article/details/81197245#重点编写-autoconfigure-类" target="_blank" rel="noopener">https://blog.csdn.net/wo18237095579/article/details/81197245#重点编写-autoconfigure-类</a></p>
+<h1 id="Springboot-打Jar包，Maven完美解决本地Jar包自动打入Springboot-Jar包中"><a href="#Springboot-打Jar包，Maven完美解决本地Jar包自动打入Springboot-Jar包中" class="headerlink" title="Springboot 打Jar包，Maven完美解决本地Jar包自动打入Springboot Jar包中"></a>Springboot 打Jar包，Maven完美解决本地Jar包自动打入Springboot Jar包中</h1><p><a href="https://www.sojson.com/blog/253.html" target="_blank" rel="noopener">https://www.sojson.com/blog/253.html</a></p>
+<h1 id="Maven将自己的jar包引入本地库中"><a href="#Maven将自己的jar包引入本地库中" class="headerlink" title="Maven将自己的jar包引入本地库中"></a>Maven将自己的jar包引入本地库中</h1><p><a href="https://www.jianshu.com/p/cef1bc65584d" target="_blank" rel="noopener">https://www.jianshu.com/p/cef1bc65584d</a></p>
+<p>#　制作SpringBoot的jar给其他项目使用需要注意的点 <a href="https://blog.csdn.net/weixin_38187317/article/details/82688906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82688906</a></p>
+]]></content>
+      <categories>
+        <category>Springboot</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【数据对比】综合分析百度情感分析以及华为情感分析的差异，我有了如下结果</title>
+    <url>/2020/07/26/%E3%80%90%E6%95%B0%E6%8D%AE%E5%AF%B9%E6%AF%94%E3%80%91%E7%BB%BC%E5%90%88%E5%88%86%E6%9E%90%E7%99%BE%E5%BA%A6%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8A%E5%8D%8E%E4%B8%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E7%9A%84%E5%B7%AE%E5%BC%82%EF%BC%8C%E6%88%91%E6%9C%89%E4%BA%86%E5%A6%82%E4%B8%8B%E7%BB%93%E6%9E%9C/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>某一天，经理找到我，说BOSS需要情感分析对比的结果，我这边能不能研究一下几家情感分析的平台，按照（巴拉巴拉）的要求进行分析，于是就有了这篇文章……</p>
+<h1 id="为什么要进行对比"><a href="#为什么要进行对比" class="headerlink" title="为什么要进行对比"></a>为什么要进行对比</h1><ol>
+<li>公司任务</li>
+<li>了解下情感分析</li>
+<li>对比几家情感分析</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景:"></a><strong>业务场景:</strong></h1><p>​    爬虫截取微博网上留言信息，调用华为云的情感分析，百度云情感分析（通用接口），百度云情感分析（定制化模型，自定义学习资料）。根据以下几个点进行对比。</p>
+<ul>
+<li>未处理的原版数据<ul>
+<li>通用模型- 原版分类置信度</li>
+<li>定制模型 - 原版分类置信度 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版分类置信度 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>原版评论分类置信度 （华为云 仅2000条左右数据）</li>
+<li>通用模型- 原版评论负面倾向概率</li>
+<li>定制模型 - 原版评论负面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版评论负面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>通用模型- 原版评论正面倾向概率</li>
+<li>使用定制模型 - 原版评论正面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>使用定制模型 - 原版评论正面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>通用模型- 原 版评论分析正负结果值</li>
+<li>定制模型 - 原版评论分析正负结果值 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版评论分析正负结果值 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>原版评论正负结果值 （华为云 仅2000条左右数据）</li>
+</ul>
+</li>
+<li>处理掉@和#后的评论数据：<ul>
+<li>通用模型- 原版分类置信度</li>
+<li>定制模型 - 原版分类置信度 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版分类置信度 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>原版评论分类置信度 （华为云 仅2000条左右数据）</li>
+<li>通用模型- 原版评论负面倾向概率</li>
+<li>定制模型 - 原版评论负面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版评论负面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>通用模型- 原版评论正面倾向概率</li>
+<li>使用定制模型 - 原版评论正面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>使用定制模型 - 原版评论正面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>通用模型- 原 版评论分析正负结果值</li>
+<li>定制模型 - 原版评论分析正负结果值 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版评论分析正负结果值 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>原版评论正负结果值 （华为云 仅2000条左右数据）</li>
+</ul>
+</li>
+</ul>
+<h1 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题:"></a><strong>解决的问题:</strong></h1><ol>
+<li>对比了两家的情感分析之后，经过综合分析，<strong>百度云情感分析（通用模型</strong>）的准确率是最高的。</li>
+<li>目前综合来看，百度云的情感分析通用模式是自然语言分析的最好选择。</li>
+<li>定制化的百度模型实际测试不如通用模型准确（可能为学习模型数据不够准确）。</li>
+</ol>
+<h1 id="挑战"><a href="#挑战" class="headerlink" title="挑战:"></a><strong>挑战:</strong></h1><ol>
+<li>首次使用华为云情感分析，对于接口调用方面自己阅读文档不够详细，走了较多的弯路，不过经过仔细研究自行解决。</li>
+<li>由于存在QPS限制，调用的时候需要限制调用频率。</li>
+<li>由于网络原因可能存在频繁调用的情况。</li>
+<li>数据较多的情况下处理数据的时长比较久（针对试用而言）。</li>
+<li>根据不同的定制化模型。</li>
+<li>可能存在无法分析的特殊字符数据。</li>
+</ol>
+<h1 id="使用服务"><a href="#使用服务" class="headerlink" title="使用服务:"></a><strong>使用服务:</strong></h1><p>自然语言处理 - 情感分析</p>
+<h1 id="如何解决"><a href="#如何解决" class="headerlink" title="如何解决:"></a><strong>如何解决:</strong></h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 在不超过**qps**限制的情况下，试用分页形式，分段请求，在数据库中设置 判断值判断数据是否进行分析，如果重复调用会直接过滤掉已经进行情感分析的数据。</span><br><span class="line">   2. 对于线程进行&#96;休眠&#96;操作，防止调用请求过于频繁接口调用失败。</span><br><span class="line">   3. 使用日志记录失败请求信息，失败请求原因，失败请求数据。</span><br><span class="line">   4. 多次调用数据确保大部分数据可以产生结果，个别数据请求失败以及没有数据的忽略。</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景:"></a><strong>使用场景:</strong></h1><ol>
+<li>比对市面上几家华为云的情感分析使用，根据分析结果数据进行比对。</li>
+<li>对比百度云通用模型和定制化模型的使用。</li>
+<li>对比不同的环境下分析的数据，数据差异值。</li>
+</ol>
+<h1 id="方案截图"><a href="#方案截图" class="headerlink" title="方案截图:"></a><strong>方案截图:</strong></h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200725102058.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>（处理掉特殊字符前的截图）</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200725102133.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>（处理掉特殊字符后的截图）</p>
+<h1 id="使用规模"><a href="#使用规模" class="headerlink" title="使用规模:"></a><strong>使用规模:</strong></h1><p>共1000条数据左右。（其实总共有18000条数据）</p>
+<h1 id="使用收益："><a href="#使用收益：" class="headerlink" title="使用收益："></a><strong>使用收益：</strong></h1><p>对比了百度情感分析和华为云的情感分析，对比结果比较显著，在情感分析的领域发现是百度云的使用情况较好。</p>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>原数据报表有 18000条，如果有对情感分析感兴趣，或者想要了解情感分析对比结果的，可以留言邮箱，我会抽空把报表数据发送至您的邮箱</p>
+<p>如果觉得对您有帮助欢迎扩散</p>
+<h1 id="作者："><a href="#作者：" class="headerlink" title="作者："></a><strong>作者：</strong></h1><p>阿东</p>
+]]></content>
+      <categories>
+        <category>未分类</category>
+      </categories>
+      <tags>
+        <tag>情感分析</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Go语言学习笔记（一）</title>
     <url>/2020/07/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/</url>
     <content><![CDATA[<h1 id="Go语言学习笔记（一）"><a href="#Go语言学习笔记（一）" class="headerlink" title="Go语言学习笔记（一）"></a>Go语言学习笔记（一）</h1><h2 id="Go语言是什么？"><a href="#Go语言是什么？" class="headerlink" title="Go语言是什么？"></a>Go语言是什么？</h2><p><em>Go 编程语言是一个使得程序员更加有效率的开源项目。Go 是有表达力、简洁、清晰和有效率的。它的并行机制使其很容易编写多核和网络应用,而新奇的类型系统允许构建有弹性的模块化程序。Go 编译到机器码非常快速,同时具有便利的垃圾回收和强大的运行时反射。它是快速的、静态类型编译语言,但是感觉上是动态类型的,解释型语言。</em></p>
@@ -539,491 +1057,58 @@
       </tags>
   </entry>
   <entry>
-    <title>Hexo 搭建思维导图以及使用</title>
-    <url>/2020/07/26/Hexo-%E6%90%AD%E5%BB%BA%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="Hexo-搭建思维导图以及使用"><a href="#Hexo-搭建思维导图以及使用" class="headerlink" title="Hexo 搭建思维导图以及使用"></a>Hexo 搭建思维导图以及使用</h1><h2 id="1-Hexo-如何搭建"><a href="#1-Hexo-如何搭建" class="headerlink" title="1. Hexo 如何搭建"></a>1. Hexo 如何搭建</h2><ul>
-<li>详细查看Hexo学习博客：</li>
-</ul>
-<h2 id="2-选择："><a href="#2-选择：" class="headerlink" title="2. 选择："></a>2. 选择：</h2><ul>
-<li>百度的kitmap<ul>
-<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
-</ul>
-</li>
-<li><h2 id="Hexo-思维导图插件"><a href="#Hexo-思维导图插件" class="headerlink" title="Hexo 思维导图插件"></a>Hexo 思维导图插件</h2></li>
-<li>为什么使用百度的kityminder<ul>
-<li>使用简单</li>
-<li>百度开发，使用国内插件</li>
-</ul>
-</li>
-<li>使用hexo思维导图插件的原因<ul>
-<li>简单好用</li>
-</ul>
-</li>
-<li>什么是Kityminder<ul>
-<li>分成两部分<ul>
-<li>kity-core</li>
-<li>kity-editor</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>如何学习kityminder<ul>
-<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
-</ul>
-</li>
-<li>如何学习hexo 思维导图插件<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/75467441" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/75467441</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="3-使用hexo-插件构建思维导图"><a href="#3-使用hexo-插件构建思维导图" class="headerlink" title="3. 使用hexo 插件构建思维导图"></a>3. 使用hexo 插件构建思维导图</h2><ul>
-<li><p>跳转到hexo的目录下面，执行如下命令</p>
-<ul>
-<li><code>npm install hexo-simple-mindmap</code></li>
-</ul>
-</li>
-<li><p>在博客内部加入如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;% pullquote mindmap mindmap-md %&#125;</span><br><span class="line">[Hexo 的思维导图插件](https:&#x2F;&#x2F;hunterx.xyz&#x2F;hexo-simple-mindmap-plugin-intro.html)</span><br><span class="line">- 前言</span><br><span class="line">- 使用方法</span><br><span class="line">&#123;% endpullquote %&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h2 id="4-查看效果"><a href="#4-查看效果" class="headerlink" title="4. 查看效果"></a>4. 查看效果</h2><p>进入文章，即可渲染出对应的思维导图</p>
-<h1 id="推荐其他的方式"><a href="#推荐其他的方式" class="headerlink" title="推荐其他的方式"></a>推荐其他的方式</h1><ul>
-<li>使用xmind 话思维导图<ul>
-<li>为什么？<ul>
-<li>软件画图，可以一键生成图片</li>
-<li>样式可以调整，不需要切换</li>
-<li>简单好用，相对于Markdown编写更为直观</li>
-</ul>
-</li>
-<li>怎么使用xmind<ul>
-<li>百度搜索xmind 进入</li>
-<li>推荐使用xmind 的升级版本</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+    <title>WIN10系统安装与U盘系统制作教程</title>
+    <url>/2020/07/26/WIN10%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E4%B8%8EU%E7%9B%98%E7%B3%BB%E7%BB%9F%E5%88%B6%E4%BD%9C%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="装机技巧系列（二）：系统安装之Windows-10启动盘制作"><a href="#装机技巧系列（二）：系统安装之Windows-10启动盘制作" class="headerlink" title="装机技巧系列（二）：系统安装之Windows 10启动盘制作"></a>装机技巧系列（二）：系统安装之Windows 10启动盘制作</h1><p><a href="https://zhuanlan.zhihu.com/p/36495771" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/36495771</a></p>
+<h1 id="重装系统安装win10系统-激活，纯小白教程"><a href="#重装系统安装win10系统-激活，纯小白教程" class="headerlink" title="重装系统安装win10系统+激活，纯小白教程"></a>重装系统安装win10系统+激活，纯小白教程</h1><p><a href="https://zhuanlan.zhihu.com/p/117467570" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/117467570</a></p>
 ]]></content>
       <categories>
-        <category>博客</category>
+        <category>装机</category>
       </categories>
       <tags>
-        <tag>Hexo</tag>
+        <tag>实用技巧</tag>
       </tags>
   </entry>
   <entry>
-    <title>PicGo和码云实现自建图床</title>
-    <url>/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/</url>
-    <content><![CDATA[<h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<a href="https://zhuanlan.zhihu.com/p/102594554" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102594554</a></p>
-<h2 id="测试图床链接："><a href="#测试图床链接：" class="headerlink" title="测试图床链接："></a>测试图床链接：</h2><p>链接1 ：</p>
-<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png</a></p>
-<p>链接2：</p>
-<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png</a></p>
-<p>链接3：</p>
-<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png</a></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959" alt="最终结果1"></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959" alt="最终结果2"></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959" alt="最终结果3"></p>
+    <title>一点鸡汤</title>
+    <url>/2020/07/26/%E4%B8%80%E7%82%B9%E9%B8%A1%E6%B1%A4/</url>
+    <content><![CDATA[<h1 id="网上查看"><a href="#网上查看" class="headerlink" title="网上查看"></a>网上查看</h1><p>Java学习这一部分其实也算是今天的重点，这一部分用来回答很多群里的朋友所问过的问题，那就是我你是如何学习Java的，能不能给点建议？今天我是打算来点干货，因此咱们就不说一些学习方法和技巧了，直接来谈每个阶段要学习的内容甚至是一些书籍。这一部分的内容，同样适用于一些希望转行到Java的同学。</p>
 <a id="more"></a>
 
-<h2 id="为什么要使用码云代替图床"><a href="#为什么要使用码云代替图床" class="headerlink" title="为什么要使用码云代替图床"></a>为什么要使用码云代替图床</h2><ul>
-<li>github毕竟是外国服务器，上传过程中因为网络问题有可能会无法使用的情况</li>
-<li>码云作为国内的“github”，访问和上传速度更快，所以使用码云更为方便</li>
-<li>目前<code>PicGo 2.0</code>之后已经有人集成了插件，使用和github一样简单好用</li>
-</ul>
-<h2 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h2><h3 id="1-下载PicGo"><a href="#1-下载PicGo" class="headerlink" title="1. 下载PicGo"></a>1. 下载PicGo</h3><p>官网地址：<a href="https://molunerfinn.com/PicGo/" target="_blank" rel="noopener">https://molunerfinn.com/PicGo/</a></p>
-<p>Github 快捷网址：<a href="https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2</a> 选择对应的版本下载即可</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131933.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>更多信息访问Github：<a href="https://github.com/Molunerfinn/PicGo" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo</a></p>
-<h3 id="2-安装PicGo"><a href="#2-安装PicGo" class="headerlink" title="2. 安装PicGo"></a>2. 安装PicGo</h3><p>安装过程就忽略了，安装完成之后打开软件</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132027.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<h3 id="3-PicGo-安装gitee-插件"><a href="#3-PicGo-安装gitee-插件" class="headerlink" title="3. PicGo 安装gitee 插件"></a>3. PicGo 安装gitee 插件</h3><p>前提条件：<strong>注意PicGo安装的前提条件是2.0版本之后新增的插件功能！！！</strong></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132225.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>将鼠标滚轮滚到最下面，会发现有一个插件设置</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132358.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>选择安装 <code>gitee-uploader 1.1.2</code>这个插件</p>
-<blockquote>
-<p><strong>安装失败如何解决</strong>？</p>
-<p>注意该插件需要node.js 的环境，Node.js的安装如下</p>
-<p><a href="http://nodejs.cn/download/" target="_blank" rel="noopener">http://nodejs.cn/download/</a></p>
-<p>进入中文官网之后，安装对应的版本即可</p>
-<p>window 下面的exe程序安装之后会自动的配置环境变量，这时候我们可以使用命令查一下是否有Node环境</p>
-<ol>
-<li>win 键 + R 打开<strong>运行</strong>窗口</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132719.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>输入命令<code>node -v</code></li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132750.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>如果出现如上所示的内容则证明安装成功</li>
-</ol>
-</blockquote>
-<h3 id="4-码云搭建图床仓库"><a href="#4-码云搭建图床仓库" class="headerlink" title="4. 码云搭建图床仓库"></a>4. 码云搭建图床仓库</h3><ol>
-<li>进入自己的码云：<a href="https://gitee.com/lazyTimes/projects" target="_blank" rel="noopener">https://gitee.com/lazyTimes/projects</a> 这是我的码云地址</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133220.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>选择右上角有一个 <code>&quot;+&quot;</code>号，选择新建仓库</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133327.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>填写基本信息，页面翻到最下面，选择保存</li>
-</ol>
-<p><img src="http://null/" alt="image-20200319133550209"></p>
-<ol>
-<li>新建仓库成功</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133836.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<h3 id="5-获取gitee私人令牌"><a href="#5-获取gitee私人令牌" class="headerlink" title="5. 获取gitee私人令牌"></a>5. 获取gitee私人令牌</h3><p>和github一样，在最终设置之前我们需要获取一下gitee令牌用于上传</p>
-<ol>
-<li>登录gitee之后，右上角选择</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214555.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>选择“私人令牌”</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214625.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>选择“生成令牌”，进入到令牌到创建页面</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214721.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>勾选如图到内容，一般只需要用到前面几项就可以满足我们到需求。按要求输入密码即可生成成功</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214905.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>生成令牌成功，将令牌内容保存在自己到笔记，防止忘记</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215102.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>经过如上步骤之后，我们基本就算是大功告成了，现在只需要在PicGo里面配置一下即可</p>
-<h3 id="6-PicGo-配置"><a href="#6-PicGo-配置" class="headerlink" title="6. PicGo 配置"></a>6. PicGo 配置</h3><ul>
-<li>repo：必填，填写gitee上面的仓库名称</li>
-<li>branch：一般默认master 即可，有需要可以建立自己到分支</li>
-<li>tolken：要用到上一节所述到私人令牌，如果忘记了可以进入页面之后重新获取一下新令牌</li>
-<li>path：写上文件存放到位置，一般写上<code>img</code>即可</li>
-<li>customPath：定义传输到格式，一般可以不用管</li>
-<li>customUrl：自定义上传到链接</li>
-</ul>
-<blockquote>
-<p>不知道怎么获取repo地址？</p>
-<ol>
-<li>进入自己到图床仓库到主页，复制地址栏到内容</li>
-<li>复制下方到用户和项目名称</li>
-</ol>
-<p><strong>注意中间到内容不要存在空格，删除注意不要多删除字符造成上传失败</strong></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215400.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-</blockquote>
-<p>最终到配置结果如下所示</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131435.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于github存在限制加上外网访问普遍较慢到问题，如果网速不给力并且没有科学上网工具建议使用gitee作为图形仓库。可以在1S内上传，非常方便。赶紧把gitee用起来把</p>
+<p>在大家看之前，我要先声明两点。1、由于我本人是Java后端开发出身，因此所推荐的学习内容是Java Web和Java后端开发的路线，非Java Web和Java后端开发的同学请适当参考其学习思想即可，切勿照搬。2、下面对于【第一部分】的推荐内容，目的是让你尽快成为一个可以参加工作的Java开发者，更适用于处于待业状态，准备转行Java的同学。</p>
+<p>如果你是在校学生，务必要在学好基础（比如计算机系统、算法、编译原理等等）的前提下，再考虑去进行下面的学习。第一部分：对于尚未做过Java工作的同学，包括一些在校生以及刚准备转行Java的同学。</p>
+<p>一、Java基础首先去找一个Java的基础教程学一下，这里推荐慕课，菜鸟，学习Java基础的时候，应该尽量多动手，很多时候，你想当然的事情，等你写出来运行一下，你就会发现不是这么回事儿，不信你就试试。学完以上内容以后，你应该对Java有一个基本的了解了，你可以用Java语言写出一些简单的程序，并且你用的是最简单的编辑器，比如记事本。这个时候，不要急于进入下一部分，留下几天好好写一些程序，尽可能熟悉这些基础内容。</p>
+<p>二、Web开发等你写上几天程序以后，你往往会比较迷茫，因为你写的东西似乎看起来毫无用处，比如实现一个简单的计算器，读取一个文件等。这个时候你就应该去学着写一些让你觉得有意思的东西了，所以你应该学习更多的知识。这些内容主要是Web开发相关的内容，包括HTML/CSS/JS（前端页面）、Servlet/JSP（J2EE）以及Mysql（数据库）相关的知识。它们的学习顺序应该是从前到后，因此最先学习的应该是HTML/CSS/JS（前端页面），这部分内容你可以去上面的那个runoob网站上找。</p>
+<p>你可以试着自己写一些页面，当然，你可以尽你最大的努力让它变得最漂亮。这部分内容对于后端Java来说，理论上不是特别重要，但至少要达到可以自己写出一些简单页面的水平。接下来，你需要学习的是Servlet/JSP（J2EE）部分，这部分是Java后端开发必须非常精通的部分，因此这部分是这三部分中最需要花精力的，而且这个时候，你要学会使用开发工具，而不能再使用记事本了，可以选择eclipse。当你下载安装好eclipse以后，请视频中的教程一步一步去学习，一定要多动手。关于Servlet/Jsp部分视频的选择，业界比较认可马士兵的视频，因此推荐给大家。</p>
+<p>当然了，我本人并没有看过他的视频，所以不好说的太绝对，如果大家自己有更好的选择，可以坚持自己的，不要被我干扰。原本我也是打算出教学视频的，但是由于时间问题，还是决定放弃了。最后一步，你需要学会使用数据库，mysql是个不错的入门选择，而且Java领域里主流的关系型数据库就是mysql。这部分一般在你学习Servlet/Jsp的时候，就会接触到的，其中的JDBC部分就是数据库相关的部分。你不仅要学会使用JDBC操作数据库，还要学会使用数据库客户端工具，比如navicat，sqlyog，二选一即可。</p>
+<p>三、开发框架当你学会以上内容以后，这个时候你还不足以参加工作，你还需要继续深造。公司里为了提高开发的效率，会使用一些Java Web框架，因此你还需要学习一些开发框架。目前比较主流的是SSM框架，即spring、springmvc、mybatis。你需要学会这三个框架的搭建，并用它们做出一个简单的增删改查的Web项目。你可以不理解那些配置都是什么含义，以及为什么要这么做，这些留着后面你去了解。</p>
+<p>但你一定要可以快速的利用它们三个搭建出一个Web框架，你可以记录下你第一次搭建的过程，相信我，你一定会用到的。还要提一句的是，你在搭建SSM的过程中，可能会经常接触到一个叫maven的工具。这个工具也是你以后工作当中几乎是必须要使用的工具，所以你在搭建SSM的过程中，也可以顺便了解一下maven的知识。在你目前这个阶段，你只需要在网络上了解一下maven基本的使用方法即可，一些高端的用法随着你工作经验的增加，会逐渐接触到的。</p>
+<p>关于学习SSM框架的地址给大家推荐一个，这里面有视频，大家可以去观看。四、找工作当你完成开发框架的学习以后，你就该找工作了，在校的找实习，毕业的找全职。与此同时，在找工作的同时，你不应该停下你的学习，准确的说，是你在以后都不能停下学习。上面这些内容你只是囫囵吞枣的学会了使用，你可以逐步尝试着去了解更多的东西，网络是你最重要的老师。</p>
+<p>第二部分：对于参加工作一年以内的同学。恭喜你，这个时候，你已经拥有了一份Java的工作。这个阶段是你成长极快的阶段，而且你可能会经常加班。但是加班不代表你就可以松懈了，永远记得我说的那句话，从你入行那一刻起，你就要不停的学习。在这一年里，你至少需要看完《Java编程思想》这本书。这本书的内容是帮助你对于Java有一个更加深入的了解，是Java基础的升级版。这本书很厚，当初看这本书，我花了整整三个月。正常速度的话，应该可以在半年左右看完。我这里不要求过高，只要你在一年以内把这本书看完即可。当然了，我所说的看完，是充分吸收，而不是读一遍就完事了，因此有些内容你可能会看不止一遍。总而言之，这个阶段的核心学习思想就是，在工作中实践，并且更加深入的了解Java基础。</p>
+<p>第二部分：对于参加工作1年到2年的同学。这部分时间段的同学，已经对Java有了一个更加深入的了解。但是对于面向对象的体会可能还不够深刻，编程的时候还停留在完成功能的层次，很少会去考虑设计的问题。于是这个时候，设计模式就来了。我当时看的是《大话设计模式》这本书，并且写了完整版的设计模式博客。因此，我要求大家，最多在你工作一年的时候，必须开始写博客，而设计模式就是你博客的开端。</p>
+<p>请记住，我所提的基本都是最低要求，因此不要有任何松懈的心理，否则五年后，你不要去羡慕别人高于你的工资，也不要去羡慕别人进入了某公司。这一年，你必须对于设计模式了如指掌，《大话设计模式》可以作为你的开端。此外，设计模式并不是你这一年唯一的任务，你还需要看一些关于代码编写优化的书。比如《重构 改善既有代码的设计》，《effective java》。总而言之，这个阶段，你的核心任务就是提高你的代码能力，要能写出一手优雅的代码。</p>
+<p>第三部分：对于参加工作2年到3年的同学有的同学在这个时候觉得自己已经很牛逼了，于是忍不住开始慢慢松懈。请记住，你还嫩的多。这个阶段，有一本书是你必须看的，它叫做《深入理解Java虚拟机》。这本书绝对是Java开发者最重要的书，没有之一。在我眼里，这本书的重要性还要高于《Java编程思想》。这本书的内容是帮助你全面的了解Java虚拟机，在这个阶段，你一定已经知道Java是运行在JVM之上的。所以，对于JVM，你没有任何理由不了解它。</p>
+<p>另外，在过去2年的工作当中，你肯定或多或少接触过并发。这个时候，你应该去更加深入的了解并发相关的知识，而这部分内容，我比较推荐《Java并发编程实战》这本书。只要你把这本书啃下来了，并发的部分基本已经了解了十之六七。与此同时，这个阶段你要做的事情还远不止如此。这个时候，你应该对于你所使用的框架应该有了更深入的了解，对于Java的类库也有了更深入的了解。</p>
+<p>因此，你需要去看一些JDK中的类的源码，也包括你所使用的框架的源码。这些源码能看懂的前提是，你必须对设计模式非常了解。否则的话，你看源码的过程中，永远会有这样那样的疑问，这段代码为什么要这么写？为什么要定义这个接口，它看起来好像很多余？由此也可以看出，这些学习的过程是环环相扣的，如果你任何一个阶段拉下来了，那么你就真的跟不上了，或者说是一步慢步步慢。而且我很负责的告诉你，我在这个阶段的时候，所学习的东西远多于这里所罗列出来的。</p>
+<p>因此千万不要觉得你已经学的很多了，我所说的这些都只是最低要求，不光是我，很多人在这个时间段所学习的内容都远超本文的范围。如果你不能跟上节奏的话，若干年后，如果不是程序猿市场还不错的话，你很可能不仅仅是工资比别人低，公司没别人好，而是根本就找不到工作。总而言之，这个阶段，你需要做的是深入了解Java底层和Java类库（比如并发那本书就是Java并发包java.concurrent的内容），也就是JVM和JDK的相关内容。而且还要更深入的去了解你所使用的框架，方式比较推荐看源码或者看官方文档。另外，还有一种学习的方式，在2年这个阶段，也应该启用了，那就是造轮子。不要听信那套“不要重复造轮子”的论调，那是公司为了节省时间成本编造出来的。重复造轮子或许对别人没有价值，因为你造的轮子可能早就有了，而且一般情况下你造出来的轮子还没有现存的好。</p>
+<p>但是对别人没有价值，不代表对你自己没有价值。一个造轮子的过程，是一个从无到有的过程。这个过程可以对你进行系统的锻炼，它不仅考察你的编码能力，还考察你的框架设计能力，你需要让你的轮子拥有足够好的扩展性、健壮性。而且在造轮子的过程中，你会遇到各种各样的难题，这些难题往往又是你学习的契机。当你把轮子造好的时候，你一定会发现，其实你自己收获了很多。所以，这个阶段，除了上面提到的了解JVM、JDK和框架源码以外，也请你根据别人优秀的源码，去造一个任何你能够想象出来的轮子。</p>
+<p>第四部分：参加工作3年到4年的同学这个阶段的同学，提升已经是很难了，而且这个阶段的学习往往会比较多样化。因为在前3年的过程中，你肯定或多或少接触过一些其它的技术，比如大数据、分布式缓存、分布式消息服务、分布式计算、软负载均衡等等。这些技术，你能精通任何一项，都将是你未来面试时巨大的优势，因此如果你对某一项技术感兴趣的话，</p>
+<p>这个时候可以深入去研究一下。这项技术不一定是你工作所用到的，但一定是相关的。而且在研究一门新技术时，切忌朝三暮四。有的同学今天去整整大数据，搞搞Hadoop、hbase一类的东西。过不了一段时间，就觉得没意思，又去研究分布式缓存，比如redis。然后又过不了一段时间，又去研究分布式计算，比如整整Mapreduce或者storm。结果到最后，搞得自己好像什么都会一样，在简历上大言不惭的写上大数据、分布式缓存、分布式计算都了解，其实任何一个都只是浮于表面。到时候面试官随便一问，就把你给识破了。</p>
+<p>一定要记住，作为一个程序猿，平日里所接触的技术可能会很多，但是想要让一门技术成为你的优势，那么一定是你对这门技术的了解强过绝大多数人才行。因此在这个阶段，你就不能再简单的去学习前3年的内容了，虽然前面的学习如果还不够深入的话依旧要继续，但这个时候你应该更多的考虑建立你的优势，也可以称为差异性。差异性相信不难理解，就是让你自己变得与众不同。你前面三年的学习足够你成为一名基本合格的Java开发者，但你离成为一名优秀的Java开发者还有很大的距离。</p>
+<p>所谓优秀，即能别人所不能。而你前三年所学习的内容，是很多做过几年的Java开发都能够掌握的。那么为了让自己有差异性，你就需要另辟蹊径，找一个方向深入研究下去，以期在将来，你能够成为这个领域的专家，比如分布式计算领域的专家，大数据领域的专家，并发领域的专家等等。此外，你除了建立你的差异性之外，还要去弥补你基础上的不足，直到现在，我都没有提及基础知识。原因是基础是很枯燥无味的，学的太早不仅容易懵逼，而且懵逼的同时还容易产生心理阴影，以至于以后再不想去研究这些基础。但基础又是你深入研究一些领域时所必须掌握的，比如你去研究分布式计算，你不懂算法你玩个毛毛？比如你去做分布式缓存，你对计算机系统的内存不了解，你如何去做缓存？</p>
+<p>如果你的基础本来就非常强，那么恭喜你，相信你在之前的工作中已经充分体会到了这些基础对你的帮助。但我相信大部分人的基础都很薄弱，哪怕是科班毕业的人，很多人也不敢说自己当初的基础学的多么强大，比如算法、计算机系统原理、编译原理这些。但是每个人时间都是有限的，而且这些基础的书籍每一本读下来，没个一年半载的，还真拿不下来，因此还是要有所抉择的。虽然艺多不压身，但问题是艺多是有代价的，是需要你付出时间和精力的，而我个人更赞成在同等代价的情况下获取最大的收获。</p>
+<p>首先，我比较推崇的基础书籍有三本，分别是《深入理解计算机系统》，《tcp/ip详解 卷一、二、三》，《数据结构与算法》。其中TCP/IP有三本书，但我们这里把这三本看成是一本大书。这三本分别适合三种人，《深入理解计算机系统》比较适合一直从事Java Web开发和APP后端开发工作的人群。《tcp/ip详解 卷一、二、三》比较适合做网络编程的人群，比如你使用netty去开发的话，那么就要对TCP/IP有更深入的了解。而《数据结构与算法》这本书，则比较适合做计算研究工作的人，比如刚才提到的分布式计算。另外，我要强调的是，这里所说的适合，并不是其它两本对你就没有用。比如你做Java Web和APP后端开发，《tcp/ip详解 卷一、二、三》这本书对你的作用也是很大的。这里只是分出个主次关系而已，你要是时间足够的话，能把三本都精读那当然最好不过了。</p>
+<p>但如果时间有限的话，那么就先挑对你帮助最大的书去读。理论上来讲，这一年你能把这三本其中一本精读下来，就已经非常厉害了。有了基础，有了前面的工作经验，你就可以去开拓属于你的领域了。在这一年里，一定要规划好自己的领域，建立好自己的优势，制造出差异性。如果你对自己的领域不够清晰的话，随着你工作的时间日益增多，你接触的技术会越来越多，这个时候，你很容易被淹死在技术的海洋里，看似接触的技术越来越多，会用的也越来越多，但你毫无优势。有的同学可能会问，“我，我也不知道我的领域是什么啊？怎么办呢？”对于这种人，我只想说，“卧槽，这还问我？要不干脆我替你学习得了，好不好？”</p>
+<p>第五部分：参加工作4年到5年的同学经过前面一年的历练，相信你在自己所钻研的领域已经有了自己一定的见解，这个时候，技术上你应该已经遇到瓶颈了。这个时候不要着急提高自己的技术，已经是时候提高你的影响力了，你可以尝试去一些知名的公司去提高你的背景，你可以发表一些文章去影响更多的人。当然，你也可以去Github创建一个属于你的开源项目，去打造自己的产品。</p>
+<p>这次的开源项目不同于之前的造轮子，你这个时候是真的要去尽量尝试造出来真正对别人有价值的轮子。技术学到这个阶段，很容易遇到瓶颈，而且往往达到一定程度后，你再深入下去的收效就真的微乎其微了，除非你是专门搞学术研究的。然而很可惜，大部分程序猿做不到这一步，那是科学家做的事情。这个时候提高影响力不仅仅是因为技术上容易遇到瓶颈，更多的是影响力可以给你创造更多的机会。程序猿在某种程度上和明星很像，一个好的电视剧和电影就可以成就一批明星，程序猿有的时候也是，一个好的项目就可以成就一群程序猿。比如国内几个脍炙人口的项目，像淘宝、支付宝、QQ、百度、微信等等。这每一个项目，都成就了一批程序猿。我敢说，这里面任何一个项目，如果你是它的核心开发，光是这样一个Title，就已经是你非常大的优势。更何况还不止如此，Title说到底也是个名头，更重要的是，这种项目在做的时候，对你的历练一定也是非常给力的。</p>
+<p>而你如果想要参与这样的项目，除了靠运气之外，影响力也是很重要的一个手段。比如你在分布式计算领域有一定的影响力，那么如果有什么好的关于分布式计算的项目，对方就很可能会邀请你。就算人家不邀请你，你自己主动去面试的时候，对方如果知道你在这个领域的影响力，也肯定会起到很大的作用，而这个作用，甚至可能会超过你现在的技术能力。所以，在这个阶段，你最大的任务是提高自己的影响力，为自己未来的十年工作生涯那一天做准备。如果你能够靠你的影响力和以前积累的技术，参与到一个伟大的项目当中，那么你后面的五年也就有着落了。当然了，我现在满打满算，做程序猿也就4年半不到，因此关于4年到5年这一部分，我的见解不一定是对的，就算是对的，也不一定是适合任何人的。</p>
+<p>所以，希望大家自己有的判断力，去决定到底该如何度过这一年。结语本文到此就基本结束了，整篇文章很长，但其实主要就说了两部分内容，一个是社招面试的准备，一个是Java生涯的学习。关于这两部分，我已经给出了自己的见解，但是还是那句话，每个人吸收知识的时候，都要有抽取精华，去除糟粕的能力。我所说的，可能有些是对的，有些是错的，有些是适合你的，有些是不太适合你的，你要自己能够判断。其实你在生活和工作当中也是一样的，你身边的人形形色色，有的人你喜欢，有的人你很讨厌。但其实你喜欢的人也有缺点，你讨厌的人也有优点。你要学会从你讨厌的人身上学会他的优点，千万不要一棒子打死，这只会让你失去很多学习成长的机会。好了，说了这么多了，就到此为止吧，希望本文可以帮助到作为程序猿或即将成为程序猿的你。</p>
 ]]></content>
       <categories>
-        <category>博客</category>
+        <category>心得体会</category>
       </categories>
       <tags>
-        <tag>PicGo</tag>
+        <tag>鸡汤</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Window 下面使用代办清单软件</title>
-    <url>/2020/07/26/Window-%E4%B8%8B%E9%9D%A2%E4%BD%BF%E7%94%A8%E4%BB%A3%E5%8A%9E%E6%B8%85%E5%8D%95%E8%BD%AF%E4%BB%B6/</url>
-    <content><![CDATA[<h1 id="windows-代办清单软件"><a href="#windows-代办清单软件" class="headerlink" title="windows 代办清单软件"></a>windows 代办清单软件</h1><h2 id="为什么要使用待办任务软件"><a href="#为什么要使用待办任务软件" class="headerlink" title="为什么要使用待办任务软件"></a>为什么要使用待办任务软件</h2><ul>
-<li>人的记忆是靠不住的</li>
-<li>琐事繁杂，列出清单能更好的</li>
-</ul>
-<h2 id="使用代办清单的好处"><a href="#使用代办清单的好处" class="headerlink" title="使用代办清单的好处"></a>使用代办清单的好处</h2><ul>
-<li>理清思路</li>
-<li>把事情拆分，一条条处理</li>
-<li>今日事，今日毕</li>
-<li>保持良好的时间管理习惯，防止懈怠</li>
-<li>可以结合番茄工作法</li>
-</ul>
-<h2 id="怎么使用代办清单软件"><a href="#怎么使用代办清单软件" class="headerlink" title="怎么使用代办清单软件"></a>怎么使用代办清单软件</h2><ul>
-<li><p>使用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">奇妙清单</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>地址：<a href="https://www.wunderlist.com/" target="_blank" rel="noopener">https://www.wunderlist.com/</a></li>
-<li>目前已经被收购</li>
-</ul>
-</li>
-<li><p>微软的TODO List，实现简单</p>
-<ul>
-<li>地址：<a href="https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab" target="_blank" rel="noopener">https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab</a></li>
-</ul>
-</li>
-<li><p>滴答清单</p>
-<ul>
-<li>地址：<a href="https://www.dida365.com/about/download" target="_blank" rel="noopener">https://www.dida365.com/about/download</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="滴答清单的使用"><a href="#滴答清单的使用" class="headerlink" title="滴答清单的使用"></a>滴答清单的使用</h2><ul>
-<li>使用对应的账号关联登陆，这里使用个人的微信账号</li>
-<li>在左侧清单<ul>
-<li>任务清单的名称</li>
-</ul>
-</li>
-<li>在指定清单创建任务</li>
-<li>选择每一条任务，设置优先级</li>
-<li>右侧设置日期</li>
-</ul>
-]]></content>
-      <categories>
-        <category>待办任务</category>
-      </categories>
-      <tags>
-        <tag>TODOs</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【数据对比】综合分析百度情感分析以及华为情感分析的差异，我有了如下结果</title>
-    <url>/2020/07/26/%E3%80%90%E6%95%B0%E6%8D%AE%E5%AF%B9%E6%AF%94%E3%80%91%E7%BB%BC%E5%90%88%E5%88%86%E6%9E%90%E7%99%BE%E5%BA%A6%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8A%E5%8D%8E%E4%B8%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E7%9A%84%E5%B7%AE%E5%BC%82%EF%BC%8C%E6%88%91%E6%9C%89%E4%BA%86%E5%A6%82%E4%B8%8B%E7%BB%93%E6%9E%9C/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>某一天，经理找到我，说BOSS需要情感分析对比的结果，我这边能不能研究一下几家情感分析的平台，按照（巴拉巴拉）的要求进行分析，于是就有了这篇文章……</p>
-<h1 id="为什么要进行对比"><a href="#为什么要进行对比" class="headerlink" title="为什么要进行对比"></a>为什么要进行对比</h1><ol>
-<li>公司任务</li>
-<li>了解下情感分析</li>
-<li>对比几家情感分析</li>
-</ol>
-<a id="more"></a>
-
-<h1 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景:"></a><strong>业务场景:</strong></h1><p>​    爬虫截取微博网上留言信息，调用华为云的情感分析，百度云情感分析（通用接口），百度云情感分析（定制化模型，自定义学习资料）。根据以下几个点进行对比。</p>
-<ul>
-<li>未处理的原版数据<ul>
-<li>通用模型- 原版分类置信度</li>
-<li>定制模型 - 原版分类置信度 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版分类置信度 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>原版评论分类置信度 （华为云 仅2000条左右数据）</li>
-<li>通用模型- 原版评论负面倾向概率</li>
-<li>定制模型 - 原版评论负面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版评论负面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>通用模型- 原版评论正面倾向概率</li>
-<li>使用定制模型 - 原版评论正面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>使用定制模型 - 原版评论正面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>通用模型- 原 版评论分析正负结果值</li>
-<li>定制模型 - 原版评论分析正负结果值 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版评论分析正负结果值 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>原版评论正负结果值 （华为云 仅2000条左右数据）</li>
-</ul>
-</li>
-<li>处理掉@和#后的评论数据：<ul>
-<li>通用模型- 原版分类置信度</li>
-<li>定制模型 - 原版分类置信度 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版分类置信度 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>原版评论分类置信度 （华为云 仅2000条左右数据）</li>
-<li>通用模型- 原版评论负面倾向概率</li>
-<li>定制模型 - 原版评论负面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版评论负面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>通用模型- 原版评论正面倾向概率</li>
-<li>使用定制模型 - 原版评论正面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>使用定制模型 - 原版评论正面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>通用模型- 原 版评论分析正负结果值</li>
-<li>定制模型 - 原版评论分析正负结果值 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版评论分析正负结果值 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>原版评论正负结果值 （华为云 仅2000条左右数据）</li>
-</ul>
-</li>
-</ul>
-<h1 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题:"></a><strong>解决的问题:</strong></h1><ol>
-<li>对比了两家的情感分析之后，经过综合分析，<strong>百度云情感分析（通用模型</strong>）的准确率是最高的。</li>
-<li>目前综合来看，百度云的情感分析通用模式是自然语言分析的最好选择。</li>
-<li>定制化的百度模型实际测试不如通用模型准确（可能为学习模型数据不够准确）。</li>
-</ol>
-<h1 id="挑战"><a href="#挑战" class="headerlink" title="挑战:"></a><strong>挑战:</strong></h1><ol>
-<li>首次使用华为云情感分析，对于接口调用方面自己阅读文档不够详细，走了较多的弯路，不过经过仔细研究自行解决。</li>
-<li>由于存在QPS限制，调用的时候需要限制调用频率。</li>
-<li>由于网络原因可能存在频繁调用的情况。</li>
-<li>数据较多的情况下处理数据的时长比较久（针对试用而言）。</li>
-<li>根据不同的定制化模型。</li>
-<li>可能存在无法分析的特殊字符数据。</li>
-</ol>
-<h1 id="使用服务"><a href="#使用服务" class="headerlink" title="使用服务:"></a><strong>使用服务:</strong></h1><p>自然语言处理 - 情感分析</p>
-<h1 id="如何解决"><a href="#如何解决" class="headerlink" title="如何解决:"></a><strong>如何解决:</strong></h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 在不超过**qps**限制的情况下，试用分页形式，分段请求，在数据库中设置 判断值判断数据是否进行分析，如果重复调用会直接过滤掉已经进行情感分析的数据。</span><br><span class="line">   2. 对于线程进行&#96;休眠&#96;操作，防止调用请求过于频繁接口调用失败。</span><br><span class="line">   3. 使用日志记录失败请求信息，失败请求原因，失败请求数据。</span><br><span class="line">   4. 多次调用数据确保大部分数据可以产生结果，个别数据请求失败以及没有数据的忽略。</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景:"></a><strong>使用场景:</strong></h1><ol>
-<li>比对市面上几家华为云的情感分析使用，根据分析结果数据进行比对。</li>
-<li>对比百度云通用模型和定制化模型的使用。</li>
-<li>对比不同的环境下分析的数据，数据差异值。</li>
-</ol>
-<h1 id="方案截图"><a href="#方案截图" class="headerlink" title="方案截图:"></a><strong>方案截图:</strong></h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200725102058.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>（处理掉特殊字符前的截图）</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200725102133.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>（处理掉特殊字符后的截图）</p>
-<h1 id="使用规模"><a href="#使用规模" class="headerlink" title="使用规模:"></a><strong>使用规模:</strong></h1><p>共1000条数据左右。（其实总共有18000条数据）</p>
-<h1 id="使用收益："><a href="#使用收益：" class="headerlink" title="使用收益："></a><strong>使用收益：</strong></h1><p>对比了百度情感分析和华为云的情感分析，对比结果比较显著，在情感分析的领域发现是百度云的使用情况较好。</p>
-<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>原数据报表有 18000条，如果有对情感分析感兴趣，或者想要了解情感分析对比结果的，可以留言邮箱，我会抽空把报表数据发送至您的邮箱</p>
-<p>如果觉得对您有帮助欢迎扩散</p>
-<h1 id="作者："><a href="#作者：" class="headerlink" title="作者："></a><strong>作者：</strong></h1><p>阿东</p>
-]]></content>
-      <categories>
-        <category>未分类</category>
-      </categories>
-      <tags>
-        <tag>情感分析</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JDK源码解读</title>
-    <url>/2020/07/26/JDK%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</url>
-    <content><![CDATA[<h1 id="深入理解JVM虚拟机-JDK源码解读"><a href="#深入理解JVM虚拟机-JDK源码解读" class="headerlink" title="深入理解JVM虚拟机 - JDK源码解读"></a>深入理解JVM虚拟机 - JDK源码解读</h1><p>《深入理解JVM虚拟机》看过了好几遍了，对于编译一个JDK源码有很强的冲动。这里主要实战使用<strong>阿里云</strong>进行编译实战</p>
-<ul>
-<li>为什么使用阿里云？<ul>
-<li>个人电脑奋斗四年了，装虚拟机莫名其妙的死机</li>
-<li>阿里云带宽1M，只能用来干些LInux学习的工作</li>
-</ul>
-</li>
-<li>参考博客：<a href="https://juejin.im/post/5c6b9a476fb9a049c30bcebd" target="_blank" rel="noopener">https://juejin.im/post/5c6b9a476fb9a049c30bcebd</a></li>
-</ul>
-<a id="more"></a>
-
-<h2 id="JDK源码下载-openJDK7u75"><a href="#JDK源码下载-openJDK7u75" class="headerlink" title="JDK源码下载 - openJDK7u75"></a>JDK源码下载 - openJDK7u75</h2><ul>
-<li>地址：<a href="https://download.java.net/openjdk/jdk7u75/ri/openjdk-7u75-src-b13-18_dec_2014.zip" target="_blank" rel="noopener">https://download.java.net/openjdk/jdk7u75/ri/openjdk-7u75-src-b13-18_dec_2014.zip</a></li>
-</ul>
-<h2 id="Bootstrap-JDK"><a href="#Bootstrap-JDK" class="headerlink" title="Bootstrap JDK"></a>Bootstrap JDK</h2><ul>
-<li><p>编译OpenJDK7需要 Bootstrap JDK U14 之后的版本</p>
-</li>
-<li><p>地址：</p>
-<p><a href="https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html" target="_blank" rel="noopener">https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html</a></p>
-<ul>
-<li>下载 <code>linux.tag.gz包</code></li>
-</ul>
-</li>
-<li><p>有条件尽量科学上网下载比较慢</p>
-</li>
-</ul>
-<h2 id="Apach-Ant-1-7-1版本"><a href="#Apach-Ant-1-7-1版本" class="headerlink" title="Apach Ant 1.7.1版本"></a>Apach Ant 1.7.1版本</h2><ul>
-<li>地址：<a href="https://ant.apache.org/bindownload.cgi" target="_blank" rel="noopener">https://ant.apache.org/bindownload.cgi</a></li>
-<li>还需要一个apach ant 1.7.1 版本</li>
-<li>这里选择了: 1.9.14版本</li>
-</ul>
-<h2 id="前置依赖："><a href="#前置依赖：" class="headerlink" title="前置依赖："></a>前置依赖：</h2><ul>
-<li>OpenJDK要用到很多的gcc，java，c的库函数，需要进行前置准备</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum -y install build-essential gawk m4 openjdk6-jdk libasound2-print-dev binutils libmotif3 libmotif-dev ant</span><br><span class="line">yum install libX* #有可能会缺失的库，先提前安装</span><br></pre></td></tr></table></figure>
-
-<h2 id="首次编译"><a href="#首次编译" class="headerlink" title="首次编译"></a>首次编译</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 进入到openjdk的目录</span><br><span class="line">cd openjdk所在目录</span><br><span class="line"># 解压</span><br><span class="line">unzip openjdk</span><br><span class="line"># 编译</span><br><span class="line">cd open jdk</span><br><span class="line"># 第一次编译，输出到对应文件</span><br><span class="line">make sanity &gt; error.txt</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>不出所料，编译失败了，我们可以根据错误日志来进行调整</li>
-<li>根据错误，整理一下错误点</li>
-<li>下面参考书籍的内容进行设置</li>
-</ul>
-<h2 id="设置环境变量"><a href="#设置环境变量" class="headerlink" title="设置环境变量"></a>设置环境变量</h2><ul>
-<li><p>gcc 4.3 版本以上</p>
-</li>
-<li><p>必须设置两个</p>
-<ul>
-<li>LANG：编译语言</li>
-<li>ALT_BOOTDIR：Bootstrap JDK 1.7 的版本</li>
-</ul>
-</li>
-<li><p>设置环境变量</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;C</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk1.7.0_80</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>去掉原本的JDK环境变量</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h2 id="OpenJDK-错误处理"><a href="#OpenJDK-错误处理" class="headerlink" title="OpenJDK 错误处理"></a>OpenJDK 错误处理</h2><h3 id="错误1：-缺少打印-Cups-依赖"><a href="#错误1：-缺少打印-Cups-依赖" class="headerlink" title="错误1： 缺少打印 Cups 依赖"></a>错误1： 缺少打印 Cups 依赖</h3><p>错误信息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: You do not have access to valid Cups header files. </span><br><span class="line">       Please check your access to </span><br><span class="line">           &#x2F;usr&#x2F;include&#x2F;cups&#x2F;cups.h </span><br><span class="line">       and&#x2F;or check your value of ALT_CUPS_HEADERS_PATH, </span><br><span class="line">       CUPS is frequently pre-installed on many systems, </span><br><span class="line">       or may be downloaded from http:&#x2F;&#x2F;www.cups.org</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<p>缺少<code>cups</code>打印框架，解决：</p>
-<ol>
-<li>可以根据如下命令查找</li>
-</ol>
-<p><code>yum search cups</code> 查找对应依赖</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: cups &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">apcupsd-cgi.x86_64 : Web interface for apcupsd</span><br><span class="line">apcupsd-gui.x86_64 : GUI interface for apcupsd</span><br><span class="line">bluez-cups.x86_64 : CUPS printer backend for Bluetooth printers</span><br><span class="line">cups.x86_64 : CUPS printing system</span><br><span class="line">cups-bjnp.x86_64 : CUPS backend for the Canon BJNP network printers</span><br><span class="line">cups-client.x86_64 : CUPS printing system - client programs</span><br><span class="line">cups-devel.i686 : CUPS printing system - development environment</span><br><span class="line">cups-devel.x86_64 : CUPS printing system - development environment</span><br><span class="line">cups-filesystem.noarch : CUPS printing system - directory layout</span><br><span class="line">cups-filters.x86_64 : OpenPrinting CUPS filters and backends</span><br><span class="line">cups-filters-devel.i686 : OpenPrinting CUPS filters and backends - development environment</span><br><span class="line">cups-filters-devel.x86_64 : OpenPrinting CUPS filters and backends - development environment</span><br><span class="line">cups-filters-libs.i686 : OpenPrinting CUPS filters and backends - cupsfilters and fontembed libraries</span><br><span class="line">cups-filters-libs.x86_64 : OpenPrinting CUPS filters and backends - cupsfilters and fontembed libraries</span><br><span class="line">cups-ipptool.x86_64 : CUPS printing system - tool for performing IPP requests</span><br><span class="line">cups-libs.x86_64 : CUPS printing system - libraries</span><br><span class="line">cups-libs.i686 : CUPS printing system - libraries</span><br><span class="line">cups-lpd.x86_64 : CUPS printing system - lpd emulation</span><br><span class="line">cups-pdf.x86_64 : Extension for creating pdf-Files with CUPS</span><br><span class="line">cups-x2go.noarch : CUPS backend for printing from X2Go</span><br><span class="line">dymo-cups-drivers.x86_64 : DYMO LabelWriter Drivers for CUPS</span><br><span class="line">ghostscript-cups.x86_64 : CUPS filter for interpreting PostScript and PDF</span><br><span class="line">gutenprint-cups.x86_64 : CUPS drivers for Canon, Epson, HP and compatible printers</span><br><span class="line">perl-Net-CUPS.x86_64 : Perl bindings to the CUPS C API Interface</span><br><span class="line">python-cups.x86_64 : Python bindings for CUPS</span><br><span class="line">python-cups-doc.x86_64 : Documentation for python-cups</span><br><span class="line">python3-cups-doc.x86_64 : Documentation for python-cups</span><br><span class="line">python34-cups.x86_64 : Python 3 bindings for CUPS API, known as pycups</span><br><span class="line">python36-cups.x86_64 : Python 3 bindings for CUPS API, known as pycups</span><br><span class="line">apcupsd.x86_64 : APC UPS Power Control Daemon</span><br><span class="line">cups-pk-helper.x86_64 : A helper that makes system-config-printer use PolicyKit</span><br><span class="line">foomatic-filters.x86_64 : CUPS print filters for the foomatic package</span><br><span class="line">samba-krb5-printing.x86_64 : Samba CUPS backend for printing with Kerberos</span><br><span class="line"></span><br><span class="line">  Name and summary matches only, use &quot;search all&quot; for everything.</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>安装Cups</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install cups-devel.x86_64</span><br></pre></td></tr></table></figure>
-
-<h3 id="错误2：-缺少-Freetype-依赖"><a href="#错误2：-缺少-Freetype-依赖" class="headerlink" title="错误2： 缺少 Freetype 依赖"></a>错误2： 缺少 Freetype 依赖</h3><p>报错情况：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: FreeType version  2.3.0  or higher is required. </span><br><span class="line"> make[2]: 进入目录“&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk&#x2F;make&#x2F;tools&#x2F;freetypecheck”</span><br><span class="line">&#x2F;bin&#x2F;mkdir -p &#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64&#x2F;btbins</span><br><span class="line">rm -f &#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64&#x2F;btbins&#x2F;freetype_versioncheck</span><br><span class="line">make[2]: 离开目录“&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk&#x2F;make&#x2F;tools&#x2F;freetypecheck”</span><br><span class="line">Failed to build freetypecheck.</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<ol>
-<li><code>yum search freetype</code></li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: freetype &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">freetype-demos.x86_64 : A collection of FreeType demos</span><br><span class="line">freetype-devel.i686 : FreeType development libraries and header files</span><br><span class="line">freetype-devel.x86_64 : FreeType development libraries and header files</span><br><span class="line">mingw32-freetype-static.noarch : Static version of the MinGW Windows Freetype library</span><br><span class="line">mingw64-freetype-static.noarch : Static version of the MinGW Windows Freetype library</span><br><span class="line">python-freetype.noarch : Freetype python bindings</span><br><span class="line">freetype.x86_64 : A free and portable font rendering engine</span><br><span class="line">freetype.i686 : A free and portable font rendering engine</span><br><span class="line">ftgl.x86_64 : OpenGL frontend to Freetype 2</span><br><span class="line">mingw32-freetype.noarch : Free and portable font rendering engine</span><br><span class="line">mingw64-freetype.noarch : Free and portable font rendering engine</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>执行命令<code>yum install freetype-devel.x86_64 -y</code></li>
-</ol>
-<h3 id="错误3：缺少声卡Alsa依赖，需要安装"><a href="#错误3：缺少声卡Alsa依赖，需要安装" class="headerlink" title="错误3：缺少声卡Alsa依赖，需要安装"></a>错误3：缺少声卡Alsa依赖，需要安装</h3><p>错误信息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: You seem to not have installed ALSA 0.9.1 or higher. </span><br><span class="line">       Please install ALSA (drivers and lib). You can download the </span><br><span class="line">       source distribution from http:&#x2F;&#x2F;www.alsa-project.org or go to </span><br><span class="line">       http:&#x2F;&#x2F;www.freshrpms.net&#x2F;docs&#x2F;alsa&#x2F; for precompiled RPM packages.</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<ol>
-<li><code>yum search alsa</code></li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> * updates: mirrors.aliyun.com</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: alsa &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">alsa-firmware.noarch : Firmware for several ALSA-supported sound cards</span><br><span class="line">alsa-lib.x86_64 : The Advanced Linux Sound Architecture (ALSA) library</span><br><span class="line">alsa-lib.i686 : The Advanced Linux Sound Architecture (ALSA) library</span><br><span class="line">alsa-lib-devel.i686 : Development files from the ALSA library</span><br><span class="line">alsa-lib-devel.x86_64 : Development files from the ALSA library</span><br><span class="line">alsa-plugins-arcamav.i686 : Arcam AV amplifier plugin for ALSA</span><br><span class="line">alsa-plugins-arcamav.x86_64 : Arcam AV amplifier plugin for ALSA</span><br><span class="line">alsa-plugins-maemo.i686 : Maemo plugin for ALSA</span><br><span class="line">alsa-plugins-maemo.x86_64 : Maemo plugin for ALSA</span><br><span class="line">alsa-plugins-oss.i686 : Oss PCM output plugin for ALSA</span><br><span class="line">alsa-plugins-oss.x86_64 : Oss PCM output plugin for ALSA</span><br><span class="line">alsa-plugins-pulseaudio.i686 : Alsa to PulseAudio backend</span><br><span class="line">alsa-plugins-pulseaudio.x86_64 : Alsa to PulseAudio backend</span><br><span class="line">alsa-plugins-samplerate.i686 : External rate converter plugin for ALSA</span><br><span class="line">alsa-plugins-samplerate.x86_64 : External rate converter plugin for ALSA</span><br><span class="line">alsa-plugins-upmix.i686 : Upmixer channel expander plugin for ALSA</span><br><span class="line">alsa-plugins-upmix.x86_64 : Upmixer channel expander plugin for ALSA</span><br><span class="line">alsa-plugins-usbstream.i686 : USB stream plugin for ALSA</span><br><span class="line">alsa-plugins-usbstream.x86_64 : USB stream plugin for ALSA</span><br><span class="line">alsa-plugins-vdownmix.i686 : Downmixer to stereo plugin for ALSA</span><br><span class="line">alsa-plugins-vdownmix.x86_64 : Downmixer to stereo plugin for ALSA</span><br><span class="line">alsa-tools.x86_64 : Specialist tools for ALSA</span><br><span class="line">alsa-tools-firmware.x86_64 : ALSA tools for uploading firmware to some soundcards</span><br><span class="line">alsa-utils.x86_64 : Advanced Linux Sound Architecture (ALSA) utilities</span><br><span class="line">alsa-plugins-speex.i686 : Rate Converter Plugin Using Speex Resampler</span><br><span class="line">alsa-plugins-speex.x86_64 : Rate Converter Plugin Using Speex Resampler</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>安装依赖：<code>yum -y install alsa-lib* alsa-util*</code></li>
-</ol>
-<h3 id="错误4：缺少Ant依赖"><a href="#错误4：缺少Ant依赖" class="headerlink" title="错误4：缺少Ant依赖"></a>错误4：缺少Ant依赖</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: The version of ant being used is older than </span><br><span class="line">       the required version of &#39;1.7.1&#39;. </span><br><span class="line">       The version of ant found was &#39;&#39;.</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install ant -y</span><br></pre></td></tr></table></figure>
-
-<h3 id="错误5：缺少C语言环境变量"><a href="#错误5：缺少C语言环境变量" class="headerlink" title="错误5：缺少C语言环境变量"></a>错误5：缺少C语言环境变量</h3><p>错误信息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WARNING: LANG has been set to zh_CN.UTF-8, this can cause build failures. </span><br><span class="line">         Try setting LANG to &#39;C&#39;.</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<ol>
-<li><code>export LANG=C</code>设置C语言环境</li>
-</ol>
-<h2 id="第二次编译"><a href="#第二次编译" class="headerlink" title="第二次编译"></a>第二次编译</h2><p>需要再次输入命令<code>make santify</code> ，知道看到如下信息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Sanity check passed.</span><br></pre></td></tr></table></figure>
-
-<h2 id="编写启动脚本"><a href="#编写启动脚本" class="headerlink" title="编写启动脚本"></a>编写启动脚本</h2><ul>
-<li>经过上面的测试，再根据JVM虚拟机的内容，编写了下面一个通用的命令脚本</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line"># 语言选项，必须设置，否者编译之后会出现一个HashTable槽的错误的NPE的错</span><br><span class="line">export LANG&#x3D;C</span><br><span class="line"># Bootstrap JDK 的安装路径</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk1.7.0_80</span><br><span class="line"># 允许自动下载数据</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line">#并行编译的线程数，设置为和CPU内核数量一致即可</span><br><span class="line"></span><br><span class="line">export HOTSPOT_BUILD_JOBS&#x3D;6</span><br><span class="line"></span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;6</span><br><span class="line"></span><br><span class="line">#比较本次build出来的映像与先前版本的差异。这对我们来说没有意义，</span><br><span class="line"></span><br><span class="line">#必须设置为false，否则sanity检查会报缺少先前版本JDK的映像的错误提示。</span><br><span class="line"></span><br><span class="line">#如果已经设置dev或者DEV_ONLY&#x3D;true，这个不显式设置也行</span><br><span class="line"></span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line"></span><br><span class="line">#使用预编译头文件，不加这个编译会更慢一些</span><br><span class="line"></span><br><span class="line">export USE_PRECOMPILED_HEADER&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的内容</span><br><span class="line"></span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true</span><br><span class="line"></span><br><span class="line">#export BUILD_JAXP&#x3D;false</span><br><span class="line"></span><br><span class="line">#export BUILD_JAXWS&#x3D;false</span><br><span class="line"></span><br><span class="line">#export BUILD_CORBA&#x3D;false</span><br><span class="line"></span><br><span class="line">export BUILD_HOTSPOT&#x3D;true</span><br><span class="line"></span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的版本</span><br><span class="line"></span><br><span class="line">#export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line"></span><br><span class="line">#export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line"></span><br><span class="line">#export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">#把它设置为false可以避开javaws和浏览器Java插件之类的部分的build</span><br><span class="line"></span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line"></span><br><span class="line">#把它设置为false就不会build出安装包。因为安装包里有些奇怪的依赖，</span><br><span class="line"></span><br><span class="line">#但即便不build出它也已经能得到完整的JDK映像，所以还是别build它好了</span><br><span class="line"></span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">#编译结果所存放的路径</span><br><span class="line"></span><br><span class="line">export ALT_OUTPUTDIR&#x3D;&#x2F;Users&#x2F;IcyFenix&#x2F;Develop&#x2F;JVM&#x2F;jdkBuild&#x2F;openjdk_7u4&#x2F;build</span><br><span class="line"></span><br><span class="line">#这两个环境变量必须去掉，不然会有很诡异的事情发生（我没有具体查过这些&quot;诡异的</span><br><span class="line">#事情&quot;，Makefile脚本检查到有这2个变量就会提示警告）</span><br><span class="line"></span><br><span class="line">unset JAVA_HOME</span><br><span class="line"></span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2＞＆1|tee $ALT_OUTPUTDIR&#x2F;build.log</span><br></pre></td></tr></table></figure>
-
-<h3 id="启动脚本参考："><a href="#启动脚本参考：" class="headerlink" title="启动脚本参考："></a>启动脚本参考：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#语言选项，这个必须设置，否则编译好后会出现一个HashTable的NPE错</span><br><span class="line">export LANG&#x3D;C</span><br><span class="line"></span><br><span class="line">#Bootstrap JDK的安装路径。必须设置。 </span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;java&#x2F;jdk1.7.0_04</span><br><span class="line"></span><br><span class="line">#允许自动下载依赖</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line"></span><br><span class="line">#并行编译的线程数，设置为和CPU内核数量一致即可</span><br><span class="line">export HOTSPOT_BUILD_JOBS&#x3D;4</span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;4</span><br><span class="line"></span><br><span class="line">#比较本次build出来的映像与先前版本的差异。这个对我们来说没有意义，必须设置为false，否则sanity检查会报缺少先前版本JDK的映像。如果有设置dev或者DEV_ONLY&#x3D;true的话这个不显式设置也行。 </span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line"></span><br><span class="line">#使用预编译头文件，不加这个编译会更慢一些</span><br><span class="line">export USE_PRECOMPILED_HEADER&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的内容</span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true </span><br><span class="line">#export BUILD_JAXP&#x3D;false</span><br><span class="line">#export BUILD_JAXWS&#x3D;false </span><br><span class="line">#export BUILD_CORBA&#x3D;false</span><br><span class="line">export BUILD_HOTSPOT&#x3D;true </span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的版本</span><br><span class="line">#export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line">#export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line">#export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">#把它设置为false可以避开javaws和浏览器Java插件之类的部分的build。 </span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line"></span><br><span class="line">#把它设置为false就不会build出安装包。因为安装包里有些奇怪的依赖，但即便不build出它也已经能得到完整的JDK映像，所以还是别build它好了。</span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">#这两个环境变量必须去掉，不然会有很诡异的事情发生（我没有具体查过这些“”诡异的事情”，Makefile脚本检查到有这2个变量就会提示警告“）</span><br><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2&gt;&amp;1 | tee $ALT_OUTPUTDIR&#x2F;build.log</span><br></pre></td></tr></table></figure>
-
-<h3 id="个人版本"><a href="#个人版本" class="headerlink" title="个人版本:"></a>个人版本:</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;C</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;jdk1.7</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line">export HOTSPOT_BUILD_JOBDS&#x3D;1</span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;1</span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line">export USE_PRECOMPLIED_HEADER&#x3D;true</span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true</span><br><span class="line">export BUILD_JAXP&#x3D;false</span><br><span class="line">export BUILD_JAXWS&#x3D;false</span><br><span class="line">export BUILD_CORBA&#x3D;false</span><br><span class="line">export BUILD_HOTSPOT&#x3D;true</span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line">export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line">export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2&gt;&amp;1 | tee &#x2F;usr&#x2F;local&#x2F;software&#x2F;build.log</span><br></pre></td></tr></table></figure>
-
-<h2 id="开始编译"><a href="#开始编译" class="headerlink" title="开始编译"></a>开始编译</h2><ul>
-<li><p>使用上一节写好的脚本</p>
-</li>
-<li><p>运行下面的命令</p>
-<ul>
-<li><code>chmod +x run.sh</code></li>
-<li><code>./run.sh</code></li>
-</ul>
-</li>
-<li><p>经过多次尝试，现在出现如下报错：</p>
-<p><code>g++: internal compiler error: Killed (program cc1plus)</code></p>
-</li>
-<li><p>处理方式</p>
-<ul>
-<li>内存不足，需要扩充内存</li>
-</ul>
-</li>
-</ul>
-<h2 id="问题收集："><a href="#问题收集：" class="headerlink" title="问题收集："></a>问题收集：</h2><h3 id="1-编译过程突然报错，报错信息如下"><a href="#1-编译过程突然报错，报错信息如下" class="headerlink" title="1. 编译过程突然报错，报错信息如下"></a>1. 编译过程突然报错，报错信息如下</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">g++: internal compiler error: Killed (program cc1plus)</span><br><span class="line">Please submit a full bug report,</span><br><span class="line">with preprocessed source if appropriate.</span><br><span class="line">See &lt;http:&#x2F;&#x2F;bugzilla.redhat.com&#x2F;bugzilla&gt; for instructions.</span><br><span class="line">make[7]: *** [ad_x86_64.o] Error 4</span><br><span class="line">make[7]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#x2F;linux_amd64_compiler2&#x2F;jvmg&#39;</span><br><span class="line">make[6]: *** [the_vm] Error 2</span><br><span class="line">make[6]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#x2F;linux_amd64_compiler2&#x2F;jvmg&#39;</span><br><span class="line">make[5]: *** [jvmg] Error 2</span><br><span class="line">make[5]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#39;</span><br><span class="line">make[4]: *** [generic_build2] Error 2</span><br><span class="line">make[4]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;hotspot&#x2F;make&#39;</span><br><span class="line">make[3]: *** [jvmg] Error 2</span><br><span class="line">make[3]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;hotspot&#x2F;make&#39;</span><br><span class="line">make[2]: *** [hotspot-build] Error 2</span><br><span class="line">make[2]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#39;</span><br><span class="line">make[1]: *** [generic_debug_build] Error 2</span><br><span class="line">make[1]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#39;</span><br><span class="line">make: *** [build_debug_image] Error 2</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>分析原因：</p>
-<ol>
-<li>可能是阿里云买的最低配，导致编译的时候内存爆了</li>
-<li>Bootstrap JDK版本和书本的不一致，尝试按照书本一模一样的方式处理</li>
-<li>脚本建议手敲，复制黏贴容易错误</li>
-</ol>
-</blockquote>
-<h2 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h2><p><a href="https://blog.csdn.net/zitong_ccnu/article/details/50149757" target="_blank" rel="noopener">https://blog.csdn.net/zitong_ccnu/article/details/50149757</a> CenterOS7 编译OpenJDK7</p>
-<p><a href="https://www.bbsmax.com/A/GBJrKLa50e/" target="_blank" rel="noopener">https://www.bbsmax.com/A/GBJrKLa50e/</a> 案例2</p>
-<p><a href="https://hllvm-group.iteye.com/group/topic/35803" target="_blank" rel="noopener">https://hllvm-group.iteye.com/group/topic/35803</a> JVM的一些讨论，值得看看</p>
-<h1 id="处理问题的几个套路"><a href="#处理问题的几个套路" class="headerlink" title="处理问题的几个套路"></a>处理问题的几个套路</h1><h2 id="套路一：缺少依赖，却不知道安装的具体内容"><a href="#套路一：缺少依赖，却不知道安装的具体内容" class="headerlink" title="套路一：缺少依赖，却不知道安装的具体内容"></a>套路一：缺少依赖，却不知道安装的具体内容</h2><p>当提示缺少依赖，而你不知道要<code>yum install</code>什么时，你可以根据提示关键字搜一下<code>yum search</code>，然后在搜出的结果列表中，对有着相同前缀的依赖使用后缀通配符一键下载</p>
-]]></content>
   </entry>
 </search>
