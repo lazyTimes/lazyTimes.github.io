@@ -1,165 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>JDK源码解读</title>
-    <url>/2020/07/26/JDK%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</url>
-    <content><![CDATA[<h1 id="深入理解JVM虚拟机-JDK源码解读"><a href="#深入理解JVM虚拟机-JDK源码解读" class="headerlink" title="深入理解JVM虚拟机 - JDK源码解读"></a>深入理解JVM虚拟机 - JDK源码解读</h1><p>《深入理解JVM虚拟机》看过了好几遍了，对于编译一个JDK源码有很强的冲动。这里主要实战使用<strong>阿里云</strong>进行编译实战</p>
+    <title>Hexo 搭建思维导图以及使用</title>
+    <url>/2020/07/26/Hexo-%E6%90%AD%E5%BB%BA%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="Hexo-搭建思维导图以及使用"><a href="#Hexo-搭建思维导图以及使用" class="headerlink" title="Hexo 搭建思维导图以及使用"></a>Hexo 搭建思维导图以及使用</h1><h2 id="1-Hexo-如何搭建"><a href="#1-Hexo-如何搭建" class="headerlink" title="1. Hexo 如何搭建"></a>1. Hexo 如何搭建</h2><ul>
+<li>详细查看Hexo学习博客：</li>
+</ul>
+<h2 id="2-选择："><a href="#2-选择：" class="headerlink" title="2. 选择："></a>2. 选择：</h2><ul>
+<li>百度的kitmap<ul>
+<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
+</ul>
+</li>
+<li><h2 id="Hexo-思维导图插件"><a href="#Hexo-思维导图插件" class="headerlink" title="Hexo 思维导图插件"></a>Hexo 思维导图插件</h2></li>
+<li>为什么使用百度的kityminder<ul>
+<li>使用简单</li>
+<li>百度开发，使用国内插件</li>
+</ul>
+</li>
+<li>使用hexo思维导图插件的原因<ul>
+<li>简单好用</li>
+</ul>
+</li>
+<li>什么是Kityminder<ul>
+<li>分成两部分<ul>
+<li>kity-core</li>
+<li>kity-editor</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>如何学习kityminder<ul>
+<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
+</ul>
+</li>
+<li>如何学习hexo 思维导图插件<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/75467441" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/75467441</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="3-使用hexo-插件构建思维导图"><a href="#3-使用hexo-插件构建思维导图" class="headerlink" title="3. 使用hexo 插件构建思维导图"></a>3. 使用hexo 插件构建思维导图</h2><ul>
+<li><p>跳转到hexo的目录下面，执行如下命令</p>
 <ul>
-<li>为什么使用阿里云？<ul>
-<li>个人电脑奋斗四年了，装虚拟机莫名其妙的死机</li>
-<li>阿里云带宽1M，只能用来干些LInux学习的工作</li>
+<li><code>npm install hexo-simple-mindmap</code></li>
 </ul>
 </li>
-<li>参考博客：<a href="https://juejin.im/post/5c6b9a476fb9a049c30bcebd" target="_blank" rel="noopener">https://juejin.im/post/5c6b9a476fb9a049c30bcebd</a></li>
-</ul>
-<a id="more"></a>
-
-<h2 id="JDK源码下载-openJDK7u75"><a href="#JDK源码下载-openJDK7u75" class="headerlink" title="JDK源码下载 - openJDK7u75"></a>JDK源码下载 - openJDK7u75</h2><ul>
-<li>地址：<a href="https://download.java.net/openjdk/jdk7u75/ri/openjdk-7u75-src-b13-18_dec_2014.zip" target="_blank" rel="noopener">https://download.java.net/openjdk/jdk7u75/ri/openjdk-7u75-src-b13-18_dec_2014.zip</a></li>
-</ul>
-<h2 id="Bootstrap-JDK"><a href="#Bootstrap-JDK" class="headerlink" title="Bootstrap JDK"></a>Bootstrap JDK</h2><ul>
-<li><p>编译OpenJDK7需要 Bootstrap JDK U14 之后的版本</p>
-</li>
-<li><p>地址：</p>
-<p><a href="https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html" target="_blank" rel="noopener">https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html</a></p>
-<ul>
-<li>下载 <code>linux.tag.gz包</code></li>
-</ul>
-</li>
-<li><p>有条件尽量科学上网下载比较慢</p>
-</li>
-</ul>
-<h2 id="Apach-Ant-1-7-1版本"><a href="#Apach-Ant-1-7-1版本" class="headerlink" title="Apach Ant 1.7.1版本"></a>Apach Ant 1.7.1版本</h2><ul>
-<li>地址：<a href="https://ant.apache.org/bindownload.cgi" target="_blank" rel="noopener">https://ant.apache.org/bindownload.cgi</a></li>
-<li>还需要一个apach ant 1.7.1 版本</li>
-<li>这里选择了: 1.9.14版本</li>
-</ul>
-<h2 id="前置依赖："><a href="#前置依赖：" class="headerlink" title="前置依赖："></a>前置依赖：</h2><ul>
-<li>OpenJDK要用到很多的gcc，java，c的库函数，需要进行前置准备</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum -y install build-essential gawk m4 openjdk6-jdk libasound2-print-dev binutils libmotif3 libmotif-dev ant</span><br><span class="line">yum install libX* #有可能会缺失的库，先提前安装</span><br></pre></td></tr></table></figure>
-
-<h2 id="首次编译"><a href="#首次编译" class="headerlink" title="首次编译"></a>首次编译</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 进入到openjdk的目录</span><br><span class="line">cd openjdk所在目录</span><br><span class="line"># 解压</span><br><span class="line">unzip openjdk</span><br><span class="line"># 编译</span><br><span class="line">cd open jdk</span><br><span class="line"># 第一次编译，输出到对应文件</span><br><span class="line">make sanity &gt; error.txt</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>不出所料，编译失败了，我们可以根据错误日志来进行调整</li>
-<li>根据错误，整理一下错误点</li>
-<li>下面参考书籍的内容进行设置</li>
-</ul>
-<h2 id="设置环境变量"><a href="#设置环境变量" class="headerlink" title="设置环境变量"></a>设置环境变量</h2><ul>
-<li><p>gcc 4.3 版本以上</p>
-</li>
-<li><p>必须设置两个</p>
-<ul>
-<li>LANG：编译语言</li>
-<li>ALT_BOOTDIR：Bootstrap JDK 1.7 的版本</li>
-</ul>
-</li>
-<li><p>设置环境变量</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;C</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk1.7.0_80</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>去掉原本的JDK环境变量</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br></pre></td></tr></table></figure>
+<li><p>在博客内部加入如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;% pullquote mindmap mindmap-md %&#125;</span><br><span class="line">[Hexo 的思维导图插件](https:&#x2F;&#x2F;hunterx.xyz&#x2F;hexo-simple-mindmap-plugin-intro.html)</span><br><span class="line">- 前言</span><br><span class="line">- 使用方法</span><br><span class="line">&#123;% endpullquote %&#125;</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
-<h2 id="OpenJDK-错误处理"><a href="#OpenJDK-错误处理" class="headerlink" title="OpenJDK 错误处理"></a>OpenJDK 错误处理</h2><h3 id="错误1：-缺少打印-Cups-依赖"><a href="#错误1：-缺少打印-Cups-依赖" class="headerlink" title="错误1： 缺少打印 Cups 依赖"></a>错误1： 缺少打印 Cups 依赖</h3><p>错误信息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: You do not have access to valid Cups header files. </span><br><span class="line">       Please check your access to </span><br><span class="line">           &#x2F;usr&#x2F;include&#x2F;cups&#x2F;cups.h </span><br><span class="line">       and&#x2F;or check your value of ALT_CUPS_HEADERS_PATH, </span><br><span class="line">       CUPS is frequently pre-installed on many systems, </span><br><span class="line">       or may be downloaded from http:&#x2F;&#x2F;www.cups.org</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<p>缺少<code>cups</code>打印框架，解决：</p>
-<ol>
-<li>可以根据如下命令查找</li>
-</ol>
-<p><code>yum search cups</code> 查找对应依赖</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: cups &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">apcupsd-cgi.x86_64 : Web interface for apcupsd</span><br><span class="line">apcupsd-gui.x86_64 : GUI interface for apcupsd</span><br><span class="line">bluez-cups.x86_64 : CUPS printer backend for Bluetooth printers</span><br><span class="line">cups.x86_64 : CUPS printing system</span><br><span class="line">cups-bjnp.x86_64 : CUPS backend for the Canon BJNP network printers</span><br><span class="line">cups-client.x86_64 : CUPS printing system - client programs</span><br><span class="line">cups-devel.i686 : CUPS printing system - development environment</span><br><span class="line">cups-devel.x86_64 : CUPS printing system - development environment</span><br><span class="line">cups-filesystem.noarch : CUPS printing system - directory layout</span><br><span class="line">cups-filters.x86_64 : OpenPrinting CUPS filters and backends</span><br><span class="line">cups-filters-devel.i686 : OpenPrinting CUPS filters and backends - development environment</span><br><span class="line">cups-filters-devel.x86_64 : OpenPrinting CUPS filters and backends - development environment</span><br><span class="line">cups-filters-libs.i686 : OpenPrinting CUPS filters and backends - cupsfilters and fontembed libraries</span><br><span class="line">cups-filters-libs.x86_64 : OpenPrinting CUPS filters and backends - cupsfilters and fontembed libraries</span><br><span class="line">cups-ipptool.x86_64 : CUPS printing system - tool for performing IPP requests</span><br><span class="line">cups-libs.x86_64 : CUPS printing system - libraries</span><br><span class="line">cups-libs.i686 : CUPS printing system - libraries</span><br><span class="line">cups-lpd.x86_64 : CUPS printing system - lpd emulation</span><br><span class="line">cups-pdf.x86_64 : Extension for creating pdf-Files with CUPS</span><br><span class="line">cups-x2go.noarch : CUPS backend for printing from X2Go</span><br><span class="line">dymo-cups-drivers.x86_64 : DYMO LabelWriter Drivers for CUPS</span><br><span class="line">ghostscript-cups.x86_64 : CUPS filter for interpreting PostScript and PDF</span><br><span class="line">gutenprint-cups.x86_64 : CUPS drivers for Canon, Epson, HP and compatible printers</span><br><span class="line">perl-Net-CUPS.x86_64 : Perl bindings to the CUPS C API Interface</span><br><span class="line">python-cups.x86_64 : Python bindings for CUPS</span><br><span class="line">python-cups-doc.x86_64 : Documentation for python-cups</span><br><span class="line">python3-cups-doc.x86_64 : Documentation for python-cups</span><br><span class="line">python34-cups.x86_64 : Python 3 bindings for CUPS API, known as pycups</span><br><span class="line">python36-cups.x86_64 : Python 3 bindings for CUPS API, known as pycups</span><br><span class="line">apcupsd.x86_64 : APC UPS Power Control Daemon</span><br><span class="line">cups-pk-helper.x86_64 : A helper that makes system-config-printer use PolicyKit</span><br><span class="line">foomatic-filters.x86_64 : CUPS print filters for the foomatic package</span><br><span class="line">samba-krb5-printing.x86_64 : Samba CUPS backend for printing with Kerberos</span><br><span class="line"></span><br><span class="line">  Name and summary matches only, use &quot;search all&quot; for everything.</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>安装Cups</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install cups-devel.x86_64</span><br></pre></td></tr></table></figure>
-
-<h3 id="错误2：-缺少-Freetype-依赖"><a href="#错误2：-缺少-Freetype-依赖" class="headerlink" title="错误2： 缺少 Freetype 依赖"></a>错误2： 缺少 Freetype 依赖</h3><p>报错情况：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: FreeType version  2.3.0  or higher is required. </span><br><span class="line"> make[2]: 进入目录“&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk&#x2F;make&#x2F;tools&#x2F;freetypecheck”</span><br><span class="line">&#x2F;bin&#x2F;mkdir -p &#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64&#x2F;btbins</span><br><span class="line">rm -f &#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64&#x2F;btbins&#x2F;freetype_versioncheck</span><br><span class="line">make[2]: 离开目录“&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk&#x2F;make&#x2F;tools&#x2F;freetypecheck”</span><br><span class="line">Failed to build freetypecheck.</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<ol>
-<li><code>yum search freetype</code></li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: freetype &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">freetype-demos.x86_64 : A collection of FreeType demos</span><br><span class="line">freetype-devel.i686 : FreeType development libraries and header files</span><br><span class="line">freetype-devel.x86_64 : FreeType development libraries and header files</span><br><span class="line">mingw32-freetype-static.noarch : Static version of the MinGW Windows Freetype library</span><br><span class="line">mingw64-freetype-static.noarch : Static version of the MinGW Windows Freetype library</span><br><span class="line">python-freetype.noarch : Freetype python bindings</span><br><span class="line">freetype.x86_64 : A free and portable font rendering engine</span><br><span class="line">freetype.i686 : A free and portable font rendering engine</span><br><span class="line">ftgl.x86_64 : OpenGL frontend to Freetype 2</span><br><span class="line">mingw32-freetype.noarch : Free and portable font rendering engine</span><br><span class="line">mingw64-freetype.noarch : Free and portable font rendering engine</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>执行命令<code>yum install freetype-devel.x86_64 -y</code></li>
-</ol>
-<h3 id="错误3：缺少声卡Alsa依赖，需要安装"><a href="#错误3：缺少声卡Alsa依赖，需要安装" class="headerlink" title="错误3：缺少声卡Alsa依赖，需要安装"></a>错误3：缺少声卡Alsa依赖，需要安装</h3><p>错误信息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: You seem to not have installed ALSA 0.9.1 or higher. </span><br><span class="line">       Please install ALSA (drivers and lib). You can download the </span><br><span class="line">       source distribution from http:&#x2F;&#x2F;www.alsa-project.org or go to </span><br><span class="line">       http:&#x2F;&#x2F;www.freshrpms.net&#x2F;docs&#x2F;alsa&#x2F; for precompiled RPM packages.</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<ol>
-<li><code>yum search alsa</code></li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> * updates: mirrors.aliyun.com</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: alsa &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">alsa-firmware.noarch : Firmware for several ALSA-supported sound cards</span><br><span class="line">alsa-lib.x86_64 : The Advanced Linux Sound Architecture (ALSA) library</span><br><span class="line">alsa-lib.i686 : The Advanced Linux Sound Architecture (ALSA) library</span><br><span class="line">alsa-lib-devel.i686 : Development files from the ALSA library</span><br><span class="line">alsa-lib-devel.x86_64 : Development files from the ALSA library</span><br><span class="line">alsa-plugins-arcamav.i686 : Arcam AV amplifier plugin for ALSA</span><br><span class="line">alsa-plugins-arcamav.x86_64 : Arcam AV amplifier plugin for ALSA</span><br><span class="line">alsa-plugins-maemo.i686 : Maemo plugin for ALSA</span><br><span class="line">alsa-plugins-maemo.x86_64 : Maemo plugin for ALSA</span><br><span class="line">alsa-plugins-oss.i686 : Oss PCM output plugin for ALSA</span><br><span class="line">alsa-plugins-oss.x86_64 : Oss PCM output plugin for ALSA</span><br><span class="line">alsa-plugins-pulseaudio.i686 : Alsa to PulseAudio backend</span><br><span class="line">alsa-plugins-pulseaudio.x86_64 : Alsa to PulseAudio backend</span><br><span class="line">alsa-plugins-samplerate.i686 : External rate converter plugin for ALSA</span><br><span class="line">alsa-plugins-samplerate.x86_64 : External rate converter plugin for ALSA</span><br><span class="line">alsa-plugins-upmix.i686 : Upmixer channel expander plugin for ALSA</span><br><span class="line">alsa-plugins-upmix.x86_64 : Upmixer channel expander plugin for ALSA</span><br><span class="line">alsa-plugins-usbstream.i686 : USB stream plugin for ALSA</span><br><span class="line">alsa-plugins-usbstream.x86_64 : USB stream plugin for ALSA</span><br><span class="line">alsa-plugins-vdownmix.i686 : Downmixer to stereo plugin for ALSA</span><br><span class="line">alsa-plugins-vdownmix.x86_64 : Downmixer to stereo plugin for ALSA</span><br><span class="line">alsa-tools.x86_64 : Specialist tools for ALSA</span><br><span class="line">alsa-tools-firmware.x86_64 : ALSA tools for uploading firmware to some soundcards</span><br><span class="line">alsa-utils.x86_64 : Advanced Linux Sound Architecture (ALSA) utilities</span><br><span class="line">alsa-plugins-speex.i686 : Rate Converter Plugin Using Speex Resampler</span><br><span class="line">alsa-plugins-speex.x86_64 : Rate Converter Plugin Using Speex Resampler</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>安装依赖：<code>yum -y install alsa-lib* alsa-util*</code></li>
-</ol>
-<h3 id="错误4：缺少Ant依赖"><a href="#错误4：缺少Ant依赖" class="headerlink" title="错误4：缺少Ant依赖"></a>错误4：缺少Ant依赖</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: The version of ant being used is older than </span><br><span class="line">       the required version of &#39;1.7.1&#39;. </span><br><span class="line">       The version of ant found was &#39;&#39;.</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install ant -y</span><br></pre></td></tr></table></figure>
-
-<h3 id="错误5：缺少C语言环境变量"><a href="#错误5：缺少C语言环境变量" class="headerlink" title="错误5：缺少C语言环境变量"></a>错误5：缺少C语言环境变量</h3><p>错误信息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WARNING: LANG has been set to zh_CN.UTF-8, this can cause build failures. </span><br><span class="line">         Try setting LANG to &#39;C&#39;.</span><br></pre></td></tr></table></figure>
-
-<p>处理方式：</p>
-<ol>
-<li><code>export LANG=C</code>设置C语言环境</li>
-</ol>
-<h2 id="第二次编译"><a href="#第二次编译" class="headerlink" title="第二次编译"></a>第二次编译</h2><p>需要再次输入命令<code>make santify</code> ，知道看到如下信息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Sanity check passed.</span><br></pre></td></tr></table></figure>
-
-<h2 id="编写启动脚本"><a href="#编写启动脚本" class="headerlink" title="编写启动脚本"></a>编写启动脚本</h2><ul>
-<li>经过上面的测试，再根据JVM虚拟机的内容，编写了下面一个通用的命令脚本</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line"># 语言选项，必须设置，否者编译之后会出现一个HashTable槽的错误的NPE的错</span><br><span class="line">export LANG&#x3D;C</span><br><span class="line"># Bootstrap JDK 的安装路径</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk1.7.0_80</span><br><span class="line"># 允许自动下载数据</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line">#并行编译的线程数，设置为和CPU内核数量一致即可</span><br><span class="line"></span><br><span class="line">export HOTSPOT_BUILD_JOBS&#x3D;6</span><br><span class="line"></span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;6</span><br><span class="line"></span><br><span class="line">#比较本次build出来的映像与先前版本的差异。这对我们来说没有意义，</span><br><span class="line"></span><br><span class="line">#必须设置为false，否则sanity检查会报缺少先前版本JDK的映像的错误提示。</span><br><span class="line"></span><br><span class="line">#如果已经设置dev或者DEV_ONLY&#x3D;true，这个不显式设置也行</span><br><span class="line"></span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line"></span><br><span class="line">#使用预编译头文件，不加这个编译会更慢一些</span><br><span class="line"></span><br><span class="line">export USE_PRECOMPILED_HEADER&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的内容</span><br><span class="line"></span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true</span><br><span class="line"></span><br><span class="line">#export BUILD_JAXP&#x3D;false</span><br><span class="line"></span><br><span class="line">#export BUILD_JAXWS&#x3D;false</span><br><span class="line"></span><br><span class="line">#export BUILD_CORBA&#x3D;false</span><br><span class="line"></span><br><span class="line">export BUILD_HOTSPOT&#x3D;true</span><br><span class="line"></span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的版本</span><br><span class="line"></span><br><span class="line">#export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line"></span><br><span class="line">#export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line"></span><br><span class="line">#export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">#把它设置为false可以避开javaws和浏览器Java插件之类的部分的build</span><br><span class="line"></span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line"></span><br><span class="line">#把它设置为false就不会build出安装包。因为安装包里有些奇怪的依赖，</span><br><span class="line"></span><br><span class="line">#但即便不build出它也已经能得到完整的JDK映像，所以还是别build它好了</span><br><span class="line"></span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">#编译结果所存放的路径</span><br><span class="line"></span><br><span class="line">export ALT_OUTPUTDIR&#x3D;&#x2F;Users&#x2F;IcyFenix&#x2F;Develop&#x2F;JVM&#x2F;jdkBuild&#x2F;openjdk_7u4&#x2F;build</span><br><span class="line"></span><br><span class="line">#这两个环境变量必须去掉，不然会有很诡异的事情发生（我没有具体查过这些&quot;诡异的</span><br><span class="line">#事情&quot;，Makefile脚本检查到有这2个变量就会提示警告）</span><br><span class="line"></span><br><span class="line">unset JAVA_HOME</span><br><span class="line"></span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2＞＆1|tee $ALT_OUTPUTDIR&#x2F;build.log</span><br></pre></td></tr></table></figure>
-
-<h3 id="启动脚本参考："><a href="#启动脚本参考：" class="headerlink" title="启动脚本参考："></a>启动脚本参考：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#语言选项，这个必须设置，否则编译好后会出现一个HashTable的NPE错</span><br><span class="line">export LANG&#x3D;C</span><br><span class="line"></span><br><span class="line">#Bootstrap JDK的安装路径。必须设置。 </span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;java&#x2F;jdk1.7.0_04</span><br><span class="line"></span><br><span class="line">#允许自动下载依赖</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line"></span><br><span class="line">#并行编译的线程数，设置为和CPU内核数量一致即可</span><br><span class="line">export HOTSPOT_BUILD_JOBS&#x3D;4</span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;4</span><br><span class="line"></span><br><span class="line">#比较本次build出来的映像与先前版本的差异。这个对我们来说没有意义，必须设置为false，否则sanity检查会报缺少先前版本JDK的映像。如果有设置dev或者DEV_ONLY&#x3D;true的话这个不显式设置也行。 </span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line"></span><br><span class="line">#使用预编译头文件，不加这个编译会更慢一些</span><br><span class="line">export USE_PRECOMPILED_HEADER&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的内容</span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true </span><br><span class="line">#export BUILD_JAXP&#x3D;false</span><br><span class="line">#export BUILD_JAXWS&#x3D;false </span><br><span class="line">#export BUILD_CORBA&#x3D;false</span><br><span class="line">export BUILD_HOTSPOT&#x3D;true </span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的版本</span><br><span class="line">#export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line">#export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line">#export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">#把它设置为false可以避开javaws和浏览器Java插件之类的部分的build。 </span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line"></span><br><span class="line">#把它设置为false就不会build出安装包。因为安装包里有些奇怪的依赖，但即便不build出它也已经能得到完整的JDK映像，所以还是别build它好了。</span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">#这两个环境变量必须去掉，不然会有很诡异的事情发生（我没有具体查过这些“”诡异的事情”，Makefile脚本检查到有这2个变量就会提示警告“）</span><br><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2&gt;&amp;1 | tee $ALT_OUTPUTDIR&#x2F;build.log</span><br></pre></td></tr></table></figure>
-
-<h3 id="个人版本"><a href="#个人版本" class="headerlink" title="个人版本:"></a>个人版本:</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;C</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;jdk1.7</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line">export HOTSPOT_BUILD_JOBDS&#x3D;1</span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;1</span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line">export USE_PRECOMPLIED_HEADER&#x3D;true</span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true</span><br><span class="line">export BUILD_JAXP&#x3D;false</span><br><span class="line">export BUILD_JAXWS&#x3D;false</span><br><span class="line">export BUILD_CORBA&#x3D;false</span><br><span class="line">export BUILD_HOTSPOT&#x3D;true</span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line">export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line">export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2&gt;&amp;1 | tee &#x2F;usr&#x2F;local&#x2F;software&#x2F;build.log</span><br></pre></td></tr></table></figure>
-
-<h2 id="开始编译"><a href="#开始编译" class="headerlink" title="开始编译"></a>开始编译</h2><ul>
-<li><p>使用上一节写好的脚本</p>
-</li>
-<li><p>运行下面的命令</p>
-<ul>
-<li><code>chmod +x run.sh</code></li>
-<li><code>./run.sh</code></li>
+<h2 id="4-查看效果"><a href="#4-查看效果" class="headerlink" title="4. 查看效果"></a>4. 查看效果</h2><p>进入文章，即可渲染出对应的思维导图</p>
+<h1 id="推荐其他的方式"><a href="#推荐其他的方式" class="headerlink" title="推荐其他的方式"></a>推荐其他的方式</h1><ul>
+<li>使用xmind 话思维导图<ul>
+<li>为什么？<ul>
+<li>软件画图，可以一键生成图片</li>
+<li>样式可以调整，不需要切换</li>
+<li>简单好用，相对于Markdown编写更为直观</li>
 </ul>
 </li>
-<li><p>经过多次尝试，现在出现如下报错：</p>
-<p><code>g++: internal compiler error: Killed (program cc1plus)</code></p>
-</li>
-<li><p>处理方式</p>
-<ul>
-<li>内存不足，需要扩充内存</li>
+<li>怎么使用xmind<ul>
+<li>百度搜索xmind 进入</li>
+<li>推荐使用xmind 的升级版本</li>
 </ul>
 </li>
 </ul>
-<h2 id="问题收集："><a href="#问题收集：" class="headerlink" title="问题收集："></a>问题收集：</h2><h3 id="1-编译过程突然报错，报错信息如下"><a href="#1-编译过程突然报错，报错信息如下" class="headerlink" title="1. 编译过程突然报错，报错信息如下"></a>1. 编译过程突然报错，报错信息如下</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">g++: internal compiler error: Killed (program cc1plus)</span><br><span class="line">Please submit a full bug report,</span><br><span class="line">with preprocessed source if appropriate.</span><br><span class="line">See &lt;http:&#x2F;&#x2F;bugzilla.redhat.com&#x2F;bugzilla&gt; for instructions.</span><br><span class="line">make[7]: *** [ad_x86_64.o] Error 4</span><br><span class="line">make[7]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#x2F;linux_amd64_compiler2&#x2F;jvmg&#39;</span><br><span class="line">make[6]: *** [the_vm] Error 2</span><br><span class="line">make[6]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#x2F;linux_amd64_compiler2&#x2F;jvmg&#39;</span><br><span class="line">make[5]: *** [jvmg] Error 2</span><br><span class="line">make[5]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#39;</span><br><span class="line">make[4]: *** [generic_build2] Error 2</span><br><span class="line">make[4]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;hotspot&#x2F;make&#39;</span><br><span class="line">make[3]: *** [jvmg] Error 2</span><br><span class="line">make[3]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;hotspot&#x2F;make&#39;</span><br><span class="line">make[2]: *** [hotspot-build] Error 2</span><br><span class="line">make[2]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#39;</span><br><span class="line">make[1]: *** [generic_debug_build] Error 2</span><br><span class="line">make[1]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#39;</span><br><span class="line">make: *** [build_debug_image] Error 2</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>分析原因：</p>
-<ol>
-<li>可能是阿里云买的最低配，导致编译的时候内存爆了</li>
-<li>Bootstrap JDK版本和书本的不一致，尝试按照书本一模一样的方式处理</li>
-<li>脚本建议手敲，复制黏贴容易错误</li>
-</ol>
-</blockquote>
-<h2 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h2><p><a href="https://blog.csdn.net/zitong_ccnu/article/details/50149757" target="_blank" rel="noopener">https://blog.csdn.net/zitong_ccnu/article/details/50149757</a> CenterOS7 编译OpenJDK7</p>
-<p><a href="https://www.bbsmax.com/A/GBJrKLa50e/" target="_blank" rel="noopener">https://www.bbsmax.com/A/GBJrKLa50e/</a> 案例2</p>
-<p><a href="https://hllvm-group.iteye.com/group/topic/35803" target="_blank" rel="noopener">https://hllvm-group.iteye.com/group/topic/35803</a> JVM的一些讨论，值得看看</p>
-<h1 id="处理问题的几个套路"><a href="#处理问题的几个套路" class="headerlink" title="处理问题的几个套路"></a>处理问题的几个套路</h1><h2 id="套路一：缺少依赖，却不知道安装的具体内容"><a href="#套路一：缺少依赖，却不知道安装的具体内容" class="headerlink" title="套路一：缺少依赖，却不知道安装的具体内容"></a>套路一：缺少依赖，却不知道安装的具体内容</h2><p>当提示缺少依赖，而你不知道要<code>yum install</code>什么时，你可以根据提示关键字搜一下<code>yum search</code>，然后在搜出的结果列表中，对有着相同前缀的依赖使用后缀通配符一键下载</p>
+</li>
+</ul>
 ]]></content>
+      <categories>
+        <category>博客</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
   </entry>
   <entry>
     <title>Maven私服Nexus搭建教程</title>
@@ -444,363 +357,6 @@
       </tags>
   </entry>
   <entry>
-    <title>PicGo和码云实现自建图床</title>
-    <url>/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/</url>
-    <content><![CDATA[<h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<a href="https://zhuanlan.zhihu.com/p/102594554" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102594554</a></p>
-<h2 id="测试图床链接："><a href="#测试图床链接：" class="headerlink" title="测试图床链接："></a>测试图床链接：</h2><p>链接1 ：</p>
-<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png</a></p>
-<p>链接2：</p>
-<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png</a></p>
-<p>链接3：</p>
-<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png</a></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959" alt="最终结果1"></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959" alt="最终结果2"></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959" alt="最终结果3"></p>
-<a id="more"></a>
-
-<h2 id="为什么要使用码云代替图床"><a href="#为什么要使用码云代替图床" class="headerlink" title="为什么要使用码云代替图床"></a>为什么要使用码云代替图床</h2><ul>
-<li>github毕竟是外国服务器，上传过程中因为网络问题有可能会无法使用的情况</li>
-<li>码云作为国内的“github”，访问和上传速度更快，所以使用码云更为方便</li>
-<li>目前<code>PicGo 2.0</code>之后已经有人集成了插件，使用和github一样简单好用</li>
-</ul>
-<h2 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h2><h3 id="1-下载PicGo"><a href="#1-下载PicGo" class="headerlink" title="1. 下载PicGo"></a>1. 下载PicGo</h3><p>官网地址：<a href="https://molunerfinn.com/PicGo/" target="_blank" rel="noopener">https://molunerfinn.com/PicGo/</a></p>
-<p>Github 快捷网址：<a href="https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2</a> 选择对应的版本下载即可</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131933.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>更多信息访问Github：<a href="https://github.com/Molunerfinn/PicGo" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo</a></p>
-<h3 id="2-安装PicGo"><a href="#2-安装PicGo" class="headerlink" title="2. 安装PicGo"></a>2. 安装PicGo</h3><p>安装过程就忽略了，安装完成之后打开软件</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132027.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<h3 id="3-PicGo-安装gitee-插件"><a href="#3-PicGo-安装gitee-插件" class="headerlink" title="3. PicGo 安装gitee 插件"></a>3. PicGo 安装gitee 插件</h3><p>前提条件：<strong>注意PicGo安装的前提条件是2.0版本之后新增的插件功能！！！</strong></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132225.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>将鼠标滚轮滚到最下面，会发现有一个插件设置</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132358.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>选择安装 <code>gitee-uploader 1.1.2</code>这个插件</p>
-<blockquote>
-<p><strong>安装失败如何解决</strong>？</p>
-<p>注意该插件需要node.js 的环境，Node.js的安装如下</p>
-<p><a href="http://nodejs.cn/download/" target="_blank" rel="noopener">http://nodejs.cn/download/</a></p>
-<p>进入中文官网之后，安装对应的版本即可</p>
-<p>window 下面的exe程序安装之后会自动的配置环境变量，这时候我们可以使用命令查一下是否有Node环境</p>
-<ol>
-<li>win 键 + R 打开<strong>运行</strong>窗口</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132719.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>输入命令<code>node -v</code></li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132750.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>如果出现如上所示的内容则证明安装成功</li>
-</ol>
-</blockquote>
-<h3 id="4-码云搭建图床仓库"><a href="#4-码云搭建图床仓库" class="headerlink" title="4. 码云搭建图床仓库"></a>4. 码云搭建图床仓库</h3><ol>
-<li>进入自己的码云：<a href="https://gitee.com/lazyTimes/projects" target="_blank" rel="noopener">https://gitee.com/lazyTimes/projects</a> 这是我的码云地址</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133220.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>选择右上角有一个 <code>&quot;+&quot;</code>号，选择新建仓库</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133327.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>填写基本信息，页面翻到最下面，选择保存</li>
-</ol>
-<p><img src="http://null/" alt="image-20200319133550209"></p>
-<ol>
-<li>新建仓库成功</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133836.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<h3 id="5-获取gitee私人令牌"><a href="#5-获取gitee私人令牌" class="headerlink" title="5. 获取gitee私人令牌"></a>5. 获取gitee私人令牌</h3><p>和github一样，在最终设置之前我们需要获取一下gitee令牌用于上传</p>
-<ol>
-<li>登录gitee之后，右上角选择</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214555.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>选择“私人令牌”</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214625.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>选择“生成令牌”，进入到令牌到创建页面</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214721.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>勾选如图到内容，一般只需要用到前面几项就可以满足我们到需求。按要求输入密码即可生成成功</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214905.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<ol>
-<li>生成令牌成功，将令牌内容保存在自己到笔记，防止忘记</li>
-</ol>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215102.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>经过如上步骤之后，我们基本就算是大功告成了，现在只需要在PicGo里面配置一下即可</p>
-<h3 id="6-PicGo-配置"><a href="#6-PicGo-配置" class="headerlink" title="6. PicGo 配置"></a>6. PicGo 配置</h3><ul>
-<li>repo：必填，填写gitee上面的仓库名称</li>
-<li>branch：一般默认master 即可，有需要可以建立自己到分支</li>
-<li>tolken：要用到上一节所述到私人令牌，如果忘记了可以进入页面之后重新获取一下新令牌</li>
-<li>path：写上文件存放到位置，一般写上<code>img</code>即可</li>
-<li>customPath：定义传输到格式，一般可以不用管</li>
-<li>customUrl：自定义上传到链接</li>
-</ul>
-<blockquote>
-<p>不知道怎么获取repo地址？</p>
-<ol>
-<li>进入自己到图床仓库到主页，复制地址栏到内容</li>
-<li>复制下方到用户和项目名称</li>
-</ol>
-<p><strong>注意中间到内容不要存在空格，删除注意不要多删除字符造成上传失败</strong></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215400.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-</blockquote>
-<p>最终到配置结果如下所示</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131435.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于github存在限制加上外网访问普遍较慢到问题，如果网速不给力并且没有科学上网工具建议使用gitee作为图形仓库。可以在1S内上传，非常方便。赶紧把gitee用起来把</p>
-]]></content>
-      <categories>
-        <category>博客</category>
-      </categories>
-      <tags>
-        <tag>PicGo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo 搭建思维导图以及使用</title>
-    <url>/2020/07/26/Hexo-%E6%90%AD%E5%BB%BA%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="Hexo-搭建思维导图以及使用"><a href="#Hexo-搭建思维导图以及使用" class="headerlink" title="Hexo 搭建思维导图以及使用"></a>Hexo 搭建思维导图以及使用</h1><h2 id="1-Hexo-如何搭建"><a href="#1-Hexo-如何搭建" class="headerlink" title="1. Hexo 如何搭建"></a>1. Hexo 如何搭建</h2><ul>
-<li>详细查看Hexo学习博客：</li>
-</ul>
-<h2 id="2-选择："><a href="#2-选择：" class="headerlink" title="2. 选择："></a>2. 选择：</h2><ul>
-<li>百度的kitmap<ul>
-<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
-</ul>
-</li>
-<li><h2 id="Hexo-思维导图插件"><a href="#Hexo-思维导图插件" class="headerlink" title="Hexo 思维导图插件"></a>Hexo 思维导图插件</h2></li>
-<li>为什么使用百度的kityminder<ul>
-<li>使用简单</li>
-<li>百度开发，使用国内插件</li>
-</ul>
-</li>
-<li>使用hexo思维导图插件的原因<ul>
-<li>简单好用</li>
-</ul>
-</li>
-<li>什么是Kityminder<ul>
-<li>分成两部分<ul>
-<li>kity-core</li>
-<li>kity-editor</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>如何学习kityminder<ul>
-<li><a href="https://qsli.github.io/2017/01/01/markdown-mindmap/" target="_blank" rel="noopener">https://qsli.github.io/2017/01/01/markdown-mindmap/</a></li>
-</ul>
-</li>
-<li>如何学习hexo 思维导图插件<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/75467441" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/75467441</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="3-使用hexo-插件构建思维导图"><a href="#3-使用hexo-插件构建思维导图" class="headerlink" title="3. 使用hexo 插件构建思维导图"></a>3. 使用hexo 插件构建思维导图</h2><ul>
-<li><p>跳转到hexo的目录下面，执行如下命令</p>
-<ul>
-<li><code>npm install hexo-simple-mindmap</code></li>
-</ul>
-</li>
-<li><p>在博客内部加入如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;% pullquote mindmap mindmap-md %&#125;</span><br><span class="line">[Hexo 的思维导图插件](https:&#x2F;&#x2F;hunterx.xyz&#x2F;hexo-simple-mindmap-plugin-intro.html)</span><br><span class="line">- 前言</span><br><span class="line">- 使用方法</span><br><span class="line">&#123;% endpullquote %&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h2 id="4-查看效果"><a href="#4-查看效果" class="headerlink" title="4. 查看效果"></a>4. 查看效果</h2><p>进入文章，即可渲染出对应的思维导图</p>
-<h1 id="推荐其他的方式"><a href="#推荐其他的方式" class="headerlink" title="推荐其他的方式"></a>推荐其他的方式</h1><ul>
-<li>使用xmind 话思维导图<ul>
-<li>为什么？<ul>
-<li>软件画图，可以一键生成图片</li>
-<li>样式可以调整，不需要切换</li>
-<li>简单好用，相对于Markdown编写更为直观</li>
-</ul>
-</li>
-<li>怎么使用xmind<ul>
-<li>百度搜索xmind 进入</li>
-<li>推荐使用xmind 的升级版本</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>博客</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Window 下面使用代办清单软件</title>
-    <url>/2020/07/26/Window-%E4%B8%8B%E9%9D%A2%E4%BD%BF%E7%94%A8%E4%BB%A3%E5%8A%9E%E6%B8%85%E5%8D%95%E8%BD%AF%E4%BB%B6/</url>
-    <content><![CDATA[<h1 id="windows-代办清单软件"><a href="#windows-代办清单软件" class="headerlink" title="windows 代办清单软件"></a>windows 代办清单软件</h1><h2 id="为什么要使用待办任务软件"><a href="#为什么要使用待办任务软件" class="headerlink" title="为什么要使用待办任务软件"></a>为什么要使用待办任务软件</h2><ul>
-<li>人的记忆是靠不住的</li>
-<li>琐事繁杂，列出清单能更好的</li>
-</ul>
-<h2 id="使用代办清单的好处"><a href="#使用代办清单的好处" class="headerlink" title="使用代办清单的好处"></a>使用代办清单的好处</h2><ul>
-<li>理清思路</li>
-<li>把事情拆分，一条条处理</li>
-<li>今日事，今日毕</li>
-<li>保持良好的时间管理习惯，防止懈怠</li>
-<li>可以结合番茄工作法</li>
-</ul>
-<h2 id="怎么使用代办清单软件"><a href="#怎么使用代办清单软件" class="headerlink" title="怎么使用代办清单软件"></a>怎么使用代办清单软件</h2><ul>
-<li><p>使用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">奇妙清单</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>地址：<a href="https://www.wunderlist.com/" target="_blank" rel="noopener">https://www.wunderlist.com/</a></li>
-<li>目前已经被收购</li>
-</ul>
-</li>
-<li><p>微软的TODO List，实现简单</p>
-<ul>
-<li>地址：<a href="https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab" target="_blank" rel="noopener">https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab</a></li>
-</ul>
-</li>
-<li><p>滴答清单</p>
-<ul>
-<li>地址：<a href="https://www.dida365.com/about/download" target="_blank" rel="noopener">https://www.dida365.com/about/download</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="滴答清单的使用"><a href="#滴答清单的使用" class="headerlink" title="滴答清单的使用"></a>滴答清单的使用</h2><ul>
-<li>使用对应的账号关联登陆，这里使用个人的微信账号</li>
-<li>在左侧清单<ul>
-<li>任务清单的名称</li>
-</ul>
-</li>
-<li>在指定清单创建任务</li>
-<li>选择每一条任务，设置优先级</li>
-<li>右侧设置日期</li>
-</ul>
-]]></content>
-      <categories>
-        <category>待办任务</category>
-      </categories>
-      <tags>
-        <tag>TODOs</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Springboot 打包的一些学习</title>
-    <url>/2020/07/26/Springboot-%E6%89%93%E5%8C%85%E7%9A%84%E4%B8%80%E4%BA%9B%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<p><a href="https://blog.csdn.net/u012702547/article/details/95180256" target="_blank" rel="noopener">https://blog.csdn.net/u012702547/article/details/95180256</a></p>
-<p><a href="https://blog.csdn.net/weixin_38187317/article/details/82688906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82688906</a></p>
-<p>制作七牛-spring-boot-starter并上传中央仓库 <a href="https://blog.csdn.net/weixin_38187317/article/details/82723758" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82723758</a></p>
-<blockquote>
-<p>说明： 依照七牛云自己实现了一个springboot，已上传中央仓库 来源博客： <a href="https://blog.csdn.net/weixin_38187317/article/details/82688906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82688906</a> 目的：学习一下如何springboot 引入另一个springboot 的service层，</p>
-</blockquote>
-<h1 id="Spring-Boot-打包成的可执行-jar-，为什么不能被其他项目依赖？"><a href="#Spring-Boot-打包成的可执行-jar-，为什么不能被其他项目依赖？" class="headerlink" title="Spring Boot 打包成的可执行 jar ，为什么不能被其他项目依赖？"></a>Spring Boot 打包成的可执行 jar ，为什么不能被其他项目依赖？</h1><p><a href="https://blog.csdn.net/u012702547/article/details/95180256" target="_blank" rel="noopener">https://blog.csdn.net/u012702547/article/details/95180256</a></p>
-<blockquote>
-<p>说明：这里解读了为什么不能使用springboot 的插件打包</p>
-</blockquote>
-<h1 id="SpringBoot-如何手动引入本地的jar包-并利用maven成功打包"><a href="#SpringBoot-如何手动引入本地的jar包-并利用maven成功打包" class="headerlink" title="SpringBoot 如何手动引入本地的jar包 并利用maven成功打包"></a>SpringBoot 如何手动引入本地的jar包 并利用maven成功打包</h1><ul>
-<li>参考博客 <a href="https://www.javatt.com/p/84969" target="_blank" rel="noopener">https://www.javatt.com/p/84969</a></li>
-<li>需要执行如下命令： <code>mvn install:install-file -Dfile=./qiniu-spring-boot-starter-0.2-RELEASE.jar -DgroupId=com.zxd -DartifactId=myquartz -Dversion=8 -Dpackaging=jar</code></li>
-<li>Maven将自己的jar包引入本地库中 <a href="https://www.jianshu.com/p/cef1bc65584d" target="_blank" rel="noopener">https://www.jianshu.com/p/cef1bc65584d</a></li>
-</ul>
-<h1 id="Spring-Boot-制作一个自己的-Starter"><a href="#Spring-Boot-制作一个自己的-Starter" class="headerlink" title="Spring Boot 制作一个自己的 Starter"></a>Spring Boot 制作一个自己的 Starter</h1><p><a href="https://blog.csdn.net/wo18237095579/article/details/81197245#重点编写-autoconfigure-类" target="_blank" rel="noopener">https://blog.csdn.net/wo18237095579/article/details/81197245#重点编写-autoconfigure-类</a></p>
-<h1 id="Springboot-打Jar包，Maven完美解决本地Jar包自动打入Springboot-Jar包中"><a href="#Springboot-打Jar包，Maven完美解决本地Jar包自动打入Springboot-Jar包中" class="headerlink" title="Springboot 打Jar包，Maven完美解决本地Jar包自动打入Springboot Jar包中"></a>Springboot 打Jar包，Maven完美解决本地Jar包自动打入Springboot Jar包中</h1><p><a href="https://www.sojson.com/blog/253.html" target="_blank" rel="noopener">https://www.sojson.com/blog/253.html</a></p>
-<h1 id="Maven将自己的jar包引入本地库中"><a href="#Maven将自己的jar包引入本地库中" class="headerlink" title="Maven将自己的jar包引入本地库中"></a>Maven将自己的jar包引入本地库中</h1><p><a href="https://www.jianshu.com/p/cef1bc65584d" target="_blank" rel="noopener">https://www.jianshu.com/p/cef1bc65584d</a></p>
-<p>#　制作SpringBoot的jar给其他项目使用需要注意的点 <a href="https://blog.csdn.net/weixin_38187317/article/details/82688906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82688906</a></p>
-]]></content>
-      <categories>
-        <category>Springboot</category>
-      </categories>
-      <tags>
-        <tag>Springboot</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【数据对比】综合分析百度情感分析以及华为情感分析的差异，我有了如下结果</title>
-    <url>/2020/07/26/%E3%80%90%E6%95%B0%E6%8D%AE%E5%AF%B9%E6%AF%94%E3%80%91%E7%BB%BC%E5%90%88%E5%88%86%E6%9E%90%E7%99%BE%E5%BA%A6%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8A%E5%8D%8E%E4%B8%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E7%9A%84%E5%B7%AE%E5%BC%82%EF%BC%8C%E6%88%91%E6%9C%89%E4%BA%86%E5%A6%82%E4%B8%8B%E7%BB%93%E6%9E%9C/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>某一天，经理找到我，说BOSS需要情感分析对比的结果，我这边能不能研究一下几家情感分析的平台，按照（巴拉巴拉）的要求进行分析，于是就有了这篇文章……</p>
-<h1 id="为什么要进行对比"><a href="#为什么要进行对比" class="headerlink" title="为什么要进行对比"></a>为什么要进行对比</h1><ol>
-<li>公司任务</li>
-<li>了解下情感分析</li>
-<li>对比几家情感分析</li>
-</ol>
-<a id="more"></a>
-
-<h1 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景:"></a><strong>业务场景:</strong></h1><p>​    爬虫截取微博网上留言信息，调用华为云的情感分析，百度云情感分析（通用接口），百度云情感分析（定制化模型，自定义学习资料）。根据以下几个点进行对比。</p>
-<ul>
-<li>未处理的原版数据<ul>
-<li>通用模型- 原版分类置信度</li>
-<li>定制模型 - 原版分类置信度 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版分类置信度 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>原版评论分类置信度 （华为云 仅2000条左右数据）</li>
-<li>通用模型- 原版评论负面倾向概率</li>
-<li>定制模型 - 原版评论负面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版评论负面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>通用模型- 原版评论正面倾向概率</li>
-<li>使用定制模型 - 原版评论正面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>使用定制模型 - 原版评论正面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>通用模型- 原 版评论分析正负结果值</li>
-<li>定制模型 - 原版评论分析正负结果值 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版评论分析正负结果值 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>原版评论正负结果值 （华为云 仅2000条左右数据）</li>
-</ul>
-</li>
-<li>处理掉@和#后的评论数据：<ul>
-<li>通用模型- 原版分类置信度</li>
-<li>定制模型 - 原版分类置信度 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版分类置信度 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>原版评论分类置信度 （华为云 仅2000条左右数据）</li>
-<li>通用模型- 原版评论负面倾向概率</li>
-<li>定制模型 - 原版评论负面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版评论负面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>通用模型- 原版评论正面倾向概率</li>
-<li>使用定制模型 - 原版评论正面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>使用定制模型 - 原版评论正面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>通用模型- 原 版评论分析正负结果值</li>
-<li>定制模型 - 原版评论分析正负结果值 （800条学习资料样本， 85.96%准确率的学习资料）</li>
-<li>定制模型 - 原版评论分析正负结果值 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
-<li>原版评论正负结果值 （华为云 仅2000条左右数据）</li>
-</ul>
-</li>
-</ul>
-<h1 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题:"></a><strong>解决的问题:</strong></h1><ol>
-<li>对比了两家的情感分析之后，经过综合分析，<strong>百度云情感分析（通用模型</strong>）的准确率是最高的。</li>
-<li>目前综合来看，百度云的情感分析通用模式是自然语言分析的最好选择。</li>
-<li>定制化的百度模型实际测试不如通用模型准确（可能为学习模型数据不够准确）。</li>
-</ol>
-<h1 id="挑战"><a href="#挑战" class="headerlink" title="挑战:"></a><strong>挑战:</strong></h1><ol>
-<li>首次使用华为云情感分析，对于接口调用方面自己阅读文档不够详细，走了较多的弯路，不过经过仔细研究自行解决。</li>
-<li>由于存在QPS限制，调用的时候需要限制调用频率。</li>
-<li>由于网络原因可能存在频繁调用的情况。</li>
-<li>数据较多的情况下处理数据的时长比较久（针对试用而言）。</li>
-<li>根据不同的定制化模型。</li>
-<li>可能存在无法分析的特殊字符数据。</li>
-</ol>
-<h1 id="使用服务"><a href="#使用服务" class="headerlink" title="使用服务:"></a><strong>使用服务:</strong></h1><p>自然语言处理 - 情感分析</p>
-<h1 id="如何解决"><a href="#如何解决" class="headerlink" title="如何解决:"></a><strong>如何解决:</strong></h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 在不超过**qps**限制的情况下，试用分页形式，分段请求，在数据库中设置 判断值判断数据是否进行分析，如果重复调用会直接过滤掉已经进行情感分析的数据。</span><br><span class="line">   2. 对于线程进行&#96;休眠&#96;操作，防止调用请求过于频繁接口调用失败。</span><br><span class="line">   3. 使用日志记录失败请求信息，失败请求原因，失败请求数据。</span><br><span class="line">   4. 多次调用数据确保大部分数据可以产生结果，个别数据请求失败以及没有数据的忽略。</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景:"></a><strong>使用场景:</strong></h1><ol>
-<li>比对市面上几家华为云的情感分析使用，根据分析结果数据进行比对。</li>
-<li>对比百度云通用模型和定制化模型的使用。</li>
-<li>对比不同的环境下分析的数据，数据差异值。</li>
-</ol>
-<h1 id="方案截图"><a href="#方案截图" class="headerlink" title="方案截图:"></a><strong>方案截图:</strong></h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200725102058.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>（处理掉特殊字符前的截图）</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200725102133.png?ynotemdtimestamp=1595729096959" alt="img"></p>
-<p>（处理掉特殊字符后的截图）</p>
-<h1 id="使用规模"><a href="#使用规模" class="headerlink" title="使用规模:"></a><strong>使用规模:</strong></h1><p>共1000条数据左右。（其实总共有18000条数据）</p>
-<h1 id="使用收益："><a href="#使用收益：" class="headerlink" title="使用收益："></a><strong>使用收益：</strong></h1><p>对比了百度情感分析和华为云的情感分析，对比结果比较显著，在情感分析的领域发现是百度云的使用情况较好。</p>
-<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>原数据报表有 18000条，如果有对情感分析感兴趣，或者想要了解情感分析对比结果的，可以留言邮箱，我会抽空把报表数据发送至您的邮箱</p>
-<p>如果觉得对您有帮助欢迎扩散</p>
-<h1 id="作者："><a href="#作者：" class="headerlink" title="作者："></a><strong>作者：</strong></h1><p>阿东</p>
-]]></content>
-      <categories>
-        <category>未分类</category>
-      </categories>
-      <tags>
-        <tag>情感分析</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Go语言学习笔记（一）</title>
     <url>/2020/07/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/</url>
     <content><![CDATA[<h1 id="Go语言学习笔记（一）"><a href="#Go语言学习笔记（一）" class="headerlink" title="Go语言学习笔记（一）"></a>Go语言学习笔记（一）</h1><h2 id="Go语言是什么？"><a href="#Go语言是什么？" class="headerlink" title="Go语言是什么？"></a>Go语言是什么？</h2><p><em>Go 编程语言是一个使得程序员更加有效率的开源项目。Go 是有表达力、简洁、清晰和有效率的。它的并行机制使其很容易编写多核和网络应用,而新奇的类型系统允许构建有弹性的模块化程序。Go 编译到机器码非常快速,同时具有便利的垃圾回收和强大的运行时反射。它是快速的、静态类型编译语言,但是感觉上是动态类型的,解释型语言。</em></p>
@@ -1057,6 +613,167 @@
       </tags>
   </entry>
   <entry>
+    <title>JDK源码解读</title>
+    <url>/2020/07/26/JDK%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</url>
+    <content><![CDATA[<h1 id="深入理解JVM虚拟机-JDK源码解读"><a href="#深入理解JVM虚拟机-JDK源码解读" class="headerlink" title="深入理解JVM虚拟机 - JDK源码解读"></a>深入理解JVM虚拟机 - JDK源码解读</h1><p>《深入理解JVM虚拟机》看过了好几遍了，对于编译一个JDK源码有很强的冲动。这里主要实战使用<strong>阿里云</strong>进行编译实战</p>
+<ul>
+<li>为什么使用阿里云？<ul>
+<li>个人电脑奋斗四年了，装虚拟机莫名其妙的死机</li>
+<li>阿里云带宽1M，只能用来干些LInux学习的工作</li>
+</ul>
+</li>
+<li>参考博客：<a href="https://juejin.im/post/5c6b9a476fb9a049c30bcebd" target="_blank" rel="noopener">https://juejin.im/post/5c6b9a476fb9a049c30bcebd</a></li>
+</ul>
+<a id="more"></a>
+
+<h2 id="JDK源码下载-openJDK7u75"><a href="#JDK源码下载-openJDK7u75" class="headerlink" title="JDK源码下载 - openJDK7u75"></a>JDK源码下载 - openJDK7u75</h2><ul>
+<li>地址：<a href="https://download.java.net/openjdk/jdk7u75/ri/openjdk-7u75-src-b13-18_dec_2014.zip" target="_blank" rel="noopener">https://download.java.net/openjdk/jdk7u75/ri/openjdk-7u75-src-b13-18_dec_2014.zip</a></li>
+</ul>
+<h2 id="Bootstrap-JDK"><a href="#Bootstrap-JDK" class="headerlink" title="Bootstrap JDK"></a>Bootstrap JDK</h2><ul>
+<li><p>编译OpenJDK7需要 Bootstrap JDK U14 之后的版本</p>
+</li>
+<li><p>地址：</p>
+<p><a href="https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html" target="_blank" rel="noopener">https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html</a></p>
+<ul>
+<li>下载 <code>linux.tag.gz包</code></li>
+</ul>
+</li>
+<li><p>有条件尽量科学上网下载比较慢</p>
+</li>
+</ul>
+<h2 id="Apach-Ant-1-7-1版本"><a href="#Apach-Ant-1-7-1版本" class="headerlink" title="Apach Ant 1.7.1版本"></a>Apach Ant 1.7.1版本</h2><ul>
+<li>地址：<a href="https://ant.apache.org/bindownload.cgi" target="_blank" rel="noopener">https://ant.apache.org/bindownload.cgi</a></li>
+<li>还需要一个apach ant 1.7.1 版本</li>
+<li>这里选择了: 1.9.14版本</li>
+</ul>
+<h2 id="前置依赖："><a href="#前置依赖：" class="headerlink" title="前置依赖："></a>前置依赖：</h2><ul>
+<li>OpenJDK要用到很多的gcc，java，c的库函数，需要进行前置准备</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum -y install build-essential gawk m4 openjdk6-jdk libasound2-print-dev binutils libmotif3 libmotif-dev ant</span><br><span class="line">yum install libX* #有可能会缺失的库，先提前安装</span><br></pre></td></tr></table></figure>
+
+<h2 id="首次编译"><a href="#首次编译" class="headerlink" title="首次编译"></a>首次编译</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 进入到openjdk的目录</span><br><span class="line">cd openjdk所在目录</span><br><span class="line"># 解压</span><br><span class="line">unzip openjdk</span><br><span class="line"># 编译</span><br><span class="line">cd open jdk</span><br><span class="line"># 第一次编译，输出到对应文件</span><br><span class="line">make sanity &gt; error.txt</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>不出所料，编译失败了，我们可以根据错误日志来进行调整</li>
+<li>根据错误，整理一下错误点</li>
+<li>下面参考书籍的内容进行设置</li>
+</ul>
+<h2 id="设置环境变量"><a href="#设置环境变量" class="headerlink" title="设置环境变量"></a>设置环境变量</h2><ul>
+<li><p>gcc 4.3 版本以上</p>
+</li>
+<li><p>必须设置两个</p>
+<ul>
+<li>LANG：编译语言</li>
+<li>ALT_BOOTDIR：Bootstrap JDK 1.7 的版本</li>
+</ul>
+</li>
+<li><p>设置环境变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;C</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk1.7.0_80</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>去掉原本的JDK环境变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="OpenJDK-错误处理"><a href="#OpenJDK-错误处理" class="headerlink" title="OpenJDK 错误处理"></a>OpenJDK 错误处理</h2><h3 id="错误1：-缺少打印-Cups-依赖"><a href="#错误1：-缺少打印-Cups-依赖" class="headerlink" title="错误1： 缺少打印 Cups 依赖"></a>错误1： 缺少打印 Cups 依赖</h3><p>错误信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: You do not have access to valid Cups header files. </span><br><span class="line">       Please check your access to </span><br><span class="line">           &#x2F;usr&#x2F;include&#x2F;cups&#x2F;cups.h </span><br><span class="line">       and&#x2F;or check your value of ALT_CUPS_HEADERS_PATH, </span><br><span class="line">       CUPS is frequently pre-installed on many systems, </span><br><span class="line">       or may be downloaded from http:&#x2F;&#x2F;www.cups.org</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<p>缺少<code>cups</code>打印框架，解决：</p>
+<ol>
+<li>可以根据如下命令查找</li>
+</ol>
+<p><code>yum search cups</code> 查找对应依赖</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: cups &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">apcupsd-cgi.x86_64 : Web interface for apcupsd</span><br><span class="line">apcupsd-gui.x86_64 : GUI interface for apcupsd</span><br><span class="line">bluez-cups.x86_64 : CUPS printer backend for Bluetooth printers</span><br><span class="line">cups.x86_64 : CUPS printing system</span><br><span class="line">cups-bjnp.x86_64 : CUPS backend for the Canon BJNP network printers</span><br><span class="line">cups-client.x86_64 : CUPS printing system - client programs</span><br><span class="line">cups-devel.i686 : CUPS printing system - development environment</span><br><span class="line">cups-devel.x86_64 : CUPS printing system - development environment</span><br><span class="line">cups-filesystem.noarch : CUPS printing system - directory layout</span><br><span class="line">cups-filters.x86_64 : OpenPrinting CUPS filters and backends</span><br><span class="line">cups-filters-devel.i686 : OpenPrinting CUPS filters and backends - development environment</span><br><span class="line">cups-filters-devel.x86_64 : OpenPrinting CUPS filters and backends - development environment</span><br><span class="line">cups-filters-libs.i686 : OpenPrinting CUPS filters and backends - cupsfilters and fontembed libraries</span><br><span class="line">cups-filters-libs.x86_64 : OpenPrinting CUPS filters and backends - cupsfilters and fontembed libraries</span><br><span class="line">cups-ipptool.x86_64 : CUPS printing system - tool for performing IPP requests</span><br><span class="line">cups-libs.x86_64 : CUPS printing system - libraries</span><br><span class="line">cups-libs.i686 : CUPS printing system - libraries</span><br><span class="line">cups-lpd.x86_64 : CUPS printing system - lpd emulation</span><br><span class="line">cups-pdf.x86_64 : Extension for creating pdf-Files with CUPS</span><br><span class="line">cups-x2go.noarch : CUPS backend for printing from X2Go</span><br><span class="line">dymo-cups-drivers.x86_64 : DYMO LabelWriter Drivers for CUPS</span><br><span class="line">ghostscript-cups.x86_64 : CUPS filter for interpreting PostScript and PDF</span><br><span class="line">gutenprint-cups.x86_64 : CUPS drivers for Canon, Epson, HP and compatible printers</span><br><span class="line">perl-Net-CUPS.x86_64 : Perl bindings to the CUPS C API Interface</span><br><span class="line">python-cups.x86_64 : Python bindings for CUPS</span><br><span class="line">python-cups-doc.x86_64 : Documentation for python-cups</span><br><span class="line">python3-cups-doc.x86_64 : Documentation for python-cups</span><br><span class="line">python34-cups.x86_64 : Python 3 bindings for CUPS API, known as pycups</span><br><span class="line">python36-cups.x86_64 : Python 3 bindings for CUPS API, known as pycups</span><br><span class="line">apcupsd.x86_64 : APC UPS Power Control Daemon</span><br><span class="line">cups-pk-helper.x86_64 : A helper that makes system-config-printer use PolicyKit</span><br><span class="line">foomatic-filters.x86_64 : CUPS print filters for the foomatic package</span><br><span class="line">samba-krb5-printing.x86_64 : Samba CUPS backend for printing with Kerberos</span><br><span class="line"></span><br><span class="line">  Name and summary matches only, use &quot;search all&quot; for everything.</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>安装Cups</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install cups-devel.x86_64</span><br></pre></td></tr></table></figure>
+
+<h3 id="错误2：-缺少-Freetype-依赖"><a href="#错误2：-缺少-Freetype-依赖" class="headerlink" title="错误2： 缺少 Freetype 依赖"></a>错误2： 缺少 Freetype 依赖</h3><p>报错情况：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: FreeType version  2.3.0  or higher is required. </span><br><span class="line"> make[2]: 进入目录“&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk&#x2F;make&#x2F;tools&#x2F;freetypecheck”</span><br><span class="line">&#x2F;bin&#x2F;mkdir -p &#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64&#x2F;btbins</span><br><span class="line">rm -f &#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64&#x2F;btbins&#x2F;freetype_versioncheck</span><br><span class="line">make[2]: 离开目录“&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk&#x2F;make&#x2F;tools&#x2F;freetypecheck”</span><br><span class="line">Failed to build freetypecheck.</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<ol>
+<li><code>yum search freetype</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: freetype &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">freetype-demos.x86_64 : A collection of FreeType demos</span><br><span class="line">freetype-devel.i686 : FreeType development libraries and header files</span><br><span class="line">freetype-devel.x86_64 : FreeType development libraries and header files</span><br><span class="line">mingw32-freetype-static.noarch : Static version of the MinGW Windows Freetype library</span><br><span class="line">mingw64-freetype-static.noarch : Static version of the MinGW Windows Freetype library</span><br><span class="line">python-freetype.noarch : Freetype python bindings</span><br><span class="line">freetype.x86_64 : A free and portable font rendering engine</span><br><span class="line">freetype.i686 : A free and portable font rendering engine</span><br><span class="line">ftgl.x86_64 : OpenGL frontend to Freetype 2</span><br><span class="line">mingw32-freetype.noarch : Free and portable font rendering engine</span><br><span class="line">mingw64-freetype.noarch : Free and portable font rendering engine</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>执行命令<code>yum install freetype-devel.x86_64 -y</code></li>
+</ol>
+<h3 id="错误3：缺少声卡Alsa依赖，需要安装"><a href="#错误3：缺少声卡Alsa依赖，需要安装" class="headerlink" title="错误3：缺少声卡Alsa依赖，需要安装"></a>错误3：缺少声卡Alsa依赖，需要安装</h3><p>错误信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: You seem to not have installed ALSA 0.9.1 or higher. </span><br><span class="line">       Please install ALSA (drivers and lib). You can download the </span><br><span class="line">       source distribution from http:&#x2F;&#x2F;www.alsa-project.org or go to </span><br><span class="line">       http:&#x2F;&#x2F;www.freshrpms.net&#x2F;docs&#x2F;alsa&#x2F; for precompiled RPM packages.</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<ol>
+<li><code>yum search alsa</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> * updates: mirrors.aliyun.com</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; N&#x2F;S matched: alsa &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">alsa-firmware.noarch : Firmware for several ALSA-supported sound cards</span><br><span class="line">alsa-lib.x86_64 : The Advanced Linux Sound Architecture (ALSA) library</span><br><span class="line">alsa-lib.i686 : The Advanced Linux Sound Architecture (ALSA) library</span><br><span class="line">alsa-lib-devel.i686 : Development files from the ALSA library</span><br><span class="line">alsa-lib-devel.x86_64 : Development files from the ALSA library</span><br><span class="line">alsa-plugins-arcamav.i686 : Arcam AV amplifier plugin for ALSA</span><br><span class="line">alsa-plugins-arcamav.x86_64 : Arcam AV amplifier plugin for ALSA</span><br><span class="line">alsa-plugins-maemo.i686 : Maemo plugin for ALSA</span><br><span class="line">alsa-plugins-maemo.x86_64 : Maemo plugin for ALSA</span><br><span class="line">alsa-plugins-oss.i686 : Oss PCM output plugin for ALSA</span><br><span class="line">alsa-plugins-oss.x86_64 : Oss PCM output plugin for ALSA</span><br><span class="line">alsa-plugins-pulseaudio.i686 : Alsa to PulseAudio backend</span><br><span class="line">alsa-plugins-pulseaudio.x86_64 : Alsa to PulseAudio backend</span><br><span class="line">alsa-plugins-samplerate.i686 : External rate converter plugin for ALSA</span><br><span class="line">alsa-plugins-samplerate.x86_64 : External rate converter plugin for ALSA</span><br><span class="line">alsa-plugins-upmix.i686 : Upmixer channel expander plugin for ALSA</span><br><span class="line">alsa-plugins-upmix.x86_64 : Upmixer channel expander plugin for ALSA</span><br><span class="line">alsa-plugins-usbstream.i686 : USB stream plugin for ALSA</span><br><span class="line">alsa-plugins-usbstream.x86_64 : USB stream plugin for ALSA</span><br><span class="line">alsa-plugins-vdownmix.i686 : Downmixer to stereo plugin for ALSA</span><br><span class="line">alsa-plugins-vdownmix.x86_64 : Downmixer to stereo plugin for ALSA</span><br><span class="line">alsa-tools.x86_64 : Specialist tools for ALSA</span><br><span class="line">alsa-tools-firmware.x86_64 : ALSA tools for uploading firmware to some soundcards</span><br><span class="line">alsa-utils.x86_64 : Advanced Linux Sound Architecture (ALSA) utilities</span><br><span class="line">alsa-plugins-speex.i686 : Rate Converter Plugin Using Speex Resampler</span><br><span class="line">alsa-plugins-speex.x86_64 : Rate Converter Plugin Using Speex Resampler</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>安装依赖：<code>yum -y install alsa-lib* alsa-util*</code></li>
+</ol>
+<h3 id="错误4：缺少Ant依赖"><a href="#错误4：缺少Ant依赖" class="headerlink" title="错误4：缺少Ant依赖"></a>错误4：缺少Ant依赖</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR: The version of ant being used is older than </span><br><span class="line">       the required version of &#39;1.7.1&#39;. </span><br><span class="line">       The version of ant found was &#39;&#39;.</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install ant -y</span><br></pre></td></tr></table></figure>
+
+<h3 id="错误5：缺少C语言环境变量"><a href="#错误5：缺少C语言环境变量" class="headerlink" title="错误5：缺少C语言环境变量"></a>错误5：缺少C语言环境变量</h3><p>错误信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WARNING: LANG has been set to zh_CN.UTF-8, this can cause build failures. </span><br><span class="line">         Try setting LANG to &#39;C&#39;.</span><br></pre></td></tr></table></figure>
+
+<p>处理方式：</p>
+<ol>
+<li><code>export LANG=C</code>设置C语言环境</li>
+</ol>
+<h2 id="第二次编译"><a href="#第二次编译" class="headerlink" title="第二次编译"></a>第二次编译</h2><p>需要再次输入命令<code>make santify</code> ，知道看到如下信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Sanity check passed.</span><br></pre></td></tr></table></figure>
+
+<h2 id="编写启动脚本"><a href="#编写启动脚本" class="headerlink" title="编写启动脚本"></a>编写启动脚本</h2><ul>
+<li>经过上面的测试，再根据JVM虚拟机的内容，编写了下面一个通用的命令脚本</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line"># 语言选项，必须设置，否者编译之后会出现一个HashTable槽的错误的NPE的错</span><br><span class="line">export LANG&#x3D;C</span><br><span class="line"># Bootstrap JDK 的安装路径</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;jdk1.7.0_80</span><br><span class="line"># 允许自动下载数据</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line">#并行编译的线程数，设置为和CPU内核数量一致即可</span><br><span class="line"></span><br><span class="line">export HOTSPOT_BUILD_JOBS&#x3D;6</span><br><span class="line"></span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;6</span><br><span class="line"></span><br><span class="line">#比较本次build出来的映像与先前版本的差异。这对我们来说没有意义，</span><br><span class="line"></span><br><span class="line">#必须设置为false，否则sanity检查会报缺少先前版本JDK的映像的错误提示。</span><br><span class="line"></span><br><span class="line">#如果已经设置dev或者DEV_ONLY&#x3D;true，这个不显式设置也行</span><br><span class="line"></span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line"></span><br><span class="line">#使用预编译头文件，不加这个编译会更慢一些</span><br><span class="line"></span><br><span class="line">export USE_PRECOMPILED_HEADER&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的内容</span><br><span class="line"></span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true</span><br><span class="line"></span><br><span class="line">#export BUILD_JAXP&#x3D;false</span><br><span class="line"></span><br><span class="line">#export BUILD_JAXWS&#x3D;false</span><br><span class="line"></span><br><span class="line">#export BUILD_CORBA&#x3D;false</span><br><span class="line"></span><br><span class="line">export BUILD_HOTSPOT&#x3D;true</span><br><span class="line"></span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的版本</span><br><span class="line"></span><br><span class="line">#export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line"></span><br><span class="line">#export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line"></span><br><span class="line">#export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">#把它设置为false可以避开javaws和浏览器Java插件之类的部分的build</span><br><span class="line"></span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line"></span><br><span class="line">#把它设置为false就不会build出安装包。因为安装包里有些奇怪的依赖，</span><br><span class="line"></span><br><span class="line">#但即便不build出它也已经能得到完整的JDK映像，所以还是别build它好了</span><br><span class="line"></span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">#编译结果所存放的路径</span><br><span class="line"></span><br><span class="line">export ALT_OUTPUTDIR&#x3D;&#x2F;Users&#x2F;IcyFenix&#x2F;Develop&#x2F;JVM&#x2F;jdkBuild&#x2F;openjdk_7u4&#x2F;build</span><br><span class="line"></span><br><span class="line">#这两个环境变量必须去掉，不然会有很诡异的事情发生（我没有具体查过这些&quot;诡异的</span><br><span class="line">#事情&quot;，Makefile脚本检查到有这2个变量就会提示警告）</span><br><span class="line"></span><br><span class="line">unset JAVA_HOME</span><br><span class="line"></span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2＞＆1|tee $ALT_OUTPUTDIR&#x2F;build.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动脚本参考："><a href="#启动脚本参考：" class="headerlink" title="启动脚本参考："></a>启动脚本参考：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#语言选项，这个必须设置，否则编译好后会出现一个HashTable的NPE错</span><br><span class="line">export LANG&#x3D;C</span><br><span class="line"></span><br><span class="line">#Bootstrap JDK的安装路径。必须设置。 </span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;java&#x2F;jdk1.7.0_04</span><br><span class="line"></span><br><span class="line">#允许自动下载依赖</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line"></span><br><span class="line">#并行编译的线程数，设置为和CPU内核数量一致即可</span><br><span class="line">export HOTSPOT_BUILD_JOBS&#x3D;4</span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;4</span><br><span class="line"></span><br><span class="line">#比较本次build出来的映像与先前版本的差异。这个对我们来说没有意义，必须设置为false，否则sanity检查会报缺少先前版本JDK的映像。如果有设置dev或者DEV_ONLY&#x3D;true的话这个不显式设置也行。 </span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line"></span><br><span class="line">#使用预编译头文件，不加这个编译会更慢一些</span><br><span class="line">export USE_PRECOMPILED_HEADER&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的内容</span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true </span><br><span class="line">#export BUILD_JAXP&#x3D;false</span><br><span class="line">#export BUILD_JAXWS&#x3D;false </span><br><span class="line">#export BUILD_CORBA&#x3D;false</span><br><span class="line">export BUILD_HOTSPOT&#x3D;true </span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">#要编译的版本</span><br><span class="line">#export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line">#export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line">#export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">#把它设置为false可以避开javaws和浏览器Java插件之类的部分的build。 </span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line"></span><br><span class="line">#把它设置为false就不会build出安装包。因为安装包里有些奇怪的依赖，但即便不build出它也已经能得到完整的JDK映像，所以还是别build它好了。</span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">#这两个环境变量必须去掉，不然会有很诡异的事情发生（我没有具体查过这些“”诡异的事情”，Makefile脚本检查到有这2个变量就会提示警告“）</span><br><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2&gt;&amp;1 | tee $ALT_OUTPUTDIR&#x2F;build.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="个人版本"><a href="#个人版本" class="headerlink" title="个人版本:"></a>个人版本:</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;C</span><br><span class="line">export ALT_BOOTDIR&#x3D;&#x2F;usr&#x2F;local&#x2F;software&#x2F;jdk1.7</span><br><span class="line">export ALLOW_DOWNLOADS&#x3D;true</span><br><span class="line">export HOTSPOT_BUILD_JOBDS&#x3D;1</span><br><span class="line">export ALT_PARALLEL_COMPILE_JOBS&#x3D;1</span><br><span class="line">export SKIP_COMPARE_IMAGES&#x3D;true</span><br><span class="line">export USE_PRECOMPLIED_HEADER&#x3D;true</span><br><span class="line">export BUILD_LANGTOOLS&#x3D;true</span><br><span class="line">export BUILD_JAXP&#x3D;false</span><br><span class="line">export BUILD_JAXWS&#x3D;false</span><br><span class="line">export BUILD_CORBA&#x3D;false</span><br><span class="line">export BUILD_HOTSPOT&#x3D;true</span><br><span class="line">export BUILD_JDK&#x3D;true</span><br><span class="line"></span><br><span class="line">export SKIP_DEBUG_BUILD&#x3D;false</span><br><span class="line">export SKIP_FASTDEBUG_BUILD&#x3D;true</span><br><span class="line">export DEBUG_NAME&#x3D;debug</span><br><span class="line"></span><br><span class="line">BUILD_DEPLOY&#x3D;false</span><br><span class="line">BUILD_INSTALL&#x3D;false</span><br><span class="line"></span><br><span class="line">unset JAVA_HOME</span><br><span class="line">unset CLASSPATH</span><br><span class="line"></span><br><span class="line">make 2&gt;&amp;1 | tee &#x2F;usr&#x2F;local&#x2F;software&#x2F;build.log</span><br></pre></td></tr></table></figure>
+
+<h2 id="开始编译"><a href="#开始编译" class="headerlink" title="开始编译"></a>开始编译</h2><ul>
+<li><p>使用上一节写好的脚本</p>
+</li>
+<li><p>运行下面的命令</p>
+<ul>
+<li><code>chmod +x run.sh</code></li>
+<li><code>./run.sh</code></li>
+</ul>
+</li>
+<li><p>经过多次尝试，现在出现如下报错：</p>
+<p><code>g++: internal compiler error: Killed (program cc1plus)</code></p>
+</li>
+<li><p>处理方式</p>
+<ul>
+<li>内存不足，需要扩充内存</li>
+</ul>
+</li>
+</ul>
+<h2 id="问题收集："><a href="#问题收集：" class="headerlink" title="问题收集："></a>问题收集：</h2><h3 id="1-编译过程突然报错，报错信息如下"><a href="#1-编译过程突然报错，报错信息如下" class="headerlink" title="1. 编译过程突然报错，报错信息如下"></a>1. 编译过程突然报错，报错信息如下</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">g++: internal compiler error: Killed (program cc1plus)</span><br><span class="line">Please submit a full bug report,</span><br><span class="line">with preprocessed source if appropriate.</span><br><span class="line">See &lt;http:&#x2F;&#x2F;bugzilla.redhat.com&#x2F;bugzilla&gt; for instructions.</span><br><span class="line">make[7]: *** [ad_x86_64.o] Error 4</span><br><span class="line">make[7]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#x2F;linux_amd64_compiler2&#x2F;jvmg&#39;</span><br><span class="line">make[6]: *** [the_vm] Error 2</span><br><span class="line">make[6]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#x2F;linux_amd64_compiler2&#x2F;jvmg&#39;</span><br><span class="line">make[5]: *** [jvmg] Error 2</span><br><span class="line">make[5]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;build&#x2F;linux-amd64-debug&#x2F;hotspot&#x2F;outputdir&#39;</span><br><span class="line">make[4]: *** [generic_build2] Error 2</span><br><span class="line">make[4]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;hotspot&#x2F;make&#39;</span><br><span class="line">make[3]: *** [jvmg] Error 2</span><br><span class="line">make[3]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#x2F;hotspot&#x2F;make&#39;</span><br><span class="line">make[2]: *** [hotspot-build] Error 2</span><br><span class="line">make[2]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#39;</span><br><span class="line">make[1]: *** [generic_debug_build] Error 2</span><br><span class="line">make[1]: Leaving directory &#96;&#x2F;usr&#x2F;local&#x2F;software&#x2F;openjdk&#39;</span><br><span class="line">make: *** [build_debug_image] Error 2</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>分析原因：</p>
+<ol>
+<li>可能是阿里云买的最低配，导致编译的时候内存爆了</li>
+<li>Bootstrap JDK版本和书本的不一致，尝试按照书本一模一样的方式处理</li>
+<li>脚本建议手敲，复制黏贴容易错误</li>
+</ol>
+</blockquote>
+<h2 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h2><p><a href="https://blog.csdn.net/zitong_ccnu/article/details/50149757" target="_blank" rel="noopener">https://blog.csdn.net/zitong_ccnu/article/details/50149757</a> CenterOS7 编译OpenJDK7</p>
+<p><a href="https://www.bbsmax.com/A/GBJrKLa50e/" target="_blank" rel="noopener">https://www.bbsmax.com/A/GBJrKLa50e/</a> 案例2</p>
+<p><a href="https://hllvm-group.iteye.com/group/topic/35803" target="_blank" rel="noopener">https://hllvm-group.iteye.com/group/topic/35803</a> JVM的一些讨论，值得看看</p>
+<h1 id="处理问题的几个套路"><a href="#处理问题的几个套路" class="headerlink" title="处理问题的几个套路"></a>处理问题的几个套路</h1><h2 id="套路一：缺少依赖，却不知道安装的具体内容"><a href="#套路一：缺少依赖，却不知道安装的具体内容" class="headerlink" title="套路一：缺少依赖，却不知道安装的具体内容"></a>套路一：缺少依赖，却不知道安装的具体内容</h2><p>当提示缺少依赖，而你不知道要<code>yum install</code>什么时，你可以根据提示关键字搜一下<code>yum search</code>，然后在搜出的结果列表中，对有着相同前缀的依赖使用后缀通配符一键下载</p>
+]]></content>
+  </entry>
+  <entry>
     <title>WIN10系统安装与U盘系统制作教程</title>
     <url>/2020/07/26/WIN10%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E4%B8%8EU%E7%9B%98%E7%B3%BB%E7%BB%9F%E5%88%B6%E4%BD%9C%E6%95%99%E7%A8%8B/</url>
     <content><![CDATA[<h1 id="装机技巧系列（二）：系统安装之Windows-10启动盘制作"><a href="#装机技巧系列（二）：系统安装之Windows-10启动盘制作" class="headerlink" title="装机技巧系列（二）：系统安装之Windows 10启动盘制作"></a>装机技巧系列（二）：系统安装之Windows 10启动盘制作</h1><p><a href="https://zhuanlan.zhihu.com/p/36495771" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/36495771</a></p>
@@ -1067,6 +784,289 @@
       </categories>
       <tags>
         <tag>实用技巧</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Springboot 打包的一些学习</title>
+    <url>/2020/07/26/Springboot-%E6%89%93%E5%8C%85%E7%9A%84%E4%B8%80%E4%BA%9B%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<p><a href="https://blog.csdn.net/u012702547/article/details/95180256" target="_blank" rel="noopener">https://blog.csdn.net/u012702547/article/details/95180256</a></p>
+<p><a href="https://blog.csdn.net/weixin_38187317/article/details/82688906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82688906</a></p>
+<p>制作七牛-spring-boot-starter并上传中央仓库 <a href="https://blog.csdn.net/weixin_38187317/article/details/82723758" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82723758</a></p>
+<blockquote>
+<p>说明： 依照七牛云自己实现了一个springboot，已上传中央仓库 来源博客： <a href="https://blog.csdn.net/weixin_38187317/article/details/82688906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82688906</a> 目的：学习一下如何springboot 引入另一个springboot 的service层，</p>
+</blockquote>
+<h1 id="Spring-Boot-打包成的可执行-jar-，为什么不能被其他项目依赖？"><a href="#Spring-Boot-打包成的可执行-jar-，为什么不能被其他项目依赖？" class="headerlink" title="Spring Boot 打包成的可执行 jar ，为什么不能被其他项目依赖？"></a>Spring Boot 打包成的可执行 jar ，为什么不能被其他项目依赖？</h1><p><a href="https://blog.csdn.net/u012702547/article/details/95180256" target="_blank" rel="noopener">https://blog.csdn.net/u012702547/article/details/95180256</a></p>
+<blockquote>
+<p>说明：这里解读了为什么不能使用springboot 的插件打包</p>
+</blockquote>
+<h1 id="SpringBoot-如何手动引入本地的jar包-并利用maven成功打包"><a href="#SpringBoot-如何手动引入本地的jar包-并利用maven成功打包" class="headerlink" title="SpringBoot 如何手动引入本地的jar包 并利用maven成功打包"></a>SpringBoot 如何手动引入本地的jar包 并利用maven成功打包</h1><ul>
+<li>参考博客 <a href="https://www.javatt.com/p/84969" target="_blank" rel="noopener">https://www.javatt.com/p/84969</a></li>
+<li>需要执行如下命令： <code>mvn install:install-file -Dfile=./qiniu-spring-boot-starter-0.2-RELEASE.jar -DgroupId=com.zxd -DartifactId=myquartz -Dversion=8 -Dpackaging=jar</code></li>
+<li>Maven将自己的jar包引入本地库中 <a href="https://www.jianshu.com/p/cef1bc65584d" target="_blank" rel="noopener">https://www.jianshu.com/p/cef1bc65584d</a></li>
+</ul>
+<h1 id="Spring-Boot-制作一个自己的-Starter"><a href="#Spring-Boot-制作一个自己的-Starter" class="headerlink" title="Spring Boot 制作一个自己的 Starter"></a>Spring Boot 制作一个自己的 Starter</h1><p><a href="https://blog.csdn.net/wo18237095579/article/details/81197245#重点编写-autoconfigure-类" target="_blank" rel="noopener">https://blog.csdn.net/wo18237095579/article/details/81197245#重点编写-autoconfigure-类</a></p>
+<h1 id="Springboot-打Jar包，Maven完美解决本地Jar包自动打入Springboot-Jar包中"><a href="#Springboot-打Jar包，Maven完美解决本地Jar包自动打入Springboot-Jar包中" class="headerlink" title="Springboot 打Jar包，Maven完美解决本地Jar包自动打入Springboot Jar包中"></a>Springboot 打Jar包，Maven完美解决本地Jar包自动打入Springboot Jar包中</h1><p><a href="https://www.sojson.com/blog/253.html" target="_blank" rel="noopener">https://www.sojson.com/blog/253.html</a></p>
+<h1 id="Maven将自己的jar包引入本地库中"><a href="#Maven将自己的jar包引入本地库中" class="headerlink" title="Maven将自己的jar包引入本地库中"></a>Maven将自己的jar包引入本地库中</h1><p><a href="https://www.jianshu.com/p/cef1bc65584d" target="_blank" rel="noopener">https://www.jianshu.com/p/cef1bc65584d</a></p>
+<p>#　制作SpringBoot的jar给其他项目使用需要注意的点 <a href="https://blog.csdn.net/weixin_38187317/article/details/82688906" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38187317/article/details/82688906</a></p>
+]]></content>
+      <categories>
+        <category>Springboot</category>
+      </categories>
+      <tags>
+        <tag>Springboot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PicGo和码云实现自建图床</title>
+    <url>/2020/07/26/PicGo%E5%92%8C%E7%A0%81%E4%BA%91%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%BB%BA%E5%9B%BE%E5%BA%8A/</url>
+    <content><![CDATA[<h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<a href="https://zhuanlan.zhihu.com/p/102594554" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/102594554</a></p>
+<h2 id="测试图床链接："><a href="#测试图床链接：" class="headerlink" title="测试图床链接："></a>测试图床链接：</h2><p>链接1 ：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png</a></p>
+<p>链接2：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png</a></p>
+<p>链接3：</p>
+<p><a href="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png" target="_blank" rel="noopener">https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png</a></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959" alt="最终结果1"></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959" alt="最终结果2"></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959" alt="最终结果3"></p>
+<a id="more"></a>
+
+<h2 id="为什么要使用码云代替图床"><a href="#为什么要使用码云代替图床" class="headerlink" title="为什么要使用码云代替图床"></a>为什么要使用码云代替图床</h2><ul>
+<li>github毕竟是外国服务器，上传过程中因为网络问题有可能会无法使用的情况</li>
+<li>码云作为国内的“github”，访问和上传速度更快，所以使用码云更为方便</li>
+<li>目前<code>PicGo 2.0</code>之后已经有人集成了插件，使用和github一样简单好用</li>
+</ul>
+<h2 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h2><h3 id="1-下载PicGo"><a href="#1-下载PicGo" class="headerlink" title="1. 下载PicGo"></a>1. 下载PicGo</h3><p>官网地址：<a href="https://molunerfinn.com/PicGo/" target="_blank" rel="noopener">https://molunerfinn.com/PicGo/</a></p>
+<p>Github 快捷网址：<a href="https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo/releases/tag/v2.2.2</a> 选择对应的版本下载即可</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131933.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>更多信息访问Github：<a href="https://github.com/Molunerfinn/PicGo" target="_blank" rel="noopener">https://github.com/Molunerfinn/PicGo</a></p>
+<h3 id="2-安装PicGo"><a href="#2-安装PicGo" class="headerlink" title="2. 安装PicGo"></a>2. 安装PicGo</h3><p>安装过程就忽略了，安装完成之后打开软件</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132027.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="3-PicGo-安装gitee-插件"><a href="#3-PicGo-安装gitee-插件" class="headerlink" title="3. PicGo 安装gitee 插件"></a>3. PicGo 安装gitee 插件</h3><p>前提条件：<strong>注意PicGo安装的前提条件是2.0版本之后新增的插件功能！！！</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132225.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>将鼠标滚轮滚到最下面，会发现有一个插件设置</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132358.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>选择安装 <code>gitee-uploader 1.1.2</code>这个插件</p>
+<blockquote>
+<p><strong>安装失败如何解决</strong>？</p>
+<p>注意该插件需要node.js 的环境，Node.js的安装如下</p>
+<p><a href="http://nodejs.cn/download/" target="_blank" rel="noopener">http://nodejs.cn/download/</a></p>
+<p>进入中文官网之后，安装对应的版本即可</p>
+<p>window 下面的exe程序安装之后会自动的配置环境变量，这时候我们可以使用命令查一下是否有Node环境</p>
+<ol>
+<li>win 键 + R 打开<strong>运行</strong>窗口</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132719.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>输入命令<code>node -v</code></li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319132750.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>如果出现如上所示的内容则证明安装成功</li>
+</ol>
+</blockquote>
+<h3 id="4-码云搭建图床仓库"><a href="#4-码云搭建图床仓库" class="headerlink" title="4. 码云搭建图床仓库"></a>4. 码云搭建图床仓库</h3><ol>
+<li>进入自己的码云：<a href="https://gitee.com/lazyTimes/projects" target="_blank" rel="noopener">https://gitee.com/lazyTimes/projects</a> 这是我的码云地址</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133220.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择右上角有一个 <code>&quot;+&quot;</code>号，选择新建仓库</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133327.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>填写基本信息，页面翻到最下面，选择保存</li>
+</ol>
+<p><img src="http://null/" alt="image-20200319133550209"></p>
+<ol>
+<li>新建仓库成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319133836.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h3 id="5-获取gitee私人令牌"><a href="#5-获取gitee私人令牌" class="headerlink" title="5. 获取gitee私人令牌"></a>5. 获取gitee私人令牌</h3><p>和github一样，在最终设置之前我们需要获取一下gitee令牌用于上传</p>
+<ol>
+<li>登录gitee之后，右上角选择</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214555.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“私人令牌”</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214625.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>选择“生成令牌”，进入到令牌到创建页面</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214721.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>勾选如图到内容，一般只需要用到前面几项就可以满足我们到需求。按要求输入密码即可生成成功</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319214905.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<ol>
+<li>生成令牌成功，将令牌内容保存在自己到笔记，防止忘记</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215102.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>经过如上步骤之后，我们基本就算是大功告成了，现在只需要在PicGo里面配置一下即可</p>
+<h3 id="6-PicGo-配置"><a href="#6-PicGo-配置" class="headerlink" title="6. PicGo 配置"></a>6. PicGo 配置</h3><ul>
+<li>repo：必填，填写gitee上面的仓库名称</li>
+<li>branch：一般默认master 即可，有需要可以建立自己到分支</li>
+<li>tolken：要用到上一节所述到私人令牌，如果忘记了可以进入页面之后重新获取一下新令牌</li>
+<li>path：写上文件存放到位置，一般写上<code>img</code>即可</li>
+<li>customPath：定义传输到格式，一般可以不用管</li>
+<li>customUrl：自定义上传到链接</li>
+</ul>
+<blockquote>
+<p>不知道怎么获取repo地址？</p>
+<ol>
+<li>进入自己到图床仓库到主页，复制地址栏到内容</li>
+<li>复制下方到用户和项目名称</li>
+</ol>
+<p><strong>注意中间到内容不要存在空格，删除注意不要多删除字符造成上传失败</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200319215400.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+</blockquote>
+<p>最终到配置结果如下所示</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319131435.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于github存在限制加上外网访问普遍较慢到问题，如果网速不给力并且没有科学上网工具建议使用gitee作为图形仓库。可以在1S内上传，非常方便。赶紧把gitee用起来把</p>
+]]></content>
+      <categories>
+        <category>博客</category>
+      </categories>
+      <tags>
+        <tag>PicGo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Window 下面使用代办清单软件</title>
+    <url>/2020/07/26/Window-%E4%B8%8B%E9%9D%A2%E4%BD%BF%E7%94%A8%E4%BB%A3%E5%8A%9E%E6%B8%85%E5%8D%95%E8%BD%AF%E4%BB%B6/</url>
+    <content><![CDATA[<h1 id="windows-代办清单软件"><a href="#windows-代办清单软件" class="headerlink" title="windows 代办清单软件"></a>windows 代办清单软件</h1><h2 id="为什么要使用待办任务软件"><a href="#为什么要使用待办任务软件" class="headerlink" title="为什么要使用待办任务软件"></a>为什么要使用待办任务软件</h2><ul>
+<li>人的记忆是靠不住的</li>
+<li>琐事繁杂，列出清单能更好的</li>
+</ul>
+<h2 id="使用代办清单的好处"><a href="#使用代办清单的好处" class="headerlink" title="使用代办清单的好处"></a>使用代办清单的好处</h2><ul>
+<li>理清思路</li>
+<li>把事情拆分，一条条处理</li>
+<li>今日事，今日毕</li>
+<li>保持良好的时间管理习惯，防止懈怠</li>
+<li>可以结合番茄工作法</li>
+</ul>
+<h2 id="怎么使用代办清单软件"><a href="#怎么使用代办清单软件" class="headerlink" title="怎么使用代办清单软件"></a>怎么使用代办清单软件</h2><ul>
+<li><p>使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">奇妙清单</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>地址：<a href="https://www.wunderlist.com/" target="_blank" rel="noopener">https://www.wunderlist.com/</a></li>
+<li>目前已经被收购</li>
+</ul>
+</li>
+<li><p>微软的TODO List，实现简单</p>
+<ul>
+<li>地址：<a href="https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab" target="_blank" rel="noopener">https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab</a></li>
+</ul>
+</li>
+<li><p>滴答清单</p>
+<ul>
+<li>地址：<a href="https://www.dida365.com/about/download" target="_blank" rel="noopener">https://www.dida365.com/about/download</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="滴答清单的使用"><a href="#滴答清单的使用" class="headerlink" title="滴答清单的使用"></a>滴答清单的使用</h2><ul>
+<li>使用对应的账号关联登陆，这里使用个人的微信账号</li>
+<li>在左侧清单<ul>
+<li>任务清单的名称</li>
+</ul>
+</li>
+<li>在指定清单创建任务</li>
+<li>选择每一条任务，设置优先级</li>
+<li>右侧设置日期</li>
+</ul>
+]]></content>
+      <categories>
+        <category>待办任务</category>
+      </categories>
+      <tags>
+        <tag>TODOs</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【数据对比】综合分析百度情感分析以及华为情感分析的差异，我有了如下结果</title>
+    <url>/2020/07/26/%E3%80%90%E6%95%B0%E6%8D%AE%E5%AF%B9%E6%AF%94%E3%80%91%E7%BB%BC%E5%90%88%E5%88%86%E6%9E%90%E7%99%BE%E5%BA%A6%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8A%E5%8D%8E%E4%B8%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%E7%9A%84%E5%B7%AE%E5%BC%82%EF%BC%8C%E6%88%91%E6%9C%89%E4%BA%86%E5%A6%82%E4%B8%8B%E7%BB%93%E6%9E%9C/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>某一天，经理找到我，说BOSS需要情感分析对比的结果，我这边能不能研究一下几家情感分析的平台，按照（巴拉巴拉）的要求进行分析，于是就有了这篇文章……</p>
+<h1 id="为什么要进行对比"><a href="#为什么要进行对比" class="headerlink" title="为什么要进行对比"></a>为什么要进行对比</h1><ol>
+<li>公司任务</li>
+<li>了解下情感分析</li>
+<li>对比几家情感分析</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景:"></a><strong>业务场景:</strong></h1><p>​    爬虫截取微博网上留言信息，调用华为云的情感分析，百度云情感分析（通用接口），百度云情感分析（定制化模型，自定义学习资料）。根据以下几个点进行对比。</p>
+<ul>
+<li>未处理的原版数据<ul>
+<li>通用模型- 原版分类置信度</li>
+<li>定制模型 - 原版分类置信度 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版分类置信度 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>原版评论分类置信度 （华为云 仅2000条左右数据）</li>
+<li>通用模型- 原版评论负面倾向概率</li>
+<li>定制模型 - 原版评论负面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版评论负面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>通用模型- 原版评论正面倾向概率</li>
+<li>使用定制模型 - 原版评论正面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>使用定制模型 - 原版评论正面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>通用模型- 原 版评论分析正负结果值</li>
+<li>定制模型 - 原版评论分析正负结果值 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版评论分析正负结果值 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>原版评论正负结果值 （华为云 仅2000条左右数据）</li>
+</ul>
+</li>
+<li>处理掉@和#后的评论数据：<ul>
+<li>通用模型- 原版分类置信度</li>
+<li>定制模型 - 原版分类置信度 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版分类置信度 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>原版评论分类置信度 （华为云 仅2000条左右数据）</li>
+<li>通用模型- 原版评论负面倾向概率</li>
+<li>定制模型 - 原版评论负面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版评论负面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>通用模型- 原版评论正面倾向概率</li>
+<li>使用定制模型 - 原版评论正面倾向概率 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>使用定制模型 - 原版评论正面倾向概率 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>通用模型- 原 版评论分析正负结果值</li>
+<li>定制模型 - 原版评论分析正负结果值 （800条学习资料样本， 85.96%准确率的学习资料）</li>
+<li>定制模型 - 原版评论分析正负结果值 （1800条学习资料样本， 65.93%准确率的学习资料）</li>
+<li>原版评论正负结果值 （华为云 仅2000条左右数据）</li>
+</ul>
+</li>
+</ul>
+<h1 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题:"></a><strong>解决的问题:</strong></h1><ol>
+<li>对比了两家的情感分析之后，经过综合分析，<strong>百度云情感分析（通用模型</strong>）的准确率是最高的。</li>
+<li>目前综合来看，百度云的情感分析通用模式是自然语言分析的最好选择。</li>
+<li>定制化的百度模型实际测试不如通用模型准确（可能为学习模型数据不够准确）。</li>
+</ol>
+<h1 id="挑战"><a href="#挑战" class="headerlink" title="挑战:"></a><strong>挑战:</strong></h1><ol>
+<li>首次使用华为云情感分析，对于接口调用方面自己阅读文档不够详细，走了较多的弯路，不过经过仔细研究自行解决。</li>
+<li>由于存在QPS限制，调用的时候需要限制调用频率。</li>
+<li>由于网络原因可能存在频繁调用的情况。</li>
+<li>数据较多的情况下处理数据的时长比较久（针对试用而言）。</li>
+<li>根据不同的定制化模型。</li>
+<li>可能存在无法分析的特殊字符数据。</li>
+</ol>
+<h1 id="使用服务"><a href="#使用服务" class="headerlink" title="使用服务:"></a><strong>使用服务:</strong></h1><p>自然语言处理 - 情感分析</p>
+<h1 id="如何解决"><a href="#如何解决" class="headerlink" title="如何解决:"></a><strong>如何解决:</strong></h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 在不超过**qps**限制的情况下，试用分页形式，分段请求，在数据库中设置 判断值判断数据是否进行分析，如果重复调用会直接过滤掉已经进行情感分析的数据。</span><br><span class="line">   2. 对于线程进行&#96;休眠&#96;操作，防止调用请求过于频繁接口调用失败。</span><br><span class="line">   3. 使用日志记录失败请求信息，失败请求原因，失败请求数据。</span><br><span class="line">   4. 多次调用数据确保大部分数据可以产生结果，个别数据请求失败以及没有数据的忽略。</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景:"></a><strong>使用场景:</strong></h1><ol>
+<li>比对市面上几家华为云的情感分析使用，根据分析结果数据进行比对。</li>
+<li>对比百度云通用模型和定制化模型的使用。</li>
+<li>对比不同的环境下分析的数据，数据差异值。</li>
+</ol>
+<h1 id="方案截图"><a href="#方案截图" class="headerlink" title="方案截图:"></a><strong>方案截图:</strong></h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200725102058.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>（处理掉特殊字符前的截图）</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200725102133.png?ynotemdtimestamp=1595729096959" alt="img"></p>
+<p>（处理掉特殊字符后的截图）</p>
+<h1 id="使用规模"><a href="#使用规模" class="headerlink" title="使用规模:"></a><strong>使用规模:</strong></h1><p>共1000条数据左右。（其实总共有18000条数据）</p>
+<h1 id="使用收益："><a href="#使用收益：" class="headerlink" title="使用收益："></a><strong>使用收益：</strong></h1><p>对比了百度情感分析和华为云的情感分析，对比结果比较显著，在情感分析的领域发现是百度云的使用情况较好。</p>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>原数据报表有 18000条，如果有对情感分析感兴趣，或者想要了解情感分析对比结果的，可以留言邮箱，我会抽空把报表数据发送至您的邮箱</p>
+<p>如果觉得对您有帮助欢迎扩散</p>
+<h1 id="作者："><a href="#作者：" class="headerlink" title="作者："></a><strong>作者：</strong></h1><p>阿东</p>
+]]></content>
+      <categories>
+        <category>未分类</category>
+      </categories>
+      <tags>
+        <tag>情感分析</tag>
       </tags>
   </entry>
   <entry>
@@ -1109,6 +1109,1789 @@
       </categories>
       <tags>
         <tag>鸡汤</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LINUX鸟哥的私房菜</title>
+    <url>/2020/07/26/LINUX%E9%B8%9F%E5%93%A5%E7%9A%84%E7%A7%81%E6%88%BF%E8%8F%9C/</url>
+    <content><![CDATA[<h1 id="LINUX鸟哥的私房菜笔记："><a href="#LINUX鸟哥的私房菜笔记：" class="headerlink" title="LINUX鸟哥的私房菜笔记："></a>LINUX鸟哥的私房菜笔记：</h1><h2 id="第一章：计算机概论"><a href="#第一章：计算机概论" class="headerlink" title="第一章：计算机概论"></a>第一章：计算机概论</h2><ul>
+<li>CPU<ul>
+<li>基本结构<ul>
+<li>控制单元</li>
+<li>存储单元</li>
+<li>内存</li>
+<li>输入单元</li>
+<li>输出单元</li>
+</ul>
+</li>
+<li>内存</li>
+<li>指令集<ul>
+<li>精简指令集 RISC<ul>
+<li>SPARC</li>
+<li>PowerPC</li>
+<li>Cell</li>
+</ul>
+</li>
+<li>复杂指令集 CISC<ul>
+<li>AMD</li>
+<li>Inter</li>
+<li>VIA</li>
+<li>X86 的起源</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Bit： CPU一次读取的最大量</li>
+</ul>
+</li>
+<li>人体和电脑设备的比喻</li>
+<li>电脑分类<ul>
+<li>超级计算机</li>
+<li>大型计算机</li>
+<li>迷你计算机</li>
+<li>工作站</li>
+</ul>
+</li>
+<li>电脑常用的计量单位<ul>
+<li>Mbit</li>
+<li>Ghz</li>
+</ul>
+</li>
+<li>CPU的工作频率：外频与倍频<ul>
+<li>外频：CPU与外部组件数据传输的速度</li>
+<li>倍频：CPU内部加速工作性能的倍数</li>
+<li>超频</li>
+</ul>
+</li>
+<li>内存<ul>
+<li>多通道设计</li>
+<li>DDR</li>
+<li>DRAM 和 SRAM</li>
+<li>二级缓存：CPU内部的内存缓存</li>
+<li>ROM<ul>
+<li>BIOS</li>
+<li>现在已写入到闪存或者硬件中</li>
+<li>固件</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>显卡<ul>
+<li>主要的连接接口<ul>
+<li>D-Sub</li>
+<li>DVI</li>
+<li>HDMI</li>
+<li>DisplayPort</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>硬盘：<ul>
+<li>组成：<ul>
+<li>碟片</li>
+<li>磁头</li>
+<li>主轴马达</li>
+<li>机器手臂</li>
+</ul>
+</li>
+<li>最小单元：扇区</li>
+<li>传输接口：<ul>
+<li>SATA</li>
+<li>USB</li>
+<li>SAS</li>
+</ul>
+</li>
+<li>固态硬盘</li>
+</ul>
+</li>
+<li>使用须知</li>
+<li>扩展接口</li>
+<li>主板<ul>
+<li>设备IO地址和IRQ中断请求</li>
+<li>连接外置设备</li>
+</ul>
+</li>
+<li>主机电源</li>
+<li>数据的表示方式<ul>
+<li>数字系统</li>
+<li>字符编码系统</li>
+<li>操作系统<ul>
+<li>概念<ul>
+<li>只管理硬件资源</li>
+<li>内核参考硬件写成</li>
+<li>应用程序参考操作系统</li>
+</ul>
+</li>
+<li>内核功能<ul>
+<li>系统调用</li>
+<li>进程管理</li>
+<li>内存管理</li>
+<li>文件系统管理</li>
+<li>设备驱动</li>
+</ul>
+</li>
+<li>注意点：</li>
+</ul>
+</li>
+<li>重点回顾<ul>
+<li>计算机定义</li>
+<li>计算机五大单元</li>
+<li>CPU的作用</li>
+<li>CPU频率，外频和倍频，以及超频</li>
+<li>新CPU的主要变化</li>
+<li>CPU处理数据</li>
+<li>内存分类<ul>
+<li>动态随机存取内存</li>
+<li>静态随机存取内存</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="第二章：Linux起源"><a href="#第二章：Linux起源" class="headerlink" title="第二章：Linux起源"></a>第二章：Linux起源</h2><ul>
+<li>Unix的发展背景</li>
+<li>GNU计划，开放源代码</li>
+<li>Minix 的发展</li>
+<li>Linux的雏形<ul>
+<li>Minix不满足要求</li>
+<li>学到的东西<ul>
+<li>基础知识和技能</li>
+<li>一点成功之后，勇于挑战</li>
+<li>把“玩具”发扬光大</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>虚拟团队对于LInux的改进</li>
+<li>Linux版本<ul>
+<li>主次版本为奇数：开发中</li>
+<li>主次版本为偶数：稳定版本</li>
+<li>主线版本：长期维护<ul>
+<li>判断是否为长期版本的办法<ul>
+<li><code>uname -r</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Linux发行版</li>
+<li>Linux应用<ul>
+<li>云端应用</li>
+<li>虚拟化</li>
+</ul>
+</li>
+<li>从头学习Linux<ul>
+<li>选择一本好用的工具书<ul>
+<li>推荐的网络书： NETMAN</li>
+</ul>
+</li>
+<li>发生问题怎么处理</li>
+<li>FAQ：<ul>
+<li>/usr/share/doc</li>
+<li><a href="http://www.tldp.org" target="_blank" rel="noopener">http://www.tldp.org</a></li>
+</ul>
+</li>
+<li>必要掌握点：<ul>
+<li>计算机概论与硬件相关知识</li>
+<li>从Linux安装和命令学起</li>
+<li>Linux操作系统的基本技能</li>
+<li>学会VI编辑器</li>
+<li>Shell与脚本学习</li>
+<li>一定要会软件管理<ul>
+<li>Tarball</li>
+<li>RPM</li>
+<li>DPKG</li>
+<li>YUM</li>
+<li>APT</li>
+</ul>
+</li>
+<li>网络基础学习</li>
+<li>网站搭建</li>
+</ul>
+</li>
+<li>网络的书推荐<ul>
+<li><a href="http://Http://linux.vbird.org" target="_blank" rel="noopener">Http://linux.vbird.org</a></li>
+</ul>
+</li>
+<li>实践大于一切</li>
+<li>习惯：<ul>
+<li>有系统的设计文件目录</li>
+<li>养成做记录的习惯</li>
+<li>作为用户人迁就机器，作为开发，机器迁就人</li>
+<li>会“偷”，“偷”了会改，改了会变，变则通</li>
+</ul>
+</li>
+<li>兴趣</li>
+<li>成就感</li>
+<li>建立兴趣</li>
+<li>协助回答问题</li>
+<li>参与讨论</li>
+<li>不同环境，解决办法很多，只要行得通就是好办法</li>
+</ul>
+</li>
+</ul>
+<h3 id="简答题："><a href="#简答题：" class="headerlink" title="简答题："></a>简答题：</h3><ol>
+<li>你再主机上安装了一块网卡，但是开机之后，系统却无法使用，网卡是好的，可能哪里出问题，如何解决？</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">链接：https:&#x2F;&#x2F;www.nowcoder.com&#x2F;questionTerminal&#x2F;1dc7f18e85e04269b1a355b32692c8ba?orderByHotValue&#x3D;1&amp;page&#x3D;1&amp;onlyReference&#x3D;false</span><br><span class="line">来源：牛客网</span><br><span class="line"></span><br><span class="line">网卡是否启动，是否配置了开机自启。可以修改 &#x2F;etc&#x2F;sysconf&#x2F;network-sripts&#x2F;ifcfg-ethX，其中X是网卡号，</span><br><span class="line">DEVICE&#x3D;eth0                              #网卡对应的设备别名</span><br><span class="line">BOOTPROTO&#x3D;static                    #网卡获得ip地址的方式（默认为dhcp，表示自动获取）</span><br><span class="line">HWADDR&#x3D;00:07:E9:05:E8:B4    #网卡MAC地址（物理地址）</span><br><span class="line">IPADDR&#x3D;192.168.100.100          #IP地址</span><br><span class="line">NETMASK&#x3D;255.255.255.0          #子网掩码 </span><br><span class="line">ONBOOT&#x3D;yes                              #系统启动时是否激活此设备</span><br></pre></td></tr></table></figure>
+
+<p>2.一个操作系统至少可以完整控制整个硬件，请问操作系统要控制哪些单元</p>
+<blockquote>
+<p>（1）运算单元，用来执行当前指令所规定的算术运算和逻辑运算，具有定点和浮点运算功能；（2）控制单元，指挥微处理器执行指令操作的功能； （3）寄存器组，用来暂存操作数，中间结果和处理结果，它构成了微处理器内部的小型存贮空间，其容量大小影响到微处理器的效率； （4）总线接口单元，提供微处理器与周围其它硬件的接口，有效地将微处理器的地址、数据和控制等信息通过总线和各相关部件接通； （5）输入/<a href="https://www.baidu.com/s?wd=输出接口&tn=SE_PcZhidaonwhc_ngpagmjz&rsv_dl=gh_pc_zhidao" target="_blank" rel="noopener">输出接口</a>单元。</p>
+</blockquote>
+<ol>
+<li>window上的游戏能不能到Linux去玩</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">不能，操作系统不一样</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Unix 是谁写出来的？ GNU 计划是谁发起的？</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GNU 是 GNU is Not Unix 的简写，是个无穷循环！ 另外，这个计划是由自由软件基金会 (Free Software Foundation, FSF) 所支</span><br><span class="line">持的！ 两者都是由 Stallman 先生所发起的！</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>何谓多人 ( Multi-user ) 多任务 ( Multitask )？</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Multiuser 指的是 Linux 允许多人同时连上主机之外，每个用户皆有其各人的使用环境，并且可以同时使用系统的资源！</span><br><span class="line">Multitask 指的是多任务环境，在 Linux 系统下， CPU 与其他例如网络资源可以同时进行多项工作， Linux 最大的特色之一</span><br><span class="line">即在于其多任务时，资源分配较为平均</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Linux 本身仅是一个核心与相关的核心工具而已，不过，他已经可以驱动所有的硬件， 所以，可以算是一 个很阳春的操作系统了。经过其他应用程序的开发之后，被整合成为 Linux distribitions。请问众多的 distributions 之间，有何异同？</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">相同：(1)同样使用 http:&#x2F;&#x2F;www.kernel.org 所释出的核心； (2)支持同样的标准，如 FHS、LSB 等； (3)使用几乎相同的自由软</span><br><span class="line">件 (例如 GNU 里面的 gcc&#x2F;glibc&#x2F;vi&#x2F;apache&#x2F;bind&#x2F;sendmail... )； (4)几乎相同的操作接口 (例如均使用 bash&#x2F;KDE&#x2F;GNOME 等等)。</span><br><span class="line">不同：使用的 kernel 与各软件的版本可能会不同；各开发商加入的应用工具不同，使用的套件管理模式不同(dpkg 与 RPM)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>什么是 POSIX ?为何说 Linux 使用 POSIX 对于发展有很好的影响？</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POSIX 是一种标准规范，主要针对在 Unix 操作系统上面跑的程序来进行规范。 若你的操作系统符合 POSIX ，则符合 POSIX</span><br><span class="line">的程序就可以在你的操作系统上面运作。 Linux 由于支持 POSIX ，因此很多 Unix 上的程序可以直接在 Linux 上运作， 因</span><br><span class="line">此程序的移植相当简易！也让大家容易转换平台，提升 Linux 的使用率。</span><br></pre></td></tr></table></figure>
+
+<h2 id="第三章：主观规划与磁盘分区"><a href="#第三章：主观规划与磁盘分区" class="headerlink" title="第三章：主观规划与磁盘分区"></a>第三章：主观规划与磁盘分区</h2><ul>
+<li>Linux和硬件的搭配<ul>
+<li>认识计算机硬件<ul>
+<li>注意硬件的性价比</li>
+<li>注意电费</li>
+</ul>
+</li>
+<li>选择Linux搭配的主机<ul>
+<li>CPU<ul>
+<li>i3最低要求</li>
+</ul>
+</li>
+<li>内存<ul>
+<li>越大越好</li>
+</ul>
+</li>
+<li>硬盘：<ul>
+<li>通常：20G</li>
+<li>高级：磁盘阵列</li>
+</ul>
+</li>
+<li>显卡<ul>
+<li>32M</li>
+</ul>
+</li>
+<li>网卡：<ul>
+<li>网络IO频繁要选好网卡</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>各硬件设备在Linux的文件名</li>
+</ul>
+</li>
+<li>磁盘分区<ul>
+<li>磁盘连接方式和设备文件名的关系<ul>
+<li>正常：/dev/sd[a-p]</li>
+<li>虚拟化环境：/dev/vd[a-p]</li>
+<li>决定关系：Linux的检测磁盘顺序</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>分区几点：<ul>
+<li>MBR</li>
+<li><h2 id="四个主分区和一个扩展分区"><a href="#四个主分区和一个扩展分区" class="headerlink" title="四个主分区和一个扩展分区"></a>四个主分区和一个扩展分区</h2></li>
+<li>MBR 与 GPT 磁盘分区表<ul>
+<li>MBR<ul>
+<li>512字节大小<ul>
+<li>主引导记录：引导程序的地方，446字节</li>
+<li>分区表：记录整个硬盘分区状态，64字节<ul>
+<li>最多只能有四组记录</li>
+<li>记录该区开始和结束柱面号码</li>
+<li>注意点<ul>
+<li>所谓分区仅仅是对于64字节的分区表设置</li>
+<li>磁盘默认只能写入四组分区信息</li>
+<li>主要分区和扩展分区</li>
+<li>最小单位为柱面</li>
+</ul>
+</li>
+<li>写入磁盘必须参考分区表才能操作</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>数据安全性</li>
+<li>系统性能</li>
+</ul>
+</li>
+<li>GPT<ul>
+<li>出现原因<ul>
+<li>MBR无法操作2.2T以上磁盘</li>
+<li>MBR只有一个区块，破会后无法恢复</li>
+<li>MBR存放引导程序只有446字节，无法存储较多程序代码</li>
+</ul>
+</li>
+<li>分区<ul>
+<li>34个LBA区块记录分区</li>
+<li>LBA0（MBR兼容区块）<ul>
+<li>存放引导信息</li>
+</ul>
+</li>
+<li>LBA1 （GPT表头记录）<ul>
+<li>分区表的本身位置和大小</li>
+<li><strong>后面34个备份GPT分区</strong></li>
+</ul>
+</li>
+<li>LBA2-33(实际分区信息记录)<ul>
+<li>4 * 32 =128 组</li>
+<li>【2^64 * 512 = 2^63 * 1K字节 = 2^33 * TB = 8ZB】 1ZB = 2^30TB</li>
+</ul>
+</li>
+<li>现在的内核使用特殊方式没有所谓的主分区，扩展分区和逻辑分区</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>启动程序BIOS和UEFI启动检测程序<ul>
+<li>BIOS<ul>
+<li>系统启动的第一个程序</li>
+<li>直接写在硬件上的一个程序</li>
+<li>启动过程：<ul>
+<li>BIOS:启动固件，认识第一个可启动设备</li>
+<li>MBR：第一个可启动的设备第一个扇区的主引导记录块，内部引导代码</li>
+<li>启动引导程序（boot loader）：可读内核文件的软件</li>
+<li>内核文件，开始启动系统</li>
+</ul>
+</li>
+<li>Boot Loader 作用<ul>
+<li>提供不同选项，多重引导</li>
+<li>加载内核文件</li>
+<li>启动管理功能转交给其他引导程序<ul>
+<li><strong>启动引导程序可以装在分个分区的启动扇区</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>多重引导<ul>
+<li>每个分区都有自己启动扇区</li>
+<li>第一以及第二扇区</li>
+<li>实际可启动的内核文件放到各个分区</li>
+<li>功能：认识自己分区的可启动内核文件，其他引导程序</li>
+<li>直接或者间接管理权给另一个启动引导管理程序</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>UEFI 搭配GPT启动流程<ul>
+<li>某些时刻可能需要关闭UEFI 的 secure boot 功能</li>
+<li>双系统清务必先安装windows</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Linux 安装模式分区选择（极其重要）<ul>
+<li>目录树结构<ul>
+<li>根目录</li>
+</ul>
+</li>
+<li>文件系统与目录树挂载<ul>
+<li>什么是挂载？<ul>
+<li>利用目录成为进入点，磁盘分区放置到目录下面</li>
+<li>进入该目录就可以读取该分区</li>
+</ul>
+</li>
+<li>判断文件在哪个分区<ul>
+<li>哪个“进入点”先被查到，被查到的就是进入点</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>规划磁盘分区<ul>
+<li>自定义安装<ul>
+<li>初学： “/” 以及 “swap” 分区即可</li>
+<li>预备一个备用的剩余磁盘容量</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>安装Linux之前的规划<ul>
+<li>选择适当发行版<ul>
+<li>镜像站</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>主机服务和硬件的关系<ul>
+<li>window和Linux共存</li>
+<li>NAT</li>
+<li>SAMBA</li>
+<li>Mail</li>
+<li>Web</li>
+<li>DHCP</li>
+<li>FTP</li>
+</ul>
+</li>
+<li>主机硬盘规划<ul>
+<li>主机硬件出问题，文件能否安全保存</li>
+<li>最简单分区办法<ul>
+<li>如上的新人办法</li>
+<li>很不靠谱</li>
+</ul>
+</li>
+<li>稍微麻烦一些<ul>
+<li>比较符合读写容量大而且读写频繁的场景分区办法<ul>
+<li>/boot</li>
+<li>/</li>
+<li>/home</li>
+<li>/var</li>
+<li>swap</li>
+</ul>
+</li>
+<li>注意服务种类</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>两个案例<ul>
+<li>家用小型Linux服务器，IP共享和文件共享中心</li>
+<li>Linux的PC集群</li>
+</ul>
+</li>
+</ul>
+<p>第三章：安装CenterOs7</p>
+<p>本章基本全靠实操，务必多操作几遍</p>
+<ul>
+<li>练习规划<ul>
+<li>配置<ul>
+<li>CPU： I5以上</li>
+<li>内存：最少提供1.2G以上内存</li>
+<li>硬盘：40GB Virtio 接口</li>
+<li>网卡：Bridge 桥接对外网卡</li>
+<li>显卡：60MB左右显存</li>
+<li>其他<ul>
+<li>键盘</li>
+<li>鼠标</li>
+<li>屏幕</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>磁盘分区参考<ul>
+<li>强制使用GPT模式</li>
+<li>BIOS boot 2MB</li>
+<li>/boot</li>
+<li>/</li>
+<li>/home</li>
+<li>swap</li>
+</ul>
+</li>
+<li>启动引导程序</li>
+<li>选择软件</li>
+<li>检查</li>
+</ul>
+</li>
+<li>开始安装CenterOs7<ul>
+<li>步骤：<ul>
+<li>调整BIOS</li>
+<li>选择安装模式</li>
+<li>选择语言</li>
+<li>软件选择</li>
+<li>磁盘分区</li>
+<li>启动引导程序</li>
+<li>安装后的首次设置</li>
+</ul>
+</li>
+<li>调整BIOS和虚拟机创建流程<ul>
+<li><code>dd if=centeros7.iso of=/dev/sdc</code></li>
+<li>光盘错误处理<ul>
+<li>硬件不支持</li>
+<li>光盘跳盘</li>
+<li>光盘有问题</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>安装模式启动<ul>
+<li>正常安装</li>
+<li>测试后再安装</li>
+<li>除错模式<ul>
+<li>图形化界面安装</li>
+<li>恢复系统</li>
+<li>运行内存测试程序</li>
+<li>本地磁盘启动，不使用光盘</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>如何GPT强制执行（关键）<ul>
+<li>正常安装CENTERos 7</li>
+<li>按下Tab键</li>
+<li>输入参数，自行百度</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>安装过程<ul>
+<li>不记录，请看书</li>
+</ul>
+</li>
+<li>其他功能：<ul>
+<li>RAM测试，安装笔记本的内核参数<ul>
+<li>内存压力测试：memtest86</li>
+</ul>
+</li>
+<li>安装笔记本电脑的参数<ul>
+<li>去掉笔记本的一些配置影响<ul>
+<li>正常安装centeros 7</li>
+<li><code>nofb apm=off acpi=off pci=noacpi</code></li>
+<li>nofb 取消缓存检测</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>多重引导安装和管理（可选）</li>
+<li>安装规划</li>
+</ul>
+</li>
+</ul>
+<h2 id="第四章：首次登陆和在线求助"><a href="#第四章：首次登陆和在线求助" class="headerlink" title="第四章：首次登陆和在线求助"></a>第四章：首次登陆和在线求助</h2><ul>
+<li>基础命令操作<ul>
+<li>date : 时间<ul>
+<li><code>date +%y/%m/%d</code></li>
+<li><code>date +%H/%m</code></li>
+</ul>
+</li>
+<li>cal：日历<ul>
+<li>cal 年份</li>
+<li>cal 月份 年份</li>
+<li>cal 13 2015 错误结果</li>
+</ul>
+</li>
+<li>bc：计算器</li>
+</ul>
+</li>
+<li>重要热键<ul>
+<li>Tab</li>
+<li>Ctrl-c</li>
+<li>Ctrl-d<ul>
+<li>相当于 exit</li>
+</ul>
+</li>
+<li>CenterOS7 补全功能有可能补全命令<ul>
+<li>Bash-completion</li>
+</ul>
+</li>
+<li>Shift + PageUp 或者 PageDown<ul>
+<li>相当于翻页</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Linux 在线求助 man page 和 info page<ul>
+<li>g 开头命令</li>
+<li>man 的组成<ul>
+<li>name</li>
+<li>synopsis</li>
+<li>description</li>
+<li>options</li>
+<li>command</li>
+<li>files</li>
+<li>see also</li>
+<li>example</li>
+</ul>
+</li>
+<li>看帮助文档技巧<ul>
+<li>查看Name部分</li>
+<li>详细看下Description</li>
+<li>如果熟悉命令，直接看options</li>
+<li>see also 查看相关使用</li>
+<li>列举有关的file 部分</li>
+</ul>
+</li>
+<li>查看命令<ul>
+<li>空格：下翻</li>
+<li>page down 下翻</li>
+<li>page up 向上</li>
+<li>Home 第一页</li>
+<li>end 最后一页</li>
+<li>/string 向下查找</li>
+<li>?string 向上查找</li>
+<li>n,N 继续查询</li>
+<li>q 结束</li>
+</ul>
+</li>
+<li>man的位置<ul>
+<li><code>/usr/share/man</code></li>
+<li><code>/etc/man_db.conf</code></li>
+</ul>
+</li>
+<li>info<ul>
+<li>网页显示</li>
+<li>默认位置<ul>
+<li>/usr/share/info</li>
+</ul>
+</li>
+<li>内容<ul>
+<li>File</li>
+<li>Node</li>
+<li>Next</li>
+<li>Up</li>
+<li>Prev</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>其他有用的文件<ul>
+<li>/usr/share/doc<ul>
+<li>例子：<ul>
+<li>/usr/share/doc/grub2-tools-20.2</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>nano<ul>
+<li>简单文本编译器</li>
+</ul>
+</li>
+<li>正确的关机办法<ul>
+<li>正确使用<ul>
+<li>shutdown<ul>
+<li>/sbin/shutdown [-krhc] [时间] [警告信息]</li>
+</ul>
+</li>
+<li>reboot</li>
+</ul>
+</li>
+<li>常用<ul>
+<li>shutdown</li>
+</ul>
+</li>
+<li>重启<ul>
+<li>rebbot</li>
+<li>halt poweroff</li>
+</ul>
+</li>
+<li>查看状况<ul>
+<li>who</li>
+</ul>
+</li>
+<li>同步写入磁盘<ul>
+<li>sync</li>
+</ul>
+</li>
+<li>systemctl 重要命令</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="练习题"><a href="#练习题" class="headerlink" title="练习题"></a>练习题</h3><ol>
+<li>终端信息如何来的，/etc/issue 文件当中</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">结果</span><br><span class="line">\S</span><br><span class="line">Kernel \r on an \m</span><br><span class="line">2.</span><br></pre></td></tr></table></figure>
+
+<p>\r 代表内核</p>
+<p>\m 硬件等级</p>
+<ol>
+<li>man issue 查找文件的个数</li>
+</ol>
+<h2 id="第五章：文件权限和目录"><a href="#第五章：文件权限和目录" class="headerlink" title="第五章：文件权限和目录"></a>第五章：文件权限和目录</h2><ul>
+<li>linux 用户记录和用户身份的文件<ul>
+<li>记录 <code>/etc/passwd</code></li>
+<li><code>/etc/shadow</code></li>
+</ul>
+</li>
+<li>linux 文件属性<ul>
+<li>drwx——- 5 root root 4096 May 29 16:08<ul>
+<li>第一个栏目代表文件类型和权限</li>
+<li>第一个字符代表是如下<ul>
+<li>文件</li>
+<li>目录</li>
+<li>连接</li>
+<li>b 设备文件</li>
+<li>c 串行端口设备</li>
+</ul>
+</li>
+<li>接下来设置<ul>
+<li>r 读取</li>
+<li>w 写</li>
+<li>x 运行</li>
+</ul>
+</li>
+<li>第一组是自己的权限</li>
+<li>第二组是同用户组的权限</li>
+<li>第三组为别人的权限</li>
+</ul>
+</li>
+<li>第二个大足 5 代表多少个文件名连接到此节点</li>
+<li>第三个代表当前目录或者文件的所有者</li>
+<li>第四个代表所在用户组</li>
+<li>第五个代表文件大小</li>
+<li>地浏览创建日期或者最近修改日期</li>
+</ul>
+</li>
+<li>修改文件属性和权限<ul>
+<li>三个常用命令<ul>
+<li>chgrp<ul>
+<li>修改所属组</li>
+<li><code>chgrp users init-ss.cfg</code></li>
+</ul>
+</li>
+<li>chown<ul>
+<li><code>chown [-R] 账号:用户组</code></li>
+</ul>
+</li>
+<li>chmod<ul>
+<li><code>chmod xyz 文件或者目录</code></li>
+<li><code>chmod</code> u=rwx,go=rx 文件或者目录</li>
+<li><code>chmod a-x 文件名或者目录</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>权限的延伸意义<ul>
+<li>r<ul>
+<li>可以ls</li>
+</ul>
+</li>
+<li>w<ul>
+<li>建立目录和文件</li>
+<li>删除已有文件或目录</li>
+<li>更名</li>
+<li>移动位置</li>
+</ul>
+</li>
+<li>x<ul>
+<li>目录的x代表能否成为工作目录</li>
+</ul>
+</li>
+<li>总结<ul>
+<li>分配权限至少需要 rx 的权限</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>文件种类和扩展名<ul>
+<li>常规文件<ul>
+<li>纯文本</li>
+<li>二进制</li>
+<li>数据文件<ul>
+<li>用户登录记录在 /var/log/wtmp</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>目录</li>
+<li>链接</li>
+<li>设备和设备文件<ul>
+<li>区块设备</li>
+<li>字符设备</li>
+</ul>
+</li>
+<li>数据接口<ul>
+<li>/run 或者 /tmp</li>
+</ul>
+</li>
+<li>FIFO 数据传输文件<ul>
+<li>解决并发读写的问题</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Linux文件扩展名</li>
+<li>文件名字长度限制<ul>
+<li>单一文件目录最大为255字节<ul>
+<li>128个汉字左右</li>
+</ul>
+</li>
+<li>避免特殊字符</li>
+</ul>
+</li>
+<li>FHS 目录配置<ul>
+<li>可分享和不可分享</li>
+<li>不变和可变动</li>
+<li>规范<ul>
+<li>/ : 和系统有关</li>
+<li>/usr : 软件的安装和执行有关</li>
+<li>/var ： 系统运行过程有关</li>
+</ul>
+</li>
+<li>规范要求的目录<ul>
+<li>/<ul>
+<li>/bin<ul>
+<li>单人维护下依然可以使用的命令</li>
+</ul>
+</li>
+<li>/boot<ul>
+<li>内核常用文件</li>
+</ul>
+</li>
+<li>/dev<ul>
+<li>设备</li>
+</ul>
+</li>
+<li>/etc<ul>
+<li>不要放可执行文件</li>
+<li>系统的主要配置文件</li>
+</ul>
+</li>
+<li>/lib<ul>
+<li>库函数</li>
+</ul>
+</li>
+<li>/media<ul>
+<li>媒体设备</li>
+</ul>
+</li>
+<li>/mnt<ul>
+<li>挂载外部硬盘</li>
+</ul>
+</li>
+<li>/opt<ul>
+<li>第三方软件</li>
+<li>个人公司的标准</li>
+</ul>
+</li>
+<li>/run<ul>
+<li>新版可以用内存模拟</li>
+</ul>
+</li>
+<li>/sbin<ul>
+<li>只有root 操作的命令</li>
+</ul>
+</li>
+<li>/srv<ul>
+<li>service</li>
+<li>网络服务</li>
+</ul>
+</li>
+<li>/tmp<ul>
+<li>临时文件</li>
+</ul>
+</li>
+<li>/usr<ul>
+<li>/usr/bin<ul>
+<li>一般用户能使用的命令</li>
+</ul>
+</li>
+<li>/usr/lib<ul>
+<li>/lib基本相同的功能</li>
+</ul>
+</li>
+<li>/usr/local<ul>
+<li>系统管理员建议安装目录</li>
+</ul>
+</li>
+<li>/usr/sbin<ul>
+<li>非系统正常运行需要的命令</li>
+</ul>
+</li>
+<li>/usr/share<ul>
+<li><strong>只读</strong>数据文件</li>
+</ul>
+</li>
+<li>/usr/games</li>
+<li>/usr/include<ul>
+<li>c,c++</li>
+</ul>
+</li>
+<li>/usr/libexec<ul>
+<li>不被常用的执行文件或者脚本</li>
+</ul>
+</li>
+<li>/usr/lib<qual>/</li>
+<li>usr/src<ul>
+<li>源代码建议位置</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>/var<ul>
+<li>/var/cache<ul>
+<li>程序本身的缓存</li>
+</ul>
+</li>
+<li>/var/lib</li>
+<li>/var/lock</li>
+<li>/var/log</li>
+<li>/var/mail</li>
+<li>/var/run</li>
+<li>/var/spool</li>
+</ul>
+</li>
+<li>/home<ul>
+<li>用户家目录</li>
+<li>~：表示目前用户家目录</li>
+<li>~xxx（用户名）：谁的家目录</li>
+</ul>
+</li>
+<li>/root<ul>
+<li>系统管理员的家</li>
+</ul>
+</li>
+<li>/lost+found<ul>
+<li>标准的ext 文件系统的目录</li>
+</ul>
+</li>
+<li>/proc<ul>
+<li>虚拟文件系统</li>
+</ul>
+</li>
+<li>/sys<ul>
+<li>虚拟文件系统</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>早期系统必备五个目录挂载点<ul>
+<li>/etc /dev /lib /sbin /bin</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="练习题-1"><a href="#练习题-1" class="headerlink" title="练习题"></a>练习题</h3><p>早期的 Unix 系统文件名最多允许 14 个字符，而新的 Unix 与 Linux 系统中，文件名最多可以容许几个 字符？</p>
+<ul>
+<li><p>当一个一般文件权限为 -rwxrwxrwx 则表示这个文件的意义为？</p>
+</li>
+<li><p>我需要将一个文件的权限改为 -rwxr-xr– 请问该如何下达指令？</p>
+</li>
+<li><p>若我需要更改一个文件的拥有者与群组，该用什么指令？ chown, chgrp</p>
+</li>
+<li><p>请问底下的目录与主要放置什么数据： /etc/, /boot, /usr/bin, /bin, /usr/sbin, /sbin, /dev, /var/ log, /run</p>
+<p>/etc/：几乎系统的所有配置文件案均在此，尤其 passwd,shadow /boot：开机配置文件，也是预设摆放核心 vmlinuz 的地方 /usr/bin, /bin：一般执行档摆放的地方 /usr/sbin, /sbin：系统管理员常用指令集 /dev：摆放所有系统装置文件的目录 /var/log：摆放系统注册表文件的地方 /run：CentOS 7 以后才有，将经常变动的项目(每次开机都不同，如程序的 PID)移动到内存暂存，所以 /run 并不占实 际磁盘容量</p>
+</li>
+<li><p>若一个文件的档名开头为『 . 』，例如 .bashrc 这个文件，代表什么？另外，如何显示出这个文件名与他的 相关属性？</p>
+<p>有『 . 』为开头的为隐藏档，需要使用 ls -a 这个 -a 的选项才能显示出隐藏文件的内容，而使用 ls -al 才能显示出属性。</p>
+</li>
+</ul>
+<h2 id="第六章-Linux文件与目录管理"><a href="#第六章-Linux文件与目录管理" class="headerlink" title="第六章 Linux文件与目录管理"></a>第六章 Linux文件与目录管理</h2><ul>
+<li>目录和路径</li>
+<li>相对路径和绝对路径</li>
+<li>目录相关操作<ul>
+<li>. 代表当前</li>
+<li>..</li>
+<li>- 前一个工作目录</li>
+<li>~account 代表账号对应的家目录</li>
+</ul>
+</li>
+<li>cd</li>
+<li>pwd</li>
+<li>mkdir</li>
+<li>rmdir</li>
+<li>执行路径的变量（$PATH）<ul>
+<li>为什么我可以在任何地方执行 ls</li>
+<li><code>echo $PATH</code></li>
+<li>PATH=”${PATH}:/root” 添加环境变量</li>
+<li>不要用 “.” 作为环境变量</li>
+<li>可以做的事<ul>
+<li>不同身份用户默认PATH不一样</li>
+<li>PATH可以修改</li>
+<li>使用绝对或者相对指定某个文件的文件名来执行，比PATH准确 ** 因为环境变量的命令存在重名优先级的问题</li>
+<li>本目录不要放到环境变量</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>ls<ul>
+<li><code>ls --full-time ~</code></li>
+</ul>
+</li>
+<li>cp rm mv<ul>
+<li>cp<ul>
+<li>cp 源文件 目标文件<ul>
+<li><strong>-a 相当于 -dr—preserve=all 保留指定的属性（默认值：mode，ownership，timestamps）（如果可能）传统属性：上下文，链接，xattr，所有</strong></li>
+<li>-d 与–no-dereference –preserve = links相同。源文件为链接，则复制文件属性而非文件</li>
+<li>-f 如果无法打开现有目标文件，将其删除，然后重试（此选项为 当同时使用-n选项时，将被忽略）</li>
+<li><strong>-i 覆盖前提示（覆盖先前的-n选项）</strong></li>
+<li><strong>-p 连同文件的属性一起复制，而非默认（备份常用）</strong></li>
+<li>-r 递归复制</li>
+<li>-s 复制为链接形式</li>
+<li>-t 根据时间排序</li>
+</ul>
+</li>
+<li>注意需要多文件复制，最后一个一定是目录</li>
+<li>执行cp前的思考<ul>
+<li>是否需要保留完整源文件信息</li>
+<li>源文件是否为符号链接</li>
+<li>源文件是否是特殊文件</li>
+<li>源文件是否为目录！</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>rm<ul>
+<li>rm 文件或者目录</li>
+<li>超级危险的命令</li>
+</ul>
+</li>
+<li>mv<ul>
+<li>mv source des<ul>
+<li>-f 强制</li>
+<li>-i 询问</li>
+<li>-u 只有新文件才能更新</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>获取路径的文件名和目录名称<ul>
+<li>basename</li>
+<li>dirname</li>
+</ul>
+</li>
+<li>文件内容的读取<ul>
+<li>cat 第一行开始</li>
+</ul>
+</li>
+<li>tac 最后一行开始<ul>
+<li>nl 显示行号</li>
+</ul>
+</li>
+<li>more 一页一页<ul>
+<li>less 和More差不多，但是可以往前翻页</li>
+</ul>
+</li>
+<li>head 只看前几行<ul>
+<li>tail 只看后几行</li>
+</ul>
+</li>
+<li>od 以二进制读取<ul>
+<li>直接查看内容<ul>
+<li>cat<ul>
+<li>-A 列出一些空白字符不是空白而已</li>
+<li>空格和制表符分别代表如下<ul>
+<li>制表符: ^I</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>-b 列出行号<ul>
+<li>-n 空白行也有行号</li>
+</ul>
+</li>
+<li>-E 结尾换行符显示<ul>
+<li>-v 特殊字符显示</li>
+</ul>
+</li>
+<li>tac<ul>
+<li>反向显示</li>
+</ul>
+</li>
+<li>nl<ul>
+<li>-b 指定行号的格式</li>
+<li>-b a 是否空行都有行号<ul>
+<li>-b t 如果有空行，空行不显示</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>-n 列出行号的方法<ul>
+<li>-n ln 左对齐</li>
+<li>-n rn 右对齐<ul>
+<li>-n rz 自己栏位的最右方显示</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>-w 行号栏位占用字符数<ul>
+<li><code>nl -b a -n rz /etc/issue</code></li>
+<li><code>nl -b a -n rz -w 3 /etc/issue</code></li>
+</ul>
+</li>
+<li>more<ul>
+<li>空格 下一页</li>
+<li>/字符串</li>
+<li>:f 立刻显示文件名和显示行数</li>
+<li>q</li>
+<li>b 回翻</li>
+</ul>
+</li>
+<li>less<ul>
+<li>page up 前翻</li>
+<li>page down 后翻</li>
+<li>N 反向重复前一个查找</li>
+<li>g 前进到这个数据前一行</li>
+<li>G 前进到这个数据最后一行</li>
+</ul>
+</li>
+<li>q 离开</li>
+</ul>
+</li>
+<li>head<ul>
+<li>-n 显示几行</li>
+<li>tail<ul>
+<li>取后面几行</li>
+</ul>
+</li>
+<li>-n 行数</li>
+</ul>
+</li>
+<li>如何去除10到20行的数据<ul>
+<li><code>head -n 20 /etc/man_db.conf | tail -n 10</code></li>
+<li><code>cat -n /etc/man_db.conf | head -n 20 | tail -n 10</code></li>
+<li>od 非纯文本文件</li>
+<li>a 默认字符<ul>
+<li>c ascii</li>
+</ul>
+</li>
+<li>d 十进制<ul>
+<li>f 浮点数</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>修改文件或者创建新文件<ul>
+<li>修改时间 mtime<ul>
+<li>内容修改的时候：如增加或者删除字符</li>
+<li>状态时间 ctime<ul>
+<li>状态被改变：如权限被改了</li>
+</ul>
+</li>
+<li>读取时间 atime<ul>
+<li>只要被读取</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>ls 默认为 m time<ul>
+<li>touch 命令</li>
+<li>-a 仅自定义access time<ul>
+<li>-c 修改文件的时间，不存在不建立新文件</li>
+<li>-d 后面可以接预定义的日期而不用目前的时间，</li>
+<li>-m 仅修改mtime</li>
+<li>-t 后面接预定义时间 [YYYYMMDDhhmm]</li>
+<li>案例<ul>
+<li><code>date ; ll --time=atime .; ll --time=ctime .; ll --time=mtime .</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>常用情况<ul>
+<li>建立空文件</li>
+<li>某个日期改成目前（mtime, atime）</li>
+</ul>
+</li>
+<li>文件和目录隐藏权限<ul>
+<li>新增文件和目录之后，默认的权限是什么？<ul>
+<li>umask<ul>
+<li>-S 使用字符表示权限</li>
+<li>指的是需要减掉的权限<ul>
+<li>如0 就是所有权限都不要减掉</li>
+</ul>
+</li>
+<li><code>umask 002</code></li>
+<li>umask 在搭建文件服务器的作用很大</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>文件隐藏属性<ul>
+<li>注意必须在 ext 2 3 4 的系统上完全生效</li>
+<li>chattr [+-=] 文件和目录<ul>
+<li>+ 增加一个特殊参数</li>
+<li>- 删除特殊参数</li>
+<li>= 直接设置</li>
+<li>A 设置这个属性的时候。atime 不会改动、避免过度读写磁盘</li>
+<li>S 非同步写磁盘，修改文件会同步写入磁盘</li>
+<li>a 设置之后只能增加数据,不能删除和修改，只有root有权限</li>
+<li>c 默认对文件压缩存储</li>
+<li>d 阻止dump程序dump文件</li>
+<li><strong>i 让文件不能删除，改名，设置连接也无法写入或者新增， 只有root有权限</strong></li>
+<li>s 如果设置s，文件被删除，完全从磁盘删除</li>
+<li>u 相反，被删除了，内容还在磁盘，用于文件恢复</li>
+</ul>
+</li>
+<li>注意点：<ul>
+<li>a 和 i 比较常用</li>
+<li>xfs 文件系统仅仅支持 AadiS</li>
+</ul>
+</li>
+<li>lsattr [-adR] 文件或者目录<ul>
+<li>-a 隐藏文件也显示</li>
+<li>-d 如果是目录，仅仅列出目录</li>
+<li>-R 子目录一起列出来</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>文件特殊权限<ul>
+<li>SUID<ul>
+<li>只对二进制文件有效</li>
+<li>执行者对于该程序具有x可执行权限</li>
+<li>仅在执行过程中有效</li>
+<li>执行者具有拥有者的权限</li>
+<li>处理密码这种机密文件只能让root修改，但是又要让用户可以修改自己密码的时候这种情况的处理方式</li>
+<li>案例<ul>
+<li>/etc/bin/passwd</li>
+<li>用户对于passwd 有执行权限，所以是执行者</li>
+<li>passwd 拥有者是root</li>
+<li>用户执行passwd的时候，会得到root权限</li>
+<li>由于有暂时的root权限，所以可以修改密码，但是只能修改自己的那部分</li>
+</ul>
+</li>
+<li><strong>只能是二进制文件，只能是二进制文件，只能是二进制文件</strong></li>
+</ul>
+</li>
+<li>SGID<ul>
+<li>ls -l /usr/bin/local</li>
+<li>文件的情况<ul>
+<li>对于二进制有用</li>
+<li>程序执行者对于程序来说是 x权限</li>
+<li>执行者在执行过程中获得用户组的支持</li>
+</ul>
+</li>
+<li>目录的情况<ul>
+<li>r和x权限，可以进入此目录</li>
+<li>此目录的有效用户组，会变成改目录的用户组</li>
+<li>如果在此目录新建文件，该文件的用户组会和此目录的用户组相同</li>
+</ul>
+</li>
+<li>举例<ul>
+<li><code>sudo ls -l /usr/bin/locate /var/lib/mlocate/mlocate.db</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>SBIT<ul>
+<li>用户对于此目录具有w,x权限的时候，具有写入的权限</li>
+<li>该目录新建文件的时候，仅有自己和root有权利删除该文件</li>
+</ul>
+</li>
+<li>后面的章节再来回顾,请看16章</li>
+</ul>
+</li>
+<li>观察文件类型 file 命令<ul>
+<li>案例 <code>file /etc/bin/passwd</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>文件的查找<ul>
+<li>which<ul>
+<li>-a 将所有由PATH 环境变量可以找到的列出来</li>
+<li>注意是以 PATH为环境变量起点的</li>
+</ul>
+</li>
+<li>find<ul>
+<li>能不用就不用</li>
+</ul>
+</li>
+<li>whereis<ul>
+<li>-l 列出会去查看的几个主要目录</li>
+<li>-b 只看二进制文件</li>
+<li>-m 只查找说明文件Manual 路径的文件( man 记录的)</li>
+<li>-s 执照源文件</li>
+<li>-u 查找不在上述文件的三个文件</li>
+<li>案例<ul>
+<li>找出 ifconfig 文件名</li>
+<li>执照出和passwd有关的说明文件</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>locate</strong> / updatedb<ul>
+<li>-I 忽略大小写</li>
+<li>-c 不输出文件名，只输出数量</li>
+<li>-l 输出几行，五行就是 -l 5</li>
+<li>-S 输出locate 使用的数据库信息</li>
+<li>-r 正则方式</li>
+<li>案例<ul>
+<li>找出系统中和passwd 相关的所有文件名，只需要5个</li>
+<li>列出locate查询使用的信息和列出数据的数量</li>
+</ul>
+</li>
+<li>注意点<ul>
+<li>新文件有可能找不到，因为数据库一般是一天更新一次</li>
+<li>更新方法：updatedb</li>
+</ul>
+</li>
+<li>原理<ul>
+<li>按照 /var/lib/mlocate 数据库近路，找出关键词的文件名</li>
+</ul>
+</li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="练习题-2"><a href="#练习题-2" class="headerlink" title="练习题"></a>练习题</h3><p>情境模拟题一：假设系统中有两个账号，分别是 alex 与 arod ，这两个人除了自己群组之外还共同支持一个名为 project 的群组。假设这两个用户需要共同拥有 /srv/ahome/ 目录的开发权，且该目录不许其他人进入查阅。 请问 该目录的权限设定应为何？请先以传统权限说明，再以 SGID 的功能解析。  目标：了解到为何项目开发时，目录最好需要设定 SGID 的权限！  前提：多个账号支持同一群组，且共同拥有目录的使用权！  需求：需要使用 root 的身份来进行 chmod, chgrp 等帮用户设定好他们的开发环境才行！ 这也是管理员的 重要任务之一！</p>
+<h3 id="简答题"><a href="#简答题" class="headerlink" title="简答题"></a>简答题</h3><p>什么是绝对路径与相对路径 绝对路径的写法为由 / 开始写，至于相对路径则不由 / 开始写！此外，相对路径为相对于目前工作目录的路径！  如何更改一个目录的名称？例如由 /home/test 变为 /home/test2 mv /home/test /home/test2  PATH 这个环境变量的意义？ 这个是用来指定执行文件执行的时候，指令搜寻的目录路径。  umask 有什么用处与优点？ umask 可以拿掉一些权限，因此，适当的定义 umask 有助于系统的安全， 因为他可以用来建立默认的目录或文件的权限。  当一个使用者的 umask 分别为 033 与 044 他所建立的文件与目录的权限为何？ 在 umask 为 033 时，则预设是拿掉 group 与 other 的 w(2)x(1) 权限，因此权限就成为『文件 -rw-r–r– ， 目录 drwxr–r– 』 而当 umask 044 时，则拿掉 r 的属性，因此就成为『文件 -rw–w–w-，目录 drwx-wx-wx』  什么是 SUID ？ 当一个指令具有 SUID 的功能时，则： o SUID 权限仅对二进制程序(binary program)有效； o 执行者对于该程序需要具有 x 的可执行权限； o 本权限仅在执行该程序的过程中有效 (run-time)； o 执行者将具有该程序拥有者 (owner) 的权限。  当我要查询 /usr/bin/passwd 这个文件的一些属性时(1)传统权限；(2)文件类型与(3)文件的隐藏属性，可以使 用什么指令来查询？ ls -al file lsattr  尝试用 find 找出目前 linux 系统中，所有具有 SUID 的文件有哪些？ find / -perm +4000 -print  找出 /etc 底下，文件大小介于 50K 到 60K 之间的文件，并且将权限完整的列出 (ls -l)： find /etc -size +50k -a -size -60k -exec ls -l {} ; 注意到 -a ，那个 -a 是 and 的意思，为符合两者才算成功  找出 /etc 底下，文件容量大于 50K 且文件所属人不是 root 的档名，且将权限完整的列出 (ls -l)； find /etc -size +50k -a ! -user root -exec ls -ld {} ; find /etc -size +50k -a ! -user root -type f -exec ls -l {} ; 上面两式均可！注意到 ! ，那个 ! 代表的是反向选择，亦即『不是后面的项目』之意！  找出 /etc 底下，容量大于 1500K 以及容量等于 0 的文件： find /etc -size +1500k -o -size 0 相对于 -a ，那个 -o 就是或 (or) 的意思啰！</p>
+<h2 id="第七章-Linux-磁盘和文件系统的管理"><a href="#第七章-Linux-磁盘和文件系统的管理" class="headerlink" title="第七章 Linux 磁盘和文件系统的管理"></a>第七章 Linux 磁盘和文件系统的管理</h2><ul>
+<li><p>磁盘组成和分区复习</p>
+<ul>
+<li>请看第一章对于磁盘的记录</li>
+<li>GPT和MBR分区</li>
+<li>磁盘组成</li>
+</ul>
+</li>
+<li><p>文件系统的特性</p>
+<ul>
+<li>Linux正统文件系统为ext2<ul>
+<li>windows 不支持 ext2 文件系统</li>
+</ul>
+</li>
+<li>通常一个可挂载的数据为一个文件系统而不是分区<ul>
+<li>通常将文件权限和文件属性放在不同的区块<ul>
+<li>权限和属性放到inode</li>
+<li>实际数据放到数据区块</li>
+</ul>
+</li>
+<li>每个inode都有编号<ul>
+<li>超级区块<ul>
+<li>文件系统的整体信息，inode 数据区块的总量，使用量，剩余量，文件系统的格式和相关信息</li>
+</ul>
+</li>
+<li>inode 记录文件的属性，一个文件占用一个inode, 记录文件的数据所在区块号码</li>
+<li>数据区块：实际记录的文件内容，文件过大会占用多个区块</li>
+</ul>
+</li>
+<li>这种方式是<strong>索引式文件系统</strong></li>
+<li>ext2 的限制<ul>
+<li>区块的大小和数量格式化之后不能修改</li>
+<li>每个区块最多防止一个文件的数据</li>
+<li>承上，如果文件大于区块，占用多个区块</li>
+<li>承上，反之，剩余空间会被浪费</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>inode table<ul>
+<li>inode 记录如下<ul>
+<li>读写属性</li>
+<li>拥有者和用户组</li>
+<li>文件大小</li>
+<li>建立或者状态改变的时间 ctime</li>
+<li>最后一次读取时间</li>
+<li>最后修改时间</li>
+<li>定义文件的标识</li>
+<li>文件真正的内容指向</li>
+</ul>
+</li>
+<li>特点<ul>
+<li>每个inode 大小固定128B （ext4 到了 256B）</li>
+<li>文件占用一个 inode</li>
+<li>建立文件数量和inode数量有关</li>
+<li>读取文件需要先找到inode, 分析Inode 记录的权限和用户是否符合，符合才可以读取</li>
+</ul>
+</li>
+<li>1KB的块最大单一文件限制为16GB是如何计算的？<ul>
+<li>12个直接、一个间接、一个三间接</li>
+<li>12个直接指向 12 * 1 K = 12 K</li>
+<li>间接 256*1K = 256K</li>
+<li>1的大小可以存256条记录</li>
+<li>双间接<ul>
+<li>256<em>256</em> 1K = 256*2K</li>
+</ul>
+</li>
+<li>三间接<ul>
+<li>256 * 256 * 256</li>
+</ul>
+</li>
+<li>总额，三者相加 = 12 + 256 +256 * 256 + 256 * 256 * 256 = 16GB</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>超级区块<ul>
+<li>主要信息<ul>
+<li>数据区块 和 inode 总量</li>
+<li>未使用和已经使用的inode 数量</li>
+<li>数据区块的inode 大小</li>
+<li>文件系统的挂载时间、最近一次的写入数据时间、最近一次检验磁盘时间、文件系统的信息</li>
+<li>一个有效数值、如果此文件已经被挂载，有效为0，否则为1</li>
+</ul>
+</li>
+<li>区块对照表</li>
+<li>inode 对照表</li>
+<li>dump2fs</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>和目录树的关系</p>
+<ul>
+<li>读取一个文件路径的底层步骤</li>
+<li>例子<ul>
+<li>读取/etc/passwd 的流程如下<ul>
+<li>/ 的 inode</li>
+<li>/ 的区块</li>
+<li>etc/ 的 inode</li>
+<li>etc/ 的区块</li>
+<li>passwd 的 inode</li>
+<li>passwd 的 区块</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>ext 文件的存取和日志式文件系统功能</p>
+<ul>
+<li>新增文件系统操作<ul>
+<li>确定是否有w和x权限</li>
+<li>根据inode 对照表找到对应的inode号码，新文件写入</li>
+<li>根据区块对照表找到没有使用的区块代码，将实际的数据写入区块，更新inode的区块数据</li>
+<li>将刚刚写入的inode 与区块数据同步更新inode对照表和区块对照表，并更新超级区块的内容</li>
+<li>同步操作</li>
+</ul>
+</li>
+<li>日志式文件系统<ul>
+<li>预备：写入一个文件的时候，需要日志记录区块记录某个文件要写入的信息</li>
+<li>实际写入：开始写入文件权限和数据，更新Metadata 的数据</li>
+<li>结束：完成数据和metadata的更新，在日志记录区块记录</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Linux文件系统的执行</p>
+<ul>
+<li>异步处理<ul>
+<li>没被修改的数据设置为clear</li>
+<li>被修改后，设置为脏数据</li>
+<li>此时操作还在进行，没有写入磁盘</li>
+</ul>
+</li>
+<li>文件系统贺内存的关系<ul>
+<li>系统会常用文件数据放到内存缓冲区，加速读写</li>
+<li>Linuxd物理内存最后都会用光，这才是正常 情况</li>
+<li>手动sync 强制内存脏数据回写磁盘</li>
+<li>正常关机，会主动sync回写磁盘</li>
+<li>不正常关机，需要重启之后磁盘校验，甚至文件系统的损坏</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>挂载点的意义</p>
+<ul>
+<li>传统文件系统：<ul>
+<li>ext2</li>
+<li>minix</li>
+<li>fat</li>
+<li>iso9660</li>
+</ul>
+</li>
+<li>日志式文件系统<ul>
+<li>ext3</li>
+<li>ext4</li>
+<li>reiserFs</li>
+<li>windows ntfs</li>
+<li>ibm jfs</li>
+<li>sgi xfs</li>
+<li>zfs</li>
+</ul>
+</li>
+<li>网络文件系统<ul>
+<li>nfs</li>
+<li>smbfs</li>
+</ul>
+</li>
+<li>查询<ul>
+<li><code>ls -l /lib/moudules/$(uname -r)/kernel/fs</code></li>
+<li><code>cat /proc/filesystems</code></li>
+</ul>
+</li>
+<li>linux VFS</li>
+</ul>
+</li>
+<li><p>XFS 文件系统</p>
+<ul>
+<li><p>ext的问题</p>
+<ul>
+<li>支持面最广，格式化最慢</li>
+</ul>
+</li>
+<li><p>数据区</p>
+<ul>
+<li>inode 容量可以调整</li>
+<li>实际最高可使用区块为4K</li>
+<li>inode 可以再 256b - 2MB</li>
+</ul>
+</li>
+<li><p>文件系统活动登录区</p>
+</li>
+<li><p>实时运行区</p>
+</li>
+<li><p>查看命令</p>
+<ul>
+<li><p>```<br>xfs_info 挂载点|设备</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">      - &#96;xfs_info &#x2F;dev&#x2F;vda2&#96;</span><br><span class="line">      - &#96;df -T &#x2F;boot&#96;</span><br><span class="line"></span><br><span class="line">- 文件系统的简单操作</span><br><span class="line"></span><br><span class="line">  - 磁盘和目录的容量</span><br><span class="line"></span><br><span class="line">    - df</span><br><span class="line"></span><br><span class="line">      - 列出文件系统的整体磁盘使用量</span><br><span class="line"></span><br><span class="line">      - 参数</span><br><span class="line"></span><br><span class="line">        - -a 列出所有文件系统</span><br><span class="line">        - -k kbyte 显示文件系统容量</span><br><span class="line">        - -m mbbyte 显示文件系统容量</span><br><span class="line">        - **-h 以人们较容易阅读的Gbyte,mbyte,kbyte 等格式自行显示**</span><br><span class="line">        - -H 以 M&#x3D;1000K 替换 M&#x3D;1024K进位方式</span><br><span class="line">        - -T 连同磁盘分区文件系统名称也列出</span><br><span class="line">        - **-i 不用磁盘容量，inode 数量显示**</span><br><span class="line"></span><br><span class="line">      - 格式</span><br><span class="line"></span><br><span class="line">        - Filesystem: 文件系统是哪个硬盘分区</span><br><span class="line">        - 1K-blocks：说明下面的数字是1KB</span><br><span class="line">        - Used：使用掉的</span><br><span class="line">        - Available：剩下的磁盘大小</span><br><span class="line">        - Use%：使用率，如果大于90%注意一下</span><br><span class="line">        - mounted on：磁盘的挂载目录</span><br><span class="line"></span><br><span class="line">      - 案例</span><br><span class="line"></span><br><span class="line">        -</span><br></pre></td></tr></table></figure>
+<pre><code>df -aT
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">  - 列出系统内所有特殊文件以及名称都列出来</span><br><span class="line"></span><br><span class="line">-</span><br></pre></td></tr></table></figure>
+df -h
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">          - 易读方式读取</span><br><span class="line"></span><br><span class="line">    - du</span><br><span class="line"></span><br><span class="line">      - 查看文件系统的磁盘使用量（常用在查看目录所占用磁盘空间）</span><br><span class="line">      - 参数</span><br><span class="line">        - -a 列出所有的文件和目录容量，因为默认仅仅是统计目录下面的文件量</span><br><span class="line">        - -h 易读的方式显示</span><br><span class="line">        - -s 仅仅李处总量，列出各个的目录占用量</span><br><span class="line">        - -S 不包含子目录下面的总计，与-s有点差别</span><br><span class="line">        - -k kb 列出</span><br><span class="line">        - -m mb列出</span><br><span class="line">      - 案例</span><br><span class="line">        - &#96;du&#96;</span><br><span class="line">        - &#96;du -sm &#x2F;*&#96;</span><br><span class="line"></span><br><span class="line">- 硬链接和符号链接</span><br><span class="line"></span><br><span class="line">  - 回顾</span><br><span class="line">    - 每个文件占用一个inode</span><br><span class="line">    - 读取文件必须要inode号码</span><br><span class="line">  - 硬链接知识某个目录增加一个文件名链接到Inode的关联记录</span><br><span class="line">  - 任何一个Inode硬链接删除，都不会影响另一个文档</span><br><span class="line">  - 缺点：</span><br><span class="line">    - 不能链接目录</span><br><span class="line">      - 为什么？</span><br><span class="line">    - 不能跨文件系统</span><br><span class="line">      - 为什么？</span><br><span class="line">  - 符号链接</span><br><span class="line">    - 特点</span><br><span class="line">      - 相当于windows 快捷方式，但是改变这个快捷方式的内容会直接影响源文档的内容</span><br><span class="line">      - 相当于文件引用的完全拷贝</span><br><span class="line">      - 如果源文件删除，引用会找不到内容</span><br><span class="line">    - 符号链接的容量计算</span><br><span class="line">      - 根据引用对象文件名字长度来确定</span><br><span class="line">    - Ln 默认使用硬链接</span><br><span class="line">    - 参数</span><br><span class="line">      - ln</span><br><span class="line">        - -s 符号链接，如果建立必须此参数</span><br><span class="line">        - -f 如果文件存在，删除后建立</span><br><span class="line"></span><br><span class="line">- 磁盘的格式化、分区、校验、挂载</span><br><span class="line"></span><br><span class="line">  - 新增磁盘的做法</span><br><span class="line"></span><br><span class="line">    - 对磁盘划分，建立可用分区</span><br><span class="line">    - 对于磁盘进行格式化，建立分区可用文件系统</span><br><span class="line">    - 仔细一点，则对于文件系统校验，</span><br><span class="line">    - Linux 上需要建立挂载点，挂载上来</span><br><span class="line"></span><br><span class="line">  - 如何知道自己的系统的文件系统</span><br><span class="line"></span><br><span class="line">    - lsblk device</span><br><span class="line"></span><br><span class="line">    - 选项与参数： -d ：仅列出磁盘本身，并不会列出该磁盘的分区数据 -f ：同时列出该磁盘内的文件系统名称 -i ：使用 ASCII 的线段输出，不要使用复杂的编码 (再某些环境下很有用) -m ：同时输出该装置在 &#x2F;dev 底下的权限数据 (rwx 的数据) -p ：列出该装置的完整文件名！而不是仅列出最后的名字而已。 -t ：列出该磁盘装置的详细数据，包括磁盘队列机制、预读写的数据量大小等</span><br><span class="line"></span><br><span class="line">    - 显示列解读</span><br><span class="line"></span><br><span class="line">       NAME：就是装置的文件名啰！会省略 &#x2F;dev 等前导目录！  MAJ:MIN：其实核心认识的装置都是透过这两个代码来熟悉的！分别是主要：次要装置代码！  RM：是否为可卸除装置 (removable device)，如光盘、USB 磁盘等等  SIZE：当然就是容量啰！  RO：是否为只读装置的意思  TYPE：是磁盘 (disk)、分区槽 (partition) 还是只读存储器 (rom) 等输出  MOUTPOINT：就是前一章谈到的挂载点</span><br><span class="line"></span><br><span class="line">    - 案例</span><br><span class="line"></span><br><span class="line">      - &#96;lsblk -ip &#x2F;dev&#x2F;vda&#96;</span><br><span class="line"></span><br><span class="line">  - blkid 列出设备的 UUID等参数</span><br><span class="line"></span><br><span class="line">  - parted 列出磁盘的 分区 表类型与 分区</span><br><span class="line"></span><br><span class="line">    - &#96;parted &#x2F;dev&#x2F;vda print&#96;</span><br><span class="line"></span><br><span class="line">    -</span><br></pre></td></tr></table></figure></code></pre><p>Model: Virtio Block Device (virtblk)<br>Disk /dev/vda: 42.9GB<br>Sector size (logical/physical): 512B/512B<br>Partition Table: msdos<br>Disk Flags: </p>
+<p>Number  Start   End     Size    Type     File system  标志<br> 1      1049kB  42.9GB  42.9GB  primary  ext4         启动</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 磁盘分区：gdisk &#x2F; fdisk</span><br><span class="line"></span><br><span class="line">  - MBR 分区表请使用 fdisk 分区， GPT 分区表请 使用 gdisk 分区！</span><br><span class="line"></span><br><span class="line">  - gdisk</span><br><span class="line"></span><br><span class="line">    - gdisk 设备名称</span><br><span class="line"></span><br><span class="line">    - 显示参数</span><br><span class="line"></span><br><span class="line">       Number：分区槽编号，1 号指的是 &#x2F;dev&#x2F;vda1 这样计算。  Start (sector)：每一个分区槽的开始扇区号码位置  End (sector)：每一个分区的结束扇区号码位置，与 start 之间可以算出分区槽的总容量  Size：就是分区槽的容量了  Code：在分区槽内的可能的文件系统类型。Linux 为 8300，swap 为 8200。不过这个项目只是一个提示而 已，不见得真的代表此分区槽内的文件系统喔！  Name：文件系统的名称等等。</span><br><span class="line"></span><br><span class="line">  - 注意不要加数字</span><br><span class="line"></span><br><span class="line">  - gdisk 新增分区</span><br><span class="line"></span><br><span class="line">    - &#96;cat &#x2F;proc&#x2F;partitions&#96;</span><br><span class="line"></span><br><span class="line">  - partprobe 更新 linux 内核的分区表信息</span><br><span class="line"></span><br><span class="line">    - partprobe -s 需要root权限</span><br><span class="line">    - 查看内核分区记录</span><br><span class="line">      - &#96;cat &#x2F;proc&#x2F;partitions&#96;</span><br><span class="line"></span><br><span class="line">  - 用gdisk 删除一个分区</span><br><span class="line"></span><br><span class="line">- fdisk</span><br><span class="line"></span><br><span class="line">  - &#96;fdisk &#x2F;dev&#x2F;vda&#96;</span><br></pre></td></tr></table></figure>
+<p>a toggle a bootable flag<br>b edit bsd disklabel<br>c toggle the dos compatibility flag<br>d delete a partition &lt;==删除一个 partition<br>l list known partition types<br>m print this menu<br>n add a new partition &lt;==新增一个 partition<br>o create a new empty DOS partition table<br>p print the partition table &lt;==在屏幕上显示分区表<br>q quit without saving changes &lt;==不储存离开 fdisk 程序<br>s create a new empty Sun disklabel<br>t change a partition’s system id<br>u change display/entry units<br>v verify the partition table<br>w write table to disk and exit &lt;==将刚刚的动作写入分区表<br>x extra functionality (experts only)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 磁盘格式化</span><br><span class="line"></span><br><span class="line">  - xfs 文件系统 Mkfs.xfs</span><br><span class="line"></span><br><span class="line">    - &#96;mkfs.xfs [ - b bsize] [ - d parms] [- i parms] [ [ - l parms] [ - L label] [ - f] \ [ [- - r parms] 装置名称&#96;</span><br><span class="line">    - 参数</span><br></pre></td></tr></table></figure>
+<p>选项与参数：<br>关于单位：底下只要谈到『数值』时，没有加单位则为 bytes 值，可以用 k,m,g,t,p (小写)等来解释<br>比较特殊的是 s 这个单位，它指的是 sector 的『个数』喔！</p>
+</li>
+<li><p>b ：后面接的是 block 容量，可由 512 到 64k，不过最大容量限制为 Linux 的 4k 喔！</p>
+</li>
+<li><p>d ：后面接的是重要的 data section 的相关参数值，主要的值有：<br>agcount=数值 ：设定需要几个储存群组的意思(AG)，通常与 CPU 有关<br>agsize=数值 ：每个 AG 设定为多少容量的意思，通常 agcount/agsize 只选一个设定即可<br>file ：指的是『格式化的装置是个文件而不是个装置』的意思！(例如虚拟磁盘)<br>size=数值 ：data section 的容量，亦即你可以不将全部的装置容量用完的意思<br>su=数值 ：当有 RAID 时，那个 stripe 数值的意思，与底下的 sw 搭配使用<br>sw=数值 ：当有 RAID 时，用于储存数据的磁盘数量(须扣除备份碟与备用碟)<br>sunit=数值 ：与 su 相当，不过单位使用的是『几个 sector(512bytes 大小)』的意思<br>swidth=数值 ：就是 su*sw 的数值，但是以『几个 sector(512bytes 大小)』来设定</p>
+</li>
+<li><p>f ：如果装置内已经有文件系统，则需要使用这个 -f 来强制格式化才行！</p>
+</li>
+<li><p>i ：与 inode 有较相关的设定，主要的设定值有：<br>size=数值 ：最小是 256bytes 最大是 2k，一般保留 256 就足够使用了！<br>internal=[0|1]：log 装置是否为内建？预设为 1 内建，如果要用外部装置，使用底下设定<br>logdev=device ：log 装置为后面接的那个装置上头的意思，需设定 internal=0 才可！<br>size=数值 ：指定这块登录区的容量，通常最小得要有 512 个 block，大约 2M 以上才行！</p>
+</li>
+<li><p>L ：后面接这个文件系统的标头名称 Label name 的意思！</p>
+</li>
+<li><p>r ：指定 realtime section 的相关设定值，常见的有：<br>extsize=数值 ：就是那个重要的 extent 数值，一般不须设定，但有 RAID 时，<br>最好设定与 swidth 的数值相同较佳！最小为 4K 最大为 1G 。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 其他</span><br></pre></td></tr></table></figure>
+<p>范例：找出你系统的 CPU 数，并据以设定你的 agcount 数值<br>[root@study ~]#  grep  ‘processor’ /proc/cpuinfo<br>processor : 0<br>processor : 1</p>
+<h1 id="所以就是有两颗-CPU-的意思，那就来设定设定我们的-xfs-文件系统格式化参数吧！！"><a href="#所以就是有两颗-CPU-的意思，那就来设定设定我们的-xfs-文件系统格式化参数吧！！" class="headerlink" title="所以就是有两颗 CPU 的意思，那就来设定设定我们的 xfs 文件系统格式化参数吧！！"></a>所以就是有两颗 CPU 的意思，那就来设定设定我们的 xfs 文件系统格式化参数吧！！</h1><p>[root@study ~]#  mkfs.xfs - - f - - d agcount=2 /dev/vda4<br>meta-data=/dev/vda4 isize=256 agcount=2, agsize=131072 blks<br>= sectsz=512 attr=2, projid32bit=1<br>= crc=0 finobt=0<br>…..(底下省略)…..</p>
+<h1 id="可以跟前一个范例对照看看，可以发现-agcount-变成-2-了喔！"><a href="#可以跟前一个范例对照看看，可以发现-agcount-变成-2-了喔！" class="headerlink" title="可以跟前一个范例对照看看，可以发现 agcount 变成 2 了喔！"></a>可以跟前一个范例对照看看，可以发现 agcount 变成 2 了喔！</h1><h1 id="此外，因为已经格式化过一次，因此-mkfs-xfs-可能会出现不给你格式化的警告！因此需要使用-f"><a href="#此外，因为已经格式化过一次，因此-mkfs-xfs-可能会出现不给你格式化的警告！因此需要使用-f" class="headerlink" title="此外，因为已经格式化过一次，因此 mkfs.xfs 可能会出现不给你格式化的警告！因此需要使用 -f"></a>此外，因为已经格式化过一次，因此 mkfs.xfs 可能会出现不给你格式化的警告！因此需要使用 -f</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">  - ext4 文件系统mkfs.ext4</span><br><span class="line"></span><br><span class="line">    - &#96;mkfs.ext4 [- - b size] [- - L label] 装 置名&#96;</span><br><span class="line"></span><br><span class="line">    选项与参数： -b ：设定 block 的大小，有 1K, 2K, 4K 的容量， -L ：后面接这个装置的标头名称</span><br><span class="line"></span><br><span class="line">  - 其他文件系统 mkfs</span><br><span class="line"></span><br><span class="line">- 文件系统检验</span><br><span class="line"></span><br><span class="line">  - &#96;xfs_repair&#96; 处理 XFS 文件系统</span><br><span class="line"></span><br><span class="line">    - &#96;xfs_repair [ - fnd] 装 置名&#96;</span><br></pre></td></tr></table></figure>
+<p>选项与参数：</p>
+</li>
+<li><p>f ：后面的装置其实是个文件而不是实体装置</p>
+</li>
+<li><p>n ：单纯检查并不修改文件系统的任何数据 (检查而已)</p>
+</li>
+<li><p>d ：通常用在单人维护模式底下，针对根目录 (/) 进行检查与修复的动作！很危险！不要随便使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 案例</span><br></pre></td></tr></table></figure>
+<p>xfs_repair /dev/vda4</p>
+<p>范例：检查一下系统原本就有的 /dev/centos/home 文件系统<br>[root@study ~]#  xfs_repair /dev/centos/home</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- fsck.ext4 处理 EXT4 文件系统</span><br></pre></td></tr></table></figure>
+<p>fsck.ext4 [ - pf] [ - b superblock]  装 置名 称</p>
+</li>
+</ul>
+<p>选项与参数：<br>-p ：当文件系统在修复时，若有需要回复 y 的动作时，自动回复 y 来继续进行修复动作。<br>-f ：强制检查！一般来说，如果 fsck 没有发现任何 unclean 的旗标，不会主动进入<br>细部检查的，如果您想要强制 fsck 进入细部检查，就得加上 -f 旗标啰！<br>-D ：针对文件系统下的目录进行优化配置。<br>-b ：后面接 superblock 的位置！一般来说这个选项用不到。但是如果你的 superblock 因故损毁时，<br>透过这个参数即可利用文件系统内备份的 superblock 来尝试救援。一般来说，superblock 备份在：<br>1K block 放在 8193, 2K block 放在 16384, 4K block 放在 32768</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 只有在极度严重的问题才使用这些命令</span><br><span class="line"></span><br><span class="line">- 文件系统挂载与卸除</span><br><span class="line"></span><br><span class="line">- 前提</span><br><span class="line"></span><br><span class="line">  - 单一文件系统不应该被重复挂载在不同的挂载点(目录)中；</span><br><span class="line">  - 单一目录不应该重复挂载多个文件系统；</span><br><span class="line">  - 要作为挂载点的目录，理论上应该都是空目录才是。</span><br><span class="line"></span><br><span class="line">- 挂载方式</span><br><span class="line"></span><br><span class="line">  - 案例</span><br></pre></td></tr></table></figure>
+<p>[root@study ~]#  mount - -a a<br>[root@study ~]#  mount [- - l]<br>[root@study ~]#  mount [- - t  文件系 统 ] LABEL=’’ 挂 载点<br>[root@study ~]#  mount [- - t  文件系 统 ] UUID=’’ 挂 载点 # 鸟哥近期建议用这种方式喔！<br>[root@study ~]#  mount [- - t  文件系 统 ]  装 置文件名 挂 载点<br>选项与参数：<br>-a ：依照配置文件 /etc/fstab 的数据将所有未挂载的磁盘都挂载上来<br>-l ：单纯的输入 mount 会显示目前挂载的信息。加上 -l 可增列 Label 名称！<br>-t ：可以加上文件系统种类来指定欲挂载的类型。常见的 Linux 支持类型有：xfs, ext3, ext4,<br>reiserfs, vfat, iso9660(光盘格式), nfs, cifs, smbfs (后三种为网络文件系统类型)<br>-n ：在默认的情况下，系统会将实际挂载的情况实时写入 /etc/mtab 中，以利其他程序的运作。<br>但在某些情况下(例如单人维护模式)为了避免问题会刻意不写入。此时就得要使用 -n 选项。<br>-o ：后面可以接一些挂载时额外加上的参数！比方说账号、密码、读写权限等：<br>async, sync: 此文件系统是否使用同步写入 (sync) 或异步 (async) 的<br>内存机制，请参考文件系统运作方式。预设为 async。<br>atime,noatime: 是否修订文件的读取时间(atime)。为了效能，某些时刻可使用 noatime<br>ro, rw: 挂载文件系统成为只读(ro) 或可擦写(rw)<br>auto, noauto: 允许此 filesystem 被以 mount -a 自动挂载(auto)<br>dev, nodev: 是否允许此 filesystem 上，可建立装置文件？ dev 为可允许<br>suid, nosuid: 是否允许此 filesystem 含有 suid/sgid 的文件格式？<br>exec, noexec: 是否允许此 filesystem 上拥有可执行 binary 文件？<br>user, nouser: 是否允许此 filesystem 让任何使用者执行 mount ？一般来说，<br>mount 仅有 root 可以进行，但下达 user 参数，则可让<br>一般 user 也能够对此 partition 进行 mount 。<br>defaults: 默认值为：rw, suid, dev, exec, auto, nouser, and async<br>remount: 重新挂载，这在系统出错，或重新更新参数时，很有用！</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">  - &#x2F;etc&#x2F;filesystems：系统指定的测试挂载文件系统类型的优先级；</span><br><span class="line">  - &#x2F;proc&#x2F;filesystems：Linux 系统已经加载的文件系统类型</span><br><span class="line"></span><br><span class="line">- 我们 Linux 支持的文件系统之驱动程序都写在如下的目录中</span><br><span class="line"></span><br><span class="line">  - &#96;&#x2F;lib&#x2F;modules&#x2F;$(uname -r)&#x2F;kernel&#x2F;fs&#x2F;&#96;</span><br><span class="line"></span><br><span class="line">- 挂载 xfs&#x2F;ext4&#x2F;vfat</span><br><span class="line"></span><br><span class="line">  - 范例</span><br></pre></td></tr></table></figure>
+<p>范例：找出 /dev/vda4 的 UUID 后，用该 UUID 来挂载文件系统到 /data/xfs 内<br>[root@study ~]#  blkid /dev/vda4<br>/dev/vda4: UUID=”e0a6af55-26e7-4cb7-a515-826a8bd29e90” TYPE=”xfs”</p>
+<p>[root@study ~]#  mount UUID=”e0a6af55- - 26e7- - 4cb7- - a515- - 826a8bd29e90” /data/xfs<br>mount: mount point /data/xfs does not exist # 非正规目录！所以手动建立它！<br>[root@study ~]#  mkdir - - p /data/xfs<br>[root@study ~]#  mount UUID=”e0a6af55- - 26e7- - 4cb7- - a515- - 826a8bd29e90” /data/xfs<br>[root@study ~]#  df /data/xfs<br>Filesystem 1K-blocks Used Available Use% Mounted on<br>/dev/vda4 1038336 32864 1005472 4% /data/xfs</p>
+<h1 id="顺利挂载，且容量约为-1G-左右没问题！"><a href="#顺利挂载，且容量约为-1G-左右没问题！" class="headerlink" title="顺利挂载，且容量约为 1G 左右没问题！"></a>顺利挂载，且容量约为 1G 左右没问题！</h1><p>范例：使用相同的方式，将 /dev/vda5 挂载于 /data/ext4<br>[root@study ~]#  blkid /dev/vda5<br>/dev/vda5: UUID=”899b755b-1da4-4d1d-9b1c-f762adb798e1” TYPE=”ext4”<br>[root@study ~]#  mkdir /data/ext4<br>[root@study ~]#  mount UUID=”899b755b- - 1da4- - 4d1d- - 9b1c- - f762adb798e1” /data/ext4<br>[root@study ~]# </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 挂载 cd 或者 dvd</span><br></pre></td></tr></table></figure>
+<p>范例：将你用来安装 Linux 的 CentOS 原版光盘拿出来挂载到 /data/cdrom！<br>[root@study ~]#  blkid<br>…..(前面省略)…..<br>/dev/sr0: UUID=”2015-04-01-00-21-36-00” LABEL=”CentOS 7 x86_64” TYPE=”iso9660” PTTYPE=”dos”<br>[root@study ~]#  mkdir /data/cdrom<br>[root@study ~]#  mount /dev/sr0 /data/cdrom<br>mount: /dev/sr0 is write-protected, mounting read-only<br>[root@study ~]#  df /data/cdrom<br>Filesystem 1K-blocks Used Available Use% Mounted on<br>/dev/sr0 7413478 7413478 0 100% /data/cdrom</p>
+<h1 id="怎么会使用掉-100-呢？是啊！因为是-DVD-啊！所以无法再写入了啊！"><a href="#怎么会使用掉-100-呢？是啊！因为是-DVD-啊！所以无法再写入了啊！" class="headerlink" title="怎么会使用掉 100% 呢？是啊！因为是 DVD 啊！所以无法再写入了啊！"></a>怎么会使用掉 100% 呢？是啊！因为是 DVD 啊！所以无法再写入了啊！</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 挂载 vfat 中文随身碟 (USB</span><br><span class="line"></span><br><span class="line">  - 案例</span><br><span class="line">  - 注意：不能够是 NTFS 的文件系统</span><br></pre></td></tr></table></figure>
+<p>范例：找出你的随身碟装置的 UUID，并挂载到 /data/usb 目录中<br>[root@study ~]#  blkid<br>/dev/sda1: UUID=”35BC-6D6B” TYPE=”vfat”<br>[root@study ~]#  mkdir /data/usb<br>[root@study ~]# mount - - o codepage=950,iocharset=utf8 UUID=”35BC- - 6D6B” /data/usb<br>[root@study ~]#  # mount - - o codepage=950,iocharset=big5 UUID=”35BC- - 6D6B” /data/usb<br>[root@study ~]#  df /data/usb<br>Filesystem 1K-blocks Used Available Use% Mounted on<br>/dev/sda1 2092344 4 2092340 1% /data/usb</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 重新挂载根目录与挂载不特定目录</span><br><span class="line"></span><br><span class="line">  - 案例</span><br></pre></td></tr></table></figure>
+<p>  范例：将 / 重新挂载，并加入参数为 rw 与 auto<br>  [root@study ~]# mount - - o remount,rw,auto /</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>  范例：将 /var 这个目录暂时挂载到 /data/var 底下：<br>  [root@study ~]#  mkdir /data/var<br>  [root@study ~]#  mount  – bind /var /data/var<br>  [root@study ~]#  ls - - lid /var  /data/var<br>  16777346 drwxr-xr-x. 22 root root 4096 Jun 15 23:43 /data/var<br>  16777346 drwxr-xr-x. 22 root root 4096 Jun 15 23:43 /var</p>
+<h1 id="内容完全一模一样啊！因为挂载目录的缘故！"><a href="#内容完全一模一样啊！因为挂载目录的缘故！" class="headerlink" title="内容完全一模一样啊！因为挂载目录的缘故！"></a>内容完全一模一样啊！因为挂载目录的缘故！</h1><p>  [root@study ~]#  mount | grep var</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- umount ( 将装置 文件 卸除)</span><br><span class="line"></span><br><span class="line">  - 案例</span><br></pre></td></tr></table></figure>
+<p>[root@study ~]#  umount [- - fn]  装 置文件名或挂 载点<br>选项与参数：<br>-f ：强制卸除！可用在类似网络文件系统 (NFS) 无法读取到的情况下；<br>-l ：立刻卸除文件系统，比 -f 还强！<br>-n ：不更新 /etc/mtab 情况下卸除。<br>就是直接将已挂载的文件系统给他卸除即是！卸除之后，可以使用 df 或 mount 看看是否还存在目<br>录树中？ 卸除的方式，可以下达装置文件名或挂载点，均可接受啦！底下的范例做看看吧！<br>范例：将本章之前自行挂载的文件系统全部卸除：<br>[root@study ~]#  mount<br>…..(前面省略)…..<br>/dev/vda4 on /data/xfs type xfs (rw,relatime,seclabel,attr2,inode64,logbsize=256k,sunit=512,..)<br>/dev/vda5 on /data/ext4 type ext4 (rw,relatime,seclabel,data=ordered)<br>/dev/sr0 on /data/cdrom type iso9660 (ro,relatime)<br>/dev/sda1 on /data/usb type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=950,iocharset=…)<br>/dev/mapper/centos-root on /data/var type xfs (rw,relatime,seclabel,attr2,inode64,noquota)</p>
+<h1 id="先找一下已经挂载的文件系统，如上所示，特殊字体即为刚刚挂载的装置啰！"><a href="#先找一下已经挂载的文件系统，如上所示，特殊字体即为刚刚挂载的装置啰！" class="headerlink" title="先找一下已经挂载的文件系统，如上所示，特殊字体即为刚刚挂载的装置啰！"></a>先找一下已经挂载的文件系统，如上所示，特殊字体即为刚刚挂载的装置啰！</h1><h1 id="基本上，卸除后面接装置或挂载点都可以！不过最后一个-centos-root-由于有其他挂载，"><a href="#基本上，卸除后面接装置或挂载点都可以！不过最后一个-centos-root-由于有其他挂载，" class="headerlink" title="基本上，卸除后面接装置或挂载点都可以！不过最后一个 centos-root 由于有其他挂载，"></a>基本上，卸除后面接装置或挂载点都可以！不过最后一个 centos-root 由于有其他挂载，</h1><h1 id="因此，该项目一定要使用挂载点来卸除才行！"><a href="#因此，该项目一定要使用挂载点来卸除才行！" class="headerlink" title="因此，该项目一定要使用挂载点来卸除才行！"></a>因此，该项目一定要使用挂载点来卸除才行！</h1><p>[root@study ~]#  umount /dev/vda4 &lt;==用装置文件名来卸除<br>[root@study ~]#  umount /data/ext4 &lt;==用挂载点来卸除<br>[root@study ~]#  umount /data/cdrom &lt;==因为挂载点比较好记忆！<br>[root@study ~]#  umount /data/usb<br>[root@study ~]#  umount /data/var &lt;==一定要用挂载点！因为装置有被其他方式挂载</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 磁盘 文件系统参数自定义</span><br><span class="line"></span><br><span class="line">  - mknod</span><br><span class="line"></span><br><span class="line">    - 就是透过文件的 major 与 minor 数值来替代的</span><br><span class="line">    - 手动处理装置文件案例</span><br></pre></td></tr></table></figure>
+<p>[root@study ~]#  mknod  装 置文件名 [bcp] [Major] [Minor]<br>选项与参数：<br>装置种类：<br>b ：设定装置名称成为一个周边储存设备文件，例如磁盘等；<br>c ：设定装置名称成为一个周边输入设备文件，例如鼠标/键盘等；<br>p ：设定装置名称成为一个 FIFO 文件；<br>Major ：主要装置代码；<br>Minor ：次要装置代码；<br>范例：由上述的介绍我们知道 /dev/vda10 装置代码 252, 10，请建立并查阅此装置<br>[root@study ~]#  mknod /dev/vda10 b 252 10<br>[root@study ~]#  ll /dev/vda10<br>brw-r–r–. 1 root root 252, 10 Jun 24 23:40 /dev/vda10</p>
+<h1 id="上面那个-252-与-10-是有意义的，不要随意设定啊！"><a href="#上面那个-252-与-10-是有意义的，不要随意设定啊！" class="headerlink" title="上面那个 252 与 10 是有意义的，不要随意设定啊！"></a>上面那个 252 与 10 是有意义的，不要随意设定啊！</h1><p>范例：建立一个 FIFO 文件，档名为 /tmp/testpipe<br>[root@study ~]#  mknod /tmp/testpipe p<br>[root@study ~]#  ll /tmp/testpipe<br>prw-r–r–. 1 root root 0 Jun 24 23:44 /tmp/testpipe</p>
+<h1 id="注意啊！这个文件可不是一般文件，不可以随便就放在这里！"><a href="#注意啊！这个文件可不是一般文件，不可以随便就放在这里！" class="headerlink" title="注意啊！这个文件可不是一般文件，不可以随便就放在这里！"></a>注意啊！这个文件可不是一般文件，不可以随便就放在这里！</h1><h1 id="测试完毕之后请删除这个文件吧！看一下这个文件的类型！是-p-喔！"><a href="#测试完毕之后请删除这个文件吧！看一下这个文件的类型！是-p-喔！" class="headerlink" title="测试完毕之后请删除这个文件吧！看一下这个文件的类型！是 p 喔！^_^"></a>测试完毕之后请删除这个文件吧！看一下这个文件的类型！是 p 喔！^_^</h1><p>[root@study ~]#  rm /dev/vda10 /tmp/testpipe<br>rm: remove block special file ‘/dev/vda10’ ? y y<br>rm: remove fifo ‘/tmp/testpipe’ ? y y</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- xfs_admin 修改 XFS 文件系统的 UUID 与 Label name</span><br><span class="line"></span><br><span class="line">  - 案例</span><br></pre></td></tr></table></figure>
+<p>  xfs_admin [-lu] [-L label] [-U uuid] 设备文件<br>  选项与参数：<br>  -l ：列出这个装置的 label name<br>  -u ：列出这个装置的 UUID<br>  -L ：设定这个装置的 Label name<br>  -U ：设定这个装置的 UUID 喔！</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- tune2fs 修改 ext4 的 label name 与 UUID</span><br></pre></td></tr></table></figure>
+<p>  [root@study ~]#  tune2fs [- - l] [- - L Label] [- - U uuid]  装 置文件名<br>  选项与参数：<br>  -l ：类似 dumpe2fs -h 的功能～将 superblock 内的数据读出来～<br>  -L ：修改 LABEL name<br>  -U ：修改 UUID 啰！<br>  范例：列出 /dev/vda5 的 label name 之后，将它改成 vbird_ext4<br>  [root@study ~]#  dumpe2fs - - h /dev/vda5 | grep name<br>  dumpe2fs 1.42.9 (28-Dec-2013)</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 设定开机挂载</span><br><span class="line"></span><br><span class="line">  - 系统挂载的一些限制</span><br><span class="line"></span><br><span class="line">    - 根目录 &#x2F; 是必须挂载的﹐而且一定要先于其它 mount point 被挂载进来。</span><br><span class="line">    - 其它 mount point 必须为已建立的目录﹐可任意指定﹐但一定要遵守必须的系统目录架构原则 (FHS)</span><br><span class="line">    - 所有 mount point 在同一时间之内﹐只能挂载一次。</span><br><span class="line">    - 所有 partition 在同一时间之内﹐只能挂载一次。</span><br><span class="line">    - 如若进行卸除﹐您必须先将工作目录移到 mount point(及其子目录) 之外</span><br><span class="line"></span><br><span class="line">  - 查看</span><br><span class="line"></span><br><span class="line">    - &#96;cat &#x2F;etc&#x2F;fstab&#96;</span><br><span class="line">    - 描述信息如下:</span><br></pre></td></tr></table></figure>
+<p>  [装置/UUID 等] [挂载点] [文件系统] [文件系统参数] [dump] [fsck]</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">      - 解释</span><br><span class="line">        - 第一栏：磁盘装置文件名&#x2F;UUID&#x2F;LABEL name：</span><br><span class="line">          - 文件系统或磁盘的装置文件名，如 &#x2F;dev&#x2F;vda2 等</span><br><span class="line">          - 文件系统的 UUID 名称，如 UUID&#x3D;xxx</span><br><span class="line">          - 文件系统的 LABEL 名称，例如 LABEL&#x3D;xxx</span><br><span class="line">        - 第二栏：挂载点 (mount point)：：</span><br><span class="line">        - 第三栏：磁盘分区槽的文件系统：</span><br><span class="line">        - 第四栏：文件系统参数：</span><br><span class="line">        - 第五栏：能否被 dump 备份指令作用：</span><br><span class="line">        - 第六栏：是否以 fsck 检验扇区：</span><br><span class="line"></span><br><span class="line">- 特殊装置 loop 挂载</span><br><span class="line"></span><br><span class="line">  - 挂载光盘&#x2F;DVD 映象文件</span><br><span class="line">  - 大型文件的格式化</span><br><span class="line">  - 挂载</span><br><span class="line"></span><br><span class="line">- 内存置换空间(swap)</span><br><span class="line"></span><br><span class="line">  - 使用实体 分区置 槽建置 swap</span><br><span class="line">    - 基本步骤</span><br><span class="line">      1. 分区：先使用 gdisk 在你的磁盘中分区出一个分区槽给系统作为 swap 。由于 Linux 的 gdisk 预设会将分 区槽的 ID 设定为 Linux 的文件系统，所以你可能还得要设定一下 system ID 就是了。</span><br><span class="line">      2. 格式化：利用建立 swap 格式的『mkswap 装置文件名』就能够格式化该分区槽成为 swap 格式啰</span><br><span class="line">      3. 使用：最后将该 swap 装置启动，方法为：『swapon 装置文件名』。</span><br><span class="line">      4. 观察：最终透过 free 与 swapon -s 这个指令来观察一下内存的用量吧！</span><br><span class="line"></span><br><span class="line">- 使用 文件置 建置 swap</span><br><span class="line"></span><br><span class="line">  - 透过一个案例学习</span><br><span class="line">    1. 使用 dd 这个指令来新增一个 128MB 的文件在 &#x2F;tmp 底下：</span><br><span class="line">    2. 使用 mkswap 将 &#x2F;tmp&#x2F;swap 这个文件格式化为 swap 的文件格式</span><br><span class="line">    3. 使用 swapon 来将 &#x2F;tmp&#x2F;swap 启动啰！</span><br><span class="line">    4. 使用 swapoff 关掉 swap file，并设定自动启用</span><br><span class="line"></span><br><span class="line">- 文件系统的特殊观察与操作</span><br><span class="line"></span><br><span class="line">  - 磁盘空间之浪费问题</span><br><span class="line">  - 利用 GNU 的 parted 进行 分区 行为(Optional)</span><br><span class="line">  - **parted 可以直接在一行指令列就完成分区，是一个非常好用的指令！它常用的语法如下：**</span><br></pre></td></tr></table></figure>
+<p>[root@study ~]#  parted [ 装 置 ] [ 指令 [ [ 参数 ]]<br>选项与参数：<br>指令功能：<br>新增分区：mkpart [primary|logical|extended] [ext4|vfat|xfs] 开始 结束<br>显示分区：print<br>删除分区：rm [partition]<br>范例一：以 parted 列出目前本机的分区表资料<br>[root@study ~]#  parted /dev/vda  print<br>Model: Virtio Block Device (virtblk) &lt;==磁盘接口与型号<br>Disk /dev/vda: 42.9GB &lt;==磁盘文件名与容量<br>Sector size (logical/physical): 512B/512B &lt;==每个扇区的大小<br>Partition Table: gpt &lt;==是 GPT 还是 MBR 分区<br>Disk Flags: pmbr_boot<br>Number Start End Size File system Name Flags<br>1 1049kB 3146kB 2097kB bios_grub<br>2 3146kB 1077MB 1074MB xfs<br>3 1077MB 33.3GB 32.2GB lvm<br>4 33.3GB 34.4GB 1074MB xfs Linux filesystem<br>5 34.4GB 35.4GB 1074MB ext4 Microsoft basic data<br>6 35.4GB 36.0GB 537MB linux-swap(v1) Linux swap<br>[ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] [ 6 ]</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 显示参数的意义</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol>
+<li>Number：这个就是分区槽的号码啦！举例来说，1 号代表的是 /dev/vda1 的意思；</li>
+<li>Start：分区的起始位置在这颗磁盘的多少 MB 处？有趣吧！他以容量作为单位喔！</li>
+<li>End：此分区的结束位置在这颗磁盘的多少 MB 处？</li>
+<li>Size：由上述两者的分析，得到这个分区槽有多少容量；</li>
+<li>File system：分析可能的文件系统类型为何的意思！</li>
+<li>Name：就如同 gdisk 的 System ID 之意。<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">  - 案例</span><br><span class="line">    - 使用parted 将 mbr 分区表改成 gpt</span><br><span class="line">      - 非常危险，无法还原</span><br><span class="line"></span><br><span class="line">## 第八章 文件和文件系统的压缩</span><br><span class="line"></span><br><span class="line">- 压缩文件的用途和技术</span><br><span class="line"></span><br><span class="line">- Linux 常见的压缩命令</span><br><span class="line"></span><br><span class="line">  - gzip ， zcat 、zmore、zless、zgrep</span><br><span class="line"></span><br><span class="line">    - 语法</span><br><span class="line"></span><br><span class="line">      - &#96;gzip [-cdtv] 文件名&#96;</span><br><span class="line">      - &#96;zcat 文件名.gz&#96;</span><br></pre></td></tr></table></figure>
+ 选项与参数：<br> -c ：将压缩的数据输出到屏幕上，可透过数据流重导向来处理；<br> -d ：解压缩的参数；<br> -t ：可以用来检验一个压缩文件的一致性～看看文件有无错误；<br> -v ：可以显示出原文件/压缩文件案的压缩比等信息；<br> -# ：# 为数字的意思，代表压缩等级，-1 最快，但是压缩比最差、-9 最慢，但是压缩比最好！预设是 -6 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">    - &#96;egrep&#96; 查找</span><br><span class="line"></span><br><span class="line">  - bzip2, bzcat&#x2F;bzmore&#x2F;bzless&#x2F;bzgrep</span><br><span class="line"></span><br><span class="line">  - 对于gzip 的升级</span><br><span class="line"></span><br><span class="line">  - 优点</span><br><span class="line"></span><br><span class="line">    - 比gzip 压缩率更好</span><br><span class="line"></span><br><span class="line">  - 缺点</span><br><span class="line"></span><br><span class="line">    - 时间要更久</span><br><span class="line"></span><br><span class="line">  - xz, xzcat&#x2F;xzmore&#x2F;xzless&#x2F;xzgrep</span><br><span class="line"></span><br><span class="line">    - 优点</span><br><span class="line">      - 比bzip2 压缩率还要好</span><br><span class="line">    - 缺点</span><br><span class="line">      - 很慢</span><br><span class="line"></span><br><span class="line">- 打包命令（常用）</span><br><span class="line"></span><br><span class="line">  - 选项和参数</span><br></pre></td></tr></table></figure>
+选项与参数：</li>
+</ol>
+<p>-c ：建立打包文件，可搭配 -v 来察看过程中被打包的档名(filename)<br>-t ：察看打包文件的内容含有哪些档名，重点在察看『档名』就是了；<br>-x ：解打包或解压缩的功能，可以搭配 -C (大写) 在特定目录解开<br>特别留意的是， -c, -t, -x 不可同时出现在一串指令列中。<br>-z ：透过 gzip 的支持进行压缩/解压缩：此时档名最好为 *.tar.gz<br>-j ：透过 bzip2 的支持进行压缩/解压缩：此时档名最好为 *.tar.bz2<br>-J ：透过 xz 的支持进行压缩/解压缩：此时档名最好为 *.tar.xz<br>特别留意， -z, -j, -J 不可以同时出现在一串指令列中<br>-v ：在压缩/解压缩的过程中，将正在处理的文件名显示出来！<br>-f filename：-f 后面要立刻接要被处理的档名！建议 -f 单独写一个选项啰！(比较不会忘记)<br>-C 目录 ：这个选项用在解压缩，若要在特定目录解压缩，可以使用这个选项。<br>其他后续练习会使用到的选项介绍：<br>-p(小写) ：保留备份数据的原本权限与属性，常用于备份(-c)重要的配置文件<br>-P(大写) ：保留绝对路径，亦即允许备份数据中含有根目录存在之意；<br>–exclude=FILE：在压缩的过程中，不要将 FILE 打包！</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 常用如下命令</span><br><span class="line"></span><br><span class="line">  - 压缩&#96;tar -jcv -f filename.tar.bz2 文件或者目录名称&#96;</span><br><span class="line">  - 查询 &#96;tar -jtv filename.tar.bz2&#96;</span><br><span class="line">  - 解压缩 &#96;tar -jxv -f filename.tar.bz2 要解压的地方&#96;</span><br><span class="line"></span><br><span class="line">- 案例</span><br><span class="line"></span><br><span class="line">  - 压缩 &#x2F;etc 下面的文件，查看优点特殊的地方</span><br><span class="line">  - 为什么要去掉 &#x2F; 根目录路径？</span><br><span class="line">  - 如果要tar 里面加上这个根路径，要怎么做？</span><br><span class="line">  - 备份数据解压缩，并且到特定的目录下面</span><br><span class="line">    - 如何指定要解开的目录</span><br><span class="line"></span><br><span class="line">- 只解开单一文件的办法</span><br><span class="line"></span><br><span class="line">  - 先查找文档名称</span><br><span class="line">    - &#96;tar - - jtv - - f &#x2F;root&#x2F;etc.tar.bz2 | grep &#39;shadow&#39;&#96;</span><br><span class="line"></span><br><span class="line">- 打包某目录，但不含该目录下的某些 文件</span><br><span class="line"></span><br><span class="line">  - --exclude 参数用法</span><br><span class="line"></span><br><span class="line">- 仅备份比某个时刻还要新的 文件</span><br><span class="line"></span><br><span class="line">  - 先使用搜索找到对应的文件</span><br><span class="line">  - &#96;tar -jcv -f &#x2F;root&#x2F;etc.newer.then.passwd.tar.bz2 --newer-mtime&#x3D;&quot;2015&#x2F;06&#x2F;07&quot; &#x2F;etc&#x2F;*&#96;</span><br><span class="line"></span><br><span class="line">- 利用管道一遍打包一遍备份</span><br><span class="line"></span><br><span class="line">  -</span><br></pre></td></tr></table></figure>
+<pre><code>tar -cvf - /etc | tar -xvf -
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">      - 注意 - 代表输入和输出</span><br><span class="line"></span><br><span class="line">  - 例题：系统备份的案例</span><br><span class="line"></span><br><span class="line">    - 结合上面所学。使用过滤方式备份数据</span><br><span class="line"></span><br><span class="line">  - 解压缩后的 SELinux</span><br><span class="line"></span><br><span class="line">    - 可能影响系统配置</span><br><span class="line"></span><br><span class="line">- XFS 文件系统的备份与还原</span><br><span class="line"></span><br><span class="line">  - 使用备份命令 xfs_dump</span><br><span class="line"></span><br><span class="line">    - 备份行为可以累积，类似SVN的手法，新建备份只新增差异文件</span><br><span class="line">    - 限制</span><br><span class="line">      - 文件系统必须挂载</span><br><span class="line">      - xfsdump 必须使用 root 的权限才能操作 (涉及文件系统的关系)</span><br><span class="line">      - xfsdump 只能备份 XFS 文件系统啊！</span><br><span class="line">      - xfsdump 备份下来的数据 (文件或储存媒体) 只能让 xfsrestore 解析</span><br><span class="line">      - xfsdump 是透过文件系统的 **UUID** 来分辨各个备份档的，因此不能备份两个具有相同 UUID 的文件系统 喔！</span><br><span class="line">      - **xfsdump 预设仅支持文件系统的备份，并不支持特定目录的备份**</span><br><span class="line"></span><br><span class="line">  - 使用方法</span><br><span class="line"></span><br><span class="line">    - &#96;xfsdump [- - L S_label] [- - M M_label] [- - l #] [- - f 备 份 档 ] 待 备 份 资&#96;</span><br><span class="line">    - 选项和参数</span><br></pre></td></tr></table></figure></code></pre><p>  选项与参数：<br>  -L ：xfsdump 会纪录每次备份的 session 标头，这里可以填写针对此文件系统的简易说明<br>  -M ：xfsdump 可以纪录储存媒体的标头，这里可以填写此媒体的简易说明<br>  -l ：是 L 的小写，就是指定等级～有 0~9 共 10 个等级喔！ (预设为 0，即完整备份)<br>  -f ：有点类似 tar 啦！后面接产生的文件，亦可接例如 /dev/st0 装置文件名或其他一般文件档名等<br>  -I ：从 /var/lib/xfsdump/inventory 列出目前备份的信息状态</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">    - 案例</span><br><span class="line">    - 累积备份</span><br><span class="line"></span><br><span class="line">- XFS 文件系统还原 xfsrestore</span><br><span class="line"></span><br><span class="line">  - 占位，等安装对应系统再来</span><br><span class="line"></span><br><span class="line">- 用 xfsrestore 观察 xfsdump</span><br><span class="line"></span><br><span class="line">  - 简单复原 level 0 的文件系统</span><br><span class="line">  - 复原累积备份资料</span><br><span class="line">  - 仅还原部分 文件的 的 xfsrestore 互动模式</span><br><span class="line"></span><br><span class="line">- 光盘写入工具</span><br><span class="line"></span><br><span class="line">  - 了解即可</span><br><span class="line"></span><br><span class="line">- 其他常见的压缩和备份工具</span><br><span class="line"></span><br><span class="line">  - dd</span><br><span class="line"></span><br><span class="line">    - 作用</span><br><span class="line">      - dd 可以读取磁盘装置的内容，然后将整个装置备份成一个文件呢</span><br><span class="line">    - 使用方法</span><br><span class="line">      - &#96;dd if&#x3D;&quot;input_file&quot; of&#x3D;&quot;output_file&quot; bs&#x3D;&quot;block_size&quot; count&#x3D;&quot;number&quot;&#96;</span><br><span class="line">    - 选项和参数</span><br></pre></td></tr></table></figure>
+<p>  选项与参数：<br>  if ：就是 input file 啰～也可以是装置喔！<br>  of ：就是 output file 喔～也可以是装置；<br>  bs ：规划的一个 block 的大小，若未指定则预设是 512 bytes(一个 sector 的大小)<br>  count：多少个 bs 的意思。</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 案例</span><br><span class="line">  - 范例一：将 &#x2F;etc&#x2F;passwd 备份到 &#x2F;tmp&#x2F;passwd.back 当中</span><br><span class="line">    - &#96;dd if&#x3D;&#x2F;etc&#x2F;passwd of&#x3D;&#x2F;tmp&#x2F;passwd.back&#96;</span><br><span class="line">  - 范例二：将刚刚刻录的光驱的内容，再次的备份下来成为映像挡</span><br><span class="line">  - 范例三：假设你的 USB 是 &#x2F;dev&#x2F;sda 好了，请将刚刚范例二的 image 刻录到 USB 磁盘中</span><br><span class="line">  - 范例四：将你的 &#x2F;boot 整个文件系统透过 dd 备份下来</span><br><span class="line">- 例题：</span><br></pre></td></tr></table></figure>
+<p>  你想要将你的 /dev/vda2 进行完整的复制到另一个 partition 上，请使用你的系统上面未分区完毕的容量再建立一<br>  个与 /dev/vda2 差不多大小的分区槽 (只能比 /dev/vda2 大，不能比他小！)，然后将之进行完整的复制 (包括需<br>  要复制 boot sector 的区块)。<br>  答：<br>  因为我们的 /dev/sda 也是个测试的 USB 磁盘，可以随意恶搞！我们刚刚也才测试过将光盘映像文件给它复制进<br>  去而已。 现在，请你分区 /dev/sda1 出来，然后将 /dev/vda2 完整的拷贝进去 /dev/sda1 吧！</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">    - 注意点</span><br><span class="line">      - 需要注意dd 连同 uuid 一起复制，如果要复制两块完全相同的硬盘，需要重新定义一下 uuid</span><br><span class="line"></span><br><span class="line">- cpio</span><br><span class="line"></span><br><span class="line">  - 作用</span><br><span class="line">    - cpio 可以备份任何东西，包括装置设备文件</span><br><span class="line">    - 暂时只记住语法即可</span><br><span class="line">  - 缺点</span><br><span class="line">    - 不会主动去找文件，需要find 找到文件才能备份</span><br><span class="line">  - 语法</span><br></pre></td></tr></table></figure>
+<p>[root@study ~]#  cpio - - ovcB &gt; [file|device] &lt;==备份<br>[root@study ~]#  cpio - - ivcdu &lt; [file|device] &lt;==还原<br>[root@study ~]#  cpio - - ivct &lt; [file|device] &lt;==察看<br>备份会使用到的选项与参数：<br>-o ：将数据 copy 输出到文件或装置上<br>-B ：让预设的 Blocks 可以增加至 5120 bytes ，预设是 512 bytes ！<br>这样的好处是可以让大文件的储存速度加快(请参考 i-nodes 的观念)<br>还原会使用到的选项与参数：<br>-i ：将数据自文件或装置 copy 出来系统当中<br>-d ：自动建立目录！使用 cpio 所备份的数据内容不见得会在同一层目录中，因此我们<br>必须要让 cpio 在还原时可以建立新目录，此时就得要 -d 选项的帮助！<br>-u ：自动的将较新的文件覆盖较旧的文件！<br>-t ：需配合 -i 选项，可用在”察看”以 cpio 建立的文件或装置的内容<br>一些可共享的选项与参数：<br>-v ：让储存的过程中文件名可以在屏幕上显示<br>-c ：一种较新的 portable format 方式储存</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">### 练习题</span><br><span class="line"></span><br><span class="line">- 情境模拟题一：请将本章练习过程中产生的不必要的文件删除，以保持系统容量不要被恶搞！</span><br><span class="line"></span><br><span class="line">- 情境模拟题二：你想要逐时备份 &#x2F;home 这个目录内的数据，又担心每次备份的信息太多， 因此想要使用 xfsdump 的方式来逐一备份数据到 &#x2F;backups 这个目录下。该如何处理？ o 目标：了解到 xfsdump 以及各个不同 level 的作用； o 前提：被备份的资料为单一 partition ，亦即本例中的 &#x2F;home 实际处理的方法其实还挺简单的！我们可以这样做看看：</span><br><span class="line"></span><br><span class="line">- 情境模拟三：假设过了一段时间后，妳的 &#x2F;home 变的怪怪的，妳想要将该 filesystem 以刚刚的备份数据还 原， 此时该如何处理呢？妳可以这样做的：</span><br><span class="line"></span><br><span class="line">  ​	由于 &#x2F;home 这个 partition 是用户只要有登入就会使用，因此你应该无法卸除这个东西！因此，你必 须要注销所有一般用户， 然后在 tty2 直接以 root 登入系统，不要使用一般账号来登入后 su 转成 root ！ 这样才有办法卸除 &#x2F;home 喔！</span><br><span class="line"></span><br><span class="line">## 第九章 Vim编辑器</span><br><span class="line"></span><br><span class="line">- vi 和 vim</span><br><span class="line"></span><br><span class="line">- 为什么要学习vi 和vim</span><br><span class="line"></span><br><span class="line">  - 内置命令会使用</span><br><span class="line">  - unix 基本都会自带</span><br><span class="line">  - 方便简单</span><br><span class="line">  - 功能强大</span><br><span class="line"></span><br><span class="line">- vi使用方法</span><br><span class="line"></span><br><span class="line">  - 三种模式</span><br><span class="line">    - 一般命令模式</span><br><span class="line">      - </span><br><span class="line">    - 编辑模式</span><br><span class="line">    - 命令行模式</span><br><span class="line"></span><br><span class="line">- 注意</span><br><span class="line"></span><br><span class="line">  - 一般指令模式可与编辑模式及指令列模式切换， 但编辑模式与指令列 模式之间不可互相切换喔</span><br><span class="line"></span><br><span class="line">- 简单案例</span><br><span class="line"></span><br><span class="line">  - 使用『 vi filename 』进入一般指令模式</span><br><span class="line">  - 使用 i 进入编辑模式</span><br><span class="line">  - 使用esc 退出到一般命令模式</span><br><span class="line">  - &#96;:wq&#96; 进行保存</span><br><span class="line"></span><br><span class="line">- 常用操作</span><br><span class="line"></span><br><span class="line">  - 一般模式</span><br><span class="line"></span><br><span class="line">    - hjkl 可以进行上下左右的移动</span><br><span class="line">    - &#96;ctrl + f&#96; 和&#96;ctrl + b&#96; 上下移动一页</span><br><span class="line">    - &#x2F; 查找 继续按下n继续查找</span><br><span class="line">    - 0 或者 home</span><br><span class="line">    - $ 或者 end</span><br><span class="line">    - gg 跳到第一行</span><br><span class="line">    - n(数字) enter 光标下移 N 行</span><br><span class="line">    - :n1,n2s&#x2F;word1&#x2F;word2&#x2F;g</span><br><span class="line">      - n1 与 n2 为数字。在第 n1 与 n2 列之间寻找 word1 这个字符串，并将该字符串取代 为 word2 ！举例来说，在 100 到 200 列之间搜寻 vbird 并取代为 VBIRD 则： 『:100,200s&#x2F;vbird&#x2F;VBIRD&#x2F;g』。(常用)</span><br><span class="line">    - :1,$s&#x2F;word1&#x2F;word2&#x2F;gc</span><br><span class="line">      - 从第一列到最后一列寻找 word1 字符串，并将该字符串取代为 word2 ！且在取代前显 示提示字符给用户确认 (confirm) 是否需要取代！(常用)</span><br><span class="line">    - :1,$s&#x2F;word1&#x2F;word2&#x2F;g</span><br><span class="line">      - 从第一列到最后一列寻找 word1 字符串，并将该字符串取代为 word2 ！(常用)</span><br><span class="line">    - x 退出但是不改变时间</span><br><span class="line">    - dd 删除一行</span><br><span class="line">    - yy 复制一行</span><br><span class="line">    - nyy 复制多行 如3yy</span><br><span class="line">    - u 恢复前一个操作</span><br><span class="line">    - ctrl + r 重做上一个动作</span><br><span class="line">    - . 重复上一个动作</span><br><span class="line"></span><br><span class="line">  - 编辑模式</span><br><span class="line"></span><br><span class="line">    - i I 插入模式</span><br><span class="line">      - i 为『从目前光标所在处插入』</span><br><span class="line">      - I 为『在目前所在列的第一个非空格符处开始插入】</span><br><span class="line">    - a 和 A</span><br><span class="line">      - a 为『从目前光标所在的下一个字符处开始插入』</span><br><span class="line">      - A 为『从光标所在列的最后一个字符处开始插入』</span><br><span class="line">    - o 和 O</span><br><span class="line">    - r 和 R</span><br><span class="line"></span><br><span class="line">  - 命令模式</span><br><span class="line"></span><br><span class="line">    - w</span><br><span class="line">    - q</span><br><span class="line">    - !</span><br><span class="line"></span><br><span class="line">  - 实际案例</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>请在 /tmp 这个目录下建立一个名为 vitest 的目录；</p>
+</li>
+<li><p>进入 vitest 这个目录当中；</p>
+</li>
+<li><p>将 /etc/man_db.conf 复制到本目录底下(或由上述的连结下载 man_db.conf 文件)；</p>
+</li>
+<li><p>使用 vi 开启本目录下的 man_db.conf 这个文件；</p>
+</li>
+<li><p>在 vi 中设定一下行号；</p>
+</li>
+<li><p>移动到第 43 列，向右移动 59 个字符，请问你看到的小括号内是哪个文字？</p>
+</li>
+<li><p>移动到第一列，并且向下搜寻一下『 gzip 』这个字符串，请问他在第几列？</p>
+</li>
+<li><p>接着下来，我要将 29 到 41 列之间的『小写 man 字符串』改为『大写 MAN 字符串』，并且一个一个挑<br>选是否需要修改，如何下达指令？如果在挑选过程中一直按『y』， 结果会在最后一列出现改变了几个 man<br>呢？</p>
+</li>
+<li><p>修改完之后，突然反悔了，要全部复原，有哪些方法？</p>
+</li>
+<li><p>我要复制 66 到 71 这 6 列的内容(含有 MANDB_MAP)，并且贴到最后一列之后；</p>
+</li>
+<li><p>113 到 128 列之间的开头为 # 符号的批注数据我不要了，要如何删除？</p>
+</li>
+<li><p>将这个文件另存成一个 man.test.config 的檔名；</p>
+</li>
+<li><p>去到第 25 列，并且删除 15 个字符，结果出现的第一个单字是什么？</p>
+</li>
+<li><p>在第一列新增一列，该列内容输入『I am a student…』；</p>
+</li>
+<li><p>储存后离开吧！</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">  - vim 缓存处理办法</span><br><span class="line"></span><br><span class="line">    - 问题</span><br><span class="line">      - 问题一：可能有其他人或程序同时在编辑这个文件：</span><br><span class="line">      - 问题二：在前一个 vim 的环境中，可能因为某些不知名原因导致 vim 中断 (crashed)：</span><br><span class="line"></span><br><span class="line">- vim 的额外功能</span><br><span class="line"></span><br><span class="line">- 可视区块</span><br><span class="line"></span><br><span class="line">  - v 开始反白</span><br><span class="line">  - V 行反白</span><br><span class="line">  - y 反白复制</span><br><span class="line">  - d 反白删除</span><br><span class="line"></span><br><span class="line">- 多文件编辑</span><br><span class="line"></span><br><span class="line">  - :n 编辑下一个文件</span><br><span class="line">  - :N 编辑上一个文件</span><br><span class="line">  - :files 列出目前这个vim 开启的所有文件</span><br><span class="line">  - 案例</span><br><span class="line">    - 多文件编辑</span><br><span class="line"></span><br><span class="line">- 多窗口功能</span><br><span class="line"></span><br><span class="line">  - :sp &#123;filename&#125;</span><br><span class="line">    - 存在文件名对比文件，</span><br><span class="line">    - 否则新建一个窗口用于对比</span><br><span class="line">  - 利用 ctrl + w + 上 或者 ctrl + w + 下 来切换窗口</span><br><span class="line"></span><br><span class="line">- vim 关键词补全</span><br><span class="line"></span><br><span class="line">  - 快捷键使用</span><br><span class="line">    - [ctrl]+x -&gt; [ctrl]+n 透过目前正在编辑的这个『文件的内容文字』作为关键词，予以补齐</span><br><span class="line">    - [ctrl]+x -&gt; [ctrl]+f 以当前目录内的『文件名』作为关键词，予以补齐</span><br><span class="line">    - [ctrl]+x -&gt; [ctrl]+o 以扩展名作为语法补充，以 vim 内建的关键词，予以补齐</span><br><span class="line"></span><br><span class="line">- vim 环境设定与记录： ~&#x2F;.vimrc, ~&#x2F;.viminfo</span><br><span class="line"></span><br><span class="line">- vim 常用图</span><br><span class="line"></span><br><span class="line">  - 查看图片</span><br><span class="line"></span><br><span class="line">- 其他vim 注意事项</span><br><span class="line"></span><br><span class="line">  - 中文乱码</span><br><span class="line">  - dos 和 linux 换行</span><br><span class="line">    - dos2nnix</span><br><span class="line">    - unix2dos</span><br><span class="line"></span><br><span class="line">- 语系编码转换</span><br><span class="line"></span><br><span class="line">  - &#96;iconv -f big5 -t utf8 vi.big5 -o vi.utf8&#96;</span><br><span class="line">  - &#96;iconv -f utf8 -t big5 vi utf8 | \&#96;</span><br><span class="line"></span><br><span class="line">### 练习题</span><br><span class="line"></span><br><span class="line">- 在第七章的情境模拟题二的第五点，编写 &#x2F;etc&#x2F;fstab 时，当时使用 nano 这个指令， 请尝试使用 vim 去编 辑 &#x2F;etc&#x2F;fstab ，并且将第七章新增的那一列的 defatuls 改成 default ，会出现什么状态？ 离开前请务必要 修订成原本正确的信息。此外，如果将该列批注 (最前面加 #)，你会发现字体颜色也有变化喔！</span><br><span class="line">- 尝试在你的系统中，你惯常使用的那个账号的家目录下，将本章介绍的 vimrc 内容进行一些常用设定，包 括： o 设定搜寻高亮度反白 o 设定语法检验启动 o 设定默认启动行号显示 o 设定有两行状态栏 (一行状态+一行指令列) :set laststatus&#x3D;2</span><br><span class="line"></span><br><span class="line">### 简答题</span><br><span class="line"></span><br><span class="line"># 第十章 认识 BASH 这个 Shell</span><br><span class="line"></span><br><span class="line">- 简单认识shell</span><br><span class="line"></span><br><span class="line">  - 什么是shell?</span><br><span class="line">    - 广义：就是指可以调动内核和硬件打交道的一个壳程序</span><br><span class="line">    - 狭义：通过内核指挥硬件工作的命令程序</span><br><span class="line">  - 为什么要学习shell？</span><br><span class="line">    - 防止突发情况</span><br><span class="line">    - 个人提升</span><br><span class="line">    - 公司要求</span><br><span class="line">    - 某些特殊情况只能使用shell去解决</span><br><span class="line">  - 不学习shell会怎么样</span><br><span class="line">    - 使用 x windows</span><br><span class="line">    - 使用第三方应用程序</span><br><span class="line">  - 如何学习shell</span><br><span class="line">    - 多敲</span><br><span class="line">    - 多练</span><br><span class="line">    - 多模拟场景</span><br><span class="line">      - 定期清理过期日志</span><br><span class="line">      - 开启启动某些应用程序</span><br><span class="line">      - 磁盘预警</span><br><span class="line"></span><br><span class="line">- 系统合法的shell 和 &#x2F;etc&#x2F;shells 功能</span><br><span class="line"></span><br><span class="line">  - cshell 和 bshell (bash)</span><br><span class="line">  - 检查&#x2F;etc&#x2F;shell 可以得到系统可使用的shell</span><br><span class="line">    - &#x2F;bin&#x2F;sh</span><br><span class="line">    - &#x2F;bin&#x2F;bash 默认</span><br><span class="line">    - &#x2F;bin&#x2F;tcsh</span><br><span class="line">    - &#x2F;bin&#x2F;csh</span><br><span class="line"></span><br><span class="line">- bash的功能</span><br><span class="line"></span><br><span class="line">  - history 历史功能</span><br><span class="line">    - 记录的位置：家目录的 .bash_history</span><br><span class="line">      - 注意：按照登陆来记录，记录上次登陆的命令，本次的被存在缓存</span><br><span class="line">  - 补全功能</span><br><span class="line">    - 确定命令正确</span><br><span class="line">  - 命令别名</span><br><span class="line">    - alias</span><br><span class="line">      - 简单用：&#96;alias lm &#x3D;&#39;ls -al&#39;&#96;</span><br><span class="line">  - 通配符</span><br><span class="line"></span><br><span class="line">- 判断命令是否为 Bash shell 内置 ： &#96;type&#96;</span><br><span class="line"></span><br><span class="line">  - &#96;man bash&#96;</span><br><span class="line">  - type 基本使用</span><br><span class="line">    - &#96;type -t umask&#96;</span><br><span class="line">  - 命令快捷键：常用</span><br><span class="line">    - ctrl + u 和 ctrl + k</span><br><span class="line">    - ctrl + a 和 ctrl + e</span><br><span class="line"></span><br><span class="line">- shell 基本内容学习</span><br><span class="line"></span><br><span class="line">  - 变量定义</span><br><span class="line">    - echo 和 unset</span><br><span class="line">      - 案例:</span><br><span class="line">        - &#96;echo $HOME&#96;</span><br><span class="line">        - 设置：变量 &#96;echo $&#123;myname&#125;&#96;</span><br><span class="line">      - 特殊点</span><br><span class="line">        - echo 默认变量为“空”</span><br><span class="line">    - 设置规则</span><br><span class="line">      - 双引号和单引号的区别</span><br><span class="line">    - 案例</span><br><span class="line">      - 如何进入到内核的目录模块</span><br><span class="line">        - &#96;cd &#x2F;lib&#x2F;moudules&#x2F;$(name -r)&#x2F;kernel&#96;</span><br><span class="line">  - 变量取消</span><br><span class="line">    - unset name</span><br><span class="line"></span><br><span class="line">- 环境变量设置</span><br><span class="line"></span><br><span class="line">  - env 查看环境变量</span><br><span class="line"></span><br><span class="line">  - declare 定义变量的另一种方式，声明变量</span><br><span class="line"></span><br><span class="line">    - declare -i number&#x3D;$RANDOM*10&#x2F;32768 ; echo $number</span><br><span class="line">      - 随机生成一个数字</span><br><span class="line"></span><br><span class="line">  - set 观察和设置自定义变量</span><br><span class="line"></span><br><span class="line">  - PS1 提示字符</span><br><span class="line"></span><br><span class="line">    - 有许多的定义，具体可以查看对应的百度内容</span><br><span class="line"></span><br><span class="line">    - https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_34208467&#x2F;article&#x2F;details&#x2F;81019467</span><br><span class="line"></span><br><span class="line">    - 参数意义</span><br></pre></td></tr></table></figure>
+<p>  \d ：可显示出『星期 月 日』的日期格式，如：”Mon Feb 2”<br>  \H ：完整的主机名。举例来说，鸟哥的练习机为『study.centos.vbird』<br>  \h ：仅取主机名在第一个小数点之前的名字，如鸟哥主机则为『study』后面省略<br>  \t ：显示时间，为 24 小时格式的『HH:MM:SS』<br>  \T ：显示时间，为 12 小时格式的『HH:MM:SS』<br>  \A ：显示时间，为 24 小时格式的『HH:MM』<br>  @ ：显示时间，为 12 小时格式的『am/pm』样式<br>  \u ：目前使用者的账号名称，如『dmtsai』；<br>  \v ：BASH 的版本信息，如鸟哥的测试主机版本为 4.2.46(1)-release，仅取『4.2』显示<br>  \w ：完整的工作目录名称，由根目录写起的目录名称。但家目录会以 ~ 取代；<br>  \W ：利用 basename 函数取得工作目录名称，所以仅会列出最后一个目录名。<br>  # ：下达的第几个指令。<br>  $ ：提示字符，如果是 root 时，提示字符为 # ，否则就是 $ 啰～</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- $</span><br><span class="line"></span><br><span class="line">  - 查看PID :&#96;&#96;</span><br><span class="line"></span><br><span class="line">- ?</span><br><span class="line"></span><br><span class="line">  - 代表着上一个命令的返回值</span><br><span class="line">  - 如何理解？</span><br><span class="line">    - 一般命令执行之后会有一个0和非0的值，如果是0代表执行成功</span><br><span class="line">    - 非0则代表失败</span><br><span class="line"></span><br><span class="line">- export 自定义环境变量</span><br><span class="line"></span><br><span class="line">  - env 和 set有什么区别？</span><br><span class="line">    - env 是父进程环境变量</span><br><span class="line">    - set 可以是子进程变量</span><br><span class="line">    - **子进程仅仅继承父进程的环境变量，不继承自定义变量**</span><br><span class="line">  - 使用export 可以让自定义变量变成环境变量</span><br><span class="line"></span><br><span class="line">- declare 环境变量转自定义变量</span><br><span class="line"></span><br><span class="line">- 语系变量</span><br><span class="line"></span><br><span class="line">  - locale -a 查看系统支持的所有语言</span><br><span class="line"></span><br><span class="line">- 变量有效范围</span><br><span class="line"></span><br><span class="line">  - 变量键盘读取和数组声明：read 、array、declare</span><br><span class="line">  - read</span><br><span class="line">    - 作用</span><br><span class="line">      - 等待键盘输入</span><br><span class="line">    - 参数</span><br><span class="line">      - -p 提示字符</span><br><span class="line">      - -t 等待秒数</span><br><span class="line">  - declare ， typeset</span><br><span class="line">    - 作用</span><br><span class="line">      - 声明变量类型</span><br><span class="line">        - -a 定义数组类型</span><br><span class="line">        - -i 定义整数类型</span><br><span class="line">        - -e export 相同</span><br><span class="line">        - -r readonly类型</span><br><span class="line">    - 注意：</span><br><span class="line">      - 默认字符串类型</span><br><span class="line">      - 默认最多为整型运算</span><br><span class="line"></span><br><span class="line">- 和文件系统程序有关的限制关系：ulimit</span><br><span class="line"></span><br><span class="line">  - 作用</span><br><span class="line">    - 限制开启文件数量，可使用CPU时间</span><br><span class="line">    - 可使用内存总量</span><br><span class="line">  - **参数和语法：**</span><br></pre></td></tr></table></figure>
+<p>选项与参数：<br>-H ：hard limit ，严格的设定，必定不能超过这个设定的数值；<br>-S ：soft limit ，警告的设定，可以超过这个设定值，但是若超过则有警告讯息。<br>在设定上，通常 soft 会比 hard 小，举例来说，soft 可设定为 80 而 hard<br>设定为 100，那么你可以使用到 90 (因为没有超过 100)，但介于 80~100 之间时，<br>系统会有警告讯息通知你！<br>-a ：后面不接任何选项与参数，可列出所有的限制额度；<br>-c ：当某些程序发生错误时，系统可能会将该程序在内存中的信息写成文件(除错用)，<br>这种文件就被称为核心文件(core file)。此为限制每个核心文件的最大容量。<br>-f ：此 shell 可以建立的最大文件容量(一般可能设定为 2GB)单位为 Kbytes<br>-d ：程序可使用的最大断裂内存(segment)容量；<br>-l ：可用于锁定 (lock) 的内存量<br>-t ：可使用的最大 CPU 时间 (单位为秒)<br>-u ：单一用户可以使用的最大程序(process)数量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">  - 如何恢复？</span><br><span class="line">    - 注销再登陆</span><br><span class="line"></span><br><span class="line">- 变量的删除、取代和替换</span><br><span class="line"></span><br><span class="line">  - 变量删除替换</span><br><span class="line"></span><br><span class="line">    - 案例：</span><br></pre></td></tr></table></figure>
+<p>${variable#/*local/bin:} }<br>上面的特殊字体部分是关键词！用在这种删除模式所必须存在的</p>
+<p>${ variable#/*local/bin:}<br>这就是原本的变量名称，以上面范例二来说，这里就填写 path 这个『变量名称』啦！</p>
+<p>${variable# #/*local/bin:}</p>
+<h1 id="号的作用"><a href="#号的作用" class="headerlink" title="号的作用"></a>号的作用</h1><p>这是重点！代表『从变量内容的最前面开始向右删除』，<br>且仅删除最短的那个</p>
+<p>${variable# /*local/bin:}<br>代表要被删除的部分，由于 # 代表由前面开始删除，所以这里便由开始的 / 写起。<br>需要注意的是，我们还可以透过通配符 * 来取代 0 到无穷多个任意字符<br>以上面范例二的结果来看， path 这个变量被删除的内容如下所示：<br>/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/dmtsai/.local/bin:/home/dmtsai/bin</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 简单理解</span><br></pre></td></tr></table></figure>
+<p>${variable# #/*local/bin:}</p>
+<h1 id="号的作用-1"><a href="#号的作用-1" class="headerlink" title="号的作用"></a>号的作用</h1><p>这是重点！代表『从变量内容的最前面开始向右删除』，<br>且仅删除最短的那个 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">  - \# 和 ## 代表如下</span><br><span class="line">    - \# 符合替换字符的【最短的】哪一个</span><br><span class="line">    - \## 符合替换字符最长的哪一个</span><br><span class="line">  - 如何从后面向前面删除内容</span><br><span class="line">    - % 和 %%</span><br><span class="line"></span><br><span class="line">- 替换</span><br><span class="line"></span><br><span class="line">  - 案例</span><br></pre></td></tr></table></figure>
+<p>范例六：将 path 的变量内容内的 sbin 取代成大写 SBIN：<br>[dmtsai@study ~]$  echo ${path/sbin/SBIN}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 变量测试和内容替换</span><br><span class="line"></span><br><span class="line">  - 案例</span><br></pre></td></tr></table></figure>
+<p>范例一：测试一下是否存在 username 这个变量，若不存在则给予 username 内容为 root<br>[dmtsai@study ~]$  echo ${username}<br>&lt;==由于出现空白，所以 username 可能不存在，也可能是空字符串<br>[dmtsai@study ~]$  username=${username-root}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">  - 关键点在于 - 号码</span><br><span class="line">  - 后面接变量不存在的替换字符</span><br><span class="line">  - 如果是空字符串也想替换要怎么做</span><br><span class="line">    - :- 前面加上 : 冒号即可</span><br><span class="line"></span><br><span class="line">- 提示变量不存在 ?</span><br><span class="line"></span><br><span class="line">  - 案例</span><br></pre></td></tr></table></figure>
+<p>测试：若 str 不存在时，则 var 的测试结果直接显示 “无此变量”<br>[dmtsai@study ~]$  unset str; var=${str? 无 此 变数} }<br>-bash: str: 无此变量 &lt;==因为 str 不存在，所以输出错误讯息</p>
+<pre><code></code></pre></li>
+</ol>
+</li>
+<li><p>命名别名和历史命令</p>
+<ul>
+<li>alias 和 unalias</li>
+<li>history<ul>
+<li>自行man 查询使用方式</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>bash shell 的操作环境</p>
+<ul>
+<li>路径和命令的查找顺序（面试终点）<ul>
+<li>根据绝对和相对路径查找的命令</li>
+<li>由于alias 查找出来的命令</li>
+<li>bash 内置的 命令来执行</li>
+<li>根据$PATH 环境变量来查找</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>登陆的欢迎信息</p>
+<ul>
+<li><code>cat /etc/issue</code></li>
+<li>cat /etc/issue.net 用于ssh等远程登陆使用的欢迎信息</li>
+<li>cat /etc/motd 用于所有登陆用户想要知道的某些信息</li>
+</ul>
+</li>
+<li><p>bash 的环境配置文件</p>
+<ul>
+<li>login 和 non-login shell<ul>
+<li>login shell 取得bash 的时候需要的完整登陆流程</li>
+<li>non-login shell: 取得bash 的方法不需要重复登陆的操作</li>
+</ul>
+</li>
+<li>为什么需要最先了解这两个东西<ul>
+<li><strong>因为不同的登陆形式获取的shell配置不一样</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>login shell读取的内容</p>
+<ul>
+<li>/etc/profile 系统整体配置，很脆弱，一旦奔溃恢复比较麻烦<ul>
+<li>/etc/profile 的主要内容<ul>
+<li>PATH</li>
+<li>MAIL</li>
+<li>USER</li>
+<li>HOSTNAME</li>
+<li>HISTSIZE</li>
+<li>umask</li>
+<li>调用外部文件<ul>
+<li>/etc/profile.d/*.sh</li>
+<li>/etc/locale.conf</li>
+<li>/usr/share/bash-completion/completions/*</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>~/.bash_profile 或者 ~/.bash_login 或者 ~/.profile 用户个人的配置文件</li>
+</ul>
+</li>
+<li><p>读取配置文件的命令 source</p>
+<ul>
+<li>作用<ul>
+<li>当案例需要多个变量环境的时候，很方便的切换变量环境</li>
+<li>安装某些软件的时候快速改变环境变量测试是否设置正确</li>
+</ul>
+</li>
+<li>注意点：<ul>
+<li>/etc/bashrc (red hat 系统特有)<ul>
+<li>作用<ul>
+<li>根据不同的UID 设置umask</li>
+<li>根据不同UID 设置提示字符</li>
+<li>调用 /etc/profile.d/*.sh</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>终端环境设置 stty 、 set</p>
+<ul>
+<li><a href="https://linux.die.net/man/1/stty" target="_blank" rel="noopener">https://linux.die.net/man/1/stty</a></li>
+<li><a href="https://www.computerhope.com/unix/ustty.htm" target="_blank" rel="noopener">https://www.computerhope.com/unix/ustty.htm</a></li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
       </tags>
   </entry>
 </search>
