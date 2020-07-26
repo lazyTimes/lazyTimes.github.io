@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://lazytime.site/"/>
-  <updated>2020-07-26T08:58:00.063Z</updated>
+  <updated>2020-07-26T09:27:17.602Z</updated>
   <id>http://lazytime.site/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hexo 迁移备份</title>
+    <link href="http://lazytime.site/2020/07/26/Hexo-%E8%BF%81%E7%A7%BB%E5%A4%87%E4%BB%BD/"/>
+    <id>http://lazytime.site/2020/07/26/Hexo-%E8%BF%81%E7%A7%BB%E5%A4%87%E4%BB%BD/</id>
+    <published>2020-07-26T09:26:28.000Z</published>
+    <updated>2020-07-26T09:27:17.602Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="创建Git分支将Hexo博客迁移到其它电脑"><a href="#创建Git分支将Hexo博客迁移到其它电脑" class="headerlink" title="创建Git分支将Hexo博客迁移到其它电脑"></a>创建Git分支将Hexo博客迁移到其它电脑</h1><h2 id="迁移前准备：安装hexo博客必要的软件"><a href="#迁移前准备：安装hexo博客必要的软件" class="headerlink" title="迁移前准备：安装hexo博客必要的软件"></a>迁移前准备：安装hexo博客必要的软件</h2><ul><li>下载安装Git客户端</li><li>安装node js</li><li>从git 仓库拉去原来的项目</li></ul><a id="more"></a><h2 id="采取方式"><a href="#采取方式" class="headerlink" title="采取方式"></a>采取方式</h2><ol><li>采取新建仓库的方式</li><li>分支存放源代码</li></ol><blockquote><p>git clone <a href="https://github.com/lazyTimes/lazyTimes.github.io.git" target="_blank" rel="noopener">https://github.com/lazyTimes/lazyTimes.github.io.git</a></p></blockquote><h2 id="必备文件"><a href="#必备文件" class="headerlink" title="必备文件"></a>必备文件</h2><table><thead><tr><th align="left">文件(夹)</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left">scaffolds/</td><td align="left">博客文章模板</td></tr><tr><td align="left">source/</td><td align="left">所有的博客文章</td></tr><tr><td align="left">themes/</td><td align="left">网站主题</td></tr><tr><td align="left">.gitignore</td><td align="left">push时需忽略的文件</td></tr><tr><td align="left">_config.yml</td><td align="left">站点配置文件</td></tr><tr><td align="left">package.json</td><td align="left">依赖包的名称和版本号</td></tr></tbody></table><h2 id="备份流程"><a href="#备份流程" class="headerlink" title="备份流程"></a>备份流程</h2><h3 id="1-拉取已经部署上去的项目"><a href="#1-拉取已经部署上去的项目" class="headerlink" title="1. 拉取已经部署上去的项目"></a>1. 拉取已经部署上去的项目</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;lazyTimes&#x2F;lazyTimes.github.io.git</span><br></pre></td></tr></table></figure><h3 id="2-拷贝需要备份的元数据"><a href="#2-拷贝需要备份的元数据" class="headerlink" title="2. 拷贝需要备份的元数据"></a>2. 拷贝需要备份的<code>元数据</code></h3><p>具体查看上方的必备文件</p><p>参考截图:</p><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200726154723.png" alt=""></p><h3 id="3-删除主题的-git-配置"><a href="#3-删除主题的-git-配置" class="headerlink" title="3. 删除主题的.git 配置"></a>3. 删除主题的.git 配置</h3><p>执行如下命令删除不必要的内容</p><p><code>rm -rf thems/next/.git*</code></p><h3 id="4-创建名为hexo的分支"><a href="#4-创建名为hexo的分支" class="headerlink" title="4. 创建名为hexo的分支"></a>4. 创建名为hexo的分支</h3><p><code>git checkout -b hexo</code></p><h3 id="5-把文件存放到暂存区"><a href="#5-把文件存放到暂存区" class="headerlink" title="5. 把文件存放到暂存区"></a>5. 把文件存放到暂存区</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add --all</span><br></pre></td></tr></table></figure><h3 id="6-提交变更"><a href="#6-提交变更" class="headerlink" title="6. 提交变更"></a>6. 提交变更</h3><p>先提交所有的改动内容</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -m &quot;hexo-2&quot;</span><br></pre></td></tr></table></figure><p>然后使用如下命令把内容推送到分支</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push --set-upstream origin hexo</span><br></pre></td></tr></table></figure><blockquote><p>如果没有在Git config 设置用户名和密码，推送的时候会提示设置，根据提示设置用户名和密码即可</p></blockquote><h3 id="7-源码推到分支上"><a href="#7-源码推到分支上" class="headerlink" title="7. 源码推到分支上"></a>7. 源码推到分支上</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git add .</span><br><span class="line">$ git commit -m &quot;xxxx&quot;</span><br><span class="line">$ git push origin hexo</span><br></pre></td></tr></table></figure><h2 id="更加推荐的方式"><a href="#更加推荐的方式" class="headerlink" title="更加推荐的方式"></a>更加推荐的方式</h2><p>为了保证我们的源码的一些敏感配置不泄露，建议使用私有仓库进行存储，接下来说一下私有仓库的配置方式</p>]]></content>
+    
+    <summary type="html">
+    
+      创建Git分支将Hexo博客迁移到其它电脑
+    
+    </summary>
+    
+    
+      <category term="博客" scheme="http://lazytime.site/categories/%E5%8D%9A%E5%AE%A2/"/>
+    
+    
+      <category term="Hexo" scheme="http://lazytime.site/tags/Hexo/"/>
+    
+  </entry>
   
   <entry>
     <title>LINUX鸟哥的私房菜</title>
