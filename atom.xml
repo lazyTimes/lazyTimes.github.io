@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://lazytime.site/"/>
-  <updated>2020-07-26T14:41:15.460Z</updated>
+  <updated>2020-08-02T02:30:38.349Z</updated>
   <id>http://lazytime.site/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>mysql zip包安装指南</title>
+    <link href="http://lazytime.site/2020/08/02/mysql-zip%E5%8C%85%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97v/"/>
+    <id>http://lazytime.site/2020/08/02/mysql-zip%E5%8C%85%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97v/</id>
+    <published>2020-08-02T02:28:05.000Z</published>
+    <updated>2020-08-02T02:30:38.349Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="1-下载zip-包"><a href="#1-下载zip-包" class="headerlink" title="1. 下载zip 包"></a>1. 下载zip 包</h1><h2 id="地址："><a href="#地址：" class="headerlink" title="地址："></a>地址：</h2><p><a href="https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.31-winx64.zip" target="_blank" rel="noopener">https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.31-winx64.zip</a></p><a id="more"></a><h1 id="2-解压缩，放到D盘自定义位置"><a href="#2-解压缩，放到D盘自定义位置" class="headerlink" title="2. 解压缩，放到D盘自定义位置"></a>2. 解压缩，放到D盘自定义位置</h1><p>我的位置如下:</p><p>D:\soft\mysql-5.7.31-winx64</p><h1 id="3-配置环境变量"><a href="#3-配置环境变量" class="headerlink" title="3. 配置环境变量"></a>3. 配置环境变量</h1><p>以win10 为例：</p><ol><li>打开高级设置</li></ol><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200801115826.png?ynotemdtimestamp=1596333875837" alt="img"></p><ol><li>在此处配置环境变量</li></ol><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200801115848.png?ynotemdtimestamp=1596333875837" alt="img"></p><ol><li>配置如下</li></ol><p>MYSQL_HOME : mysql5.7zip包解压路径</p><p><strong>path：%MYSQL_HOME%\bin</strong></p><h1 id="4-新建my-ini文件（解压包里是没有my-dafault-ini或自带my-ini文件，需自己创建）编辑写入以下信息"><a href="#4-新建my-ini文件（解压包里是没有my-dafault-ini或自带my-ini文件，需自己创建）编辑写入以下信息" class="headerlink" title="4. 新建my.ini文件（解压包里是没有my-dafault.ini或自带my.ini文件，需自己创建）编辑写入以下信息"></a>4. 新建my.ini文件（解压包里是没有my-dafault.ini或自带my.ini文件，需自己创建）编辑写入以下信息</h1><p>配置如下</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[mysql]</span><br><span class="line"># 设置mysql客户端默认字符集</span><br><span class="line">default-character-set&#x3D;utf8 </span><br><span class="line">[mysqld]</span><br><span class="line"># 设置3306端口</span><br><span class="line">port &#x3D; 3306 </span><br><span class="line"># 设置mysql的安装目录</span><br><span class="line">basedir&#x3D;C:\Program Files\mysql-5.7.21-winx64</span><br><span class="line"># 设置mysql数据库的数据的存放目录</span><br><span class="line">datadir&#x3D;C:\Program Files\mysql-5.7.21-winx64\data</span><br><span class="line"># 允许最大连接数</span><br><span class="line">max_connections&#x3D;200</span><br><span class="line"># 设置mysql服务端默认字符集</span><br><span class="line">character-set-server&#x3D;utf8</span><br><span class="line"># 创建新表时将使用的默认存储引擎</span><br><span class="line">default-storage-engine&#x3D;INNODB</span><br></pre></td></tr></table></figure><h1 id="5-让配置生效"><a href="#5-让配置生效" class="headerlink" title="5. 让配置生效"></a>5. 让配置生效</h1><p>mysql初始化，以<strong>管理员权限</strong>打开cmd命令窗口，切换到<code>”C:\Program Files\mysql-5.7.21-winx64\bin”</code>路径下执行</p><p>这里可以获得ROOT密码：<code>j&lt;ASsKzqP8M4</code></p><blockquote><p>这里提示报错:</p><p>由于找不到msvcr120.dll无法继续执行代码</p><p>我的解决办法是，进入到：<a href="https://www.microsoft.com/zh-cn/download/confirmation.aspx?id=40784" target="_blank" rel="noopener">https://www.microsoft.com/zh-cn/download/confirmation.aspx?id=40784</a></p><p>这种错误是由于未安装 vcredist 引起的</p><p>引入自博客：<a href="https://blog.csdn.net/weixin_30517001/article/details/97706795" target="_blank" rel="noopener">https://blog.csdn.net/weixin_30517001/article/details/97706795</a></p></blockquote><blockquote><p>MySQL5.7执行mysqld命令出现Can‘t change dir to ‘C:\Program Files\MySQL\MySQL Server 5.7\data\‘错误</p><p>解决方法： 提示No such file or directory，到C:\Program Files\MySQL\MySQL Server 5.7\目录下创建data文件夹即可。</p><p>楼主这里手动创建了对应的目录以及对应的子目录</p></blockquote><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200801123207.png?ynotemdtimestamp=1596333875837" alt="img"></p><h1 id="6-让my-ini-配置生效"><a href="#6-让my-ini-配置生效" class="headerlink" title="6. 让my.ini 配置生效"></a>6. 让my.ini 配置生效</h1><p>执行如下命令</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld install MySQL --defaults-file&#x3D;&quot;C:\Program Files\mysql-5.7.21-winx64\my.ini</span><br></pre></td></tr></table></figure><p>my.ini 为你自己建立的配置文件路径</p><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200801123830.png?ynotemdtimestamp=1596333875837" alt="img"></p><h1 id="7-启动mysql服务，输入-net-start-mysql，启动成功，会出现下面的截图。如果服务一直处于启动中，说明上一步的操作有误，核实my-ini文件路径是否正确"><a href="#7-启动mysql服务，输入-net-start-mysql，启动成功，会出现下面的截图。如果服务一直处于启动中，说明上一步的操作有误，核实my-ini文件路径是否正确" class="headerlink" title="7. 启动mysql服务，输入 net start mysql，启动成功，会出现下面的截图。如果服务一直处于启动中，说明上一步的操作有误，核实my.ini文件路径是否正确"></a>7. 启动mysql服务，输入 net start mysql，启动成功，会出现下面的截图。<strong>如果服务一直处于启动中，说明上一步的操作有误，核实my.ini文件路径是否正确</strong></h1><p>如果之前有安装过mysql，这里可以查看这篇博客了解如何卸载:</p><p><a href="https://www.cnblogs.com/puhongjun/p/10189454.html" target="_blank" rel="noopener">https://www.cnblogs.com/puhongjun/p/10189454.html</a></p><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200801125305.png?ynotemdtimestamp=1596333875837" alt="img"></p><p>经过不懈的努力，安装成功</p><p>PS：mysql 还是建议装在c盘，个人碰到了各种莫名其妙的问题</p><h1 id="8-初次登陆设置mysql-root-用户密码："><a href="#8-初次登陆设置mysql-root-用户密码：" class="headerlink" title="8. 初次登陆设置mysql root 用户密码："></a>8. 初次登陆设置mysql root 用户密码：</h1><blockquote><p>ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement.</p></blockquote><p>当使用mysql 安装生成的root 密码登录的时候，需要重新设置root 密码，修改root 密码为:</p><p>修改密码命令：<code>set password = password(‘新密码’)</code>;</p><h1 id="9-结语"><a href="#9-结语" class="headerlink" title="9. 结语"></a>9. 结语</h1><p>此时在服务里面可以看到Mysql 的服务已经启动了</p><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200801132213.png?ynotemdtimestamp=1596333875837" alt="img"></p><p>用zip 包的安装方式可能会有各种各样的问题，这里找了百度先生处理一些常见的问题:</p><p><a href="https://jingyan.baidu.com/article/da1091fb1a46a6027849d6a8.html" target="_blank" rel="noopener">https://jingyan.baidu.com/article/da1091fb1a46a6027849d6a8.html</a></p>]]></content>
+    
+    <summary type="html">
+    
+      mysqlzip包的安装方式
+    
+    </summary>
+    
+    
+      <category term="Linux" scheme="http://lazytime.site/categories/Linux/"/>
+    
+    
+      <category term="mysql" scheme="http://lazytime.site/tags/mysql/"/>
+    
+  </entry>
   
   <entry>
     <title>nodejs安装教程</title>
@@ -450,29 +473,6 @@
     
     
       <category term="情感分析" scheme="http://lazytime.site/tags/%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Window 下面使用代办清单软件</title>
-    <link href="http://lazytime.site/2020/07/26/Window-%E4%B8%8B%E9%9D%A2%E4%BD%BF%E7%94%A8%E4%BB%A3%E5%8A%9E%E6%B8%85%E5%8D%95%E8%BD%AF%E4%BB%B6/"/>
-    <id>http://lazytime.site/2020/07/26/Window-%E4%B8%8B%E9%9D%A2%E4%BD%BF%E7%94%A8%E4%BB%A3%E5%8A%9E%E6%B8%85%E5%8D%95%E8%BD%AF%E4%BB%B6/</id>
-    <published>2020-07-26T05:57:20.000Z</published>
-    <updated>2020-07-26T05:57:56.017Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="windows-代办清单软件"><a href="#windows-代办清单软件" class="headerlink" title="windows 代办清单软件"></a>windows 代办清单软件</h1><h2 id="为什么要使用待办任务软件"><a href="#为什么要使用待办任务软件" class="headerlink" title="为什么要使用待办任务软件"></a>为什么要使用待办任务软件</h2><ul><li>人的记忆是靠不住的</li><li>琐事繁杂，列出清单能更好的</li></ul><h2 id="使用代办清单的好处"><a href="#使用代办清单的好处" class="headerlink" title="使用代办清单的好处"></a>使用代办清单的好处</h2><ul><li>理清思路</li><li>把事情拆分，一条条处理</li><li>今日事，今日毕</li><li>保持良好的时间管理习惯，防止懈怠</li><li>可以结合番茄工作法</li></ul><h2 id="怎么使用代办清单软件"><a href="#怎么使用代办清单软件" class="headerlink" title="怎么使用代办清单软件"></a>怎么使用代办清单软件</h2><ul><li><p>使用</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">奇妙清单</span><br></pre></td></tr></table></figure><ul><li>地址：<a href="https://www.wunderlist.com/" target="_blank" rel="noopener">https://www.wunderlist.com/</a></li><li>目前已经被收购</li></ul></li><li><p>微软的TODO List，实现简单</p><ul><li>地址：<a href="https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab" target="_blank" rel="noopener">https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab</a></li></ul></li><li><p>滴答清单</p><ul><li>地址：<a href="https://www.dida365.com/about/download" target="_blank" rel="noopener">https://www.dida365.com/about/download</a></li></ul></li></ul><h2 id="滴答清单的使用"><a href="#滴答清单的使用" class="headerlink" title="滴答清单的使用"></a>滴答清单的使用</h2><ul><li>使用对应的账号关联登陆，这里使用个人的微信账号</li><li>在左侧清单<ul><li>任务清单的名称</li></ul></li><li>在指定清单创建任务</li><li>选择每一条任务，设置优先级</li><li>右侧设置日期</li></ul>]]></content>
-    
-    <summary type="html">
-    
-      常用代办任务工具
-    
-    </summary>
-    
-    
-      <category term="待办任务" scheme="http://lazytime.site/categories/%E5%BE%85%E5%8A%9E%E4%BB%BB%E5%8A%A1/"/>
-    
-    
-      <category term="TODOs" scheme="http://lazytime.site/tags/TODOs/"/>
     
   </entry>
   
