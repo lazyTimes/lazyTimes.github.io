@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="ZyC1bd11DZ5XV3P11yBfvTIuaPZzFxxkUEnAhZ6zQSA">
+  <meta name="baidu-site-verification" content="code-vIeEhdQrdN">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="学习数据结构的内容-韩顺平">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Go语言+IDEA+mysql 逆向生成dao 和 domain 的方法">
+<meta property="og:url" content="https://lazytime.site/2020/10/27/goidea/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="学习数据结构的内容-韩顺平">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-27T14:53:01.000Z">
+<meta property="article:modified_time" content="2020-10-29T14:39:21.703Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="数据结构的一些遗留笔记">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lazytime.site/2020/10/27/goidea/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用Go语言+IDEA+mysql 逆向生成dao 和 domain 的方法 | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lazytime.site/2020/10/27/goidea/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Go语言+IDEA+mysql 逆向生成dao 和 domain 的方法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-10-27 22:53:01" itemprop="dateCreated datePublished" datetime="2020-10-27T22:53:01+08:00">2020-10-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-29 22:39:21" itemprop="dateModified" datetime="2020-10-29T22:39:21+08:00">2020-10-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/10/27/goidea/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/27/goidea/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+            <div class="post-description">学习数据结构的内容-韩顺平</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="参考地址："><a href="#参考地址：" class="headerlink" title="参考地址："></a>参考地址：</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vZ2FvbWFuaXRvL3AvMTA2ODIyNjAuaHRtbA==" title="https://www.cnblogs.com/gaomanito/p/10682260.html">https://www.cnblogs.com/gaomanito/p/10682260.html<i class="fa fa-external-link"></i></span></p>
+<a id="more"></a>
+
+<h1 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h1><h2 id="第一步：安装idea-自行百度"><a href="#第一步：安装idea-自行百度" class="headerlink" title="第一步：安装idea:自行百度"></a>第一步：安装idea:自行百度</h2><h2 id="第二步：Idea配置mysql-连接"><a href="#第二步：Idea配置mysql-连接" class="headerlink" title="第二步：Idea配置mysql 连接"></a>第二步：Idea配置mysql 连接</h2><ul>
+<li>View -&gt; Tool Windows -&gt; DataSource 出现数据连接页面</li>
+<li>点击 <strong>+</strong> 号，出现数据库连接设置，<ul>
+<li>name: 连接名称</li>
+<li>comments: 备注</li>
+<li>host:本地或者内网ip</li>
+<li>user:用户名</li>
+<li>password：密码</li>
+<li>Database：连接数据库名称</li>
+<li>url: jdbc连接<ul>
+<li>注意此处如果是mysql 5.5 以上 的版本需要加入如下参数</li>
+<li><strong>serverTimezone=UTC</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="第三步：使用groovy逆向生成model-dao-daoxml-三种类型的文件"><a href="#第三步：使用groovy逆向生成model-dao-daoxml-三种类型的文件" class="headerlink" title="第三步：使用groovy逆向生成model, dao, daoxml 三种类型的文件"></a>第三步：使用groovy逆向生成model, dao, daoxml 三种类型的文件</h2><ul>
+<li>右击连接：选中<code>Scripted Extendsions</code> </li>
+<li>选择<code>Go to Scripts Directory</code> 调转到go 语言的模板地址</li>
+<li>如果需要扩展则只需要在该文件夹内加入对应的模板即可</li>
+</ul>
+<h2 id="第四步：几个默认的模板"><a href="#第四步：几个默认的模板" class="headerlink" title="第四步：几个默认的模板"></a>第四步：几个默认的模板</h2><h3 id="Generate-MyPOJOs-groovy文件（生成实体类）："><a href="#Generate-MyPOJOs-groovy文件（生成实体类）：" class="headerlink" title="Generate MyPOJOs.groovy文件（生成实体类）："></a>Generate MyPOJOs.groovy文件（生成实体类）：</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.intellij.database.model.DasTable</span><br><span class="line"><span class="keyword">import</span> com.intellij.database.model.ObjectKind</span><br><span class="line"><span class="keyword">import</span> com.intellij.database.util.Case</span><br><span class="line"><span class="keyword">import</span> com.intellij.database.util.DasUtil</span><br><span class="line"><span class="keyword">import</span> java.io.*</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Available context bindings:</span></span><br><span class="line"><span class="comment"> *   SELECTION   Iterable&lt;DasObject&gt;</span></span><br><span class="line"><span class="comment"> *   PROJECT     project</span></span><br><span class="line"><span class="comment"> *   FILES       files helper</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">packageName = <span class="string">""</span></span><br><span class="line">typeMapping = [</span><br><span class="line">        (~/(?i)tinyint|smallint|mediumint/)      : <span class="string">"Integer"</span>,</span><br><span class="line">        (~/(?i)<span class="keyword">int</span>/)                             : <span class="string">"Long"</span>,</span><br><span class="line">        (~/(?i)<span class="keyword">bool</span>|bit/)                        : <span class="string">"Boolean"</span>,</span><br><span class="line">        (~/(?i)float|double|decimal|<span class="built_in">real</span>/)       : <span class="string">"Double"</span>,</span><br><span class="line">        (~/(?i)datetime|timestamp|date|time/)    : <span class="string">"Date"</span>,</span><br><span class="line">        (~/(?i)blob|binary|bfile|clob|raw|image/): <span class="string">"InputStream"</span>,</span><br><span class="line">        (~/(?i)/)                                : <span class="string">"String"</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">FILES.chooseDirectoryAndSave(<span class="string">"Choose directory"</span>, <span class="string">"Choose where to store generated files"</span>) &#123; dir -&gt;</span><br><span class="line">    SELECTION.filter &#123; it instanceof DasTable &amp;&amp; it.getKind() == ObjectKind.TABLE &#125;.each &#123; generate(it, dir) &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def generate(table, dir) &#123;</span><br><span class="line">    <span class="comment">//def className = javaClassName(table.getName(), true)</span></span><br><span class="line">    def className = javaName(table.getName(), <span class="literal">true</span>)</span><br><span class="line">    def fields = calcFields(table)</span><br><span class="line">    packageName = getPackageName(dir)</span><br><span class="line">    PrintWriter printWriter = <span class="built_in">new</span> PrintWriter(<span class="built_in">new</span> OutputStreamWriter(<span class="built_in">new</span> FileOutputStream(<span class="built_in">new</span> File(dir, className + <span class="string">".java"</span>)), <span class="string">"UTF-8"</span>))</span><br><span class="line">    printWriter.withPrintWriter &#123;out -&gt; generate(out, className, fields,table)&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    new File(dir, className + ".java").withPrintWriter &#123; out -&gt; generate(out, className, fields,table) &#125;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取包所在文件夹路径</span></span><br><span class="line">def getPackageName(dir) &#123;</span><br><span class="line">    <span class="keyword">return</span> dir.toString().replaceAll(<span class="string">"\\\\"</span>, <span class="string">"."</span>).replaceAll(<span class="string">"/"</span>, <span class="string">"."</span>).replaceAll(<span class="string">"^.*src(\\.main\\.java\\.)?"</span>, <span class="string">""</span>) + <span class="string">";"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def generate(out, className, fields,table) &#123;</span><br><span class="line">    def tableName = table.getName()</span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"package $packageName"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">""</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import javax.persistence.Column;"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import javax.persistence.Entity;"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import javax.persistence.Table;"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import java.io.Serializable;"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import lombok.Data;"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import lombok.AllArgsConstructor;"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import lombok.Builder;"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import lombok.NoArgsConstructor;"</span></span><br><span class="line"></span><br><span class="line">    Set types = <span class="built_in">new</span> HashSet()</span><br><span class="line"></span><br><span class="line">    fields.each() &#123;</span><br><span class="line">        types.add(it.<span class="keyword">type</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (types.contains(<span class="string">"Date"</span>)) &#123;</span><br><span class="line">        out.<span class="built_in">println</span> <span class="string">"import java.util.Date;"</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (types.contains(<span class="string">"InputStream"</span>)) &#123;</span><br><span class="line">        out.<span class="built_in">println</span> <span class="string">"import java.io.InputStream;"</span></span><br><span class="line">    &#125;</span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">""</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"/**\n"</span> +</span><br><span class="line">            <span class="string">" * @Description  \n"</span> +</span><br><span class="line">            <span class="string">" * @Author  GX\n"</span> +</span><br><span class="line">            <span class="string">" * @Date "</span>+ <span class="built_in">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>).format(<span class="built_in">new</span> Date()) + <span class="string">" \n"</span> +</span><br><span class="line">            <span class="string">" */"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">""</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"@Data"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"@Entity"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"@AllArgsConstructor"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"@Builder"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"@NoArgsConstructor"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"@Table ( name =\""</span>+table.getName() +<span class="string">"\" )"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"public class $className  implements Serializable &#123;"</span></span><br><span class="line">    out.<span class="built_in">println</span> genSerialID()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断自增</span></span><br><span class="line">    <span class="keyword">if</span> ((tableName + <span class="string">"_id"</span>).equalsIgnoreCase(fields[<span class="number">0</span>].colum) || <span class="string">"id"</span>.equalsIgnoreCase(fields[<span class="number">0</span>].colum)) &#123;</span><br><span class="line">        out.<span class="built_in">println</span> <span class="string">"\t@Id"</span></span><br><span class="line">        out.<span class="built_in">println</span> <span class="string">"\t@GeneratedValue(generator = \"idGenerator\")"</span></span><br><span class="line">        out.<span class="built_in">println</span> <span class="string">"\t@GenericGenerator(name = \"idGenerator\", strategy = ChiticCoreConstant.ID_GENERATOR_COMMON)"</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    fields.each() &#123;</span><br><span class="line">        out.<span class="built_in">println</span> <span class="string">""</span></span><br><span class="line">        <span class="comment">// 输出注释</span></span><br><span class="line">        <span class="keyword">if</span> (isNotEmpty(it.commoent)) &#123;</span><br><span class="line">            out.<span class="built_in">println</span> <span class="string">"\t/**"</span></span><br><span class="line">            out.<span class="built_in">println</span> <span class="string">"\t * $&#123;it.commoent.toString()&#125;"</span></span><br><span class="line">            out.<span class="built_in">println</span> <span class="string">"\t */"</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (it.annos != <span class="string">""</span>) out.<span class="built_in">println</span> <span class="string">"   $&#123;it.annos.replace("</span>[@Id]<span class="string">", "</span><span class="string">")&#125;"</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 输出成员变量</span></span><br><span class="line">        out.<span class="built_in">println</span> <span class="string">"\tprivate $&#123;it.type&#125; $&#123;it.name&#125;;"</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输出get/set方法</span></span><br><span class="line"><span class="comment">//    fields.each() &#123;</span></span><br><span class="line"><span class="comment">//        out.println ""</span></span><br><span class="line"><span class="comment">//        out.println "\tpublic $&#123;it.type&#125; get$&#123;it.name.capitalize()&#125;() &#123;"</span></span><br><span class="line"><span class="comment">//        out.println "\t\treturn this.$&#123;it.name&#125;;"</span></span><br><span class="line"><span class="comment">//        out.println "\t&#125;"</span></span><br><span class="line"><span class="comment">//        out.println ""</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//        out.println "\tpublic void set$&#123;it.name.capitalize()&#125;($&#123;it.type&#125; $&#123;it.name&#125;) &#123;"</span></span><br><span class="line"><span class="comment">//        out.println "\t\tthis.$&#123;it.name&#125; = $&#123;it.name&#125;;"</span></span><br><span class="line"><span class="comment">//        out.println "\t&#125;"</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">""</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"&#125;"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def calcFields(table) &#123;</span><br><span class="line">    DasUtil.getColumns(table).reduce([]) &#123; fields, col -&gt;</span><br><span class="line">        def spec = Case.LOWER.apply(col.getDataType().getSpecification())</span><br><span class="line"></span><br><span class="line">        def typeStr = typeMapping.find &#123; p, t -&gt; p.matcher(spec).find() &#125;.value</span><br><span class="line">        def comm =[</span><br><span class="line">                colName : col.getName(),</span><br><span class="line">                name :  javaName(col.getName(), <span class="literal">false</span>),</span><br><span class="line">                <span class="keyword">type</span> : typeStr,</span><br><span class="line">                commoent: col.getComment(),</span><br><span class="line">                annos: <span class="string">"\t@Column(name = \""</span>+col.getName()+<span class="string">"\" )"</span>]</span><br><span class="line">        <span class="keyword">if</span>(<span class="string">"id"</span>.equals(Case.LOWER.apply(col.getName())))</span><br><span class="line">            comm.annos +=[<span class="string">"@Id"</span>]</span><br><span class="line">        fields += [comm]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 处理类名（这里是因为我的表都是以t_命名的，所以需要处理去掉生成类名时的开头的T，</span></span><br><span class="line"><span class="comment">// 如果你不需要那么请查找用到了 javaClassName这个方法的地方修改为 javaName 即可）</span></span><br><span class="line">def javaClassName(str, capitalize) &#123;</span><br><span class="line">    def s = com.intellij.psi.codeStyle.NameUtil.splitNameIntoWords(str)</span><br><span class="line">            .collect &#123; Case.LOWER.apply(it).capitalize() &#125;</span><br><span class="line">            .join(<span class="string">""</span>)</span><br><span class="line">            .replaceAll(/[^\p&#123;javaJavaIdentifierPart&#125;[_]]/, <span class="string">"_"</span>)</span><br><span class="line">    <span class="comment">// 去除开头的T  http://developer.51cto.com/art/200906/129168.htm</span></span><br><span class="line">    s = s[<span class="number">1.</span>.s.size() - <span class="number">1</span>]</span><br><span class="line">    capitalize || s.length() == <span class="number">1</span>? s : Case.LOWER.apply(s[<span class="number">0</span>]) + s[<span class="number">1.</span>.<span class="number">-1</span>]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def javaName(str, capitalize) &#123;</span><br><span class="line"><span class="comment">//    def s = str.split(/(?&lt;=[^\p&#123;IsLetter&#125;])/).collect &#123; Case.LOWER.apply(it).capitalize() &#125;</span></span><br><span class="line"><span class="comment">//            .join("").replaceAll(/[^\p&#123;javaJavaIdentifierPart&#125;]/, "_")</span></span><br><span class="line"><span class="comment">//    capitalize || s.length() == 1? s : Case.LOWER.apply(s[0]) + s[1..-1]</span></span><br><span class="line">    def s = com.intellij.psi.codeStyle.NameUtil.splitNameIntoWords(str)</span><br><span class="line">            .collect &#123; Case.LOWER.apply(it).capitalize() &#125;</span><br><span class="line">            .join(<span class="string">""</span>)</span><br><span class="line">            .replaceAll(/[^\p&#123;javaJavaIdentifierPart&#125;[_]]/, <span class="string">"_"</span>)</span><br><span class="line">    capitalize || s.length() == <span class="number">1</span>? s : Case.LOWER.apply(s[<span class="number">0</span>]) + s[<span class="number">1.</span>.<span class="number">-1</span>]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def isNotEmpty(content) &#123;</span><br><span class="line">    <span class="keyword">return</span> content != null &amp;&amp; content.toString().trim().length() &gt; <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static String changeStyle(String str, boolean toCamel)&#123;</span><br><span class="line">    <span class="keyword">if</span>(!str || str.size() &lt;= <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> str</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(toCamel)&#123;</span><br><span class="line">        String r = str.toLowerCase().split(<span class="string">'_'</span>).collect&#123;cc -&gt; Case.LOWER.apply(cc).capitalize()&#125;.join(<span class="string">''</span>)</span><br><span class="line">        <span class="keyword">return</span> r[<span class="number">0</span>].toLowerCase() + r[<span class="number">1.</span>.<span class="number">-1</span>]</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        str = str[<span class="number">0</span>].toLowerCase() + str[<span class="number">1.</span>.<span class="number">-1</span>]</span><br><span class="line">        <span class="keyword">return</span> str.collect&#123;cc -&gt; ((char)cc).isUpperCase() ? <span class="string">'_'</span> + cc.toLowerCase() : cc&#125;.join(<span class="string">''</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static String genSerialID()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"\tprivate static final long serialVersionUID =  "</span>+Math.abs(<span class="built_in">new</span> Random().nextLong())+<span class="string">"L;"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Generate-Dao-groovy文件（生成dao）："><a href="#Generate-Dao-groovy文件（生成dao）：" class="headerlink" title="Generate Dao.groovy文件（生成dao）："></a>Generate Dao.groovy文件（生成dao）：</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> src</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.intellij.database.model.DasTable</span><br><span class="line"><span class="keyword">import</span> com.intellij.database.util.Case</span><br><span class="line"><span class="keyword">import</span> com.intellij.database.util.DasUtil</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Available context bindings:</span></span><br><span class="line"><span class="comment"> *   SELECTION   Iterable&lt;DasObject&gt;</span></span><br><span class="line"><span class="comment"> *   PROJECT     project</span></span><br><span class="line"><span class="comment"> *   FILES       files helper</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line">packageName = <span class="string">"**;"</span> <span class="comment">// 需手动配置 生成的 dao 所在包位置</span></span><br><span class="line"></span><br><span class="line">FILES.chooseDirectoryAndSave(<span class="string">"Choose directory"</span>, <span class="string">"Choose where to store generated files"</span>) &#123; dir -&gt;</span><br><span class="line">    SELECTION.filter &#123; it instanceof DasTable &#125;.each &#123; generate(it, dir) &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def generate(table, dir) &#123;</span><br><span class="line">    def baseName = javaName(table.getName(), <span class="literal">true</span>)</span><br><span class="line">    <span class="built_in">new</span> File(dir, baseName + <span class="string">"Mapper.java"</span>).withPrintWriter &#123; out -&gt; generateInterface(out, baseName) &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def generateInterface(out, baseName) &#123;</span><br><span class="line">    def date = <span class="built_in">new</span> Date().format(<span class="string">"yyyy/MM/dd"</span>)</span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"package $packageName"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import cn.xx.entity.$&#123;baseName&#125;Entity;"</span> <span class="comment">// 需手动配置</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"import org.springframework.stereotype.Repository;"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">""</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"/**"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">" * Created on $date."</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">" *"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">" * @author GX"</span> <span class="comment">// 可自定义</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">" */"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"@Repository"</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"public interface $&#123;baseName&#125;Dao extends BaseDao&lt;$&#123;baseName&#125;Entity&gt; &#123;"</span> <span class="comment">// 可自定义</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">""</span></span><br><span class="line">    out.<span class="built_in">println</span> <span class="string">"&#125;"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def javaName(str, capitalize) &#123;</span><br><span class="line">    def s = com.intellij.psi.codeStyle.NameUtil.splitNameIntoWords(str)</span><br><span class="line">            .collect &#123; Case.LOWER.apply(it).capitalize() &#125;</span><br><span class="line">            .join(<span class="string">""</span>)</span><br><span class="line">            .replaceAll(/[^\p&#123;javaJavaIdentifierPart&#125;[_]]/, <span class="string">"_"</span>)</span><br><span class="line">    name = capitalize || s.length() == <span class="number">1</span> ? s : Case.LOWER.apply(s[<span class="number">0</span>]) + s[<span class="number">1.</span>.<span class="number">-1</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Generate-DaoXml-groovy文件（生成dao-xml）："><a href="#Generate-DaoXml-groovy文件（生成dao-xml）：" class="headerlink" title="Generate DaoXml.groovy文件（生成dao.xml）："></a>Generate DaoXml.groovy文件（生成dao.xml）：</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> src</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.intellij.database.model.DasTable</span><br><span class="line"><span class="keyword">import</span> com.intellij.database.util.Case</span><br><span class="line"><span class="keyword">import</span> com.intellij.database.util.DasUtil</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Available context bindings:</span></span><br><span class="line"><span class="comment"> *   SELECTION   Iterable&lt;DasObject&gt;</span></span><br><span class="line"><span class="comment"> *   PROJECT     project</span></span><br><span class="line"><span class="comment"> *   FILES       files helper</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// entity(dto)、mapper(dao) 与数据库表的对应关系在这里手动指明,idea Database 窗口里只能选下列配置了的 mapper</span></span><br><span class="line"><span class="comment">// tableName(key) : [mapper(dao),entity(dto)]</span></span><br><span class="line">typeMapping = [</span><br><span class="line">        (~/(?i)<span class="keyword">int</span>/)                      : <span class="string">"INTEGER"</span>,</span><br><span class="line">        (~/(?i)float|double|decimal|<span class="built_in">real</span>/): <span class="string">"DOUBLE"</span>,</span><br><span class="line">        (~/(?i)datetime|timestamp/)       : <span class="string">"TIMESTAMP"</span>,</span><br><span class="line">        (~/(?i)date/)                     : <span class="string">"TIMESTAMP"</span>,</span><br><span class="line">        (~/(?i)time/)                     : <span class="string">"TIMESTAMP"</span>,</span><br><span class="line">        (~/(?i)/)                         : <span class="string">"VARCHAR"</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">basePackage = <span class="string">"com.chitic.bank.mapping"</span> <span class="comment">// 包名需手动填写</span></span><br><span class="line"></span><br><span class="line">FILES.chooseDirectoryAndSave(<span class="string">"Choose directory"</span>, <span class="string">"Choose where to store generated files"</span>) &#123; dir -&gt;</span><br><span class="line">    SELECTION.filter &#123; it instanceof DasTable &#125;.each &#123; generate(it, dir) &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def generate(table, dir) &#123;</span><br><span class="line">    def baseName = mapperName(table.getName(), <span class="literal">true</span>)</span><br><span class="line">    def fields = calcFields(table)</span><br><span class="line">    <span class="built_in">new</span> File(dir, baseName + <span class="string">"Mapper.xml"</span>).withPrintWriter &#123; out -&gt; generate(table, out, baseName, fields) &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def generate(table, out, baseName, fields) &#123;</span><br><span class="line">    def baseResultMap = <span class="string">'BaseResultMap'</span></span><br><span class="line">    def base_Column_List = <span class="string">'Base_Column_List'</span></span><br><span class="line">    def date = <span class="built_in">new</span> Date().format(<span class="string">"yyyy/MM/dd"</span>)</span><br><span class="line">    def tableName = table.getName()</span><br><span class="line"></span><br><span class="line">    def dao = basePackage + <span class="string">".dao.$&#123;baseName&#125;Mapper"</span></span><br><span class="line">    def to = basePackage + <span class="string">".to.$&#123;baseName&#125;TO"</span></span><br><span class="line"></span><br><span class="line">    out.<span class="built_in">println</span> mappingsStart(dao)</span><br><span class="line">    out.<span class="built_in">println</span> resultMap(baseResultMap, to, fields)</span><br><span class="line">    out.<span class="built_in">println</span> sql(fields, base_Column_List)</span><br><span class="line">    out.<span class="built_in">println</span> selectById(tableName, fields, baseResultMap, base_Column_List)</span><br><span class="line">    out.<span class="built_in">println</span> deleteById(tableName, fields)</span><br><span class="line">    out.<span class="built_in">println</span> <span class="built_in">delete</span>(tableName, fields, to)</span><br><span class="line">    out.<span class="built_in">println</span> insert(tableName, fields, to)</span><br><span class="line">    out.<span class="built_in">println</span> update(tableName, fields, to)</span><br><span class="line">    out.<span class="built_in">println</span> selectList(tableName, fields, to, base_Column_List, baseResultMap)</span><br><span class="line">    out.<span class="built_in">println</span> mappingsEnd()</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static def resultMap(baseResultMap, to, fields) &#123;</span><br><span class="line"></span><br><span class="line">    def inner = <span class="string">''</span></span><br><span class="line">    fields.each() &#123;</span><br><span class="line">        inner += <span class="string">'\t\t&lt;result column="'</span> + it.sqlFieldName + <span class="string">'" jdbcType="'</span> + it.<span class="keyword">type</span> + <span class="string">'" property="'</span> + it.name + <span class="string">'"/&gt;\n'</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span><span class="string">'\t&lt;resultMap id="'</span><span class="string">''</span> + baseResultMap + <span class="string">''</span><span class="string">'" type="'</span><span class="string">''</span> + to + <span class="string">''</span><span class="string">'"&gt;</span></span><br><span class="line"><span class="string">        &lt;id column="id" jdbcType="INTEGER" property="id"/&gt;</span></span><br><span class="line"><span class="string">'</span><span class="string">''</span> + inner + <span class="string">''</span><span class="string">'\t&lt;/resultMap&gt;</span></span><br><span class="line"><span class="string">'</span><span class="string">''</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def calcFields(table) &#123;</span><br><span class="line">    DasUtil.getColumns(table).reduce([]) &#123; fields, col -&gt;</span><br><span class="line">        def spec = Case.LOWER.apply(col.getDataType().getSpecification())</span><br><span class="line">        def typeStr = typeMapping.find &#123; p, t -&gt; p.matcher(spec).find() &#125;.value</span><br><span class="line">        fields += [[</span><br><span class="line">                           comment     : col.getComment(),</span><br><span class="line">                           name        : mapperName(col.getName(), <span class="literal">false</span>),</span><br><span class="line">                           sqlFieldName: col.getName(),</span><br><span class="line">                           <span class="keyword">type</span>        : typeStr,</span><br><span class="line">                           annos       : <span class="string">""</span>]]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">def mapperName(str, capitalize) &#123;</span><br><span class="line">    def s = com.intellij.psi.codeStyle.NameUtil.splitNameIntoWords(str)</span><br><span class="line">            .collect &#123; Case.LOWER.apply(it).capitalize() &#125;</span><br><span class="line">            .join(<span class="string">""</span>)</span><br><span class="line">            .replaceAll(/[^\p&#123;javaJavaIdentifierPart&#125;[_]]/, <span class="string">"_"</span>)</span><br><span class="line">    name = capitalize || s.length() == <span class="number">1</span> ? s : Case.LOWER.apply(s[<span class="number">0</span>]) + s[<span class="number">1.</span>.<span class="number">-1</span>]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ------------------------------------------------------------------------ mappings</span></span><br><span class="line">static def mappingsStart(mapper) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span><span class="string">'&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="string">&lt;!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;</span></span><br><span class="line"><span class="string">&lt;mapper namespace="'</span><span class="string">''</span> + mapper + <span class="string">''</span><span class="string">'"&gt;</span></span><br><span class="line"><span class="string">'</span><span class="string">''</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ------------------------------------------------------------------------ mappings</span></span><br><span class="line">static def mappingsEnd() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span><span class="string">'&lt;/mapper&gt;'</span><span class="string">''</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ------------------------------------------------------------------------ selectById</span></span><br><span class="line">static def selectById(tableName, fields, baseResultMap, base_Column_List) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">    &lt;select id="selectById" parameterType="java.lang.Integer" resultMap="'</span><span class="string">''</span> + baseResultMap + <span class="string">''</span><span class="string">'"&gt;</span></span><br><span class="line"><span class="string">        select</span></span><br><span class="line"><span class="string">        &lt;include refid="'</span><span class="string">''</span> + base_Column_List + <span class="string">''</span><span class="string">'"/&gt;</span></span><br><span class="line"><span class="string">        from '</span><span class="string">''</span> + tableName + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        where id = #&#123;id&#125;</span></span><br><span class="line"><span class="string">    &lt;/select&gt;'</span><span class="string">''</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ------------------------------------------------------------------------ insert</span></span><br><span class="line">static def insert(tableName, fields, parameterType) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">    &lt;insert id="insert" parameterType="'</span><span class="string">''</span> + parameterType + <span class="string">''</span><span class="string">'"&gt;</span></span><br><span class="line"><span class="string">        insert into '</span><span class="string">''</span> + tableName + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        &lt;trim prefix="(" suffix=")" suffixOverrides=","&gt;</span></span><br><span class="line"><span class="string">            '</span><span class="string">''</span> + testNotNullStr(fields) + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        &lt;/trim&gt;</span></span><br><span class="line"><span class="string">        &lt;trim prefix="values (" suffix=")" suffixOverrides=","&gt;</span></span><br><span class="line"><span class="string">            '</span><span class="string">''</span> + testNotNullStrSet(fields) + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        &lt;/trim&gt;</span></span><br><span class="line"><span class="string">    &lt;/insert&gt;</span></span><br><span class="line"><span class="string">'</span><span class="string">''</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ------------------------------------------------------------------------ update</span></span><br><span class="line">static def update(tableName, fields, parameterType) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">    &lt;update id="update" parameterType="'</span><span class="string">''</span> + parameterType + <span class="string">''</span><span class="string">'"&gt;</span></span><br><span class="line"><span class="string">        update '</span><span class="string">''</span> + tableName + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        &lt;set&gt;</span></span><br><span class="line"><span class="string">            '</span><span class="string">''</span> + testNotNullStrWhere(fields) + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        &lt;/set&gt;</span></span><br><span class="line"><span class="string">        where id = #&#123;id&#125;</span></span><br><span class="line"><span class="string">    &lt;/update&gt;'</span><span class="string">''</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ------------------------------------------------------------------------ deleteById</span></span><br><span class="line">static def deleteById(tableName, fields) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">    &lt;delete id="deleteById" parameterType="java.lang.Integer"&gt;</span></span><br><span class="line"><span class="string">        delete</span></span><br><span class="line"><span class="string">        from '</span><span class="string">''</span> + tableName + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        where id = #&#123;id&#125;</span></span><br><span class="line"><span class="string">    &lt;/delete&gt;'</span><span class="string">''</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ------------------------------------------------------------------------ delete</span></span><br><span class="line">static def <span class="built_in">delete</span>(tableName, fields, parameterType) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">    &lt;delete id="delete" parameterType="'</span><span class="string">''</span> + parameterType + <span class="string">''</span><span class="string">'"&gt;</span></span><br><span class="line"><span class="string">        delete from '</span><span class="string">''</span> + tableName + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        where 1 = 1</span></span><br><span class="line"><span class="string">        '</span><span class="string">''</span> + testNotNullStrWhere(fields) + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">    &lt;/delete&gt;'</span><span class="string">''</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ------------------------------------------------------------------------ selectList</span></span><br><span class="line">static def selectList(tableName, fields, parameterType, base_Column_List, baseResultMap) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">    &lt;select id="selectList" parameterType="'</span><span class="string">''</span> + parameterType + <span class="string">''</span><span class="string">'" resultMap="'</span><span class="string">''</span> + baseResultMap + <span class="string">''</span><span class="string">'"&gt;</span></span><br><span class="line"><span class="string">        select</span></span><br><span class="line"><span class="string">        &lt;include refid="'</span><span class="string">''</span> + base_Column_List + <span class="string">''</span><span class="string">'"/&gt;</span></span><br><span class="line"><span class="string">                from '</span><span class="string">''</span> + tableName + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        where 1 = 1</span></span><br><span class="line"><span class="string">        '</span><span class="string">''</span> + testNotNullStrWhere(fields) + <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        order by id desc</span></span><br><span class="line"><span class="string">    &lt;/select&gt;'</span><span class="string">''</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ------------------------------------------------------------------------ sql</span></span><br><span class="line">static def sql(fields, base_Column_List) &#123;</span><br><span class="line">    def str = <span class="string">''</span><span class="string">'\t&lt;sql id="'</span><span class="string">''</span> + base_Column_List + <span class="string">''</span><span class="string">'"&gt;</span></span><br><span class="line"><span class="string">        @inner@</span></span><br><span class="line"><span class="string">    &lt;/sql&gt; '</span><span class="string">''</span></span><br><span class="line"></span><br><span class="line">    def inner = <span class="string">''</span></span><br><span class="line">    fields.each() &#123;</span><br><span class="line">        inner += (<span class="string">'\t\t'</span> + it.sqlFieldName + <span class="string">',\n'</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> str.replace(<span class="string">"@inner@"</span>, inner.substring(<span class="number">0</span>, inner.length() - <span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static def testNotNullStrWhere(fields) &#123;</span><br><span class="line">    def inner = <span class="string">''</span></span><br><span class="line">    fields.each &#123;</span><br><span class="line">        inner += <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        &lt;if test="'</span><span class="string">''</span> + it.name + <span class="string">''</span><span class="string">' != null"&gt;</span></span><br><span class="line"><span class="string">            and '</span><span class="string">''</span> + it.sqlFieldName + <span class="string">''</span><span class="string">' = #&#123;'</span><span class="string">''</span> + it.name + <span class="string">''</span><span class="string">'&#125;</span></span><br><span class="line"><span class="string">        &lt;/if&gt;\n'</span><span class="string">''</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> inner</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static def testNotNullStrSet(fields) &#123;</span><br><span class="line">    def inner = <span class="string">''</span></span><br><span class="line">    fields.each &#123;</span><br><span class="line">        inner += <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        &lt;if test="'</span><span class="string">''</span> + it.name + <span class="string">''</span><span class="string">' != null"&gt;</span></span><br><span class="line"><span class="string">            #&#123;'</span><span class="string">''</span> + it.name + <span class="string">''</span><span class="string">'&#125;,</span></span><br><span class="line"><span class="string">        &lt;/if&gt;\n'</span><span class="string">''</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> inner</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static def testNotNullStr(fields) &#123;</span><br><span class="line">    def inner1 = <span class="string">''</span></span><br><span class="line">    fields.each &#123;</span><br><span class="line">        inner1 += <span class="string">''</span><span class="string">'</span></span><br><span class="line"><span class="string">        &lt;if test = "'</span><span class="string">''</span> + it.name + <span class="string">''</span><span class="string">' != null" &gt;</span></span><br><span class="line"><span class="string">        \t'</span><span class="string">''</span> + it.sqlFieldName + <span class="string">''</span><span class="string">',</span></span><br><span class="line"><span class="string">        &lt;/if&gt;\n'</span><span class="string">''</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> inner1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://lazytime.site/2020/10/27/goidea/" title="使用Go语言+IDEA+mysql 逆向生成dao 和 domain 的方法">https://lazytime.site/2020/10/27/goidea/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/22/jar/" rel="prev" title="如何访问jar包下面的资源文件">
+      <i class="fa fa-chevron-left"></i> 如何访问jar包下面的资源文件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/27/study/" rel="next" title="数据结构和算法的一个留坑">
+      数据结构和算法的一个留坑 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参考地址："><span class="nav-number">1.</span> <span class="nav-text">参考地址：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用方式"><span class="nav-number">2.</span> <span class="nav-text">使用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一步：安装idea-自行百度"><span class="nav-number">2.1.</span> <span class="nav-text">第一步：安装idea:自行百度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二步：Idea配置mysql-连接"><span class="nav-number">2.2.</span> <span class="nav-text">第二步：Idea配置mysql 连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三步：使用groovy逆向生成model-dao-daoxml-三种类型的文件"><span class="nav-number">2.3.</span> <span class="nav-text">第三步：使用groovy逆向生成model, dao, daoxml 三种类型的文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第四步：几个默认的模板"><span class="nav-number">2.4.</span> <span class="nav-text">第四步：几个默认的模板</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-MyPOJOs-groovy文件（生成实体类）："><span class="nav-number">2.4.1.</span> <span class="nav-text">Generate MyPOJOs.groovy文件（生成实体类）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-Dao-groovy文件（生成dao）："><span class="nav-number">2.4.2.</span> <span class="nav-text">Generate Dao.groovy文件（生成dao）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-DaoXml-groovy文件（生成dao-xml）："><span class="nav-number">2.4.3.</span> <span class="nav-text">Generate DaoXml.groovy文件（生成dao.xml）：</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://lazytime.site/" title="http:&#x2F;&#x2F;lazytime.site&#x2F;">Title</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">374k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">5:40</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
