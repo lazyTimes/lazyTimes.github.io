@@ -11,6 +11,8 @@
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
   <link rel="manifest" href="/images/manifest.json">
   <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
   <meta name="google-site-verification" content="ZyC1bd11DZ5XV3P11yBfvTIuaPZzFxxkUEnAhZ6zQSA">
   <meta name="baidu-site-verification" content="code-7cqMLS8QpK">
 
@@ -18,10 +20,11 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="百度编辑器的一些踩坑以及我是如何看待和解决问题的">
@@ -190,7 +193,7 @@
 
     
 
-  <a href="https://github.com/lazyTimes" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
 
 
     <main class="main">
@@ -349,7 +352,7 @@
 <h2 id="处理百度编辑器粘贴在IE失效的问题（目前未找到解决方案）"><a href="#处理百度编辑器粘贴在IE失效的问题（目前未找到解决方案）" class="headerlink" title="处理百度编辑器粘贴在IE失效的问题（目前未找到解决方案）"></a>处理百度编辑器粘贴在IE失效的问题（目前未找到解决方案）</h2><h3 id="问题复现：-1"><a href="#问题复现：-1" class="headerlink" title="问题复现："></a>问题复现：</h3><p>这也是我要说的重点问题，目前我依然没有找到解决办法，下面的内容都是我的个人尝试，希望找到有过处理经验的人或者有其他方式的办法，有偿感谢！！</p>
 <p>第一个问题：在IE当中，使用<code>ctrl + V</code> 是没有任何反应和效果的，而在谷歌的浏览器下面，</p>
 <p>第二个问题：在IE中, 复制粘贴word内容无法粘贴图片</p>
-<h3 id="无法解决的办法："><a href="#无法解决的办法：" class="headerlink" title="无法解决的办法："></a>无法解决的办法：</h3><p><a href="https://www.cnblogs.com/songsu/p/11915470.html" target="_blank" rel="noopener">https://www.cnblogs.com/songsu/p/11915470.html</a> </p>
+<h3 id="无法解决的办法："><a href="#无法解决的办法：" class="headerlink" title="无法解决的办法："></a>无法解决的办法：</h3><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vc29uZ3N1L3AvMTE5MTU0NzAuaHRtbA==" title="https://www.cnblogs.com/songsu/p/11915470.html">https://www.cnblogs.com/songsu/p/11915470.html<i class="fa fa-external-link"></i></span> </p>
 <p>遇事不决找谷歌，谷歌出了一篇这种文章，试下</p>
 <p>大概在<code>ueditor.all.js</code>文件的23881行左右</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">bindEvents:&#123;</span><br><span class="line">            <span class="comment">//插入粘贴板的图片，拖放插入图片</span></span><br><span class="line">            <span class="string">'ready'</span>:<span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line">                <span class="keyword">var</span> me = <span class="keyword">this</span>;</span><br><span class="line">                <span class="keyword">if</span>(<span class="built_in">window</span>.FormData &amp;&amp; <span class="built_in">window</span>.FileReader) &#123;</span><br><span class="line">                    domUtils.on(me.body, <span class="string">'paste drop'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line">                        <span class="comment">//判断剪贴板的内容是否包含文本</span></span><br><span class="line">                        <span class="comment">//首先解释一下为什么要判断文本是不是为空</span></span><br><span class="line">                        <span class="comment">//在ctrl+c word中的文字或者图片之后会返回1种(image/png)或者4种type(text/plain,text/html,text/rtf,image/png)类型的对象</span></span><br><span class="line">                        <span class="comment">//为了兼容4种格式的情况，做了如下的判断</span></span><br><span class="line">                        <span class="comment">//如下代码：e.originalEvent.clipboardData.items获得剪贴板的内容</span></span><br><span class="line">                        <span class="comment">//当粘贴了文本之后text是不为空的，同时也会返回当前文本的图片类型</span></span><br><span class="line">                        <span class="comment">//如果有文字的话不做任何的处理，如果只粘贴图片的话文本一定是空的，包括复制的桌面图片或者截图的图片</span></span><br><span class="line">                        <span class="comment">// var text = e.originalEvent.clipboardData.getData("text");</span></span><br><span class="line">                        <span class="comment">// if(text == "")&#123;</span></span><br><span class="line">                        <span class="comment">//     var items=e.originalEvent.clipboardData.items;</span></span><br><span class="line">                        <span class="comment">//     for (var i = 0, len = items.length; i &lt; len; i++) &#123;</span></span><br><span class="line">                        <span class="comment">//         var item = items[i];</span></span><br><span class="line">                        <span class="comment">//         if ( item.kind == 'file' &amp;&amp; item.type.indexOf('image/') !== -1 ) &#123;</span></span><br><span class="line">                        <span class="comment">//             var blob = item.getAsFile();</span></span><br><span class="line">                        <span class="comment">//             getBase64(blob, function( base64 ) &#123;</span></span><br><span class="line">                        <span class="comment">//                 //sendAndInsertImage(base64,me); 上传到服务器</span></span><br><span class="line">                        <span class="comment">//                 setBase64Image(base64,me);</span></span><br><span class="line">                        <span class="comment">//             &#125;);</span></span><br><span class="line">                        <span class="comment">//             //阻止默认事件, 避免重复添加;</span></span><br><span class="line">                        <span class="comment">//             e.originalEvent.preventDefault();</span></span><br><span class="line">                        <span class="comment">//         &#125;;</span></span><br><span class="line">                        <span class="comment">//     &#125;</span></span><br><span class="line">                        <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">                        <span class="comment">//TODO 粘贴图片的根本问题点 20201010</span></span><br><span class="line">                        <span class="keyword">var</span> hasImg = <span class="literal">false</span>,</span><br><span class="line">                            items;</span><br><span class="line">                        <span class="comment">//获取粘贴板文件列表或者拖放文件列表</span></span><br><span class="line">                        items = e.type == <span class="string">'paste'</span> ? getPasteImage(e):getDropImage(e);</span><br><span class="line">                        <span class="keyword">if</span>(items)&#123;</span><br><span class="line">                            <span class="keyword">var</span> len = items.length,</span><br><span class="line">                                file;</span><br><span class="line">                            <span class="keyword">while</span> (len--)&#123;</span><br><span class="line">                                file = items[len];</span><br><span class="line">                                <span class="keyword">if</span>(file.getAsFile) file = file.getAsFile();</span><br><span class="line">                                <span class="keyword">if</span>(file &amp;&amp; file.size &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                                    sendAndInsertFile(file, me);</span><br><span class="line">                                    hasImg = <span class="literal">true</span>;</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                            hasImg &amp;&amp; e.preventDefault();</span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                    &#125;);</span><br><span class="line">                    <span class="comment">//取消拖放图片时出现的文字光标位置提示</span></span><br><span class="line">                    domUtils.on(me.body, <span class="string">'dragover'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">                        <span class="keyword">if</span>(e.dataTransfer.types[<span class="number">0</span>] == <span class="string">'Files'</span>) &#123;</span><br><span class="line">                            e.preventDefault();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line"></span><br><span class="line">                    <span class="comment">//设置loading的样式</span></span><br><span class="line">                    utils.cssRule(<span class="string">'loading'</span>,</span><br><span class="line">                        <span class="string">'.loadingclass&#123;display:inline-block;cursor:default;background: url(\''</span></span><br><span class="line">                            + <span class="keyword">this</span>.options.themePath</span><br><span class="line">                            + <span class="keyword">this</span>.options.theme +<span class="string">'/images/loading.gif\') no-repeat center center transparent;border:1px solid #cccccc;margin-left:1px;height: 22px;width: 22px;&#125;\n'</span> +</span><br><span class="line">                            <span class="string">'.loaderrorclass&#123;display:inline-block;cursor:default;background: url(\''</span></span><br><span class="line">                            + <span class="keyword">this</span>.options.themePath</span><br><span class="line">                            + <span class="keyword">this</span>.options.theme +<span class="string">'/images/loaderror.png\') no-repeat center center transparent;border:1px solid #cccccc;margin-right:1px;height: 22px;width: 22px;'</span> +</span><br><span class="line">                            <span class="string">'&#125;'</span>,</span><br><span class="line">                        <span class="keyword">this</span>.document);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
@@ -373,13 +376,13 @@
 <p>至此，我知道自己的能力不足，无法解决这个问题，所以跑去问前端了，然后前端百度一圈下来，和我说：”要不换个编辑器？”</p>
 <p>我没有死心，继续搜索</p>
 <h3 id="其他方式："><a href="#其他方式：" class="headerlink" title="其他方式："></a>其他方式：</h3><p>其实有其他的组织或者公司已经对于这种word的上传问题进行了解决</p>
-<p><a href="https://blog.csdn.net/myfmyfmyfmyf/article/details/18399329" target="_blank" rel="noopener">ueditor文本编辑器支持ctrl+v图片文字样式</a></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215Zm15Zm15Zm15Zi9hcnRpY2xlL2RldGFpbHMvMTgzOTkzMjk=" title="https://blog.csdn.net/myfmyfmyfmyf/article/details/18399329">ueditor文本编辑器支持ctrl+v图片文字样式<i class="fa fa-external-link"></i></span></p>
 <p>总结：</p>
 <ol>
 <li>思路不错，但是基本属于闭门造车，并且还要安装一个exe的Active控件，无法解决问题</li>
 <li>自己重写一个Active控件兼容处理</li>
 </ol>
-<p><a href="http://blog.ncmem.com/wordpress/2019/08/07/%E5%AF%8C%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E7%B2%98%E8%B4%B4word%E5%86%85%E5%AE%B9/" target="_blank" rel="noopener">富文本编辑器粘贴word内容</a></p>
+<p><span class="exturl" data-url="aHR0cDovL2Jsb2cubmNtZW0uY29tL3dvcmRwcmVzcy8yMDE5LzA4LzA3LyVFNSVBRiU4QyVFNiU5NiU4NyVFNiU5QyVBQyVFNyVCQyU5NiVFOCVCRSU5MSVFNSU5OSVBOCVFNyVCMiU5OCVFOCVCNCVCNHdvcmQlRTUlODYlODUlRTUlQUUlQjkv" title="http://blog.ncmem.com/wordpress/2019/08/07/%E5%AF%8C%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E7%B2%98%E8%B4%B4word%E5%86%85%E5%AE%B9/">富文本编辑器粘贴word内容<i class="fa fa-external-link"></i></span></p>
 <p>总结：</p>
 <ol>
 <li>其他公司二次开发，商用版本</li>
@@ -387,13 +390,13 @@
 <li>也是基于word的上传开发了插件，并且需要安装word上传的控件</li>
 <li>感兴趣可以下载看下，localhost 和 “127.0.0.1” 可以正常上传和使用</li>
 </ol>
-<p><a href="https://www.cnblogs.com/yangzhi/p/3576527.html" target="_blank" rel="noopener">UEditor单独图片上传组件！适用IE,Chrome,firefox.</a></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20veWFuZ3poaS9wLzM1NzY1MjcuaHRtbA==" title="https://www.cnblogs.com/yangzhi/p/3576527.html">UEditor单独图片上传组件！适用IE,Chrome,firefox.<i class="fa fa-external-link"></i></span></p>
 <p>总结：</p>
 <ol>
 <li>不是一码事，针对上传操作做了一些兼容和优化而已，无法解决粘贴的问题</li>
 </ol>
 <p>官方Github:<br>问题描述：从word中复制的图片粘贴到UEditor中以后不能正常显示，work图片转存的按钮也不可用。</p>
-<p>解决方案：参看 <a href="https://github.com/fex-team/ueditor/issues/2883" target="_blank" rel="noopener">ISSUE</a></p>
+<p>解决方案：参看 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2ZleC10ZWFtL3VlZGl0b3IvaXNzdWVzLzI4ODM=" title="https://github.com/fex-team/ueditor/issues/2883">ISSUE<i class="fa fa-external-link"></i></span></p>
 <p>总结：</p>
 <ol>
 <li>虽然官方的ISSUE 有人提过了，但是我访问404 啊。。。。</li>
@@ -425,7 +428,7 @@
     <a href="https://lazytime.site/2020/10/11/%E7%99%BE%E5%BA%A6%E7%BC%96%E8%BE%91%E5%99%A8%E7%9A%84%E9%82%A3%E4%BA%9B%E5%9D%91/" title="百度编辑器的那些坑">https://lazytime.site/2020/10/11/百度编辑器的那些坑/</a>
   </li>
   <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC</a> 许可协议。转载请注明出处！
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
   </li>
 </ul>
 </div>
@@ -543,10 +546,10 @@
 </div>
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
-        <a href="https://github.com/lazyTimes" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:1097483508@qq.com" title="E-Mail → mailto:1097483508@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
       </span>
   </div>
 
@@ -604,7 +607,7 @@
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     <span title="站点阅读时长">5:40</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>
 
         
@@ -642,6 +645,8 @@
 
   
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
