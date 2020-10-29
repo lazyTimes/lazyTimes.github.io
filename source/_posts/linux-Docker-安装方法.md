@@ -2,6 +2,7 @@
 title: linux Docker 安装方法
 subtitle: 如何在Linux上安装docker
 author: lazytime
+url_suffix: note21
 tags:
   - docker
 categories:

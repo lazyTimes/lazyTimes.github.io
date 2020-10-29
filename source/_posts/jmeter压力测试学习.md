@@ -2,6 +2,7 @@
 title: jmeter压力测试学习
 subtitle: 实战jmeter 压力测试
 author: lazytime
+url_suffix: note20
 tags:
   - jmeter
 categories:

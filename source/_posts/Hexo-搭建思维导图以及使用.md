@@ -2,6 +2,7 @@
 title: Hexo 搭建思维导图以及使用
 subtitle: 这个人很懒，不想写副标题
 author: lazytime
+url_suffix: hexo-study1
 tags:
   - Hexo
 categories:

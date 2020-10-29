@@ -2,6 +2,7 @@
 title: Window 下面使用代办清单软件
 subtitle: 常用代办任务工具
 author: lazytime
+url_suffix: window-study
 tags:
   - TODOs
 categories:

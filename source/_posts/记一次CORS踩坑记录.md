@@ -2,6 +2,7 @@
 title: 记一次CORS踩坑记录
 subtitle: 记一次CORS踩坑记录
 author: lazytime
+url_suffix: note3
 tags:
   - cors
 categories:

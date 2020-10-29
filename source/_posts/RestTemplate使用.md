@@ -2,6 +2,7 @@
 title: RestTemplate使用
 subtitle: RestTemplate日常的使用和常见API
 author: lazytime
+url_suffix: note15
 tags:
   - JAVA
 categories:

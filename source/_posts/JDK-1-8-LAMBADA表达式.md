@@ -2,6 +2,7 @@
 title: JDK 1.8 LAMBADA表达式
 subtitle: jdk1.8中对于lambada表达式
 author: lazytime
+url_suffix: note27
 tags:
   - LAMBAD
 categories:

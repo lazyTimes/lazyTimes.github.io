@@ -2,6 +2,7 @@
 title: LINUX鸟哥的私房菜
 subtitle: 鸟哥的私房菜笔记
 author: lazytime
+url_suffix: unix1
 tags:
   - Linux
 categories:

@@ -2,6 +2,7 @@
 title: Oracle常用命令大全（很有用，做笔记）
 subtitle: Oracle常用命令大全（很有用，做笔记）
 author: lazytime
+url_suffix: note22
 tags:
   - oracle
 categories:

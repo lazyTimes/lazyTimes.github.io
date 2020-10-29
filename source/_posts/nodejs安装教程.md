@@ -2,6 +2,7 @@
 title: nodejs安装教程
 subtitle: NodeJS教程
 author: lazytime
+url_suffix: note12
 tags:
   - NodeJS
 categories:

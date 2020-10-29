@@ -2,6 +2,7 @@
 title: Mindoc 安装与部署
 subtitle: 如何简单的使用mindoc
 author: lazytime
+url_suffix: note26
 tags:
   - 文档
 categories:

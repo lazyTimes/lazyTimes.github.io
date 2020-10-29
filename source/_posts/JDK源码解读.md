@@ -1,6 +1,7 @@
 ---
 layout: 深入理解jvm虚拟机
 title: JDK源码解读
+url_suffix: jdkym
 date: 2020-07-26 12:27:28
 tags:
 ---

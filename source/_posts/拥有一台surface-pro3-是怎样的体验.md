@@ -2,6 +2,7 @@
 title: 拥有一台surface pro3 是怎样的体验
 subtitle: 买了一台surface，写一下使用心得
 author: lazytime
+url_suffix: note30
 tags:
   - surface
 categories:

@@ -2,6 +2,7 @@
 title: mysql zip包安装指南
 subtitle: zip包安装指南
 author: lazytime
+url_suffix: note12
 tags:
   - mysql
 categories:

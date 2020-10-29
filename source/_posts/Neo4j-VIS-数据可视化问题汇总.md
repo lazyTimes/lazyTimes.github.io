@@ -2,6 +2,7 @@
 title: Neo4j + VIS 数据可视化问题汇总
 subtitle: Neo4j实际使用
 author: lazytime
+url_suffix: note1
 tags:
   - Neo4j
 categories:

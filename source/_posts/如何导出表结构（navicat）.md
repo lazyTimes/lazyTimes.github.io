@@ -2,6 +2,7 @@
 title: 如何导出表结构（navicat）
 subtitle: 如何导出表结构（navicat）
 author: lazytime
+url_suffix: note18
 tags:
   - 数据库
 categories:

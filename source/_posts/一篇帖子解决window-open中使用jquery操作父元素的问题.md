@@ -2,6 +2,7 @@
 title: 一篇帖子解决window.open中使用jquery操作父元素的问题
 subtitle: 还是不喜欢搞前端
 author: lazytime
+url_suffix: note31
 tags:
   - 前端
 categories:

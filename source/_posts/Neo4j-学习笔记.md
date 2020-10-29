@@ -2,6 +2,7 @@
 title: Neo4j 学习笔记
 subtitle: Neo4j 学习
 author: lazytime
+url_suffix: note10
 tags:
   - Neo4j
 categories:

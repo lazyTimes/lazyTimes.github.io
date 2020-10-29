@@ -2,6 +2,7 @@
 title: 如何访问jar包下面的资源文件
 subtitle: jar包的访问一定要知道内容访问机制
 author: lazytime
+url_suffix: jar
 tags:
   - jar
 categories:

@@ -2,6 +2,7 @@
 title: 使用Hibernate JSP 303 整合到SSM项目
 subtitle: 这个人很懒，不想写副标题
 author: lazytime
+url_suffix: note5
 tags:
   - 无
 categories:

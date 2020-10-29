@@ -1,6 +1,7 @@
 ---
 title: Springboot 打包的一些学习
 subtitle: Spring Boot 打包成的可执行 jar ，为什么不能被其他项目依赖？
+url_suffix: springbootpac
 author: lazytime
 tags:
   - Springboot

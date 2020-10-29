@@ -2,6 +2,7 @@
 title: WIN10系统安装与U盘系统制作教程
 subtitle: WIN10系统安装与U盘系统制作教程
 author: lazytime
+url_suffix: win10read
 tags:
   - 实用技巧
 categories:

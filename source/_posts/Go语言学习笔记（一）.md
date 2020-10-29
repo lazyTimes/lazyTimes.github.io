@@ -2,6 +2,7 @@
 title: Go语言学习笔记（一）
 subtitle: Go语言学习笔记
 author: lazytime
+url_suffix: gostudy1
 tags:
   - go
 categories:

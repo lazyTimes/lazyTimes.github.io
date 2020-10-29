@@ -2,6 +2,7 @@
 title: Maven私服Nexus搭建教程
 subtitle: 这个人很懒，不想写副标题
 author: lazytime
+url_suffix: mavennexus
 tags:
   - Maven
 categories:

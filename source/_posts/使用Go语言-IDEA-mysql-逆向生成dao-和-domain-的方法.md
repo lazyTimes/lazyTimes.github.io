@@ -2,6 +2,7 @@
 title: 使用Go语言+IDEA+mysql 逆向生成dao 和 domain 的方法
 subtitle: 学习数据结构的内容-韩顺平
 author: lazytime
+url_suffix: goidea
 tags:
   - 数据结构
 categories:

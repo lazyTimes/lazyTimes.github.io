@@ -2,6 +2,7 @@
 title: 《Spring 实战》解读
 subtitle: 《Spring 实战》解读
 author: lazytime
+url_suffix: note2
 tags:
   - Spring
 categories:

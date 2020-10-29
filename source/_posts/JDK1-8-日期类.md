@@ -2,6 +2,7 @@
 title: JDK1.8 日期类
 subtitle: JDK1.8 日期类
 author: lazytime
+url_suffix: note7
 tags:
   - JDK1.8
 categories:

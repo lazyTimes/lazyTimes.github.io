@@ -2,6 +2,7 @@
 title: 小技巧：Typera如何设置高亮和自定义快捷键？
 subtitle: Markdown 如何给文字加上高亮效果？
 author: lazytime
+url_suffix: note8
 tags:
   - 实用
 categories:
