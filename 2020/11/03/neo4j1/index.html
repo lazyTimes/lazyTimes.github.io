@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="ZyC1bd11DZ5XV3P11yBfvTIuaPZzFxxkUEnAhZ6zQSA">
+  <meta name="baidu-site-verification" content="code-vIeEhdQrdN">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="学习neo4j的使用和基本语法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我的Neo4j探索之旅 - 初识Neo4j（一）">
+<meta property="og:url" content="https://lazytime.site/2020/11/03/neo4j1/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="学习neo4j的使用和基本语法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827111934.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827142816.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827143345.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827143459.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827143602.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827144938.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827150440.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827145703.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827145921.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201102104408.png">
+<meta property="og:image" content="file:///C:/Users/123/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201102105121.png">
+<meta property="article:published_time" content="2020-11-02T16:03:27.000Z">
+<meta property="article:modified_time" content="2020-11-02T16:06:33.657Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="neo4j">
+<meta property="article:tag" content="图数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827111934.png">
+
+<link rel="canonical" href="https://lazytime.site/2020/11/03/neo4j1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>我的Neo4j探索之旅 - 初识Neo4j（一） | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lazytime.site/2020/11/03/neo4j1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          我的Neo4j探索之旅 - 初识Neo4j（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-03 00:03:27 / 修改时间：00:06:33" itemprop="dateCreated datePublished" datetime="2020-11-03T00:03:27+08:00">2020-11-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">图数据库</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/03/neo4j1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/03/neo4j1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+            <div class="post-description">学习neo4j的使用和基本语法</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="我的Neo4j探索之旅-初识Neo4j（一）"><a href="#我的Neo4j探索之旅-初识Neo4j（一）" class="headerlink" title="我的Neo4j探索之旅 - 初识Neo4j（一）"></a>我的Neo4j探索之旅 - 初识Neo4j（一）</h1><h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p>[TOC]</p>
+<h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><p>neo4j 这个东西在国内用的很少，目前能百度的资料也是很早之前的几篇了，我针对neo4j 3.5 的版本进行一次学习和记录，以及实际的工作需求我也遇到了，后续会开源一个剔除业务的开源项目，有兴趣的读者可以了解一下图数据库的中间件，还是蛮有意思的。</p>
+<a id="more"></a>
+
+<h2 id="它是什么？"><a href="#它是什么？" class="headerlink" title="它是什么？"></a>它是什么？</h2><ul>
+<li>百度百科定义： <span class="exturl" data-url="aHR0cDovL3d3dy55b3VtZWVrLmNvbS9teS1sZWFybmluZy13YXkvP3Rkc291cmNldGFnPXNfcGNxcV9haW9tc2c=" title="http://www.youmeek.com/my-learning-way/?tdsourcetag=s_pcqq_aiomsg">http://www.youmeek.com/my-learning-way/?tdsourcetag=s_pcqq_aiomsg<i class="fa fa-external-link"></i></span> </li>
+<li>官方网站： <span class="exturl" data-url="aHR0cHM6Ly9uZW80ai5jb20v" title="https://neo4j.com/">https://neo4j.com/<i class="fa fa-external-link"></i></span> </li>
+<li>官方文档地址： <span class="exturl" data-url="aHR0cHM6Ly9uZW80ai5jb20vZG9jcy8=" title="https://neo4j.com/docs/">https://neo4j.com/docs/<i class="fa fa-external-link"></i></span> <ul>
+<li>Java Driver API Docs</li>
+<li>Neo4j Javadocs</li>
+<li>Cypher Manual</li>
+<li>Spring data neo4j 这个是spring 管理neo4j的框架</li>
+</ul>
+</li>
+<li>维基百科介绍: <span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvTmVvNGo=" title="https://en.wikipedia.org/wiki/Neo4j">https://en.wikipedia.org/wiki/Neo4j<i class="fa fa-external-link"></i></span> </li>
+</ul>
+<h2 id="它的历史"><a href="#它的历史" class="headerlink" title="它的历史"></a>它的历史</h2><ul>
+<li><p>1.0版于2010年2月发布。</p>
+</li>
+<li><p>Neo4j 2.0版于2013年12月发布。</p>
+</li>
+<li><p>Neo4j 3.0版于2016年4月发布。</p>
+</li>
+<li><p>2016年11月，Neo4j成功获得了由Greenbridge Partners Ltd.牵头的3600万美元D轮融资<span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvTmVvNGojY2l0ZV9ub3RlLTE1" title="https://en.wikipedia.org/wiki/Neo4j#cite_note-15">[15]<i class="fa fa-external-link"></i></span></p>
+</li>
+<li><p>2018年11月，Neo4j成功获得了由One Peak Partners和Morgan Stanley Expansion Capital牵头的8000万美元E轮融资，其他投资者包括Creandum，Eight Roads和Greenbridge Partners参与了此次融资</p>
+</li>
+</ul>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8zNjQwNDg3Mg==" title="https://zhuanlan.zhihu.com/p/36404872">https://zhuanlan.zhihu.com/p/36404872<i class="fa fa-external-link"></i></span>  知乎介绍neo4j</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vcG9zdC81YjU1OTk5MDUxODgyNTE5NmIwMWRmYzI=" title="https://juejin.im/post/5b559990518825196b01dfc2">https://juejin.im/post/5b559990518825196b01dfc2<i class="fa fa-external-link"></i></span>  掘金文章</li>
+</ul>
+<h2 id="同类产品比较"><a href="#同类产品比较" class="headerlink" title="同类产品比较"></a>同类产品比较</h2><ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2JlbGFsZHMvYXJ0aWNsZS9kZXRhaWxzLzg3OTE3OTAw" title="https://blog.csdn.net/belalds/article/details/87917900">https://blog.csdn.net/belalds/article/details/87917900<i class="fa fa-external-link"></i></span>  主流图数据库Neo4J、ArangoDB、OrientDB综合对比：架构分析</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cubGpqeXkuY29tL2FyY2hpdmVzLzIwMTkvMDkvMTAwNTg0Lmh0bWw=" title="https://www.ljjyy.com/archives/2019/09/100584.html">https://www.ljjyy.com/archives/2019/09/100584.html<i class="fa fa-external-link"></i></span>  在实际的项目选型中使用</li>
+</ul>
+<h2 id="为什么学习它"><a href="#为什么学习它" class="headerlink" title="为什么学习它"></a>为什么学习它</h2><ul>
+<li>公司业务需求，需要使用可视化拓扑图展示数据</li>
+<li>标签库使用mysql展示图形结构比较困难，转而使用图数据库解决</li>
+</ul>
+<h2 id="为什么要使用neo4j"><a href="#为什么要使用neo4j" class="headerlink" title="为什么要使用neo4j"></a>为什么要使用neo4j</h2><ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vcnViaW5vcnRoL3AvNTg0NjE0MC5odG1s" title="https://www.cnblogs.com/rubinorth/p/5846140.html">https://www.cnblogs.com/rubinorth/p/5846140.html<i class="fa fa-external-link"></i></span> 参考</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly96aGlkYW8uYmFpZHUuY29tL3F1ZXN0aW9uLzEwNTIwOTAyNTE0Mjg1MDUzNzkuaHRtbA==" title="https://zhidao.baidu.com/question/1052090251428505379.html">https://zhidao.baidu.com/question/1052090251428505379.html<i class="fa fa-external-link"></i></span> 百度知道</li>
+</ul>
+<h2 id="哪些人不喜欢它"><a href="#哪些人不喜欢它" class="headerlink" title="哪些人不喜欢它"></a>哪些人不喜欢它</h2><ul>
+<li>neo4j 属于老牌图数据库</li>
+<li>neo4j 不支持分片，对分布式的系统支持不是很好，推荐单机部署</li>
+</ul>
+<h2 id="我要怎么做（按优先级从高到低排序）"><a href="#我要怎么做（按优先级从高到低排序）" class="headerlink" title="我要怎么做（按优先级从高到低排序）"></a>我要怎么做（按优先级从高到低排序）</h2><ul>
+<li><p>看文档：</p>
+<ul>
+<li><p>安装Neo4j desktop </p>
+<ul>
+<li>启动，进入localhost: 7474</li>
+<li>参考desktop 的快速入门操作案例</li>
+<li>进入官网，选择DEVELOP-Document，阅读如下内容：<ul>
+<li>Getting Started 简单的了解Neo4j,地址如下：<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9uZW80ai5jb20vZG9jcy9nZXR0aW5nLXN0YXJ0ZWQvY3VycmVudC8=" title="https://neo4j.com/docs/getting-started/current/">https://neo4j.com/docs/getting-started/current/<i class="fa fa-external-link"></i></span></li>
+</ul>
+</li>
+<li>Cypher manaral 比较重要： CQL语言十分强大，好用</li>
+<li>Neo4j 1.7 Driver Manual neo4j 驱动以及api使用</li>
+</ul>
+</li>
+<li>Java Driver API Docs java API</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>自己写 Demo</p>
+<ul>
+<li>后续会将个人实验内容上传到github</li>
+</ul>
+</li>
+<li><p>参考别人 Demo</p>
+<ul>
+<li>参考地址：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0lzRml2ZS9uZW80ai12aXMuanMuZ2l0" title="https://github.com/IsFive/neo4j-vis.js.git">https://github.com/IsFive/neo4j-vis.js.git<i class="fa fa-external-link"></i></span> git 地址</li>
+<li>后面根据该项目进行二次开发，目前已上线正式环境。</li>
+</ul>
+</li>
+<li><p>项目场景模拟</p>
+<ul>
+<li>让业务去推动技术</li>
+<li>明确需求</li>
+</ul>
+</li>
+<li><p>遇到问题</p>
+<ul>
+<li>科学上网到国外使用谷歌进行搜索，目前国内使用较少</li>
+<li>查看csdn 博客，有部分问题的解决办法</li>
+<li>关于关系型数据库 与 neo4j数据库的数据同步问题 </li>
+<li>Neo4j 与 vis 的使用问题</li>
+</ul>
+</li>
+</ul>
+<h1 id="如何安装neo4j社区版本（免费）（windows-10）"><a href="#如何安装neo4j社区版本（免费）（windows-10）" class="headerlink" title="如何安装neo4j社区版本（免费）（windows - 10）"></a>如何安装neo4j社区版本（免费）（windows - 10）</h1><h2 id="1-进入官网，下载软件"><a href="#1-进入官网，下载软件" class="headerlink" title="1. 进入官网，下载软件"></a>1. 进入官网，下载软件</h2><p><span class="exturl" data-url="aHR0cHM6Ly9uZW80ai5jb20vZ3JhcGgtYWxnb3JpdGhtcy1ib29rLz9yZWY9aG9tZS1iYW5uZXI=" title="https://neo4j.com/graph-algorithms-book/?ref=home-banner">https://neo4j.com/graph-algorithms-book/?ref=home-banner<i class="fa fa-external-link"></i></span></p>
+<p>点击右上角：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827111934.png" alt=""></p>
+<p>点击下载：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827142816.png" alt=""></p>
+<p>进入到如下页面</p>
+<p>输入对应信息，选择下载</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827143345.png" alt=""></p>
+<blockquote>
+<p> PS： 外网软件的下载真的慢的想死，这里提供一个诀窍</p>
+<p> <img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827143459.png" alt=""></p>
+<ol>
+<li><p>进入到如下页面，右击蓝色连接</p>
+</li>
+<li><p>复制连接地址</p>
+</li>
+<li><p>在迅雷里面，新建任务，然后粘贴地址进去</p>
+</li>
+<li><p>迅雷会找到资源然后提示你下载</p>
+</li>
+<li><p>下载，不出意外飞速下好软件包</p>
+<p>（本迅雷为破解版，个人自己使用，不对外开放）</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827143602.png" alt=""></p>
+</li>
+</ol>
+</blockquote>
+<blockquote>
+<p>线上的版本使用 版本为<strong>3.5.12</strong> ，官方最新版已经有了4.0的版本了</p>
+<p>这里我也提供了安装包，自己下的话需要翻墙加迅雷下才有可能拉下来</p>
+<p>Windows:</p>
+<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMXlXa0lkVVV0LVJ6dlN1a2U4OW5KQ3c=" title="https://pan.baidu.com/s/1yWkIdUUt-RzvSuke89nJCw">https://pan.baidu.com/s/1yWkIdUUt-RzvSuke89nJCw<i class="fa fa-external-link"></i></span><br>提取码：3c21</p>
+<p>Linux:</p>
+<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMWxqelM1RElZbzVuOWZDSXpLa0FNaXc=" title="https://pan.baidu.com/s/1ljzS5DIYo5n9fCIzKkAMiw">https://pan.baidu.com/s/1ljzS5DIYo5n9fCIzKkAMiw<i class="fa fa-external-link"></i></span><br>提取码：bnrf </p>
+</blockquote>
+<h2 id="2-安装JDK"><a href="#2-安装JDK" class="headerlink" title="2.  安装JDK"></a>2.  安装JDK</h2><p>这个请自行百度，教程烂大街，不过注意安装 <strong>JDK1.8</strong> 版本以上，否则是无法使用的</p>
+<h2 id="3-配置Neo4j环境变量"><a href="#3-配置Neo4j环境变量" class="headerlink" title="3. 配置Neo4j环境变量"></a>3. 配置Neo4j环境变量</h2><p>将下好的包解压到对应的位置之后，我们可以配置环境变量</p>
+<p>环境变量如下</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827144938.png" alt=""></p>
+<blockquote>
+<p>NEO4J_HOME</p>
+<p>D:\zxd\tool\neo4j-community-3.5.12-windows\neo4j-community-3.5.12</p>
+</blockquote>
+<h2 id="4-neo4j-启动"><a href="#4-neo4j-启动" class="headerlink" title="4. neo4j 启动"></a>4. neo4j 启动</h2><ol>
+<li><p><strong>管理员模式</strong>打开CMD， <code>cd</code> 到 <code>D:\zxd\tool\neo4j-community-3.5.12-windows\neo4j-community-3.5.12\bin</code> 下面（记得切换盘符）</p>
+</li>
+<li><p>请查看下面的常用命令，根据自己的实际情况选择</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 启动服务</span><br><span class="line">neo4j(.bat) start</span><br><span class="line"># 重启服务</span><br><span class="line">neo4j(.bat) restart</span><br><span class="line"># 停止服务</span><br><span class="line">neo4j(.bat) stop</span><br><span class="line"># 控制台模式启动</span><br><span class="line">neo4j(.bat) console</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><p>开启neo4j，看到 类似<code>successful</code>的字样就代表运行成功了</p>
+</li>
+<li><p>进入到 <span class="exturl" data-url="aHR0cDovL2xvY2FsaG9zdDo3NDc0L2Jyb3dzZXIv" title="http://localhost:7474/browser/">http://localhost:7474/browser/<i class="fa fa-external-link"></i></span></p>
+</li>
+<li><p>进入主页面，neo4j安装成功</p>
+</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827150440.png" alt=""></p>
+<h2 id="5-安装有可能的问题"><a href="#5-安装有可能的问题" class="headerlink" title="5. 安装有可能的问题"></a>5. 安装有可能的问题</h2><p>此部分是针对（4） 有可能失败的情况下进行尝试：</p>
+<h3 id="常见问题1"><a href="#常见问题1" class="headerlink" title="常见问题1"></a>常见问题1</h3><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827145703.png" alt=""></p>
+<p>输入如下的命令，安装neo4j 的服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 安装neo4j 服务</span></span><br><span class="line">neo4j install-service</span><br><span class="line"><span class="meta">#</span><span class="bash"> 卸载neo4j 服务</span></span><br><span class="line">neo4j uninstall-service</span><br></pre></td></tr></table></figure>
+
+<h3 id="常见问题2："><a href="#常见问题2：" class="headerlink" title="常见问题2："></a>常见问题2：</h3><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200827145921.png" alt=""></p>
+<p>这种情况可能是你安装服务的时候，neo4j默认已经给你启动了，尝试访问 <span class="exturl" data-url="aHR0cDovL2xvY2FsaG9zdDo3NDc0" title="http://localhost:7474">http://localhost:7474<i class="fa fa-external-link"></i></span> 看下能不能访问，如果可以访问，证明没有出现问题</p>
+<blockquote>
+<p>如果依然没有解决，请尝试 <code>neo4j.bat stop</code> 先关闭服务，或者重新安装一遍neo4j的服务</p>
+</blockquote>
+<h3 id="常见问题3："><a href="#常见问题3：" class="headerlink" title="常见问题3："></a>常见问题3：</h3><p>下面这个问题是一个比较奇怪的问题，我之前在上线部署的时候遇到过一次</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201102104408.png" alt=""></p>
+<p>解决办法：<img src="file:///C:/Users/123/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png" alt="img"><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3RvZ2V0aGVyX2N6L2FydGljbGUvZGV0YWlscy85NzkxODc4OQ==" title="https://blog.csdn.net/together_cz/article/details/97918789">https://blog.csdn.net/together_cz/article/details/97918789<i class="fa fa-external-link"></i></span></p>
+<p> 修改bin下面，有一个文件：neo4j.ps1</p>
+<p>需要把前缀的 $PSSCRIPT 改为你的安装路径，然后执行neo4j 的命令就不会报错了</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201102105121.png" alt=""></p>
+<h2 id="6-neo4j-实现外网访问："><a href="#6-neo4j-实现外网访问：" class="headerlink" title="6. neo4j 实现外网访问："></a>6. neo4j 实现外网访问：</h2><p>在<code>conf</code> 里面的 <code>neo4j.conf</code> 中修改:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#dbms.connectors.default_listen_address&#x3D;0.0.0.0</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="7-Neo4j-部分配置参数详解："><a href="#7-Neo4j-部分配置参数详解：" class="headerlink" title="7. Neo4j 部分配置参数详解："></a>7. Neo4j 部分配置参数详解：</h2><p>在<code>conf/neo4j.config</code>中有对应的内容：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">其他配置项目从网上摘抄部分</span></span><br><span class="line"><span class="string">修改相应配置如下：</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改第22行load csv时l路径，在前面加个#，可从任意路径读取文件</span></span><br><span class="line"><span class="comment">#dbms.directories.import=import</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改35行和36行，设置JVM初始堆内存和JVM最大堆内存</span></span><br><span class="line"><span class="comment"># 生产环境给的JVM最大堆内存越大越好，但是要小于机器的物理内存</span></span><br><span class="line"><span class="string">dbms.memory.heap.initial_size=5g</span></span><br><span class="line"><span class="string">dbms.memory.heap.max_size=10g</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改46行，可以认为这个是缓存，如果机器配置高，这个越大越好</span></span><br><span class="line"><span class="string">dbms.memory.pagecache.size=10g</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改54行，去掉改行的#，可以远程通过ip访问neo4j数据库</span></span><br><span class="line"><span class="string">dbms.connectors.default_listen_address=0.0.0.0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认 bolt端口是7687，http端口是7474，https关口是7473，不修改下面3项也可以</span></span><br><span class="line"><span class="comment"># 修改71行，去掉#，设置http端口为7687，端口可以自定义，只要不和其他端口冲突就行</span></span><br><span class="line"><span class="comment">#dbms.connector.bolt.listen_address=:7687</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改75行，去掉#，设置http端口为7474，端口可以自定义，只要不和其他端口冲突就行</span></span><br><span class="line"><span class="string">dbms.connector.http.listen_address=:7474</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改79行，去掉#，设置http端口为7473，端口可以自定义，只要不和其他端口冲突就行</span></span><br><span class="line"><span class="string">dbms.connector.https.listen_address=:7473</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改227行，去掉#，允许从远程url来load csv</span></span><br><span class="line"><span class="string">dbms.security.allow_csv_import_from_file_urls=true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改246行，允许使用neo4j-shell，类似于mysql 命令行之类的</span></span><br><span class="line"><span class="string">dbms.shell.enabled=true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改235行，去掉#，设置连接neo4j-shell的端口，一般都是localhost或者127.0.0.1，这样安全，其他地址的话，一般使用https就行</span></span><br><span class="line"><span class="string">dbms.shell.host=127.0.0.1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改250行，去掉#，设置neo4j-shell端口，端口可以自定义，只要不和其他端口冲突就行</span></span><br><span class="line"><span class="string">dbms.shell.port=1337</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改254行，设置neo4j可读可写</span></span><br><span class="line"><span class="string">dbms.read_only=false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="8-修改neo4j可视化界面的超管用户密码"><a href="#8-修改neo4j可视化界面的超管用户密码" class="headerlink" title="8. 修改neo4j可视化界面的超管用户密码]"></a>8. 修改neo4j可视化界面的超管用户密码]</h2><p>在控制台输入<code>:server change-password</code> 进行修改</p>
+<p>键入原密码及新密码，即可修改</p>
+<p>注意冒号</p>
+<h2 id="9-window版本的其他安装方式"><a href="#9-window版本的其他安装方式" class="headerlink" title="9 . window版本的其他安装方式:"></a>9 . window版本的其他安装方式:</h2><p>neo4j 在window平台有一个desktop 版本，实现了多实例创建图数据库的应用，有需要可以直接安装，个人直接下载window的Bin包进行单机的部署。</p>
+<h1 id="如何安装neo4j社区版本（免费）（linux-CenterOs7）"><a href="#如何安装neo4j社区版本（免费）（linux-CenterOs7）" class="headerlink" title="如何安装neo4j社区版本（免费）（linux - CenterOs7）"></a>如何安装neo4j社区版本（免费）（linux - CenterOs7）</h1><p>重复的内容请查看<code>window</code>安装方式，linux 的安装相对更加简单一些。</p>
+<p>（1）准备<code>**neo4j-community-3.5.12-unix.tar.gz.gz**</code> ，使用目前最新的版本</p>
+<blockquote>
+<p>Linux:</p>
+<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMWxqelM1RElZbzVuOWZDSXpLa0FNaXc=" title="https://pan.baidu.com/s/1ljzS5DIYo5n9fCIzKkAMiw">https://pan.baidu.com/s/1ljzS5DIYo5n9fCIzKkAMiw<i class="fa fa-external-link"></i></span><br>提取码：bnrf </p>
+</blockquote>
+<p>（2）解压放入到linux相应位置</p>
+<p>（3）确保当前环境变量存在JDK，版本不能低于<code>JDK1.8</code></p>
+<p>（4）同样由于安全配置的原因，需要进入客户端配置一次用户名和密码，因为linux没有GUI，在<code>neo4j.conf</code>需要开启远程访问：</p>
+<blockquote>
+<p>#dbms.connectors.default_listen_address=0.0.0.0</p>
+<p>把#拿掉就可以进行远程访问了</p>
+</blockquote>
+<p>（5）请参考window对于用户名和密码进行自定义</p>
+<p>（6）如果忘记了GUI页面的用户名和密码，可以使用删除db的方式对于图数据库进行重置</p>
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><ol>
+<li>介绍了Neo4J的基本理念，已经我为什么要使用到neo4j 这个库</li>
+<li>Neo4j在linux上和windows上的安装，注意如果要用到项目上，请注意使用开源的社区版，企业版提供更多的功能以及更好性能，同时官方提供技术支持，商用版本需要授权</li>
+<li>下一篇文章将对neo4j 进行扩展</li>
+</ol>
+<p>内容篇幅较长，感谢观看！希望能对读者有所帮助，如果对于博客有任何建议或者意见，欢迎讨论，如果文章内容有误，可以直接私信或者在评论区留言，我会及时答复并且修复</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://lazytime.site/2020/11/03/neo4j1/" title="我的Neo4j探索之旅 - 初识Neo4j（一）">https://lazytime.site/2020/11/03/neo4j1/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/neo4j/" rel="tag"># neo4j</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/29/mail/" rel="prev" title="一次项目短信验证码整改实验">
+      <i class="fa fa-chevron-left"></i> 一次项目短信验证码整改实验
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/03/note/" rel="next" title="我的Neo4j探索之旅 - 安装Apoc插件以及JAVA集成（二）">
+      我的Neo4j探索之旅 - 安装Apoc插件以及JAVA集成（二） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#我的Neo4j探索之旅-初识Neo4j（一）"><span class="nav-number">1.</span> <span class="nav-text">我的Neo4j探索之旅 - 初识Neo4j（一）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前言："><span class="nav-number">1.2.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#它是什么？"><span class="nav-number">1.3.</span> <span class="nav-text">它是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#它的历史"><span class="nav-number">1.4.</span> <span class="nav-text">它的历史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用场景"><span class="nav-number">1.5.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同类产品比较"><span class="nav-number">1.6.</span> <span class="nav-text">同类产品比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么学习它"><span class="nav-number">1.7.</span> <span class="nav-text">为什么学习它</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要使用neo4j"><span class="nav-number">1.8.</span> <span class="nav-text">为什么要使用neo4j</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哪些人不喜欢它"><span class="nav-number">1.9.</span> <span class="nav-text">哪些人不喜欢它</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我要怎么做（按优先级从高到低排序）"><span class="nav-number">1.10.</span> <span class="nav-text">我要怎么做（按优先级从高到低排序）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何安装neo4j社区版本（免费）（windows-10）"><span class="nav-number">2.</span> <span class="nav-text">如何安装neo4j社区版本（免费）（windows - 10）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-进入官网，下载软件"><span class="nav-number">2.1.</span> <span class="nav-text">1. 进入官网，下载软件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-安装JDK"><span class="nav-number">2.2.</span> <span class="nav-text">2.  安装JDK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-配置Neo4j环境变量"><span class="nav-number">2.3.</span> <span class="nav-text">3. 配置Neo4j环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-neo4j-启动"><span class="nav-number">2.4.</span> <span class="nav-text">4. neo4j 启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-安装有可能的问题"><span class="nav-number">2.5.</span> <span class="nav-text">5. 安装有可能的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常见问题1"><span class="nav-number">2.5.1.</span> <span class="nav-text">常见问题1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见问题2："><span class="nav-number">2.5.2.</span> <span class="nav-text">常见问题2：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见问题3："><span class="nav-number">2.5.3.</span> <span class="nav-text">常见问题3：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-neo4j-实现外网访问："><span class="nav-number">2.6.</span> <span class="nav-text">6. neo4j 实现外网访问：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-Neo4j-部分配置参数详解："><span class="nav-number">2.7.</span> <span class="nav-text">7. Neo4j 部分配置参数详解：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-修改neo4j可视化界面的超管用户密码"><span class="nav-number">2.8.</span> <span class="nav-text">8. 修改neo4j可视化界面的超管用户密码]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-window版本的其他安装方式"><span class="nav-number">2.9.</span> <span class="nav-text">9 . window版本的其他安装方式:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何安装neo4j社区版本（免费）（linux-CenterOs7）"><span class="nav-number">3.</span> <span class="nav-text">如何安装neo4j社区版本（免费）（linux - CenterOs7）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结："><span class="nav-number">4.</span> <span class="nav-text">总结：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">384k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">5:49</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
