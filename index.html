@@ -197,6 +197,163 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lazytime.site/2020/11/15/note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/15/note/" class="post-title-link" itemprop="url">记一次阿里云安装mysql （rpm安装）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-15 15:55:50 / 修改时间：16:07:21" itemprop="dateCreated datePublished" datetime="2020-11-15T15:55:50+08:00">2020-11-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/15/note/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/15/note/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+            <div class="post-description">使用rpm进行mysql安装</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="下载mysql源安装包"><a href="#下载mysql源安装包" class="headerlink" title="下载mysql源安装包"></a>下载mysql源安装包</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http:&#x2F;&#x2F;dev.mysql.com&#x2F;get&#x2F;mysql57-community-release-el7-8.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="安装mysql源"><a href="#安装mysql源" class="headerlink" title="安装mysql源"></a>安装mysql源</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum localinstall mysql57-community-release-el7-8.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="检测是否安装完成"><a href="#检测是否安装完成" class="headerlink" title="检测是否安装完成"></a>检测是否安装完成</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum repolist enabled | grep &quot;mysql.*-community.*&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install mysql-community-server</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="设置开启启动mysql服务"><a href="#设置开启启动mysql服务" class="headerlink" title="设置开启启动mysql服务"></a>设置开启启动mysql服务</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable mysqld</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="查看安装的mysql版本"><a href="#查看安装的mysql版本" class="headerlink" title="查看安装的mysql版本"></a>查看安装的mysql版本</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -aq | grep -i mysql</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="启动MySQL服务"><a href="#启动MySQL服务" class="headerlink" title="启动MySQL服务"></a>启动MySQL服务</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="查看MySQL初始密码"><a href="#查看MySQL初始密码" class="headerlink" title="查看MySQL初始密码"></a>查看MySQL初始密码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep &#39;A temporary password&#39; &#x2F;var&#x2F;log&#x2F;mysqld.log</span><br></pre></td></tr></table></figure>
+
+<p>执行上面步骤可以获得mysql初始数据库密码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获取到初始密码：.DhtciCJ?3rg</span><br></pre></td></tr></table></figure>
+
+<p>根据此密码就可以在第一次root登录的时候修改密码</p>
+<h2 id="更改MySQL密码"><a href="#更改MySQL密码" class="headerlink" title="更改MySQL密码"></a>更改MySQL密码</h2><p><code>mysqladmin -u root -p&#39;旧密码&#39; password &#39;新密码&#39;</code></p>
+<h3 id="初始化更改密码的案例"><a href="#初始化更改密码的案例" class="headerlink" title="初始化更改密码的案例"></a>初始化更改密码的案例</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin  -u root -p &#39;xxx&#39; password &#39;xxxxx&#39;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter user &#39;root&#39;@&#39;localhost&#39; identified by &#39;.DhtciCJ?3rg&#39; # 这里用刚刚到随机初始密码</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>这里会可能出现<font color='red'>更改失败</font>的问题</p>
+<p>方法一：把密码设置复杂点（这是最直接的方法）</p>
+<p>方法二：关闭mysql密码强度验证(validate_password)</p>
+<p>　　　　编辑配置文件：vim /etc/my.cnf， 增加这么一行validate_password=off</p>
+<p>　　　　编辑后重启mysql服务：systemctl restart mysqld</p>
+</blockquote>
+<h2 id="设置mysql能够远程访问（不建议使用root）"><a href="#设置mysql能够远程访问（不建议使用root）" class="headerlink" title="设置mysql能够远程访问（不建议使用root）"></a>设置mysql能够远程访问（不建议使用root）</h2><h3 id="1-登录进MySQL：mysql-uroot-p密码"><a href="#1-登录进MySQL：mysql-uroot-p密码" class="headerlink" title="1. 登录进MySQL：mysql -uroot -p密码"></a>1. 登录进MySQL：mysql -uroot -p密码</h3><p>注意只有root用户才可以操作</p>
+<h3 id="2-在阿里云当中增加一个用户给予访问权限："><a href="#2-在阿里云当中增加一个用户给予访问权限：" class="headerlink" title="2. 在阿里云当中增加一个用户给予访问权限："></a>2. 在阿里云当中增加一个用户给予访问权限：</h3><p>具体查看阿里云配置安全组</p>
+<h3 id="开放用户远程访问"><a href="#开放用户远程访问" class="headerlink" title="开放用户远程访问:"></a>开放用户远程访问:</h3><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vaG9nZS9wLzQ5NTgyMTQuaHRtbA==" title="https://www.cnblogs.com/hoge/p/4958214.html">https://www.cnblogs.com/hoge/p/4958214.html<i class="fa fa-external-link"></i></span></p>
+<p>mysql中添加一个和root一样的用户用于远程连接：</p>
+<p>大家在拿站时应该碰到过。root用户的mysql，只可以本地连，对外拒绝连接。</p>
+<p>下面语句添加一个新用户<code>administrtor</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 创建新用户</span><br><span class="line">CREATE USER &#39;monitor&#39;@&#39;%&#39; IDENTIFIED BY &#39;admin&#39;;</span><br><span class="line"></span><br><span class="line">-- 给用户分配root并且支持远程访问</span><br><span class="line">GRANT ALL PRIVILEGES ON *.* TO &#39;monitor&#39;@&#39;%&#39; IDENTIFIED BY &#39;admin&#39; WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;</span><br></pre></td></tr></table></figure>
+
+<p>删除这个用户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-- 删除用户</span><br><span class="line">DROP USER &#39;monitor&#39;@&#39;%&#39;;</span><br><span class="line">-- 删除具体分配表</span><br><span class="line">DROP DATABASE IF EXISTS &#96;monitor&#96; ;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-阿里云的安全组设置里面选择添加安全组规则，开启3306端口。授权对象选择0-0-0-0-0所有ip可访问，如果添加限制可以点击旁面的小叹号。"><a href="#3-阿里云的安全组设置里面选择添加安全组规则，开启3306端口。授权对象选择0-0-0-0-0所有ip可访问，如果添加限制可以点击旁面的小叹号。" class="headerlink" title="3. 阿里云的安全组设置里面选择添加安全组规则，开启3306端口。授权对象选择0.0.0.0/0所有ip可访问，如果添加限制可以点击旁面的小叹号。"></a>3. 阿里云的安全组设置里面选择添加安全组规则，开启3306端口。授权对象选择<code>0.0.0.0/0</code>所有ip可访问，如果添加限制可以点击旁面的小叹号。</h3><h3 id="4-最后：建议重启一下mysqld的服务"><a href="#4-最后：建议重启一下mysqld的服务" class="headerlink" title="4. 最后：建议重启一下mysqld的服务"></a><font color='red'>4. 最后：建议重启一下mysqld的服务</font></h3><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://lazytime.site/2020/11/11/word-export/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1160,119 +1317,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://lazytime.site/2020/10/13/note34/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LazyTimes的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/13/note34/" class="post-title-link" itemprop="url">我还是输给了免费富文本编辑器</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-13 23:38:28" itemprop="dateCreated datePublished" datetime="2020-10-13T23:38:28+08:00">2020-10-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-29 23:05:24" itemprop="dateModified" datetime="2020-10-29T23:05:24+08:00">2020-10-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%99%BE%E5%BA%A6%E7%BC%96%E8%BE%91%E5%99%A8/" itemprop="url" rel="index"><span itemprop="name">百度编辑器</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/10/13/note34/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/13/note34/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-            <div class="post-description">最后还是换了编辑器，也算是一种解脱</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前因后果"><a href="#前因后果" class="headerlink" title="前因后果"></a>前因后果</h1><h2 id="说说我做的一些努力"><a href="#说说我做的一些努力" class="headerlink" title="说说我做的一些努力"></a>说说我做的一些努力</h2><ol>
-<li>考虑给百度编辑器开发的一个二次插件，等下会进行说明如何使用改源码的方式开发二次插件</li>
-<li>后端增加接口，接受word文档，转为html返回前台，前台再根据html内容对于富文本编辑框继续赋值和一些处理</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/13/note34/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1342,7 +1386,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1421,13 +1465,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">401k</span>
+    <span title="站点总字数">403k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">6:05</span>
+    <span title="站点阅读时长">6:06</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>
