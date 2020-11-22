@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="ZyC1bd11DZ5XV3P11yBfvTIuaPZzFxxkUEnAhZ6zQSA">
+  <meta name="baidu-site-verification" content="code-vIeEhdQrdN">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="maven多模块如何在idea中创建，以及maven常见的依赖问题介绍和处理方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="maven多模块和依赖冲突问题汇总记录">
+<meta property="og:url" content="https://lazytime.site/2020/11/22/mavenmodules/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="maven多模块如何在idea中创建，以及maven常见的依赖问题介绍和处理方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122191750.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122114914.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122115055.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122115139.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122115235.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122121402.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122121551.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122181117.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122185753.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122190207.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122190726.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122190841.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122182537.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122183942.png">
+<meta property="article:published_time" content="2020-11-22T11:46:50.000Z">
+<meta property="article:modified_time" content="2020-11-22T11:48:04.854Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="maven">
+<meta property="article:tag" content="多模块">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122191750.png">
+
+<link rel="canonical" href="https://lazytime.site/2020/11/22/mavenmodules/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>maven多模块和依赖冲突问题汇总记录 | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lazytime.site/2020/11/22/mavenmodules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          maven多模块和依赖冲突问题汇总记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-22 19:46:50 / 修改时间：19:48:04" itemprop="dateCreated datePublished" datetime="2020-11-22T19:46:50+08:00">2020-11-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/maven/" itemprop="url" rel="index"><span itemprop="name">maven</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/22/mavenmodules/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/22/mavenmodules/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+            <div class="post-description">maven多模块如何在idea中创建，以及maven常见的依赖问题介绍和处理方法</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="maven多模块和依赖冲突问题汇总记录"><a href="#maven多模块和依赖冲突问题汇总记录" class="headerlink" title="maven多模块和依赖冲突问题汇总记录"></a>maven多模块和依赖冲突问题汇总记录</h1><h1 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122191750.png" alt=""></p>
+<p>[TOC]</p>
+<h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>今天学习和总结了一下maven的相关知识点，发现一些比较基础的东西居然也会忘记，这里对于一些日常工作中可能会遇到的问题进行了一下汇总。</p>
+<a id="more"></a>
+
+<h1 id="idea怎么创建maven多module的项目"><a href="#idea怎么创建maven多module的项目" class="headerlink" title="idea怎么创建maven多module的项目"></a>idea怎么创建maven多module的项目</h1><h2 id="首先了解上面是多module？"><a href="#首先了解上面是多module？" class="headerlink" title="首先了解上面是多module？"></a>首先了解上面是多module？</h2><p>一句话概括就是：一个父模块作为版本控制多个子模块，子模块负责接入到父模块当中作为整个项目的过程。</p>
+<h2 id="多Module管理项目的几种方式："><a href="#多Module管理项目的几种方式：" class="headerlink" title="多Module管理项目的几种方式："></a>多Module管理项目的几种方式：</h2><ol>
+<li>按照单模块拆分为多个子模块，比如将MVC三层架构拆分为 xxx-service，xxx-dao，xxx-model，不过这种方式个人感觉比较二，目前以业务模块拆分比较多，迁移到微服务比如用springcloude或者dubbo 的时候非常好用。</li>
+<li>按照业务模块拆分，这种模式使用的比较多，也比较多见。</li>
+</ol>
+<h2 id="创建一个多module项目-idea2019-3-3版本"><a href="#创建一个多module项目-idea2019-3-3版本" class="headerlink" title="创建一个多module项目(idea2019.3.3版本)"></a>创建一个多module项目(idea2019.3.3版本)</h2><h3 id="创建一个父pom项目："><a href="#创建一个父pom项目：" class="headerlink" title="创建一个父pom项目："></a>创建一个父pom项目：</h3><ol>
+<li>打开idea，选择<code>create new project</code></li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122114914.png" alt=""></p>
+<ol start="2">
+<li>选择maven项目，同时不选任何的预加载设置</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122115055.png" alt=""></p>
+<ol start="3">
+<li>父pom配置如下：</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122115139.png" alt=""></p>
+<ol start="4">
+<li>删除<code>src</code> 目录</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122115235.png" alt=""></p>
+<h3 id="创建子模块，引入到父pom里面"><a href="#创建子模块，引入到父pom里面" class="headerlink" title="创建子模块，引入到父pom里面"></a>创建子模块，引入到父pom里面</h3><ol>
+<li>同样右击项目工程，选择<code>new module</code>，然后选择<code>maven</code>，这时候会出现父模块以及对应的子模块名称</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122121402.png" alt=""></p>
+<ol start="2">
+<li>此时在父模块里面发现引入了子模块的内容</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122121551.png" alt=""></p>
+<h2 id="子父模块的区别："><a href="#子父模块的区别：" class="headerlink" title="子父模块的区别："></a>子父模块的区别：</h2><h3 id="父pom-xml文件内容："><a href="#父pom-xml文件内容：" class="headerlink" title="父pom.xml文件内容："></a>父pom.xml文件内容：</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.zxd<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>taglib<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">packaging</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">modules</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>taglib-core<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">modules</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>分为两个部分，一个部分是父pom的声明，包含gourpId，artifactId，打包方式<strong>必须是pom</strong>，因为使用了<strong>聚合模型</strong>，同时在父pom里面指定版本号，子模块不填写version会默认使用父pom的version号</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">modules</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>taglib-core<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">modules</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>上面表示当前引入的子模块内容</p>
+<h3 id="子pom-xml文件内容："><a href="#子pom-xml文件内容：" class="headerlink" title="子pom.xml文件内容："></a>子pom.xml文件内容：</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 引用自父pom --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>taglib<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.zxd<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 打包方式为jar包 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">packaging</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>taglib-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="子模块之间进行互相的依赖"><a href="#子模块之间进行互相的依赖" class="headerlink" title="子模块之间进行互相的依赖"></a>子模块之间进行互相的依赖</h2><p>在下面的pom中可以在任意的子模块引入对应的父模块依赖</p>
+<p>注意由于<code>&lt;parent&gt;</code>这个标签会递归继承，所以要注意子依赖不要和依赖引入不同版本的依赖，这样容易造成冲突</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.zxd<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>taglib-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 这里需要注释掉编译的作用域 --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--&lt;scope&gt;compile&lt;/scope&gt;--&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="将上面的项目改造为spring-boot多模块项目："><a href="#将上面的项目改造为spring-boot多模块项目：" class="headerlink" title="将上面的项目改造为spring-boot多模块项目："></a>将上面的项目改造为spring-boot多模块项目：</h2><h3 id="改造父pom文件："><a href="#改造父pom文件：" class="headerlink" title="改造父pom文件："></a>改造父pom文件：</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>parent指向<code>springboot-started</code></p>
+<p>子模块只需要引入父pom的内容</p>
+<h3 id="Spring-boot-maven-plugin问题"><a href="#Spring-boot-maven-plugin问题" class="headerlink" title="Spring boot maven plugin问题"></a>Spring boot maven plugin问题</h3><p>在打包spring boot项目时，需要使用如下插件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果在用maven构建多模块项目时，不要将此插件放到parent pom中，否则如果有sub module不是spring boot应用，在打包时就会出错。<strong>只将该插件添加到是spring boot项目的子模块</strong>。</p>
+<h1 id="MAVEN依赖冲突问题："><a href="#MAVEN依赖冲突问题：" class="headerlink" title="MAVEN依赖冲突问题："></a>MAVEN依赖冲突问题：</h1><h2 id="依赖的传递原则："><a href="#依赖的传递原则：" class="headerlink" title="依赖的传递原则："></a>依赖的传递原则：</h2><ol>
+<li>最短路径原则</li>
+<li>最先声明原则</li>
+</ol>
+<h2 id="maven的依赖引入策略"><a href="#maven的依赖引入策略" class="headerlink" title="maven的依赖引入策略"></a>maven的依赖引入策略</h2><h3 id="最短路径原则："><a href="#最短路径原则：" class="headerlink" title="最短路径原则："></a>最短路径原则：</h3><p>我有下面两个依赖jar包，A和B，他们都引入了C这个依赖，这时候如果有如下的引用</p>
+<p>A -&gt; C（3.3）</p>
+<p>B -&gt; A（3.3）</p>
+<p>B  -&gt; C（3.4）</p>
+<p>此时如果把B打包，得到版本号是3.4，但是如果B去掉C的依赖，那就是走A-&gt;C的传递依赖，很简单</p>
+<p>验证：</p>
+<ol>
+<li>我假设我有一个web包引入了common-lang3，版本是3.4的版本</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-lang3<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>此时又引入了一个公用包，里面也有这个引用：</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-lang3<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>如果此时在本地引用3.4版本，那就是3.4的版本，否则就死3.3的版本，不管声明顺序谁先谁后</li>
+</ol>
+<h3 id="最先声明原则："><a href="#最先声明原则：" class="headerlink" title="最先声明原则："></a>最先声明原则：</h3><p>如果两个jar包的寻址路径一致，那么谁先优先声明，先引入谁</p>
+<p>验证：</p>
+<p>下面两个依赖分配对应两个module，引入模块的这个模块暂定为 <strong>C</strong> 模块。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 引入core包内容 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.zxd<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>taglib-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--            &lt;scope&gt;compile&lt;/scope&gt;--&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 引入db包的内容 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.zxd<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>taglib-db<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>此时 <code>taglib-core</code>  中的依赖版本如下，暂定为 <strong>A</strong> 模块：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.5.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>而<code>taglib-db</code> 中的依赖版本如下，暂定为 <strong>B</strong> 模块：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>此时将整个web项目打包，可以看到web项目里面的版本如下：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122181117.png" alt=""></p>
+<p>可以很明显的看到如果引入关系是这样的：</p>
+<p>C -&gt; A,B</p>
+<p>A -&gt; curator-client 2.5</p>
+<p>B -&gt; curator-client 4.1</p>
+<p>这样的链路最终打包出来的效果是  C -&gt; A -&gt; curator-client 2.5</p>
+<p>这样也就造成了很多情况下我们<strong>编译</strong>和<strong>运行</strong>时完全没有问题的，<strong>甚至有可能打包都是正常</strong>的，但是到最后运行的时候突然报错，要谨防这种依赖版本的问题，好在一般公司的项目都有经理负责控制版本依赖，这种错误算是低级错误，但是在如今框架满天飞的时代，依赖管理的版本控制问题依然需要注意！！！</p>
+<h2 id="如何解决依赖冲突的问题"><a href="#如何解决依赖冲突的问题" class="headerlink" title="如何解决依赖冲突的问题"></a>如何解决依赖冲突的问题</h2><h3 id="锁定版本法"><a href="#锁定版本法" class="headerlink" title="锁定版本法"></a>锁定版本法</h3><p>一般情况下我们会在父pom文件里面管理，可以使用<code>&lt;dependencyManagement&gt;</code>这个这个标签来管理所有子模块的版本依赖，子模块如果指定自己的版本，这里发现打出来的包依然是父pom指定的版本，版本管理使用如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>锁定版本法可以打破2个依赖传递的原则，优先级为最高</strong></p>
+<blockquote>
+<p>版本锁定可以排除一些exclude标签，不同模块用不同版本的jar包本身也不符合规范，所以这种方式较为稳妥</p>
+</blockquote>
+<h2 id="什么情况下会出现Jar包冲突问题"><a href="#什么情况下会出现Jar包冲突问题" class="headerlink" title="什么情况下会出现Jar包冲突问题"></a>什么情况下会出现Jar包冲突问题</h2><p><strong>只有高版本Jar包不向下兼容，或者新增了某些低版本没有的API才有可能导致这样的问题</strong></p>
+<h2 id="如何查找和发现jar包冲突？"><a href="#如何查找和发现jar包冲突？" class="headerlink" title="如何查找和发现jar包冲突？"></a>如何查找和发现jar包冲突？</h2><h3 id="1-利用idea的maven视图工具"><a href="#1-利用idea的maven视图工具" class="headerlink" title="1. 利用idea的maven视图工具"></a>1. 利用idea的maven视图工具</h3><p>直接使用一个图说明一下：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122185753.png" alt=""></p>
+<p>可以通过这个工具查看依赖在哪个模块重复引用，同时如果有冲突会显示红线，这个视图非常的直观，可以帮助依赖管理人员去处理依赖重复引用或者引用版本不一致的问题，进行<code>&lt;exclude&gt;</code>操作</p>
+<h3 id="2-Idea-Maven-Helper-插件"><a href="#2-Idea-Maven-Helper-插件" class="headerlink" title="2. Idea Maven Helper 插件"></a>2. Idea <code>Maven Helper</code> 插件</h3><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122190207.png" alt=""></p>
+<p>如何使用？</p>
+<p>安装完成之后，随便找一个pom.xml文件，按照如下的图例提示进行操作，对于冲突的内容，右击<code>exclude</code>就可以排除依赖：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122190726.png" alt=""></p>
+<p>排除完依赖之后，点击左上角的<code>Refresh UI</code> 刷新一下UI的界面：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122190841.png" alt=""></p>
+<h3 id="3-maven命令工具："><a href="#3-maven命令工具：" class="headerlink" title="3. maven命令工具："></a>3. maven命令工具：</h3><p><code>mvn dependency:tree -Dverbose</code>，有时候如果我们没有idea的情况下，可以使用这个命令来处理，执行的结果参考如下：</p>
+<blockquote>
+<p>PS: 此处一定不要省略<code>-Dverbose</code>参数，要不然是<strong>不会</strong>显示被<strong>忽略</strong>的包的</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">or:curator-client:jar:4.1.0:compile</span><br><span class="line">[INFO] |  |  +- org.apache.zookeeper:zookeeper:jar:3.5.4-beta:compile</span><br><span class="line">[INFO] |  |  |  +- commons-cli:commons-cli:jar:1.2:compile</span><br><span class="line">[INFO] |  |  |  +- log4j:log4j:jar:1.2.17:compile</span><br><span class="line">[INFO] |  |  |  +- org.apache.yetus:audience-annotations:jar:0.5.0:compile</span><br><span class="line">[INFO] |  |  |  \- io.netty:netty:jar:3.10.6.Final:compile</span><br><span class="line">[INFO] |  |  +- com.google.guava:guava:jar:20.0:compile</span><br><span class="line">[INFO] |  |  \- org.slf4j:slf4j-api:jar:1.7.30:compile</span><br><span class="line">[INFO] |  +- commons-codec:commons-codec:jar:1.15:compile</span><br><span class="line">[INFO] |  +- commons-collections:commons-collections:jar:3.2.2:compile</span><br><span class="line">[INFO] |  +- commons-beanutils:commons-beanutils:jar:1.9.4:compile</span><br><span class="line">[INFO] |  +- commons-configuration:commons-configuration:jar:1.10:compile</span><br><span class="line">[INFO] |  |  \- commons-lang:commons-lang:jar:2.6:compile</span><br></pre></td></tr></table></figure>
+
+<p>总体上来说还是比较直观的，非常方便和好用。</p>
+<h2 id="如何写一个干净依赖关系的POM文件"><a href="#如何写一个干净依赖关系的POM文件" class="headerlink" title="如何写一个干净依赖关系的POM文件"></a>如何写一个干净依赖关系的<code>POM</code>文件</h2><ul>
+<li>尽量在父POM中定义<code>&lt;dependencyManagement&gt;</code>，来进行本项目一些依赖版本的管理，这样可以从很大程度上解决一定的冲突</li>
+<li>最少依赖jar包原则</li>
+<li>使用<code>mvn dependency:analyze-only</code>命令用于检测那些声明了但是没被使用的依赖，如有有一些是你自己声明的，那尽量去掉</li>
+<li>使用<code>mvn dependency:analyze-duplicate</code>命令用来分析重复定义的依赖，清理那些重复定义的依赖</li>
+</ul>
+<h3 id="dependency-analyze-only-命令"><a href="#dependency-analyze-only-命令" class="headerlink" title="dependency:analyze-only 命令"></a><code>dependency:analyze-only</code> 命令</h3><p>在idea - <code>Terminal</code>里面，可以看到对应的依赖被下载</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122182537.png" alt=""></p>
+<p>执行完之后我的运行结果如下，这里报错的原因是打包时候默认去阿里云仓库寻找依赖，这里需要配置一下：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122183942.png" alt=""></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[ERROR] Failed to execute goal on project taglib-web: Could not resolve dependencies for project org.zxd:taglib-web:war:1.0.0: The following artifacts could not be resolved: org.zxd:</span><br><span class="line">taglib-core:jar:1.0.0, org.zxd:taglib-db:jar:1.0.0: Failure to find org.zxd:taglib-core:jar:1.0.0 in http://maven.aliyun.com/nexus/content/repositories/central/ was cached in the loc</span><br><span class="line">al repository, resolution will not be reattempted until the update interval of alimaven has elapsed or updates are forced -&gt; [Help 1]</span><br></pre></td></tr></table></figure>
+
+<p>大致意思就是说再阿里云仓库找不到对应的依赖引入。</p>
+<p>解决方式如下：</p>
+<p>找到maven的安装路径下的<code>apache-maven-3.6.3\conf</code>下面的<code>setting.xml</code>，找到如下配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- localRepository</span></span><br><span class="line"><span class="comment">   | The path to the local repository maven will use to store artifacts.</span></span><br><span class="line"><span class="comment">   |</span></span><br><span class="line"><span class="comment">   | Default: $&#123;user.home&#125;/.m2/repository</span></span><br><span class="line"><span class="comment">  &lt;localRepository&gt;/path/to/local/repo&lt;/localRepository&gt;</span></span><br><span class="line"><span class="comment">  --&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 这里配置本地仓库的位置 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">localRepository</span>&gt;</span>D:\soft\apache-maven-3.6.3\rep<span class="tag">&lt;/<span class="name">localRepository</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>此时重新执行一下：<code>dependency:analyze-only</code> 命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[INFO] --- maven-dependency-plugin:3.1.2:analyze-only (default-cli) @ taglib-web ---</span><br><span class="line">[WARNING] Unused declared dependencies found:</span><br><span class="line">[WARNING]    org.zxd:taglib-core:jar:1.0.0:compile</span><br><span class="line">[WARNING]    org.apache.commons:commons-lang3:jar:3.4:compile</span><br><span class="line">[WARNING]    org.springframework.boot:spring-boot-starter-web:jar:2.4.0:compile</span><br><span class="line">[WARNING]    org.springframework.boot:spring-boot-starter-test:jar:2.4.0:test</span><br><span class="line">[WARNING]    org.neo4j.driver:neo4j-java-driver:jar:1.5.0:compile</span><br><span class="line">[WARNING]    commons-codec:commons-codec:jar:1.10:compile</span><br><span class="line">[WARNING]    commons-collections:commons-collections:jar:3.2.2:compile</span><br><span class="line">[WARNING]    commons-beanutils:commons-beanutils:jar:1.9.4:compile</span><br><span class="line">[WARNING]    commons-configuration:commons-configuration:jar:1.10:compile</span><br><span class="line">[WARNING]    commons-fileupload:commons-fileupload:jar:1.3:compile</span><br><span class="line">[WARNING]    commons-logging:commons-logging:jar:1.2:compile</span><br><span class="line">[WARNING]    org.apache.httpcomponents:httpclient:jar:4.4.1:compile</span><br><span class="line">[WARNING]    org.apache.poi:poi-ooxml:jar:3.17:compile</span><br><span class="line">[WARNING]    org.mybatis:mybatis:jar:3.4.0:compile</span><br><span class="line">[WARNING]    org.mybatis:mybatis-spring:jar:1.3.0:compile</span><br><span class="line">[WARNING]    com.github.pagehelper:pagehelper:jar:5.1.2:compile</span><br></pre></td></tr></table></figure>
+
+<h3 id="mvn-dependency-analyze-duplicate-命令"><a href="#mvn-dependency-analyze-duplicate-命令" class="headerlink" title="mvn dependency:analyze-duplicate 命令"></a><code>mvn dependency:analyze-duplicate</code> 命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[INFO] No duplicate dependencies found in &lt;dependencies&#x2F;&gt; or in &lt;dependencyManagement&#x2F;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果没有其他信息，代表没有重复依赖的引入</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://lazytime.site/2020/11/22/mavenmodules/" title="maven多模块和依赖冲突问题汇总记录">https://lazytime.site/2020/11/22/mavenmodules/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/maven/" rel="tag"># maven</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/21/note/" rel="prev" title="Redis学习 - Redis发布订阅">
+      <i class="fa fa-chevron-left"></i> Redis学习 - Redis发布订阅
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#maven多模块和依赖冲突问题汇总记录"><span class="nav-number">1.</span> <span class="nav-text">maven多模块和依赖冲突问题汇总记录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言："><span class="nav-number">3.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#idea怎么创建maven多module的项目"><span class="nav-number">4.</span> <span class="nav-text">idea怎么创建maven多module的项目</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#首先了解上面是多module？"><span class="nav-number">4.1.</span> <span class="nav-text">首先了解上面是多module？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多Module管理项目的几种方式："><span class="nav-number">4.2.</span> <span class="nav-text">多Module管理项目的几种方式：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建一个多module项目-idea2019-3-3版本"><span class="nav-number">4.3.</span> <span class="nav-text">创建一个多module项目(idea2019.3.3版本)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建一个父pom项目："><span class="nav-number">4.3.1.</span> <span class="nav-text">创建一个父pom项目：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建子模块，引入到父pom里面"><span class="nav-number">4.3.2.</span> <span class="nav-text">创建子模块，引入到父pom里面</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子父模块的区别："><span class="nav-number">4.4.</span> <span class="nav-text">子父模块的区别：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#父pom-xml文件内容："><span class="nav-number">4.4.1.</span> <span class="nav-text">父pom.xml文件内容：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子pom-xml文件内容："><span class="nav-number">4.4.2.</span> <span class="nav-text">子pom.xml文件内容：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子模块之间进行互相的依赖"><span class="nav-number">4.5.</span> <span class="nav-text">子模块之间进行互相的依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将上面的项目改造为spring-boot多模块项目："><span class="nav-number">4.6.</span> <span class="nav-text">将上面的项目改造为spring-boot多模块项目：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#改造父pom文件："><span class="nav-number">4.6.1.</span> <span class="nav-text">改造父pom文件：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-boot-maven-plugin问题"><span class="nav-number">4.6.2.</span> <span class="nav-text">Spring boot maven plugin问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MAVEN依赖冲突问题："><span class="nav-number">5.</span> <span class="nav-text">MAVEN依赖冲突问题：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#依赖的传递原则："><span class="nav-number">5.1.</span> <span class="nav-text">依赖的传递原则：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#maven的依赖引入策略"><span class="nav-number">5.2.</span> <span class="nav-text">maven的依赖引入策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#最短路径原则："><span class="nav-number">5.2.1.</span> <span class="nav-text">最短路径原则：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最先声明原则："><span class="nav-number">5.2.2.</span> <span class="nav-text">最先声明原则：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何解决依赖冲突的问题"><span class="nav-number">5.3.</span> <span class="nav-text">如何解决依赖冲突的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#锁定版本法"><span class="nav-number">5.3.1.</span> <span class="nav-text">锁定版本法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么情况下会出现Jar包冲突问题"><span class="nav-number">5.4.</span> <span class="nav-text">什么情况下会出现Jar包冲突问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何查找和发现jar包冲突？"><span class="nav-number">5.5.</span> <span class="nav-text">如何查找和发现jar包冲突？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-利用idea的maven视图工具"><span class="nav-number">5.5.1.</span> <span class="nav-text">1. 利用idea的maven视图工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Idea-Maven-Helper-插件"><span class="nav-number">5.5.2.</span> <span class="nav-text">2. Idea Maven Helper 插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-maven命令工具："><span class="nav-number">5.5.3.</span> <span class="nav-text">3. maven命令工具：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何写一个干净依赖关系的POM文件"><span class="nav-number">5.6.</span> <span class="nav-text">如何写一个干净依赖关系的POM文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dependency-analyze-only-命令"><span class="nav-number">5.6.1.</span> <span class="nav-text">dependency:analyze-only 命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mvn-dependency-analyze-duplicate-命令"><span class="nav-number">5.6.2.</span> <span class="nav-text">mvn dependency:analyze-duplicate 命令</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">419k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">6:21</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
