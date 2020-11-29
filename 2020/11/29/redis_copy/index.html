@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="ZyC1bd11DZ5XV3P11yBfvTIuaPZzFxxkUEnAhZ6zQSA">
+  <meta name="baidu-site-verification" content="code-vIeEhdQrdN">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="redis复制以及集群部署的方式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis学习 - 复制以及三种部署模式">
+<meta property="og:url" content="https://lazytime.site/2020/11/29/redis_copy/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="redis复制以及集群部署的方式">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201123232149.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201123134010.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201129145217.png">
+<meta property="og:image" content="https://img2018.cnblogs.com/blog/725429/201908/725429-20190829164650720-1058321793.jpg">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201129184329.png">
+<meta property="article:published_time" content="2020-11-29T11:59:01.000Z">
+<meta property="article:modified_time" content="2020-11-29T12:02:12.244Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="reids">
+<meta property="article:tag" content="redis复制">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201123232149.png">
+
+<link rel="canonical" href="https://lazytime.site/2020/11/29/redis_copy/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis学习 - 复制以及三种部署模式 | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lazytime.site/2020/11/29/redis_copy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis学习 - 复制以及三种部署模式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-29 19:59:01 / 修改时间：20:02:12" itemprop="dateCreated datePublished" datetime="2020-11-29T19:59:01+08:00">2020-11-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/29/redis_copy/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/29/redis_copy/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>18k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>17 分钟</span>
+            </span>
+            <div class="post-description">redis复制以及集群部署的方式</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Redis学习-复制以及三种部署模式"><a href="#Redis学习-复制以及三种部署模式" class="headerlink" title="Redis学习 - 复制以及三种部署模式"></a>Redis学习 - 复制以及三种部署模式</h1><h2 id="什么是复制"><a href="#什么是复制" class="headerlink" title="什么是复制"></a>什么是复制</h2><p>单机的redis通常情况是无法满足项目需求的，一般都建议使用集群部署的方式进行数据的多机备份和部署，这样既可以保证数据安全，同时在redis宕机的时候，复制也可以对于数据进行快速的修复。</p>
+<a id="more"></a>
+
+<h2 id="采取的方式"><a href="#采取的方式" class="headerlink" title="采取的方式"></a>采取的方式</h2><ol>
+<li>单机部署（忽略）</li>
+<li>主从链</li>
+<li>一主多从</li>
+<li>哨兵模式</li>
+<li>集群模式</li>
+</ol>
+<h2 id="复制的前提"><a href="#复制的前提" class="headerlink" title="复制的前提"></a>复制的前提</h2><ol>
+<li>需要保证<code>redis.conf</code>里面的配置是正确的，比如：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dir .&#x2F;</span><br><span class="line">dbfilename &quot;dump.rdb&quot;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>需要保证指定的路径对于redis来说是<strong>可写</strong>的，意味着如果当前目录没有写权限同样会失败</li>
+</ol>
+<h2 id="从服务器连接主服务器的几种方式"><a href="#从服务器连接主服务器的几种方式" class="headerlink" title="从服务器连接主服务器的几种方式"></a>从服务器连接主服务器的几种方式</h2><ol>
+<li>在从服务器的配置文件里面配置连接那个主服务器：</li>
+</ol>
+<p>连接的具体配置如下：</p>
+<blockquote>
+<p>在5.0版本中使用了<code>replicaof</code>代替了<code>slaveof</code>（<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FudGlyZXovcmVkaXMvaXNzdWVzLzUzMzU=" title="https://github.com/antirez/redis/issues/5335">github.com/antirez/red…<i class="fa fa-external-link"></i></span>），<code>slaveof</code>还可以继续使用，不过建议使用<code>replicaof</code></p>
+</blockquote>
+<p>下面是个人的配置</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># replicaof &lt;masterip&gt; &lt;masterport&gt; </span></span><br><span class="line"><span class="attr">replicaof</span> <span class="string">127.0.0.1 16379</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>警告</strong>：此小节只说明了这一个配置的更改，进行主从配置的时候还有其他几个参数需要更改，这里只作为部分内容参考</p>
+</blockquote>
+<ol start="2">
+<li>在启动的适合，在<strong>redis从服务器</strong>的redis-cli当中敲击如下的命令：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:16380&gt; slaveof 127.0.0.1 16379</span><br><span class="line">OK Already connected to specified master</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以在从服务器动态的指定要连接哪个主服务器了，但是这种配置是<strong>当前运行时有效</strong>，下次再次进入的时候，会根据配置文件进行配置或者按照默认的规则当前实例就是<strong>master</strong>3. </p>
+<ol start="3">
+<li>在从服务器执行<code>slaveof no one</code>，当前实例脱离控制自动成为<code>master</code></li>
+</ol>
+<h2 id="redis-复制启动的过程-（重点）"><a href="#redis-复制启动的过程-（重点）" class="headerlink" title="redis 复制启动的过程==（重点）=="></a>redis 复制启动的过程==（重点）==</h2><table>
+<thead>
+<tr>
+<th>主服务器操作</th>
+<th>从服务器操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1. （等待命令）</td>
+<td>1. 连接（重新连接）主服务器，发送<strong>sync</strong>命令</td>
+</tr>
+<tr>
+<td>2. 开始执行bgsave，使用缓冲区记录bgsave之后执行所有写命令</td>
+<td>2. 根据配置选项是使用现有的数据（存在）处理客户端请求，还是向请求的客户端返回错误信息</td>
+</tr>
+<tr>
+<td>3. bgsave执行完毕，向从服务器发送<strong>快照文件</strong>，同时异步执行缓冲区记录的写命令</td>
+<td>3. <strong>丢弃所有的旧数据</strong>，载入主服务器的快照文件</td>
+</tr>
+<tr>
+<td>4.  快照文件发送完毕，开始向着从服务器发送存储在缓冲区的写命令</td>
+<td>4. 完成对于快照的解释操作，恢复日常的请求操作</td>
+</tr>
+<tr>
+<td>5. 缓冲区写命令发送完成，同时现在每执行一个写命令就像从服务器发送相同写命令</td>
+<td>5. 执行主服务器发来的所有存储在缓冲区的写命令，并且从现在开始接受主服务器的每一个命令</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>建议：由于<strong>bgsave</strong>需要开启进行子线程的创建写入缓冲区的创建，所以最好在系统中预留30% - 45% 内存用于redis的bgsave操作</p>
+</blockquote>
+<blockquote>
+<p>特别注意：当从服务器连接主服务器的那一刻，执行到第三步会<strong>清空</strong>当前redis里面的所有数据。</p>
+</blockquote>
+<h3 id="配置方式和命令方式的区别："><a href="#配置方式和命令方式的区别：" class="headerlink" title="配置方式和命令方式的区别："></a>配置方式和命令方式的区别：</h3><p>redis.conf 配置slaveof 的方式：不会马上进行主服务器同步，而是<strong>先载入当前本地存在的rdb或者aof</strong>到redis中进行数据恢复，然后才开始同步复制</p>
+<p>命令slaveof方式：会<strong>立即</strong>连接主服务器进行同步操作</p>
+<h3 id="关于redis的主主复制"><a href="#关于redis的主主复制" class="headerlink" title="关于redis的主主复制:"></a>关于redis的主主复制:</h3><p>如果我们尝试让两台服务器互相slaveof 那么会出现上面情况呢？</p>
+<p>从上面的复制过程可以看到，当一个服务器slaveof另一个服务器，产生的结果只会是两边相互覆盖，也就是从服务器会去同步主服务器的数据，如果此时按照主主的配置，两边互相同步对方的数据，这样产生的数据可能会不一致，或者数据干脆就是不完整的。不仅如此，这种操作还会大量占用资源区让两台服务器互相知道对方</p>
+<h3 id="当一台服务器连接另一台服务器的时候会发生什么？"><a href="#当一台服务器连接另一台服务器的时候会发生什么？" class="headerlink" title="当一台服务器连接另一台服务器的时候会发生什么？"></a>当一台服务器连接另一台服务器的时候会发生什么？</h3><table>
+<thead>
+<tr>
+<th>当有新服务器连接的时候</th>
+<th>主服务器操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>步骤3还没有执行</td>
+<td>所有从服务器都会收到相同的快照文件和相同缓冲区写命令</td>
+</tr>
+<tr>
+<td>步骤3正在执行或者已经执行</td>
+<td>完成了之前同步的五个操作之后，会跟新服务器重新执行一次新的五个步骤</td>
+</tr>
+</tbody></table>
+<h2 id="系统故障处理"><a href="#系统故障处理" class="headerlink" title="系统故障处理"></a>系统故障处理</h2><p>复制和持久化虽然已经基本可以保证系统的数据安全，但是总有意外的情况，比如突然断电断网，系统磁盘故障，服务器宕机等一系列情况，那么会出现各种莫名奇妙的问题，下面针对这些情况说明一下解决方式：</p>
+<h3 id="验证快照文件以及aof文件"><a href="#验证快照文件以及aof文件" class="headerlink" title="验证快照文件以及aof文件"></a>验证快照文件以及aof文件</h3><p>在redis的<code>bin</code>目录下面，存在如下的两个sh</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-rwxr-xr-x 1 root root 9722168 Nov 15 20:53 redis-check-aof</span><br><span class="line">-rwxr-xr-x 1 root root 9722168 Nov 15 20:53 redis-check-rdb</span><br></pre></td></tr></table></figure>
+
+<p>他们的命令作用和内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[xd@iZwz99gyct1a1rh6iblyucZ bin]$ .&#x2F;redis-check-aof </span><br><span class="line">Usage: .&#x2F;redis-check-aof [--fix] &lt;file.aof&gt;</span><br><span class="line">[xd@iZwz99gyct1a1rh6iblyucZ bin]$ .&#x2F;redis-check-rdb </span><br><span class="line">Usage: .&#x2F;redis-check-rdb &lt;rdb-file-name&gt;</span><br></pre></td></tr></table></figure>
+
+<p>redis-check-aof：如果加入<code>--fix</code>选项，那么命令会尝试修复aof文件，会将内容里面出现错误的命令以及下面的所有命令清空，一般情况下回清空尾部的一些未完成命令。</p>
+<p>redis-check-rdb：遗憾的是目前这种修复收效甚微。建议在修复rdb的时候，用SHA1和SHA256验证文件是否完整。</p>
+<h3 id="校验和与散列值："><a href="#校验和与散列值：" class="headerlink" title="校验和与散列值："></a>校验和与散列值：</h3><p>redis2.6 之后加入了校验和与散列值进行验证。</p>
+<p>快照文件增加CRC64校验和</p>
+<blockquote>
+<p>什么是crc<strong>循环冗余校验</strong>？</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUJFJUFBJUU3JTkyJUIwJUU1JTg2JTk3JUU5JUE0JTk4JUU2JUEwJUExJUU5JUE5JTk3" title="https://zh.wikipedia.org/wiki/%E5%BE%AA%E7%92%B0%E5%86%97%E9%A4%98%E6%A0%A1%E9%A9%97">https://zh.wikipedia.org/wiki/%E5%BE%AA%E7%92%B0%E5%86%97%E9%A4%98%E6%A0%A1%E9%A9%97<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h3 id="更换故障主服务器："><a href="#更换故障主服务器：" class="headerlink" title="更换故障主服务器："></a>更换故障主服务器：</h3><ol>
+<li>假设A故障，存在BC两台机器，B为从服务，C为将要替换的主服务器</li>
+<li>向机器B发送save命令，同时创建一个新的快照文件，同步完成之后，发送给C</li>
+<li>机器C上面启动redis,让C成为B的主服务器</li>
+</ol>
+<h3 id="Redis-sentienel-哨兵"><a href="#Redis-sentienel-哨兵" class="headerlink" title="Redis sentienel 哨兵"></a>Redis sentienel 哨兵</h3><p>可以监视指定主服务器以及属下的从服务器</p>
+<p>也就是我们常用的<strong>哨兵模式</strong></p>
+<p>但是随着时代进步，目前使用redis基本还是以<code>cluster模式</code>为主</p>
+<h2 id="redis主从复制模式（redis6-0版本）："><a href="#redis主从复制模式（redis6-0版本）：" class="headerlink" title="redis主从复制模式（redis6.0版本）："></a>redis主从复制模式（redis6.0版本）：</h2><h3 id="前提说明："><a href="#前提说明：" class="headerlink" title="前提说明："></a>前提说明：</h3><p>有条件的可以弄三台虚拟机查看效果，这样模拟出来的效果算是比较真实的。</p>
+<h3 id="三台从服务器以及一台主服务器的配置"><a href="#三台从服务器以及一台主服务器的配置" class="headerlink" title="三台从服务器以及一台主服务器的配置"></a>三台从服务器以及一台主服务器的配置</h3><p>个人的办法是copy一个公用的配置，然后进行修改（这里只列举区别以及改动较多的地方，其他地方根据需要配置）：</p>
+<p>第一台机器的配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">pidfile</span> <span class="string">/var/run/redis_16379.pid</span></span><br><span class="line"><span class="attr">port</span> <span class="string">16379</span></span><br><span class="line"><span class="attr">dbfilename</span> <span class="string">dump16379.rdb</span></span><br><span class="line"><span class="attr">appendfilename</span> <span class="string">"appendonly16379.aof"</span></span><br><span class="line"><span class="attr">logfile</span> <span class="string">"log16379"</span></span><br></pre></td></tr></table></figure>
+
+<p>第二台机器的配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">pidfile</span> <span class="string">/var/run/redis_16380.pid</span></span><br><span class="line"><span class="attr">port</span> <span class="string">16380</span></span><br><span class="line"><span class="attr">dbfilename</span> <span class="string">dump16380.rdb</span></span><br><span class="line"><span class="attr">appendfilename</span> <span class="string">"appendonly16380.aof"</span></span><br><span class="line"><span class="attr">logfile</span> <span class="string">"log16380"</span></span><br></pre></td></tr></table></figure>
+
+<p>第三台机器的配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">pidfile</span> <span class="string">/var/run/redis_16381.pid</span></span><br><span class="line"><span class="attr">port</span> <span class="string">16381</span></span><br><span class="line"><span class="attr">dbfilename</span> <span class="string">dump16381.rdb</span></span><br><span class="line"><span class="attr">appendfilename</span> <span class="string">"appendonly16381.aof"</span></span><br><span class="line"><span class="attr">logfile</span> <span class="string">"log16381"</span></span><br></pre></td></tr></table></figure>
+
+<p>这时候要配置一台主服务器</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">pidfile</span> <span class="string">/var/run/redis_10000.pid</span></span><br><span class="line"><span class="attr">port</span> <span class="string">10000</span></span><br><span class="line"><span class="attr">dbfilename</span> <span class="string">dump10000.rdb</span></span><br><span class="line"><span class="attr">appendfilename</span> <span class="string">"appendonly10000.aof"</span></span><br><span class="line"><span class="attr">logfile</span> <span class="string">"log10000"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动redis一主多从："><a href="#启动redis一主多从：" class="headerlink" title="启动redis一主多从："></a>启动redis一主多从：</h3><p>配置很简单，可以用<strong>手动</strong>进行主从复制，也可以使用<strong>redis.conf</strong>提前配置，具体区别上文已经进行过介绍，这里不再赘述。</p>
+<p>从服务器可以通过命令：<code>slaveof 127.0.0.1 10000</code> 实现主从复制拷贝</p>
+<p>可以通过命令<code>info replication</code> 查看主从配置的信息。</p>
+<p>主服务器启动日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:10000&gt; info replication</span><br><span class="line"># Replication</span><br><span class="line">role:master</span><br><span class="line">connected_slaves:0</span><br><span class="line">master_replid:e2a92d8c59fbdde3b162da12f4d74ff28bab4fbb</span><br><span class="line">master_replid2:0000000000000000000000000000000000000000</span><br><span class="line">master_repl_offset:0</span><br><span class="line">second_repl_offset:-1</span><br><span class="line">repl_backlog_active:0</span><br><span class="line">repl_backlog_size:1048576</span><br><span class="line">repl_backlog_first_byte_offset:0</span><br><span class="line">repl_backlog_histlen:0</span><br><span class="line">127.0.0.1:10000&gt; info replication</span><br><span class="line"># Replication</span><br><span class="line">role:master</span><br><span class="line">connected_slaves:3</span><br><span class="line">slave0:ip&#x3D;127.0.0.1,port&#x3D;16381,state&#x3D;online,offset&#x3D;14,lag&#x3D;1</span><br><span class="line">slave1:ip&#x3D;127.0.0.1,port&#x3D;16380,state&#x3D;online,offset&#x3D;14,lag&#x3D;1</span><br><span class="line">slave2:ip&#x3D;127.0.0.1,port&#x3D;16379,state&#x3D;online,offset&#x3D;14,lag&#x3D;1</span><br><span class="line">master_replid:029e455ee6f8fdc0e255b6d5c4f63136d933fb24</span><br><span class="line">master_replid2:0000000000000000000000000000000000000000</span><br><span class="line">master_repl_offset:14</span><br><span class="line">second_repl_offset:-1</span><br><span class="line">repl_backlog_active:1</span><br><span class="line">repl_backlog_size:1048576</span><br><span class="line">repl_backlog_first_byte_offset:1</span><br><span class="line">repl_backlog_histlen:14</span><br></pre></td></tr></table></figure>
+
+<p>可以看到进行主从配置之后，当前的目录下面多出了对应备份文件</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201123232149.png" alt=""></p>
+<p>当进行主从配置之后，从服务就无法进行写入了，主服务器才可以写入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:16379&gt; set key 1</span><br><span class="line">(error) READONLY You can&#39;t write against a read only replica.</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试一主多从复制："><a href="#测试一主多从复制：" class="headerlink" title="测试一主多从复制："></a>测试一主多从复制：</h4><p>主服务器敲入如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:10000&gt; hset key1 name1 value1</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:10000&gt; keys *</span><br><span class="line">1) &quot;key1&quot;</span><br></pre></td></tr></table></figure>
+
+<p>从服务器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:16379&gt; hget key1 name1</span><br><span class="line">&quot;value1&quot;</span><br><span class="line">127.0.0.1:16380&gt; hget key1 name1</span><br><span class="line">&quot;value1&quot;</span><br><span class="line">127.0.0.1:16381&gt; hget key1 name1</span><br><span class="line">&quot;value1&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="主从链"><a href="#主从链" class="headerlink" title="主从链"></a>主从链</h3><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201123134010.png" alt=""></p>
+<p>配置方式：</p>
+<p>和主从配置一样，只不过主节点换为从节点。</p>
+<blockquote>
+<p>注意：主从链的配置依然只能是master节点可以写数据，同时中间的节点也是slave</p>
+</blockquote>
+<h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><p>如何检测磁盘是否写入数据？</p>
+<ol>
+<li>主从服务器通过一个虚标值（unique dummy value）来验证从服务器是否真的把数据写入到自己的磁盘。</li>
+<li>通过命令：<code>info</code>检查结果当中的 <code>aof_appending_bio_fsync</code>的值是否为0:</li>
+</ol>
+<blockquote>
+<p># 5.0 版本之后改为如下形式验证</p>
+<p>repl_backlog_active:0</p>
+</blockquote>
+<h2 id="redis主从哨兵模式（Redis-sentienel）（redis6-0版本）"><a href="#redis主从哨兵模式（Redis-sentienel）（redis6-0版本）" class="headerlink" title="redis主从哨兵模式（Redis sentienel）（redis6.0版本）"></a>redis主从哨兵模式（Redis sentienel）（redis6.0版本）</h2><h3 id="哨兵模式有什么作用："><a href="#哨兵模式有什么作用：" class="headerlink" title="哨兵模式有什么作用："></a>哨兵模式有什么作用：</h3><p>Redis的哨兵模式就是对redis系统进行实时的监控，其主要功能有下面两点</p>
+<p>1.<strong>监测</strong>主数据库和从数据库是否正常运行。</p>
+<p>2.当我们的主数据库出现故障的时候，可以自动将从数据库转换为主数据库，实现<strong>自动的切换</strong>。</p>
+<h3 id="为什么要使用哨兵模式："><a href="#为什么要使用哨兵模式：" class="headerlink" title="为什么要使用哨兵模式："></a>为什么要使用哨兵模式：</h3><ol>
+<li>主从复制在主节点宕机的情况下，需要人工干预恢复redis，无法实现高可用。</li>
+<li>主节点宕机的情况下需要备份数据到新的从节点，然后其他节点将主节点设置为新的redis，需要一次全量复制同步数据的过程</li>
+</ol>
+<h3 id="哨兵模式原理"><a href="#哨兵模式原理" class="headerlink" title="哨兵模式原理"></a>哨兵模式原理</h3><p>主节点故障的时候，由redis sentinel自动完成故障发现和转移</p>
+<h3 id="如何部署哨兵模式："><a href="#如何部署哨兵模式：" class="headerlink" title="如何部署哨兵模式："></a>如何部署哨兵模式：</h3><ol>
+<li>首先按照上一节配置，已经设置了一个主节点三个从节点的配置</li>
+</ol>
+<blockquote>
+<p>下面的配置如下：</p>
+<p>主节点：10000</p>
+<p>从节点1：16379</p>
+<p>从节点2：16380</p>
+<p>从节点3：16381</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[xd@iZwz99gyct1a1rh6iblyucZ ~]$ ps -ef | grep redis</span><br><span class="line">xd        2964  2910  0 18:02 pts&#x2F;0    00:00:00 grep --color&#x3D;auto redis</span><br><span class="line">root     26412     1  0 Nov23 ?        00:06:07 .&#x2F;redis-server 127.0.0.1:10000</span><br><span class="line">root     26421     1  0 Nov23 ?        00:05:37 .&#x2F;redis-server 127.0.0.1:16379</span><br><span class="line">root     26428     1  0 Nov23 ?        00:05:37 .&#x2F;redis-server 127.0.0.1:16380</span><br><span class="line">root     26435     1  0 Nov23 ?        00:05:37 .&#x2F;redis-server 127.0.0.1:16381</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><code>sentinel.conf</code> 配置文件在安装redis的源码包里面有，所以如果误删了可以下回来然后把文件弄到手，其实可以配置一个常用的或者通用的配置放到自己的本地有需要直接替换</li>
+<li><strong>配置5个sentienl.conf文件（建议奇数个哨兵，方便宕机选举产生新的节点）</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[xd@iZwz99gyct1a1rh6iblyucZ bin]$ sudo cp sentinel.conf sentinel_26379.conf</span><br><span class="line">[xd@iZwz99gyct1a1rh6iblyucZ bin]$ sudo cp sentinel.conf sentinel_26380.conf</span><br><span class="line">[xd@iZwz99gyct1a1rh6iblyucZ bin]$ sudo cp sentinel.conf sentinel_26381.conf</span><br><span class="line">[xd@iZwz99gyct1a1rh6iblyucZ bin]$ sudo cp sentinel.conf sentinel_10000.conf</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>四个配置文件的改动依次如下：</li>
+</ol>
+<p>所有的<code>sentinel.conf</code> 配置如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 指定哨兵端口</span></span><br><span class="line">port 20000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 监听主节点10000</span></span><br><span class="line">sentinel monitor mymaster 127.0.0.1 10000 2</span><br><span class="line"><span class="meta">#</span><span class="bash"> 连接主节点时的密码，如果redis配置了密码需要填写</span></span><br><span class="line">sentinel auth-pass mymaster 12345678</span><br><span class="line"><span class="meta">#</span><span class="bash"> 故障转移时最多可以有2从节点同时对新主节点进行数据同步</span></span><br><span class="line">sentinel config-epoch mymaster 2</span><br><span class="line"><span class="meta">#</span><span class="bash"> 故障转移超时时间180s，</span></span><br><span class="line">sentinel failover-timeout mymasterA 180000 </span><br><span class="line"><span class="meta">#</span><span class="bash"> sentinel节点定期向主节点ping命令，当超过了300S时间后没有回复，可能就认定为此主节点出现故障了……</span></span><br><span class="line">sentinel down-after-milliseconds mymasterA 300000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 故障转移后，1代表每个从节点按顺序排队一个一个复制主节点数据，如果为3，指3个从节点同时并发复制主节点数据，不会影响阻塞，但存在网络和IO开销</span></span><br><span class="line">sentinel parallel-syncs mymasterA 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置后台启动</span></span><br><span class="line">daemonize yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> 进程的pid文件，保险起见设置不一样的，特别是设置后台启动的时候</span></span><br><span class="line">pidfile /var/run/redis-sentinel.pid</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>扩展：如何判定转移失败:</p>
+<p>a - 如果转移超时失败，下次转移时时间为之前的2倍；</p>
+<p>b - 从节点变主节点时，从节点执行slaveof no one命令一直失败的话，当时间超过<strong>180S</strong>时，则故障转移失败</p>
+<p>c - 从节点复制新主节点时间超过<strong>180S</strong>转移失败</p>
+</blockquote>
+<p>下面为配好五个之后的配置：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-rw-r--r-- 1 root root   10772 Nov 28 21:00 sentienl_26382.conf</span><br><span class="line">-rw-r--r-- 1 root root   10767 Nov 28 20:43 sentinel_10000.conf</span><br><span class="line">-rw-r--r-- 1 root root   10772 Nov 28 21:03 sentinel_26379.conf</span><br><span class="line">-rw-r--r-- 1 root root   10766 Nov 28 20:46 sentinel_26380.conf</span><br><span class="line">-rw-r--r-- 1 root root   10772 Nov 28 20:59 sentinel_26381.conf</span><br><span class="line">-rw-r--r-- 1 root root   10772 Nov 28 21:03 sentinel_26382.conf</span><br><span class="line">-rw-r--r-- 1 root root   10744 Nov 28 18:06 sentinel.conf</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><p>上一节已经启动过，这里不再介绍</p>
+</li>
+<li><p><strong>启动sentinel服务</strong></p>
+</li>
+</ol>
+<p>启动五个哨兵：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./redis-sentinel ./sentinel_10000.conf </span><br><span class="line">./redis-sentinel ./sentinel_26379.conf </span><br><span class="line">./redis-sentinel ./sentinel_263780.conf </span><br><span class="line">./redis-sentinel ./sentinel_263781.conf </span><br><span class="line">./redis-sentinel ./sentinel_263782.conf</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>ps</code>命令查看所有的服务：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">root      3267     1  0 21:14 ?        00:00:01 ./redis-sentinel *:20000 [sentinel]</span><br><span class="line">root      3280     1  0 21:15 ?        00:00:01 ./redis-sentinel *:26379 [sentinel]</span><br><span class="line">root      3296     1  0 21:20 ?        00:00:00 ./redis-sentinel *:26380 [sentinel]</span><br><span class="line">root      3303     1  0 21:21 ?        00:00:00 ./redis-sentinel *:26381 [sentinel]</span><br><span class="line">root      3316  3254  0 21:28 pts/0    00:00:00 grep --color=auto redis</span><br><span class="line">root     26412     1  0 Nov23 ?        00:06:17 ./redis-server 127.0.0.1:10000</span><br><span class="line">root     26421     1  0 Nov23 ?        00:05:47 ./redis-server 127.0.0.1:16379</span><br><span class="line">root     26428     1  0 Nov23 ?        00:05:47 ./redis-server 127.0.0.1:16380</span><br><span class="line">root     26435     1  0 Nov23 ?        00:05:47 ./redis-server 127.0.0.1:16381</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>验证一下哨兵是否管用</li>
+</ol>
+<p>10000是主节点，他的<code>info</code>信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Keyspace</span><br><span class="line">db0:keys&#x3D;1,expires&#x3D;0,avg_ttl&#x3D;0</span><br><span class="line">127.0.0.1:10000&gt; info replication</span><br><span class="line"># Replication</span><br><span class="line">role:master</span><br><span class="line">connected_slaves:3</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>kill -9 master节点进程端口号</code>之后，我们已经干掉了额主进程，验证一下从节点是否启动</p>
+<p>进入到6379端口的<code>redis-cli</code>当中，可以看到从节点6379的实例被选举为新的的节点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:16379&gt; info replication</span><br><span class="line"># Replication</span><br><span class="line">role:master</span><br><span class="line">connected_slaves:2</span><br><span class="line">slave0:ip&#x3D;127.0.0.1,port&#x3D;16380,state&#x3D;online,offset&#x3D;857706,lag&#x3D;1</span><br><span class="line">slave1:ip&#x3D;127.0.0.1,port&#x3D;16381,state&#x3D;online,offset&#x3D;858242,lag&#x3D;1</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>挂掉的主节点恢复之后，能不能进行恢复为主节点？</strong></p>
+<p>尝试重启挂掉的master之后，可以发现他变成了从节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:10000&gt; info replication</span><br><span class="line"><span class="meta">#</span><span class="bash"> Replication</span></span><br><span class="line">role:slave</span><br><span class="line">master_host:127.0.0.1</span><br><span class="line">master_port:16379</span><br><span class="line">master_link_status:up</span><br><span class="line">master_last_io_seconds_ago:2</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><strong>注意：生产环境建议让redis Sentinel部署到不同的物理机上</strong></p>
+<p>如果不喜欢上面的启动哨兵模式，也可以使用下面的命令开启：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@dev-server-1 sentinel]# redis-server sentinel1.conf --sentinel</span><br><span class="line">[root@dev-server-1 sentinel]# redis-server sentinel2.conf --sentinel</span><br><span class="line">[root@dev-server-1 sentinel]# redis-server sentinel3.conf --sentinel</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="哨兵模式部署建议"><a href="#哨兵模式部署建议" class="headerlink" title="哨兵模式部署建议"></a>哨兵模式部署建议</h3><p>a，sentinel节点应部署在<strong>多台</strong>物理机（<strong>线上</strong>环境）</p>
+<p>b，至少三个且<strong>奇数</strong>个sentinel节点</p>
+<p>c，通过以上我们知道，<strong>3个sentinel</strong>可同时监控一个主节点或多个主节点</p>
+<p>  监听N个主节点较多时，如果sentinel出现异常，会对多个主节点有影响，同时还会造成sentinel节点产生过多的网络连接，</p>
+<p>  一般线上建议还是， <strong>3个sentinel</strong>监听一个主节点</p>
+<p>也可以按照下面的方式在启动哨兵的时候启动：</p>
+<h3 id="哨兵模式的优缺点："><a href="#哨兵模式的优缺点：" class="headerlink" title="哨兵模式的优缺点："></a>哨兵模式的优缺点：</h3><p>优点：</p>
+<ol>
+<li>哨兵模式基于主从复制模式，所以主从复制模式有的优点，哨兵模式也有</li>
+<li>哨兵模式下，master挂掉可以自动进行切换，系统可用性更高</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>同样也继承了主从模式难以在线扩容的缺点，Redis的容量受限于单机配置</li>
+<li>需要额外的资源来启动sentinel进程，实现相对复杂一点，同时slave节点作为备份节点不提供服务</li>
+</ol>
+<h2 id="redis集群模式（redis6-0版本）"><a href="#redis集群模式（redis6-0版本）" class="headerlink" title="redis集群模式（redis6.0版本）"></a>redis集群模式（redis6.0版本）</h2><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201129145217.png" alt=""></p>
+<p>随着应用的扩展，虽然主从模式和哨兵模式的加入解决了高可用的问题，但是现代的应用基本都是要求可以动态扩展了，为了支持动态扩展，redis在后续的版本当中加入了哨兵的模式</p>
+<p>集群模式主要解决的问题是：</p>
+<p>Cluster模式实现了Redis的分布式存储，即每台节点存储不同的内容，来解决在线扩容的问题</p>
+<h3 id="redis结构设计："><a href="#redis结构设计：" class="headerlink" title="redis结构设计："></a>redis结构设计：</h3><p>使用的是无中心的结构，每一个节点和节点之间相互连接</p>
+<ol>
+<li>redis 使用彼此互联的(ping-pong)的方式，进行互相关联，内部使用二进制协议优化速度</li>
+<li>客户端与redis节点直连,不需要中间代理层.客户端不需要连接集群所有节点,连接集群中任何一个可用节点即可</li>
+<li>节点的fail是通过集群中超过<strong>半数</strong>的节点检测失效时才生效</li>
+</ol>
+<h3 id="redis集群的工作机制"><a href="#redis集群的工作机制" class="headerlink" title="redis集群的工作机制"></a>redis集群的工作机制</h3><ol>
+<li><p>在Redis的每个节点上，都有一个插槽（slot），取值范围为0-16383，redis会根据接节点的数量分配槽的位置来进行判定发送给哪一个cluster节点</p>
+</li>
+<li><p>当我们存取key的时候，Redis会根据CRC16的算法得出一个结果，然后把结果对16384求余数，这样每个key都会对应一个编号在0-16383之间的哈希槽，通过这个值，去找到对应的插槽所对应的节点，然后直接自动跳转到这个对应的节点上进行存取操作</p>
+</li>
+<li><p>为了保证高可用，Cluster模式也引入<strong>主从复制模式</strong>，一个主节点对应一个或者多个从节点，当主节点宕机的时候，就会启用从节点</p>
+</li>
+<li><p>当其它主节点ping一个主节点A时，如果半数以上的主节点与A通信超时，那么认为主节点A宕机了。如果主节点A和它的从节点都宕机了，那么<strong>该集群就无法再提供服务了</strong></p>
+</li>
+</ol>
+<h3 id="配置集群（重点）："><a href="#配置集群（重点）：" class="headerlink" title="配置集群（重点）："></a>配置集群（重点）：</h3><p>为了不产生干扰，先把上一节所有的redis进程干掉，包括哨兵的配置</p>
+<p>使用<code>kil -9 进程端口号</code>直接抹掉整个应用</p>
+<p>配置如下：</p>
+<ol>
+<li>集群至少需要三主三从，同时需要奇数的节点配置。</li>
+<li>我们可以将之前的主从配置的一主三从<strong>增加两个主节点</strong>，目前的配置如下：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-rw-r--r-- 1 root root   84993 Nov 28 21:41 redis10000.conf</span><br><span class="line">-rw-r--r-- 1 root root   84936 Nov 28 21:35 redis16379.conf</span><br><span class="line">-rw-r--r-- 1 root root   84962 Nov 28 21:35 redis16380.conf</span><br><span class="line">-rw-r--r-- 1 root root   84962 Nov 28 21:35 redis16381.conf</span><br><span class="line"></span><br><span class="line"># 增加两个主要节点</span><br><span class="line">-rw-r--r-- 1 root root   84962 Nov 28 21:35 redis16382.conf</span><br><span class="line">-rw-r--r-- 1 root root   84962 Nov 28 21:35 redis16383.conf</span><br></pre></td></tr></table></figure>
+
+<p>主节点的配置主要如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">port 7100 # 本示例6个节点端口分别为7100,7200,7300,7400,7500,7600 </span><br><span class="line">daemonize yes # r后台运行 </span><br><span class="line">pidfile &#x2F;var&#x2F;run&#x2F;redis_7100.pid # pidfile文件对应7100,7200,7300,7400,7500,7600 </span><br><span class="line">cluster-enabled yes # 开启集群模式 </span><br><span class="line">masterauth passw0rd # 如果设置了密码，需要指定master密码</span><br><span class="line">cluster-config-file nodes_7100.conf # 集群的配置文件，同样对应7100,7200等六个节点</span><br><span class="line">cluster-node-timeout 15000 # 请求超时 默认15秒，可自行设置</span><br></pre></td></tr></table></figure>
+
+<p>启动如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ./redis-server ./cluster/redis17000_cluster.conf</span><br><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ./redis-server ./cluster/redis17100_cluster.conf</span><br><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ./redis-server ./cluster/redis17200_cluster.conf</span><br><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ./redis-server ./cluster/redis17300_cluster.conf</span><br><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ./redis-server ./cluster/redis17400_cluster.conf</span><br><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ./redis-server ./cluster/redis17500_cluster.conf</span><br><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ps -ef | grep redis</span><br><span class="line">root      4761     1  0 15:55 ?        00:00:00 ./redis-server 127.0.0.1:17000 [cluster]</span><br><span class="line">root      4767     1  0 15:55 ?        00:00:00 ./redis-server 127.0.0.1:17100 [cluster]</span><br><span class="line">root      4773     1  0 15:55 ?        00:00:00 ./redis-server 127.0.0.1:17200 [cluster]</span><br><span class="line">root      4779     1  0 15:55 ?        00:00:00 ./redis-server 127.0.0.1:17300 [cluster]</span><br><span class="line">root      4785     1  0 15:55 ?        00:00:00 ./redis-server 127.0.0.1:17400 [cluster]</span><br><span class="line">root      4791     1  0 15:55 ?        00:00:00 ./redis-server 127.0.0.1:17500 [cluster]</span><br><span class="line">root      4797  4669  0 15:55 pts/0    00:00:00 grep --color=auto redis</span><br></pre></td></tr></table></figure>
+
+<p>启动了上面六个节点之后，使用下面的命令并且敲入<code>yes</code>让他们变为集群：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# .&#x2F;redis-cli --cluster create 127.0.0.1:17000 127.0.0.1:17100 127.0.0.1:17200 127.0.0.1:17300 127.0.0.1:17400 127.0.0.1:17500 --cluster-replicas 1</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; Performing hash slots allocation on 6 nodes...</span><br><span class="line">Master[0] -&gt; Slots 0 - 5460</span><br><span class="line">Master[1] -&gt; Slots 5461 - 10922</span><br><span class="line">Master[2] -&gt; Slots 10923 - 16383</span><br><span class="line">Adding replica 127.0.0.1:17400 to 127.0.0.1:17000</span><br><span class="line">Adding replica 127.0.0.1:17500 to 127.0.0.1:17100</span><br><span class="line">Adding replica 127.0.0.1:17300 to 127.0.0.1:17200</span><br><span class="line">&gt;&gt;&gt; Trying to optimize slaves allocation for anti-affinity</span><br><span class="line">[WARNING] Some slaves are in the same host as their master</span><br><span class="line">M: 1179bb5f47e7f8221ba7917b5852f8064778e0db 127.0.0.1:17000</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">M: 153afa1b9b14194de441fffa791f8d9001badc66 127.0.0.1:17100</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">M: 4029aeeb6b80e843279738d6d35eee7a1adcd2ff 127.0.0.1:17200</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">S: 3ceb11fe492f98432f124fd1dcb7b2bb1e769a96 127.0.0.1:17300</span><br><span class="line">   replicates 1179bb5f47e7f8221ba7917b5852f8064778e0db</span><br><span class="line">S: 66eaea82ccf69ef96dbc16aac39fd6f6ed3d0691 127.0.0.1:17400</span><br><span class="line">   replicates 153afa1b9b14194de441fffa791f8d9001badc66</span><br><span class="line">S: c34aeb59c8bedc11b4aeb720b70b0019e7389093 127.0.0.1:17500</span><br><span class="line">   replicates 4029aeeb6b80e843279738d6d35eee7a1adcd2ff</span><br></pre></td></tr></table></figure>
+
+<h4 id="验证集群："><a href="#验证集群：" class="headerlink" title="验证集群："></a>验证集群：</h4><ol>
+<li>输入<code>redis-cli</code>进入任意的一个主节点，注意是主节点，从节点不能做写入操作</li>
+</ol>
+<p><code>Redirected to slot [9189] located at 127.0.0.1:17100</code>根据Hash的算法，算出连接那个节点槽，然后提示slot[9189] 落到了17100上面，所以集群会自动跳转进行Key的加入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ./redis-cli -p 17000</span><br><span class="line">127.0.0.1:17000&gt; set key1 1</span><br><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ./redis-cli -p 17000</span><br><span class="line">127.0.0.1:17000&gt; set key1 1</span><br><span class="line">(error) MOVED 9189 127.0.0.1:17100</span><br><span class="line">[root@iZwz99gyct1a1rh6iblyucZ bin]# ./redis-cli -p 17000 -c</span><br><span class="line">127.0.0.1:17000&gt; set key1 ke</span><br><span class="line"><span class="meta">-&gt;</span><span class="bash"> Redirected to slot [9189] located at 127.0.0.1:17100</span></span><br><span class="line">OK</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>小贴士：集群之后不能使用传统的连接方式，因为每一个key都要经过一次hash的操作找到对应的槽 -》节点之后才能做后续的操作</p>
+<p>使用如下命令进入后正常</p>
+<p>./redis-cli -p 17000 <strong>-c</strong></p>
+<p>-c 代表以集群的方式连接</p>
+</blockquote>
+<ol start="2">
+<li>可以使用如下命令验证集群的信息:</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:17000&gt; cluster nodes</span><br><span class="line">66eaea82ccf69ef96dbc16aac39fd6f6ed3d0691 127.0.0.1:17400@27400 slave 153afa1b9b14194de441fffa791f8d9001badc66 0 1606639411000 2 connected</span><br><span class="line">4029aeeb6b80e843279738d6d35eee7a1adcd2ff 127.0.0.1:17200@27200 master - 0 1606639411000 3 connected 10923-16383</span><br><span class="line">3ceb11fe492f98432f124fd1dcb7b2bb1e769a96 127.0.0.1:17300@27300 slave 1179bb5f47e7f8221ba7917b5852f8064778e0db 0 1606639410000 1 connected</span><br><span class="line">1179bb5f47e7f8221ba7917b5852f8064778e0db 127.0.0.1:17000@27000 myself,master - 0 1606639410000 1 connected 0-5460</span><br><span class="line">153afa1b9b14194de441fffa791f8d9001badc66 127.0.0.1:17100@27100 master - 0 1606639412002 2 connected 5461-10922</span><br><span class="line">c34aeb59c8bedc11b4aeb720b70b0019e7389093 127.0.0.1:17500@27500 slave 4029aeeb6b80e843279738d6d35eee7a1adcd2ff 0 1606639413005 3 connected</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>接下来我们验证一下当一个主节点挂掉会发生什么情况：</li>
+</ol>
+<p>还是和主从复制的验证一样，直接Kill 进程：</p>
+<p>kill掉 17000 之后，我们可以发现 17300 被升级为主节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:17300&gt; info replication</span><br><span class="line"><span class="meta">#</span><span class="bash"> Replication</span></span><br><span class="line">role:master</span><br><span class="line">connected_slaves:0</span><br></pre></td></tr></table></figure>
+
+<p>此时的节点情况如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:17100&gt; cluster nodes</span><br><span class="line">4029aeeb6b80e843279738d6d35eee7a1adcd2ff 127.0.0.1:17200@27200 master - 0 1606640582000 3 connected 10923-16383</span><br><span class="line">153afa1b9b14194de441fffa791f8d9001badc66 127.0.0.1:17100@27100 myself,master - 0 1606640581000 2 connected 5461-10922</span><br><span class="line">66eaea82ccf69ef96dbc16aac39fd6f6ed3d0691 127.0.0.1:17400@27400 slave 153afa1b9b14194de441fffa791f8d9001badc66 0 1606640581000 2 connected</span><br><span class="line">c34aeb59c8bedc11b4aeb720b70b0019e7389093 127.0.0.1:17500@27500 slave 4029aeeb6b80e843279738d6d35eee7a1adcd2ff 0 1606640582624 3 connected</span><br><span class="line">3ceb11fe492f98432f124fd1dcb7b2bb1e769a96 127.0.0.1:17300@27300 master - 0 1606640580619 7 connected 0-5460</span><br><span class="line">1179bb5f47e7f8221ba7917b5852f8064778e0db 127.0.0.1:17000@27000 master,fail - 1606640370074 1606640367068 1 disconnected</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>如果这时候主节点恢复呢？</li>
+</ol>
+<p>和哨兵的模式一样，恢复之后也变为<code>slave</code>了。</p>
+<h3 id="集群模式优缺点："><a href="#集群模式优缺点：" class="headerlink" title="集群模式优缺点："></a>集群模式优缺点：</h3><p>优点：</p>
+<ol>
+<li>无中心架构，数据按照slot分布在多个节点。</li>
+<li>集群中的每个节点都是平等的关系，每个节点都保存各自的数据和整个集群的状态。每个节点都和其他所有节点连接，而且这些连接保持活跃，这样就保证了我们只需要连接集群中的任意一个节点，就可以获取到其他节点的数据。</li>
+<li>可线性扩展到1000多个节点，节点可动态添加或删除</li>
+<li>能够实现自动故障转移，节点之间通过gossip协议交换状态信息，用投票机制完成slave到master的角色转换</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>客户端实现复杂，驱动要求实现Smart Client，缓存slots mapping信息并及时更新，提高了开发难度。目前仅JedisCluster相对成熟，异常处理还不完善，比如常见的“max redirect exception”</li>
+<li>节点会因为某些原因发生阻塞（阻塞时间大于 cluster-node-timeout）被判断下线，这种failover是没有必要的</li>
+<li>数据通过异步复制，不保证数据的强一致性</li>
+<li>slave充当“冷备”，不能缓解读压力</li>
+<li>批量操作限制，目前只支持具有相同slot值的key执行批量操作，对mset、mget、sunion等操作支持不友好</li>
+<li>key事务操作支持有线，只支持多key在同一节点的事务操作，多key分布不同节点时无法使用事务功能</li>
+<li>不支持多数据库空间，单机redis可以支持16个db，集群模式下只能使用一个，即db 0</li>
+</ol>
+<blockquote>
+<p> Redis Cluster模式不建议使用pipeline和multi-keys操作，减少max redirect产生的场景。</p>
+</blockquote>
+<h3 id="cluster的相关疑问"><a href="#cluster的相关疑问" class="headerlink" title="cluster的相关疑问"></a>cluster的相关疑问</h3><h4 id="为什么redis的槽要用-16384？"><a href="#为什么redis的槽要用-16384？" class="headerlink" title="为什么redis的槽要用 16384？"></a>为什么redis的槽要用 <code>16384</code>？</h4><p><img src="https://img2018.cnblogs.com/blog/725429/201908/725429-20190829164650720-1058321793.jpg" alt="img"></p>
+<p>值得高兴的是：这个问题作者出门回答了：</p>
+<p>能理解作者意思的可以不用看下面的内容</p>
+<p>地址：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3JlZGlzL3JlZGlzL2lzc3Vlcy8yNTc2" title="https://github.com/redis/redis/issues/2576">https://github.com/redis/redis/issues/2576<i class="fa fa-external-link"></i></span></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">The reason is:</span><br><span class="line"></span><br><span class="line">Normal heartbeat packets carry the full configuration of a node, that can be replaced in an idempotent way with the old in order to update an old config. This means they contain the slots configuration for a node, in raw form, that uses 2k of space with16k slots, but would use a prohibitive 8k of space using 65k slots.</span><br><span class="line">At the same time it is unlikely that Redis Cluster would scale to more than 1000 mater nodes because of other design tradeoffs.</span><br><span class="line">So 16k was in the right range to ensure enough slots per master with a max of 1000 maters, but a small enough number to propagate the slot configuration as a raw bitmap easily. Note that in small clusters the bitmap would be hard to compress because when N is small the bitmap would have slots&#x2F;N bits set that is a large percentage of bits set.</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>首先我们查看一下结构体，关于cluster的源代码：<code>cluster.h</code></li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201129184329.png" alt=""></p>
+<p>代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">char</span> sig[<span class="number">4</span>];        <span class="comment">/* Signature "RCmb" (Redis Cluster message bus). */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> totlen;    <span class="comment">/* Total length of this message */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> ver;       <span class="comment">/* Protocol version, currently set to 1. */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> port;      <span class="comment">/* TCP base port number. */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> type;      <span class="comment">/* Message type */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> count;     <span class="comment">/* Only used for some kind of messages. */</span></span><br><span class="line">    <span class="keyword">uint64_t</span> currentEpoch;  <span class="comment">/* The epoch accordingly to the sending node. */</span></span><br><span class="line">    <span class="keyword">uint64_t</span> configEpoch;   <span class="comment">/* The config epoch if it's a master, or the last</span></span><br><span class="line"><span class="comment">                               epoch advertised by its master if it is a</span></span><br><span class="line"><span class="comment">                               slave. */</span></span><br><span class="line">    <span class="keyword">uint64_t</span> offset;    <span class="comment">/* Master replication offset if node is a master or</span></span><br><span class="line"><span class="comment">                           processed replication offset if node is a slave. */</span></span><br><span class="line">    <span class="keyword">char</span> sender[CLUSTER_NAMELEN]; <span class="comment">/* Name of the sender node */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> myslots[CLUSTER_SLOTS/<span class="number">8</span>];</span><br><span class="line">    <span class="keyword">char</span> slaveof[CLUSTER_NAMELEN];</span><br><span class="line">    <span class="keyword">char</span> myip[NET_IP_STR_LEN];    <span class="comment">/* Sender IP, if not all zeroed. */</span></span><br><span class="line">    <span class="keyword">char</span> notused1[<span class="number">34</span>];  <span class="comment">/* 34 bytes reserved for future usage. */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> cport;      <span class="comment">/* Sender TCP cluster bus port */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> flags;      <span class="comment">/* Sender node flags */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> state; <span class="comment">/* Cluster state from the POV of the sender */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> mflags[<span class="number">3</span>]; <span class="comment">/* Message flags: CLUSTERMSG_FLAG[012]_... */</span></span><br><span class="line">    <span class="keyword">union</span> clusterMsgData data;</span><br><span class="line">&#125; clusterMsg;</span><br></pre></td></tr></table></figure>
+
+<p>集群节点之间的通信内容无非就是IP信息，请求头，请求内容，以及一些参数信息，这里着重看一下参数<code>myslots[CLUSTER_SLOTS/8]</code></p>
+<blockquote>
+<p>#define CLUSTER_SLOTS 16384  这里就是16384的来源</p>
+</blockquote>
+<p>在redis节点发送心跳包时需要把所有的槽放到这个心跳包里，以便让节点知道当前集群信息，16384=16k，在发送心跳包时使用<code>char</code>进行bitmap压缩后是2k（<code>2 * 8 (8 bit) * 1024(1k) = 2K</code>），也就是说使用2k的空间创建了16k的槽数。</p>
+<p>虽然使用CRC16算法最多可以分配65535（2^16-1）个槽位，65535=65k，压缩后就是8k（<code>8 * 8 (8 bit) * 1024(1k) = 8K</code>），也就是说需要需要8k的心跳包，作者认为这样做不太值得；并且一般情况下一个redis集群不会有超过1000个master节点，所以16k的槽位是个比较合适的选择。</p>
+<h2 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h2><p><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82ODQ0OTA0MDk3MTE2NTg1OTkxI2hlYWRpbmctOQ==" title="https://juejin.cn/post/6844904097116585991#heading-9">https://juejin.cn/post/6844904097116585991#heading-9<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82ODQ0OTA0MTc4MTU0ODk3NDE1I2hlYWRpbmctMjU=" title="https://juejin.cn/post/6844904178154897415#heading-25">https://juejin.cn/post/6844904178154897415#heading-25<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vcmp6aGVuZy9wLzExNDMwNTkyLmh0bWw=" title="https://www.cnblogs.com/rjzheng/p/11430592.html">为什么Redis集群有16384个槽<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://lazytime.site/2020/11/29/redis_copy/" title="Redis学习 - 复制以及三种部署模式">https://lazytime.site/2020/11/29/redis_copy/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/redis/" rel="tag"># redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/22/mavenmodules/" rel="prev" title="maven多模块和依赖冲突问题汇总记录">
+      <i class="fa fa-chevron-left"></i> maven多模块和依赖冲突问题汇总记录
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis学习-复制以及三种部署模式"><span class="nav-number">1.</span> <span class="nav-text">Redis学习 - 复制以及三种部署模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是复制"><span class="nav-number">1.1.</span> <span class="nav-text">什么是复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#采取的方式"><span class="nav-number">1.2.</span> <span class="nav-text">采取的方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制的前提"><span class="nav-number">1.3.</span> <span class="nav-text">复制的前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从服务器连接主服务器的几种方式"><span class="nav-number">1.4.</span> <span class="nav-text">从服务器连接主服务器的几种方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis-复制启动的过程-（重点）"><span class="nav-number">1.5.</span> <span class="nav-text">redis 复制启动的过程&#x3D;&#x3D;（重点）&#x3D;&#x3D;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置方式和命令方式的区别："><span class="nav-number">1.5.1.</span> <span class="nav-text">配置方式和命令方式的区别：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于redis的主主复制"><span class="nav-number">1.5.2.</span> <span class="nav-text">关于redis的主主复制:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#当一台服务器连接另一台服务器的时候会发生什么？"><span class="nav-number">1.5.3.</span> <span class="nav-text">当一台服务器连接另一台服务器的时候会发生什么？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统故障处理"><span class="nav-number">1.6.</span> <span class="nav-text">系统故障处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#验证快照文件以及aof文件"><span class="nav-number">1.6.1.</span> <span class="nav-text">验证快照文件以及aof文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#校验和与散列值："><span class="nav-number">1.6.2.</span> <span class="nav-text">校验和与散列值：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更换故障主服务器："><span class="nav-number">1.6.3.</span> <span class="nav-text">更换故障主服务器：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-sentienel-哨兵"><span class="nav-number">1.6.4.</span> <span class="nav-text">Redis sentienel 哨兵</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis主从复制模式（redis6-0版本）："><span class="nav-number">1.7.</span> <span class="nav-text">redis主从复制模式（redis6.0版本）：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#前提说明："><span class="nav-number">1.7.1.</span> <span class="nav-text">前提说明：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三台从服务器以及一台主服务器的配置"><span class="nav-number">1.7.2.</span> <span class="nav-text">三台从服务器以及一台主服务器的配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动redis一主多从："><span class="nav-number">1.7.3.</span> <span class="nav-text">启动redis一主多从：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#测试一主多从复制："><span class="nav-number">1.7.3.1.</span> <span class="nav-text">测试一主多从复制：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主从链"><span class="nav-number">1.7.4.</span> <span class="nav-text">主从链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展"><span class="nav-number">1.7.5.</span> <span class="nav-text">扩展</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis主从哨兵模式（Redis-sentienel）（redis6-0版本）"><span class="nav-number">1.8.</span> <span class="nav-text">redis主从哨兵模式（Redis sentienel）（redis6.0版本）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#哨兵模式有什么作用："><span class="nav-number">1.8.1.</span> <span class="nav-text">哨兵模式有什么作用：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要使用哨兵模式："><span class="nav-number">1.8.2.</span> <span class="nav-text">为什么要使用哨兵模式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#哨兵模式原理"><span class="nav-number">1.8.3.</span> <span class="nav-text">哨兵模式原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何部署哨兵模式："><span class="nav-number">1.8.4.</span> <span class="nav-text">如何部署哨兵模式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#哨兵模式部署建议"><span class="nav-number">1.8.5.</span> <span class="nav-text">哨兵模式部署建议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#哨兵模式的优缺点："><span class="nav-number">1.8.6.</span> <span class="nav-text">哨兵模式的优缺点：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis集群模式（redis6-0版本）"><span class="nav-number">1.9.</span> <span class="nav-text">redis集群模式（redis6.0版本）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis结构设计："><span class="nav-number">1.9.1.</span> <span class="nav-text">redis结构设计：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis集群的工作机制"><span class="nav-number">1.9.2.</span> <span class="nav-text">redis集群的工作机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置集群（重点）："><span class="nav-number">1.9.3.</span> <span class="nav-text">配置集群（重点）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#验证集群："><span class="nav-number">1.9.3.1.</span> <span class="nav-text">验证集群：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群模式优缺点："><span class="nav-number">1.9.4.</span> <span class="nav-text">集群模式优缺点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cluster的相关疑问"><span class="nav-number">1.9.5.</span> <span class="nav-text">cluster的相关疑问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么redis的槽要用-16384？"><span class="nav-number">1.9.5.1.</span> <span class="nav-text">为什么redis的槽要用 16384？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料："><span class="nav-number">1.10.</span> <span class="nav-text">参考资料：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">437k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">6:37</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
