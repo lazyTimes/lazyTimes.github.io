@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="ZyC1bd11DZ5XV3P11yBfvTIuaPZzFxxkUEnAhZ6zQSA">
+  <meta name="baidu-site-verification" content="code-vIeEhdQrdN">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="redis的sds字符串实现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis学习 - sds字符串">
+<meta property="og:url" content="https://lazytime.site/2020/12/16/note/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="redis的sds字符串实现">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/46b159febe6d4e039b5503e04c0f0616~tplv-k3u1fbpfcp-zoom-1.image">
+<meta property="article:published_time" content="2020-12-16T15:47:42.000Z">
+<meta property="article:modified_time" content="2020-12-16T15:48:56.006Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="sds和c">
+<meta property="article:tag" content="sds字符串">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/46b159febe6d4e039b5503e04c0f0616~tplv-k3u1fbpfcp-zoom-1.image">
+
+<link rel="canonical" href="https://lazytime.site/2020/12/16/note/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>redis学习 - sds字符串 | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lazytime.site/2020/12/16/note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          redis学习 - sds字符串
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-12-16 23:47:42 / 修改时间：23:48:56" itemprop="dateCreated datePublished" datetime="2020-12-16T23:47:42+08:00">2020-12-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/12/16/note/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/16/note/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+            <div class="post-description">redis的sds字符串实现</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="redis学习-sds字符串"><a href="#redis学习-sds字符串" class="headerlink" title="redis学习 - sds字符串"></a>redis学习 - sds字符串</h1><p><span class="exturl" data-url="aHR0cDovL3JlZGlzYm9vay5jb20vaW5kZXguaHRtbA==" title="http://redisbook.com/index.html">Redis 设计与实现<i class="fa fa-external-link"></i></span>：如果想要知道redis底层，这本书可以给予不少的帮助，非常推荐每一位学习redis的同学去翻一翻。</p>
+<p>sds字符串建议多看看源代码的实现，这篇文章基本是个人看了好几篇文章之后的笔记。</p>
+<p>源代码文件分别是：<code>sds.c</code>，<code>sds.h</code></p>
+<a id="more"></a>
+
+<h2 id="redis的string-API使用"><a href="#redis的string-API使用" class="headerlink" title="redis的string API使用"></a>redis的string API使用</h2><p>首先看下API的简单应用，设置str1变量为helloworld，然后我们使用<code>debug object +变量名</code>的方式看下，注意编码为<strong>embstr</strong>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:17100&gt; set str1 helloworld</span><br><span class="line"><span class="meta">-&gt;</span><span class="bash"> Redirected to slot [5416] located at 127.0.0.1:17300</span></span><br><span class="line">OK</span><br><span class="line">127.0.0.1:17300&gt; debug object str1</span><br><span class="line">Value at:0x7f2821c0e340 refcount:1 encoding:embstr serializedlength:11 lru:14294151 lru_seconds_idle:8</span><br></pre></td></tr></table></figure>
+
+<p>如果我们将str2设置为<code>helloworldhelloworldhelloworldhelloworldhell</code>，字符长度为44，再使用下<code>debug object+变量名</code>的方式看下，注意编码为<strong>embstr</strong>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:17300&gt; set str2 helloworldhelloworldhelloworldhelloworldhell</span><br><span class="line"><span class="meta">-&gt;</span><span class="bash"> Redirected to slot [9547] located at 127.0.0.1:17100</span></span><br><span class="line">OK</span><br><span class="line">127.0.0.1:17100&gt; get str2</span><br><span class="line">"helloworldhelloworldhelloworldhelloworldhell"</span><br><span class="line">127.0.0.1:17100&gt; debug object str2</span><br><span class="line">Value at:0x7fd75e422c80 refcount:1 encoding:embstr serializedlength:21 lru:14294260 lru_seconds_idle:6</span><br></pre></td></tr></table></figure>
+
+<p>但是当我们把设置为<code>helloworldhelloworldhelloworldhelloworldhello</code>，字符长度为45，再使用<code>debug object+变量名</code>的方式看下，注意编码改变了，变为<strong>raw</strong>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:17100&gt; set str2 helloworldhelloworldhelloworldhelloworldhello</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:17100&gt; debug object str2</span><br><span class="line">Value at:0x7fd75e430c60 refcount:1 encoding:raw serializedlength:21 lru:14294358 lru_seconds_idle:9</span><br></pre></td></tr></table></figure>
+
+<p>最后我们将其设置为整数100，再使用<code>debug object+变量名</code>的方式看下，编码的格式变为了int。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:17100&gt; set str2 11</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:17100&gt; get str2</span><br><span class="line">"11"</span><br><span class="line">127.0.0.1:17100&gt; debug object str2</span><br><span class="line">Value at:0x7fd75e44d370 refcount:2147483647 encoding:int serializedlength:2 lru:14294440 lru_seconds_idle:9</span><br></pre></td></tr></table></figure>
+
+<p>所以Redis的string类型一共有三种存储方式：</p>
+<ol>
+<li>当字符串长度小于等于44，底层采用<strong>embstr</strong>；</li>
+<li>当字符串长度大于44，底层采用<strong>raw</strong>；</li>
+<li>当设置是<strong>整数</strong>，底层则采用<strong>int</strong>。</li>
+</ol>
+<p>至于这三者有什么区别，可以直接看书：</p>
+<p><span class="exturl" data-url="aHR0cDovL3JlZGlzYm9vay5jb20vcHJldmlldy9vYmplY3Qvc3RyaW5nLmh0bWw=" title="http://redisbook.com/preview/object/string.html">http://redisbook.com/preview/object/string.html<i class="fa fa-external-link"></i></span></p>
+<h2 id="为什么redis-string-要使用sds字符串？"><a href="#为什么redis-string-要使用sds字符串？" class="headerlink" title="为什么redis string 要使用sds字符串？"></a>为什么redis string 要使用sds字符串？</h2><ol>
+<li><strong>O(1)获取长度</strong>，c语言的字符串本身不记录长度，而是通过末尾的<code>\0</code>作为结束标志，而sds本身记录了字符串的长度所以获取直接变为O(1)的时间复杂度、同时，长度的维护操作由sds的本身api实现</li>
+<li><strong>防止缓冲区溢出bufferoverflow</strong>：由于c不记录字符串长度，相邻字符串容易发生缓存溢出。sds在进行添加之前会检查长度是否足够，并且不足够会自动根据api扩容</li>
+<li><strong>减少字符串修改的内存分配次数</strong>：使用动态扩容的机制，根据字符串的大小选择合适的header类型存储并且根据实际情况动态扩展。</li>
+<li>使用<strong>空间预分配和惰性空间释放</strong>，其实就是在扩容的时候，根据大小额外扩容2倍或者1M的空间，方面字符串修改的时候进行伸缩</li>
+<li>使用<strong>二进制保护</strong>，数据的读写不受特殊的限制，写入的时候什么样读取就是什么样</li>
+<li>支持<strong>兼容部分</strong>的c字符串函数，可以减少部分API的开发</li>
+</ol>
+<h2 id="SDS字符串和C语言字符串库有什么区别"><a href="#SDS字符串和C语言字符串库有什么区别" class="headerlink" title="SDS字符串和C语言字符串库有什么区别"></a>SDS字符串和C语言字符串库有什么区别</h2><p>摘自黄健宏大神的一张表</p>
+<table>
+<thead>
+<tr>
+<th align="left">C 字符串</th>
+<th align="left">SDS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">获取字符串长度的复杂度为 O(N) 。</td>
+<td align="left">获取字符串长度的复杂度为 O(1) 。</td>
+</tr>
+<tr>
+<td align="left">API 是不安全的，可能会造成缓冲区溢出。</td>
+<td align="left">API 是安全的，不会造成缓冲区溢出。</td>
+</tr>
+<tr>
+<td align="left">修改字符串长度 <code>N</code> 次必然需要执行 <code>N</code> 次内存重分配。</td>
+<td align="left">修改字符串长度 <code>N</code> 次最多需要执行 <code>N</code> 次内存重分配。</td>
+</tr>
+<tr>
+<td align="left">只能保存文本数据。</td>
+<td align="left">可以保存文本或者二进制数据。</td>
+</tr>
+<tr>
+<td align="left">可以使用所有 <code>&lt;string.h&gt;</code> 库中的函数。</td>
+<td align="left">可以使用一部分 <code>&lt;string.h&gt;</code> 库中的函数。</td>
+</tr>
+</tbody></table>
+<h2 id="redis的sds是如何实现的"><a href="#redis的sds是如何实现的" class="headerlink" title="redis的sds是如何实现的"></a>redis的sds是如何实现的</h2><p>由于c语言的string是以<code>\0</code>结尾的Redis单独封装了SDS简单动态字符串结构，如果在字符串变量十分多的情况下，会浪费十分多的内存空间，同时为了减少malloc操作，redis封装了自己的sds字符串。</p>
+<p>下面是网上查找的一个sds字符串实现的数据结构设计图：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/46b159febe6d4e039b5503e04c0f0616~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>s1,s2分别指向真实数据区域的头部，而要确定一个sds字符串的类型，则需要通过 s[-1] 来获取对应的flags，根据flags辨别出对应的Header类型，获取到Header类型之后，根据最低三位获取header的类型（这也是使用<code>__attribute__ ((__packed__))</code>关键字的原因下文会说明）：</p>
+<ul>
+<li>由于s1[-1] == 0x01 == SDS_TYPE_8，因此s1的header类型是sdshdr8。</li>
+<li>由于s2[-1] == 0x02 == SDS_TYPE_16，因此s2的header类型是sdshdr16。</li>
+</ul>
+<p>下面的部分是sds的实现源代码：</p>
+<p>sds一共有5种类型的header。之所以有5种，是为了能让不同长度的字符串可以使用不同大小的header。这样，短字符串就能使用较小的header，从而节省内存。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">char</span> *sds;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 这个比较特殊，基本上用不到</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr5</span> &#123;</span></span><br><span class="line">    usigned <span class="keyword">char</span> flags;</span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr8</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint8_t</span> len;</span><br><span class="line">    <span class="keyword">uint8_t</span> alloc;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags;</span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr16</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint16_t</span> len;</span><br><span class="line">    <span class="keyword">uint16_t</span> alloc;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags;</span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//string_size &lt; 1ll&lt;&lt;32</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr32</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint32_t</span> len;</span><br><span class="line">    <span class="keyword">uint32_t</span> alloc;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags;</span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//string_size &lt; 1ll&lt;&lt;32</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr64</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint64_t</span> len;</span><br><span class="line">    <span class="keyword">uint64_t</span> alloc;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags;</span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 定义了五种header类型，用于表示不同长度的string </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_5 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_8 1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_16 2</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_32 3</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_64 4</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_MASK 7 <span class="comment">// 类型掩码</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_BITS 3 <span class="comment">// </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_HDR_VAR(T,s) struct sdshdr##T *sh = (void*)((s)-(sizeof(struct sdshdr##T))); <span class="comment">// 获取header头指针</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_HDR(T,s) ((struct sdshdr##T *)((s)-(sizeof(struct sdshdr##T)))) <span class="comment">// 获取header头指针</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_5_LEN(f) ((f)&gt;&gt;SDS_TYPE_BITS)</span></span><br></pre></td></tr></table></figure>
+
+<p>上面的代码需要注意以下两个点：</p>
+<ul>
+<li><p><code>__attribute__ ((__packed__))</code> 这是C语言的一种关键字,这将使这个结构体在内存中不再遵守字符串对齐规则，而是以内存紧凑的方式排列。目的时在指针寻址的时候，可以直接通过sds[-1]找到对应flags，有了flags就可以知道头部的类型，进而获取到对应的len，alloc信息，而不使用内存对齐，CPU寻址就会变慢，同时如果不对齐会造成CPU进行优化导致空白位不补0使得header和data不连续，最终无法通过flags获取低3位的header类型。</p>
+</li>
+<li><p><code>SDS_HDR_VAR</code>函数则通过结构体类型与字符串开始字节，获取到动态字符串头部的开始位置，并赋值给sh指针。<code>SDS_HDR</code>函数则通过类型与字符串开始字节，返回动态字符串头部的指针。</p>
+</li>
+</ul>
+<ul>
+<li>在各个header的定义中最后有一个char buf[]。我们注意到这是一个没有指明长度的字符数组，这是C语言中定义字符数组的一种特殊写法，称为柔性数组（<span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvRmxleGlibGVfYXJyYXlfbWVtYmVy" title="https://en.wikipedia.org/wiki/Flexible_array_member">flexible array member<i class="fa fa-external-link"></i></span>），只能定义在一个结构体的最后一个字段上。它在这里只是起到一个标记的作用，表示在flags字段后面就是一个字符数组，或者说，它指明了紧跟在flags字段后面的这个字符数组在结构体中的偏移位置。而程序在为header分配的内存的时候，它并不占用内存空间。如果计算sizeof(struct sdshdr16)的值，那么结果是5个字节，其中没有buf字段。</li>
+</ul>
+<blockquote>
+<p>关于柔性数组的介绍：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NlMTIzX3pob3V3ZWkvYXJ0aWNsZS9kZXRhaWxzLzg5NzMwNzM=" title="https://blog.csdn.net/ce123_zhouwei/article/details/8973073">深入浅出C语言中的柔性数组<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<ul>
+<li><strong>sdshdr5</strong>与其它几个header结构不同，它不包含alloc字段，而长度使用flags的<strong>高5位</strong>来存储。因此，它不能为字符串分配空余空间。如果字符串需要动态增长，那么它就必然要重新分配内存才行。所以说，这种类型的sds字符串更适合存储静态的短字符串（长度小于32）。</li>
+</ul>
+<p>同时根据上面的结构可以看到，SDS结构分为两个部分：</p>
+<ul>
+<li><strong>len、alloc、flags</strong>。只是<code>sdshdr5</code>有所不同，<ul>
+<li>len: 表示字符串的真正长度（不包含NULL结束符在内）。</li>
+<li>alloc: 表示字符串的最大容量（不包含最后多余的那个字节）。</li>
+<li>flags: 总是占用一个字节。其中的最低3个bit用来表示header的类型。header的类型共有5种，在sds.h中有常量定义。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_5  0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_8  1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_16 2</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_32 3</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SDS_TYPE_64 4</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>buf[]</strong>：柔性数组，之前有提到过，其实就是具体的数据存储区域，注意这里实际存储的数据的时候末尾存在<code>NULL</code></li>
+</ul>
+<blockquote>
+<p>小贴士：</p>
+<p>#define SDS_HDR(T,s) ((struct sdshdr##T *)((s)-(sizeof(struct sdshdr##T))))</p>
+<p>#号有什么作用？</p>
+<p>这个的含义是让”#”后面的变量按照<strong>普通字符串</strong>来处理</p>
+<p>双#又有什么用处呢？</p>
+<p>双“#”号可以理解为，在单“#”号的基础上，增加了连接功能</p>
+</blockquote>
+<h2 id="sds的创建和销毁"><a href="#sds的创建和销毁" class="headerlink" title="sds的创建和销毁"></a>sds的创建和销毁</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">sds <span class="title">sdsnewlen</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *init, <span class="keyword">size_t</span> initlen)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">void</span> *sh;</span><br><span class="line">    sds s;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">char</span> type = sdsReqType(initlen);</span><br><span class="line">    <span class="comment">/* Empty strings are usually created in order to append. Use type 8</span></span><br><span class="line"><span class="comment">     * since type 5 is not good at this. */</span></span><br><span class="line">    <span class="keyword">if</span> (type == SDS_TYPE_5 &amp;&amp; initlen == <span class="number">0</span>) type = SDS_TYPE_8;</span><br><span class="line">    <span class="keyword">int</span> hdrlen = sdsHdrSize(type);</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> *fp; <span class="comment">/* flags pointer. */</span></span><br><span class="line"></span><br><span class="line">    sh = s_malloc(hdrlen+initlen+<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (!init)</span><br><span class="line">        <span class="built_in">memset</span>(sh, <span class="number">0</span>, hdrlen+initlen+<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (sh == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    s = (<span class="keyword">char</span>*)sh+hdrlen;</span><br><span class="line">    fp = ((<span class="keyword">unsigned</span> <span class="keyword">char</span>*)s)<span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">switch</span>(type) &#123;</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_5: &#123;</span><br><span class="line">            *fp = type | (initlen &lt;&lt; SDS_TYPE_BITS);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_8: &#123;</span><br><span class="line">            SDS_HDR_VAR(<span class="number">8</span>,s);</span><br><span class="line">            sh-&gt;len = initlen;</span><br><span class="line">            sh-&gt;alloc = initlen;</span><br><span class="line">            *fp = type;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_16: &#123;</span><br><span class="line">            SDS_HDR_VAR(<span class="number">16</span>,s);</span><br><span class="line">            sh-&gt;len = initlen;</span><br><span class="line">            sh-&gt;alloc = initlen;</span><br><span class="line">            *fp = type;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_32: &#123;</span><br><span class="line">            SDS_HDR_VAR(<span class="number">32</span>,s);</span><br><span class="line">            sh-&gt;len = initlen;</span><br><span class="line">            sh-&gt;alloc = initlen;</span><br><span class="line">            *fp = type;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_64: &#123;</span><br><span class="line">            SDS_HDR_VAR(<span class="number">64</span>,s);</span><br><span class="line">            sh-&gt;len = initlen;</span><br><span class="line">            sh-&gt;alloc = initlen;</span><br><span class="line">            *fp = type;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (initlen &amp;&amp; init)</span><br><span class="line">        <span class="built_in">memcpy</span>(s, init, initlen);</span><br><span class="line">    s[initlen] = <span class="string">'\0'</span>;</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">sds <span class="title">sdsempty</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sdsnewlen(<span class="string">""</span>,<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">sds <span class="title">sdsnew</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *init)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 如果initlen 为NULL,使用0作为初始化数据</span></span><br><span class="line">    <span class="keyword">size_t</span> initlen = (init == <span class="literal">NULL</span>) ? <span class="number">0</span> : <span class="built_in">strlen</span>(init);</span><br><span class="line">    <span class="keyword">return</span> sdsnewlen(init, initlen);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sdsfree</span><span class="params">(sds s)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (s == <span class="literal">NULL</span>) <span class="keyword">return</span>;</span><br><span class="line">    s_free((<span class="keyword">char</span>*)s-sdsHdrSize(s[<span class="number">-1</span>]));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的源代码需要注意如下几个点：</p>
+<ol>
+<li><strong>SDS_TYPE_5</strong>由于设计之初按照常量对待，实际情况大多数为append操作扩容，而<strong>SDS_TYPE_5</strong>扩容会造成内存的分配，所以使用<strong>SDS_TYPE_8</strong> 进行判定</li>
+<li>SDS字符串的长度为：<code>hdrlen+initlen+1</code> -&gt; <code>sds_header</code>的长度 + 初始化长度 + 1 (末尾占位符<code>NULL</code>判定字符串结尾)</li>
+<li><code>s[initlen] = &#39;\0&#39;;</code> 字符串末尾会使用<code>\0</code>进行结束标志：代表为<code>NULL</code></li>
+<li>sdsfree释放sds字符串需要计算出Header的起始位置，具体为<code>s_malloc</code>指针所指向的位置</li>
+</ol>
+<p>知道了sds如何创建之后，我们可以了解一下里面调用的具体函数。比如<strong>sdsReqType</strong>，<strong>sdsReqType</strong>方法定义了获取类型的方法，首先根据操作系统的位数根据判别 <code>LLONG_MAX</code>是否等于<code>LONG_MAX</code>，根据机器确定为32位的情况下分配sds32，同时在64位的操作系统上根据判断小于2^32分配sds32，否则分配sds64。</p>
+<p>这里值得注意的是：<code>string_size &lt; 1ll&lt;&lt;32</code>这段代码在<strong>redis3.2</strong>中才进行了bug修复，在早期版本当中这里存在分配类型的<code>Bug</code></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FudGlyZXovcmVkaXMvY29tbWl0LzYwMzIzNDA3NmY0ZTU5OTY3ZjMzMWJjOTdkZTNjMGRiOTk0N2M4ZWY=" title="https://github.com/antirez/redis/commit/603234076f4e59967f331bc97de3c0db9947c8ef">commit<i class="fa fa-external-link"></i></span></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">char</span> <span class="title">sdsReqType</span><span class="params">(<span class="keyword">size_t</span> string_size)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (string_size &lt; <span class="number">1</span>&lt;&lt;<span class="number">5</span>)</span><br><span class="line">        <span class="keyword">return</span> SDS_TYPE_5;</span><br><span class="line">    <span class="keyword">if</span> (string_size &lt; <span class="number">1</span>&lt;&lt;<span class="number">8</span>)</span><br><span class="line">        <span class="keyword">return</span> SDS_TYPE_8;</span><br><span class="line">    <span class="keyword">if</span> (string_size &lt; <span class="number">1</span>&lt;&lt;<span class="number">16</span>)</span><br><span class="line">        <span class="keyword">return</span> SDS_TYPE_16;</span><br><span class="line"><span class="comment">// 在一些稍微久远一点的文章上面没有这一串代码 #</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> (LONG_MAX == LLONG_MAX)</span></span><br><span class="line">    <span class="keyword">if</span> (string_size &lt; <span class="number">1l</span>l&lt;&lt;<span class="number">32</span>)</span><br><span class="line">        <span class="keyword">return</span> SDS_TYPE_32;</span><br><span class="line">    <span class="keyword">return</span> SDS_TYPE_64;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="keyword">return</span> SDS_TYPE_32;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再来看下<code>sdslen</code>方法，<strong>s[-1]</strong>用于向低位地址偏移一个字节，和<code>SDS_TYPE_MASK</code>按位与的操作，获得Header类型，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">size_t</span> <span class="title">sdslen</span><span class="params">(<span class="keyword">const</span> sds s)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags = s[<span class="number">-1</span>];</span><br><span class="line">    <span class="comment">// SDS_TYPE_MASK == 7</span></span><br><span class="line">    <span class="keyword">switch</span>(flags&amp;SDS_TYPE_MASK) &#123;</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_5:</span><br><span class="line">            <span class="keyword">return</span> SDS_TYPE_5_LEN(flags);</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_8:</span><br><span class="line">            <span class="keyword">return</span> SDS_HDR(<span class="number">8</span>,s)-&gt;len;</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_16:</span><br><span class="line">            <span class="keyword">return</span> SDS_HDR(<span class="number">16</span>,s)-&gt;len;</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_32:</span><br><span class="line">            <span class="keyword">return</span> SDS_HDR(<span class="number">32</span>,s)-&gt;len;</span><br><span class="line">        <span class="keyword">case</span> SDS_TYPE_64:</span><br><span class="line">            <span class="keyword">return</span> SDS_HDR(<span class="number">64</span>,s)-&gt;len;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="sds的连接（追加）操作"><a href="#sds的连接（追加）操作" class="headerlink" title="sds的连接（追加）操作"></a>sds的连接（追加）操作</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Append the specified binary-safe string pointed by 't' of 'len' bytes to the</span></span><br><span class="line"><span class="comment"> * end of the specified sds string 's'.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * After the call, the passed sds string is no longer valid and all the</span></span><br><span class="line"><span class="comment"> * references must be substituted with the new pointer returned by the call. */</span></span><br><span class="line"></span><br><span class="line"><span class="function">sds <span class="title">sdscatlen</span><span class="params">(sds s, <span class="keyword">const</span> <span class="keyword">void</span> *t, <span class="keyword">size_t</span> len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">size_t</span> curlen = sdslen(s);</span><br><span class="line"></span><br><span class="line">    s = sdsMakeRoomFor(s,len);</span><br><span class="line">    <span class="keyword">if</span> (s == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="built_in">memcpy</span>(s+curlen, t, len);</span><br><span class="line">    sdssetlen(s, curlen+len);</span><br><span class="line">    <span class="comment">// 注意末尾需要设置占位符\0代表结束标志</span></span><br><span class="line">    s[curlen+len] = <span class="string">'\0'</span>;</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">sds <span class="title">sdscat</span><span class="params">(sds s, <span class="keyword">const</span> <span class="keyword">char</span> *t)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sdscatlen(s, t, <span class="built_in">strlen</span>(t));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">sds <span class="title">sdscatsds</span><span class="params">(sds s, <span class="keyword">const</span> sds t)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sdscatlen(s, t, sdslen(t));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// sds实现的一个核心代码，用于判别是否可以追加以及是否有足够的空间</span></span><br><span class="line"><span class="function">sds <span class="title">sdsMakeRoomFor</span><span class="params">(sds s, <span class="keyword">size_t</span> addlen)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">void</span> *sh, *newsh;</span><br><span class="line">    <span class="keyword">size_t</span> avail = sdsavail(s);</span><br><span class="line">    <span class="keyword">size_t</span> len, newlen;</span><br><span class="line">    <span class="keyword">char</span> type, oldtype = s[<span class="number">-1</span>] &amp; SDS_TYPE_MASK;</span><br><span class="line">    <span class="keyword">int</span> hdrlen;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Return ASAP if there is enough space left. */</span></span><br><span class="line">    <span class="comment">// 如果原来的空间大于增加后的空间，直接返回</span></span><br><span class="line">    <span class="keyword">if</span> (avail &gt;= addlen) <span class="keyword">return</span> s;</span><br><span class="line"></span><br><span class="line">    len = sdslen(s);</span><br><span class="line">    sh = (<span class="keyword">char</span>*)s-sdsHdrSize(oldtype);</span><br><span class="line">    newlen = (len+addlen);</span><br><span class="line">    <span class="comment">// 如果小于 1M，则分配他的两倍大小，否则分配 +1M</span></span><br><span class="line">    <span class="keyword">if</span> (newlen &lt; SDS_MAX_PREALLOC)</span><br><span class="line">        newlen *= <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        newlen += SDS_MAX_PREALLOC;</span><br><span class="line"></span><br><span class="line">    type = sdsReqType(newlen);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Don't use type 5: the user is appending to the string and type 5 is</span></span><br><span class="line"><span class="comment">     * not able to remember empty space, so sdsMakeRoomFor() must be called</span></span><br><span class="line"><span class="comment">     * at every appending operation. */</span></span><br><span class="line">    <span class="comment">// sdsheader5 会造成内存的重新分配，使用header8替代</span></span><br><span class="line">    <span class="keyword">if</span> (type == SDS_TYPE_5) type = SDS_TYPE_8;</span><br><span class="line"></span><br><span class="line">    hdrlen = sdsHdrSize(type);</span><br><span class="line">    <span class="comment">// 如果不需要重新分配header，那么试着在原来的alloc空间分配内存</span></span><br><span class="line">    <span class="keyword">if</span> (oldtype==type) &#123;</span><br><span class="line">        newsh = s_realloc(sh, hdrlen+newlen+<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (newsh == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">        s = (<span class="keyword">char</span>*)newsh+hdrlen;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">/* Since the header size changes, need to move the string forward,</span></span><br><span class="line"><span class="comment">         * and can't use realloc */</span></span><br><span class="line">        <span class="comment">// 如果需要更换Header，则需要进行数据的搬迁</span></span><br><span class="line">        newsh = s_malloc(hdrlen+newlen+<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (newsh == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">        <span class="built_in">memcpy</span>((<span class="keyword">char</span>*)newsh+hdrlen, s, len+<span class="number">1</span>);</span><br><span class="line">        s_free(sh);</span><br><span class="line">        s = (<span class="keyword">char</span>*)newsh+hdrlen;</span><br><span class="line">        s[<span class="number">-1</span>] = type;</span><br><span class="line">        sdssetlen(s, len);</span><br><span class="line">    &#125;</span><br><span class="line">    sdssetalloc(s, newlen);</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过上面的函数可以了解到每次传入的都是一个旧变量，但是在返回的时候，都是<strong>新的sds变量</strong>，redis多数的数据结构都采用这种方式处理。</p>
+<p>同时我们可以确认一下几个点：</p>
+<ul>
+<li><strong>append</strong>操作的实现函数为<code>sdscatlen</code>函数</li>
+<li><code>getrange</code>这种截取一段字符串内容的方式可以直接操作字符数组，对于部分内容操作看起来比较容易，效率也比较高。</li>
+</ul>
+<h2 id="sds字符串-的空间扩容策略："><a href="#sds字符串-的空间扩容策略：" class="headerlink" title="sds字符串 的空间扩容策略："></a>sds字符串 的空间扩容策略：</h2><ol>
+<li>如果sds字符串修改之后，空间小于1M，扩容和len等长的未分配空间。比如修改之后为13个字节，那么程序也会分配 <code>13</code> 字节的未使用空间</li>
+<li>如果修改之后大于等于1M，则分配1M的内存空间，比如修改之后为30M,则buf的实际长度为：30M+1M+1Byte</li>
+</ol>
+<p>简单来说就是：</p>
+<ul>
+<li>小于1M，扩容修改后长度2倍</li>
+<li>大于1M，扩容1M</li>
+</ul>
+<h2 id="字符串命令的实现"><a href="#字符串命令的实现" class="headerlink" title="字符串命令的实现"></a>字符串命令的实现</h2><table>
+<thead>
+<tr>
+<th align="left">命令</th>
+<th align="left"><code>int</code> 编码的实现方法</th>
+<th align="left"><code>embstr</code> 编码的实现方法</th>
+<th align="left"><code>raw</code> 编码的实现方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">SET</td>
+<td align="left">使用 <code>int</code> 编码保存值。</td>
+<td align="left">使用 <code>embstr</code> 编码保存值。</td>
+<td align="left">使用 <code>raw</code> 编码保存值。</td>
+</tr>
+<tr>
+<td align="left">GET</td>
+<td align="left">拷贝对象所保存的整数值， 将这个拷贝转换成字符串值， 然后向客户端返回这个字符串值。</td>
+<td align="left">直接向客户端返回字符串值。</td>
+<td align="left">直接向客户端返回字符串值。</td>
+</tr>
+<tr>
+<td align="left">APPEND</td>
+<td align="left">将对象转换成 <code>raw</code> 编码， 然后按 <code>raw</code> 编码的方式执行此操作。</td>
+<td align="left">将对象转换成 <code>raw</code> 编码， 然后按 <code>raw</code> 编码的方式执行此操作。</td>
+<td align="left">调用 <code>sdscatlen</code> 函数， 将给定字符串追加到现有字符串的末尾。</td>
+</tr>
+<tr>
+<td align="left">INCRBYFLOAT</td>
+<td align="left">取出整数值并将其转换成 <code>long double</code> 类型的浮点数， 对这个浮点数进行加法计算， 然后将得出的浮点数结果保存起来。</td>
+<td align="left">取出字符串值并尝试将其转换成 <code>long double</code> 类型的浮点数， 对这个浮点数进行加法计算， 然后将得出的浮点数结果保存起来。 如果字符串值不能被转换成浮点数， 那么向客户端返回一个错误。</td>
+<td align="left">取出字符串值并尝试将其转换成 <code>long double</code> 类型的浮点数， 对这个浮点数进行加法计算， 然后将得出的浮点数结果保存起来。 如果字符串值不能被转换成浮点数， 那么向客户端返回一个错误。</td>
+</tr>
+<tr>
+<td align="left">INCRBY</td>
+<td align="left">对整数值进行加法计算， 得出的计算结果会作为整数被保存起来。</td>
+<td align="left"><code>embstr</code> 编码不能执行此命令， 向客户端返回一个错误。</td>
+<td align="left"><code>raw</code> 编码不能执行此命令， 向客户端返回一个错误。</td>
+</tr>
+<tr>
+<td align="left">DECRBY</td>
+<td align="left">对整数值进行减法计算， 得出的计算结果会作为整数被保存起来。</td>
+<td align="left"><code>embstr</code> 编码不能执行此命令， 向客户端返回一个错误。</td>
+<td align="left"><code>raw</code> 编码不能执行此命令， 向客户端返回一个错误。</td>
+</tr>
+<tr>
+<td align="left">STRLEN</td>
+<td align="left">拷贝对象所保存的整数值， 将这个拷贝转换成字符串值， 计算并返回这个字符串值的长度。</td>
+<td align="left">调用 <code>sdslen</code> 函数， 返回字符串的长度。</td>
+<td align="left">调用 <code>sdslen</code> 函数， 返回字符串的长度。</td>
+</tr>
+<tr>
+<td align="left">SETRANGE</td>
+<td align="left">将对象转换成 <code>raw</code> 编码， 然后按 <code>raw</code> 编码的方式执行此命令。</td>
+<td align="left">将对象转换成 <code>raw</code> 编码， 然后按 <code>raw</code> 编码的方式执行此命令。</td>
+<td align="left">将字符串特定索引上的值设置为给定的字符。</td>
+</tr>
+<tr>
+<td align="left">GETRANGE</td>
+<td align="left">拷贝对象所保存的整数值， 将这个拷贝转换成字符串值， 然后取出并返回字符串指定索引上的字符。</td>
+<td align="left">直接取出并返回字符串指定索引上的字符。</td>
+<td align="left">直接取出并返回字符串指定索引上的字符。</td>
+</tr>
+</tbody></table>
+<h2 id="结尾："><a href="#结尾：" class="headerlink" title="结尾："></a>结尾：</h2><p>多多翻翻资料，其实很多东西不需要去钻研细节，有很多优秀的人为我们答疑解惑，所以最重要的是理解作者为什么要这样设计，学习任何东西都要学习思想，思想层面的东西才是最有价值的。</p>
+<p>sds已经被许多大佬文章进行过说明，这篇文章只是简单的归纳了一下自己看的内容，<strong>如果有错误的地方还望指正</strong>，谢谢</p>
+<h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><p>下面是个人学习sds的参考资料：</p>
+<p>Redis内部数据结构详解(2)——sds</p>
+<p><span class="exturl" data-url="aHR0cDovL3poYW5ndGllbGVpLmNvbS9wb3N0cy9ibG9nLXJlZGlzLXNkcy5odG1s" title="http://zhangtielei.com/posts/blog-redis-sds.html">http://zhangtielei.com/posts/blog-redis-sds.html<i class="fa fa-external-link"></i></span></p>
+<p>解析redis的字符串sds数据结构：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3d1eGluZzI2amlheW91L2FydGljbGUvZGV0YWlscy83OTY0NDMwOQ==" title="https://blog.csdn.net/wuxing26jiayou/article/details/79644309">https://blog.csdn.net/wuxing26jiayou/article/details/79644309<i class="fa fa-external-link"></i></span></p>
+<p>SDS 与 C 字符串的区别</p>
+<p><span class="exturl" data-url="aHR0cDovL3JlZGlzYm9vay5jb20vcHJldmlldy9zZHMvZGlmZmVyZW50X2JldHdlZW5fc2RzX2FuZF9jX3N0cmluZy5odG1s" title="http://redisbook.com/preview/sds/different_between_sds_and_c_string.html">http://redisbook.com/preview/sds/different_between_sds_and_c_string.html<i class="fa fa-external-link"></i></span></p>
+<p>Redis源码剖析–动态字符串SDS</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8yNDIwMjMxNg==" title="https://zhuanlan.zhihu.com/p/24202316">https://zhuanlan.zhihu.com/p/24202316<i class="fa fa-external-link"></i></span></p>
+<p>C基础 带你手写 redis sds</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cubGFnb3UuY29tL2xnZWR1YXJ0aWNsZS83NzEwMS5odG1s" title="https://www.lagou.com/lgeduarticle/77101.html">https://www.lagou.com/lgeduarticle/77101.html<i class="fa fa-external-link"></i></span></p>
+<p>redis源码分析系列文章</p>
+<p><span class="exturl" data-url="aHR0cDovL3d3dy5zb29sY28uY29tL3Bvc3QvNzMyMDRfMV8xLmh0bWw=" title="http://www.soolco.com/post/73204_1_1.html">http://www.soolco.com/post/73204_1_1.html<i class="fa fa-external-link"></i></span></p>
+<p><strong>Redis SDS (简单动态字符串) 源码阅读</strong></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jaGVuamlheWFuZy5tZS8yMDE4LzA0LzA4L3JlZGlzLXNkcy1zb3VyY2UtY29kZS8=" title="https://chenjiayang.me/2018/04/08/redis-sds-source-code/">https://chenjiayang.me/2018/04/08/redis-sds-source-code/<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://lazytime.site/2020/12/16/note/" title="redis学习 - sds字符串">https://lazytime.site/2020/12/16/note/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/redis/" rel="tag"># redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/13/note/" rel="prev" title="《恶意》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《恶意》读书笔记
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis学习-sds字符串"><span class="nav-number">1.</span> <span class="nav-text">redis学习 - sds字符串</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#redis的string-API使用"><span class="nav-number">1.1.</span> <span class="nav-text">redis的string API使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么redis-string-要使用sds字符串？"><span class="nav-number">1.2.</span> <span class="nav-text">为什么redis string 要使用sds字符串？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SDS字符串和C语言字符串库有什么区别"><span class="nav-number">1.3.</span> <span class="nav-text">SDS字符串和C语言字符串库有什么区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis的sds是如何实现的"><span class="nav-number">1.4.</span> <span class="nav-text">redis的sds是如何实现的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sds的创建和销毁"><span class="nav-number">1.5.</span> <span class="nav-text">sds的创建和销毁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sds的连接（追加）操作"><span class="nav-number">1.6.</span> <span class="nav-text">sds的连接（追加）操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sds字符串-的空间扩容策略："><span class="nav-number">1.7.</span> <span class="nav-text">sds字符串 的空间扩容策略：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串命令的实现"><span class="nav-number">1.8.</span> <span class="nav-text">字符串命令的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结尾："><span class="nav-number">1.9.</span> <span class="nav-text">结尾：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料："><span class="nav-number">2.</span> <span class="nav-text">参考资料：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">456k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">6:54</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
