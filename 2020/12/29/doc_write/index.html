@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="ZyC1bd11DZ5XV3P11yBfvTIuaPZzFxxkUEnAhZ6zQSA">
+  <meta name="baidu-site-verification" content="code-vIeEhdQrdN">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="如何写出好的接口文档和文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何写一份优秀的接口文档">
+<meta property="og:url" content="https://lazytime.site/2020/12/29/doc_write/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="如何写出好的接口文档和文档">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201226173034.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201226173949.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201229233100.jpg">
+<meta property="article:published_time" content="2020-12-29T15:55:07.000Z">
+<meta property="article:modified_time" content="2020-12-29T15:57:23.490Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="接口文档">
+<meta property="article:tag" content="文档">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201226173034.png">
+
+<link rel="canonical" href="https://lazytime.site/2020/12/29/doc_write/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>如何写一份优秀的接口文档 | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lazytime.site/2020/12/29/doc_write/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何写一份优秀的接口文档
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-12-29 23:55:07 / 修改时间：23:57:23" itemprop="dateCreated datePublished" datetime="2020-12-29T23:55:07+08:00">2020-12-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%96%87%E6%A1%A3/" itemprop="url" rel="index"><span itemprop="name">文档</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/12/29/doc_write/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/29/doc_write/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+            <div class="post-description">如何写出好的接口文档和文档</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="如何写一份优秀的接口文档"><a href="#如何写一份优秀的接口文档" class="headerlink" title="如何写一份优秀的接口文档"></a>如何写一份优秀的接口文档</h1><p>[TOC]</p>
+<a id="more"></a>
+
+<h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><p>最近看了很多写的非常好的接口文档，在理解业务方面给了非常多的帮助，解决很多时候对于一些<code>协商数据</code>的问题困扰，同时，后续个人的工作当中，也需要对外开放接口给第三方进行调用，这时候一个好的规范文档可以解决很多问题。</p>
+<h2 id="文章目的："><a href="#文章目的：" class="headerlink" title="文章目的："></a>文章目的：</h2><ol>
+<li>个人对于写接口文档的一些资料整理。</li>
+<li>学习如何写一份别人乐意去看的文档。</li>
+<li>希望可以通过本文帮助处理那些面临自己写接口文档的情况下无从下手的尴尬的局面。</li>
+</ol>
+<!-- more -->
+
+<h2 id="目录："><a href="#目录：" class="headerlink" title="目录："></a>目录：</h2><p>主要分为以下两个版本，两个版本各有各自的特点，需要应对不同的应用场景</p>
+<ol>
+<li>简单版本</li>
+<li>复杂版本</li>
+</ol>
+<h2 id="简单版本"><a href="#简单版本" class="headerlink" title="简单版本"></a>简单版本</h2><p>核心：如果你的案例可以直接依靠复制拿来使用，那这个文档就是好文档</p>
+<p>既然要简单，那就抓住核心：<strong>怎么简单怎么来，怎么省时间怎么来</strong></p>
+<p>如果不知道怎么写，就<strong>把案例写的越详细越好</strong>。</p>
+<p>开发时间是非常宝贵的，而接口对接通常都是一些工期紧张的情况下去快速编写，而且面对一些碎片化的时间工作者，一份简单直观的文档可能更受欢迎。</p>
+<p>另外，接口文档最终形式最好是pdf，以前遇到过接口文档写到<strong>word</strong>里面的，在不同的版本下可能会出现样式等各种问题</p>
+<blockquote>
+<p>最佳方式：word -&gt; pdf</p>
+</blockquote>
+<h3 id="简单版本的目录格式"><a href="#简单版本的目录格式" class="headerlink" title="简单版本的目录格式"></a>简单版本的目录格式</h3><ul>
+<li>接口说明</li>
+<li>请求示例</li>
+<li>请求参数说明</li>
+<li>响应示例</li>
+<li>响应参数说明</li>
+</ul>
+<h3 id="案例模板1："><a href="#案例模板1：" class="headerlink" title="案例模板1："></a>案例模板1：</h3><h4 id="接口说明："><a href="#接口说明：" class="headerlink" title="接口说明："></a>接口说明：</h4><p>接口功能：</p>
+<blockquote>
+<p>本接口用于获取用户的token信息。</p>
+</blockquote>
+<p>接口请求地址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https: xxx&#x2F;xxx&#x2F;xxxx</span><br></pre></td></tr></table></figure>
+
+<p><strong>请求头 :</strong>  </p>
+<table>
+<thead>
+<tr>
+<th>请求头</th>
+<th>请求内容</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Authorization</td>
+<td>Basic secretKey</td>
+<td>访问token</td>
+</tr>
+<tr>
+<td>Content-Type</td>
+<td>application/json</td>
+<td>请求方式</td>
+</tr>
+</tbody></table>
+<p><strong>请求方式:  POST</strong></p>
+<p><strong>参数类型</strong> ：<strong>JSON</strong></p>
+<h4 id="请求示例："><a href="#请求示例：" class="headerlink" title="请求示例："></a>请求示例：</h4><p>绝大多数为json，格式自定</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;<span class="attr">"id"</span>:<span class="string">"20201219"</span>,</span><br><span class="line">     <span class="attr">"name"</span>:<span class="string">"21.59"</span>，</span><br><span class="line">     <span class="string">"age"</span>:<span class="string">"ftp_1002"</span></span><br><span class="line">     ...</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;<span class="attr">"id"</span>:<span class="string">"20201219"</span>,</span><br><span class="line">     <span class="attr">"name"</span>:<span class="string">"21.59"</span>，</span><br><span class="line">     <span class="string">"age"</span>:<span class="string">"ftp_1002"</span></span><br><span class="line">     ...</span><br><span class="line">    &#125;,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h4 id="请求参数说明"><a href="#请求参数说明" class="headerlink" title="请求参数说明"></a>请求参数说明</h4><table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>字段说明</th>
+<th>字段类型</th>
+<th>是否必填</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字段1</td>
+<td>说明字段1的作用</td>
+<td>varchar(50)</td>
+<td>是</td>
+</tr>
+<tr>
+<td>字段2</td>
+<td>说明字段2的作用</td>
+<td>int</td>
+<td>是</td>
+</tr>
+<tr>
+<td>字段3</td>
+<td>说明字段3的作用</td>
+<td>decimal</td>
+<td>是</td>
+</tr>
+</tbody></table>
+<h4 id="响应示例"><a href="#响应示例" class="headerlink" title="响应示例"></a>响应示例</h4><p>成功响应编码：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    "code: "200",</span><br><span class="line">    "message": "请求成功",</span><br><span class="line">    "data": 返回数据，格式自定</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>失败响应编码：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    "code: "200",</span><br><span class="line">    "message": "请求成功",</span><br><span class="line">    "data": 返回数据，格式自定</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="响应参数说明"><a href="#响应参数说明" class="headerlink" title="响应参数说明"></a>响应参数说明</h4><table>
+<thead>
+<tr>
+<th><strong>接口返回码</strong></th>
+<th><strong>接口返回描述</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>200</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>400</td>
+<td>请求参数异常</td>
+</tr>
+<tr>
+<td>401</td>
+<td>授权失败</td>
+</tr>
+<tr>
+<td>500</td>
+<td>系统异常</td>
+</tr>
+</tbody></table>
+<h3 id="案例模板2："><a href="#案例模板2：" class="headerlink" title="案例模板2："></a>案例模板2：</h3><p>下面这种模板是单个接口的适合很实用，同时针对一些比较简单的接口这样处理还算比较直观</p>
+<p>核心是<strong>一个表包含所有信息</strong>，这对于一些接口量非常非常大的时候或者接口参数相似的时候比较有效果，这样可以使得内容比较紧凑，不会看了下一页忘记上一页的烦恼，当然缺点也很明显，会存在文字堆积的情况。</p>
+<blockquote>
+<p> markdown的表格在存放Json的数据时候不是很直观，建议使用<strong>word</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="left">接口名</th>
+<th align="left">UserUpdateService</th>
+<th align="left"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>接口请求地址</strong></td>
+<td align="left"><span class="exturl" data-url="aHR0cDovL3d3dy5iYWlkdS5jb20=" title="http://www.baidu.com">http://www.baidu.com<i class="fa fa-external-link"></i></span></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><strong>功能说明</strong></td>
+<td align="left">UserUpdateService接口是应用系统的账号修改方法</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><strong>请求参数</strong></td>
+<td align="left"><strong>参数名</strong></td>
+<td align="left"><strong>中文说明</strong></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">RequestId</td>
+<td align="left">平台每次调用生成的随机ID，应用系统每次响应返回此ID，String类型</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">uid</td>
+<td align="left">三方应用系统账号创建时，返回给应用系统的账号主键uid。<strong>必传字段</strong></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">loginName/ fullName</td>
+<td align="left">需要修改的账号字段属性</td>
+</tr>
+<tr>
+<td align="left"><strong>响应参数</strong></td>
+<td align="left"><strong>参数名</strong></td>
+<td align="left"><strong>中文说明</strong></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">RequestId</td>
+<td align="left">平台每次调用接口发送的请求ID，字段为String类型</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">resultCode</td>
+<td align="left">接口调用处理的结果码，<strong>0为正常处理</strong>，其它值由应用系统定义。字段为String类型，<strong>必传字段</strong>。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">message</td>
+<td align="left">接口调用处理的信息。字段为String类型</td>
+</tr>
+<tr>
+<td align="left"><strong>请求示例：</strong></td>
+<td align="left">{        “token”,””,  “treeCode”,” EXECUTIVE”,      “code”,””}</td>
+<td align="left">markdown展示不是很好看，建议word</td>
+</tr>
+<tr>
+<td align="left"><strong>返回值</strong></td>
+<td align="left">{      “xxxx”:  “xxxxxx”,      “resultCode”: “0”,      “message”:  “success”  }</td>
+<td align="left">markdown展示不是很好看，建议word</td>
+</tr>
+</tbody></table>
+<h3 id="案例模板3："><a href="#案例模板3：" class="headerlink" title="案例模板3："></a>案例模板3：</h3><p>下面这种可能不是很直观，但是参考很多文档发现好像类似的还不少，也可以参考一下。</p>
+<p>请求地址：<code>http://www.baidu.com</code></p>
+<h4 id="l-属性列表"><a href="#l-属性列表" class="headerlink" title="l 属性列表"></a>l <strong>属性列表</strong></h4><table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>中文命名</th>
+<th>值类型</th>
+<th>值必须</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>token</td>
+<td>令牌</td>
+<td>String</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>treeCode</td>
+<td>机构树编码</td>
+<td>String</td>
+<td>是</td>
+<td>如果为空表示根机构，默认填写” ROOT”</td>
+</tr>
+<tr>
+<td>code</td>
+<td>机构代码</td>
+<td>String</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>start_date</td>
+<td>开始日期</td>
+<td>Date</td>
+<td></td>
+<td>合同或项目的开始日期</td>
+</tr>
+<tr>
+<td>name</td>
+<td>机构名称</td>
+<td>String</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>end_date</td>
+<td>结束日期</td>
+<td>Date</td>
+<td></td>
+<td>合同或项目的结束日期</td>
+</tr>
+<tr>
+<td>user_num</td>
+<td>驻点人员数量</td>
+<td>Int</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>supplier_name</td>
+<td>供应商名称</td>
+<td>String</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>type</td>
+<td>机构类型</td>
+<td>String</td>
+<td>是</td>
+<td>项目机构ProjectOrg，行政机构AdministrativeOrg</td>
+</tr>
+<tr>
+<td>orgUpCode</td>
+<td>上层机构代码</td>
+<td>String</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>parentId</td>
+<td>父机构code</td>
+<td>String</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>isDisabled</td>
+<td>是否禁用</td>
+<td>Boolean</td>
+<td></td>
+<td>false</td>
+</tr>
+</tbody></table>
+<p>l <strong>响应属性列表</strong></p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>中文命名</th>
+<th>值类型</th>
+<th>值必须</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>code</td>
+<td>返回码</td>
+<td>String</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>message</td>
+<td>返回信息</td>
+<td>String</td>
+<td>是</td>
+<td>如果为空表示根机构，默认填写” ROOT”</td>
+</tr>
+<tr>
+<td>data</td>
+<td>返回内容</td>
+<td>String</td>
+<td>是</td>
+<td></td>
+</tr>
+</tbody></table>
+<h4 id="l-JSON数据示例"><a href="#l-JSON数据示例" class="headerlink" title="l JSON数据示例**"></a>l <strong>JSON数据示例**</strong></h4><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">[http:<span class="comment">//xxxxxxxx/xxx/xxx]</span></span><br><span class="line"></span><br><span class="line">请求参数：</span><br><span class="line"><span class="string">"</span></span><br><span class="line"><span class="string">    &#123;</span></span><br><span class="line"><span class="string">        “token”,””,               //必填</span></span><br><span class="line"><span class="string">        “treeCode”,” EXECUTIVE”,  //必填</span></span><br><span class="line"><span class="string">        “code”,””,                //必填</span></span><br><span class="line"><span class="string">        “entity”,” &#123;</span></span><br><span class="line"><span class="string">        "</span>code<span class="string">":"</span><span class="number">2222</span><span class="string">",            //必填</span></span><br><span class="line"><span class="string">        "</span> start_date<span class="string">":"</span><span class="string">",</span></span><br><span class="line"><span class="string">        "</span>name<span class="string">":"</span>字段名称<span class="string">",         //必填</span></span><br><span class="line"><span class="string">        "</span>end_date <span class="string">":"</span><span class="string">",   </span></span><br><span class="line"><span class="string">        "</span>user_num<span class="string">":"</span><span class="string">",</span></span><br><span class="line"><span class="string">        "</span>supplier_name<span class="string">":"</span><span class="string">",</span></span><br><span class="line"><span class="string">        “type”,””,   //指定类型  </span></span><br><span class="line"><span class="string">        "</span>orgUpCode<span class="string">":"</span><span class="number">11111</span><span class="string">",      //必填</span></span><br><span class="line"><span class="string">        "</span>parentId<span class="string">":"</span><span class="number">1111111</span><span class="string">",    //必填</span></span><br><span class="line"><span class="string">        “isDisabled”:” false”    //是否禁用</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">"</span></span><br><span class="line"></span><br><span class="line">响应：login</span><br><span class="line"></span><br><span class="line">JSON - 数据示例</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"> <span class="attr">"success"</span>: <span class="literal">true</span>,</span><br><span class="line"> <span class="attr">"data"</span>: &#123;</span><br><span class="line">     <span class="attr">"treeId"</span>: <span class="string">"ROOT"</span>,</span><br><span class="line">     <span class="attr">"parentId"</span>: <span class="number">112034</span>,</span><br><span class="line">     <span class="attr">"name"</span>: <span class="string">"3333"</span>,</span><br><span class="line"> &#125;,</span><br><span class="line"> <span class="attr">"errorCode"</span>: <span class="literal">null</span>,</span><br><span class="line"> <span class="attr">"errorName"</span>: <span class="literal">null</span>,</span><br><span class="line"> <span class="attr">"errorMessage"</span>: <span class="literal">null</span>,</span><br><span class="line"> <span class="attr">"errorException"</span>: &#123;</span><br><span class="line">  <span class="attr">"name"</span>: <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">"message"</span>: <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">"trace"</span>: <span class="literal">null</span></span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，一个简单的接口文档差不多就是这些内容，下面将会介绍一下复杂的做法（内容较多）</p>
+<h2 id="复杂版本"><a href="#复杂版本" class="headerlink" title="复杂版本"></a>复杂版本</h2><p>由于不同的公司有不同的文档格式要求，这里只给出我看过的几个文档罗列下来的一些文档内容，不一定通用，也不一定是很完美的，但是希望内容可以具备一定的参考价值。</p>
+<p>复杂版本的内容有点多。请耐心观看或者收藏再看（=v=）</p>
+<h3 id="复杂版本的目录格式"><a href="#复杂版本的目录格式" class="headerlink" title="复杂版本的目录格式"></a>复杂版本的目录格式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">+ 封面</span><br><span class="line">  + 接口文档名称</span><br><span class="line">  + 接口版本号</span><br><span class="line">  + 版权说明</span><br><span class="line">+ 文档信息</span><br><span class="line">  + 标题 | 创建时间 | 打印时间 | 文件名 | 存放目录 | 所有者 | 作用</span><br><span class="line">  + 小题：版权声明</span><br><span class="line">+ 版本历史（重点1）</span><br><span class="line">  + \| 版本号 \| 日期 \| 修改者 \| 描述 \|</span><br><span class="line">  + \| v1.0.0  \| xxx \| xxx \| xxx |</span><br><span class="line">+ 目录</span><br><span class="line">  + 结构清晰</span><br><span class="line">  + 有条理</span><br><span class="line">  + 能快速定位需要的信息（后文会介绍）</span><br><span class="line">+ 文档具体内容部分</span><br><span class="line">  + 编写目的</span><br><span class="line">  + 对接准备事项</span><br><span class="line">    + 测试联调</span><br><span class="line">    + 上线</span><br><span class="line">  + 使用协议 + 规范</span><br><span class="line">  + 报文规范</span><br><span class="line">    + 请求报文规范</span><br><span class="line">    + 响应报文规范</span><br><span class="line">  + 接口描述</span><br><span class="line">    + 报文规范</span><br><span class="line">      + 请求报文</span><br><span class="line">      + 响应报文</span><br><span class="line">      + 公共报文头</span><br><span class="line">      + 接口码说明</span><br><span class="line">      + 业务接口</span><br><span class="line">      + 查询接口</span><br><span class="line">    + 加解密规范</span><br><span class="line">      + 原则</span><br><span class="line">      + 令牌信息</span><br><span class="line">      + 加密规范</span><br><span class="line">      + 解密规范</span><br><span class="line">  + 业务接口</span><br><span class="line">    + 具体接口1：</span><br><span class="line">      + 说明</span><br><span class="line">      + 规范码（查表）</span><br><span class="line">      + 使用方式</span><br><span class="line">      + 请求字段</span><br><span class="line">      + 响应字段</span><br><span class="line">      + 案例</span><br><span class="line">    + 具体接口2....</span><br><span class="line">    ........</span><br><span class="line">  + 附录</span><br><span class="line">    + 参考资料1</span><br><span class="line">    + 参考资料2</span><br><span class="line">  + 其他.....</span><br></pre></td></tr></table></figure>
+
+<h3 id="案例："><a href="#案例：" class="headerlink" title="案例："></a>案例：</h3><h4 id="封面："><a href="#封面：" class="headerlink" title="封面："></a>封面：</h4><p>封面还是比较重要的，毕竟是打开文档的第一眼内容，下面用阿里的文档作为参考，可以看到封面一般是如下内容：</p>
+<ul>
+<li>公司名称</li>
+<li>文档名称</li>
+<li>版本号</li>
+</ul>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201226173034.png" alt=""></p>
+<h4 id="文档信息："><a href="#文档信息：" class="headerlink" title="文档信息："></a>文档信息：</h4><p>文档信息主要记录这份文件的产生日期以及具体的创建打印日期等。</p>
+<table>
+<thead>
+<tr>
+<th>文档名</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>标题</td>
+<td>一份帅气的文档</td>
+</tr>
+<tr>
+<td>创建日期</td>
+<td>20xx-xx-xx</td>
+</tr>
+<tr>
+<td>打印日期</td>
+<td>20xx-xx-xx</td>
+</tr>
+<tr>
+<td>文件名</td>
+<td>文档的全名</td>
+</tr>
+<tr>
+<td>存放目录</td>
+<td>文件位置</td>
+</tr>
+<tr>
+<td>所有者</td>
+<td>某某公司</td>
+</tr>
+<tr>
+<td>作者</td>
+<td>张三</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>版权声明：（现在这个时代版权是极其重要的）</p>
+<p>xxxx所有，不得三方借阅、出让、出版</p>
+</blockquote>
+<h4 id="版本历史："><a href="#版本历史：" class="headerlink" title="版本历史："></a>版本历史：</h4><p>版本历史是很重要的，每次改动都需要有详细的记录，这样才能保证文档的干净和有效，同时可以方便<strong>review</strong>的时候，对于文档的修订者进行文档审查</p>
+<table>
+<thead>
+<tr>
+<th>版本号</th>
+<th>日期</th>
+<th>概述</th>
+<th>修订者</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.0.0</td>
+<td>20xx-xx-xx</td>
+<td>创建</td>
+<td>张三</td>
+</tr>
+<tr>
+<td>1.0.1</td>
+<td>20xx-xx-xx</td>
+<td>修改文档第一小节内容</td>
+<td>李四</td>
+</tr>
+<tr>
+<td>1.0.2</td>
+<td>20xx-xx-xx</td>
+<td>修订文档第四小节的错误描述，更新文档说明</td>
+<td>王五</td>
+</tr>
+</tbody></table>
+<p>目录：</p>
+<p>好的文档一定有好的目录，只要按照一定的规范和格式写出来的文档，一般看上去都是十分舒服的。还是用阿里的开发手册做参考<br><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201226173949.png" alt=""></p>
+<h4 id="文档具体内容部分"><a href="#文档具体内容部分" class="headerlink" title="文档具体内容部分"></a>文档具体内容部分</h4><p>这一部分发挥的自由空间就比较大了，不同的业务不同的公司不同的需求不同的人都能写出万千种格式的文档，所以这里也是给一个样例做参考使用。是否有实用价值因人而异。</p>
+<blockquote>
+<p> 为了不让整个目录树太长，这里没有做标题说明=-=</p>
+</blockquote>
+<p><strong>编写目的：</strong></p>
+<p>需要解决什么问题，为什么要这份文档，这份文档有什么参考价值？</p>
+<p><strong>对接准备事项：</strong></p>
+<p>接口方可以提供什么内容，接口方需要对接方的那些内容，以及提供的其他信息，比如需要对接方提供 <strong>系统应用id</strong>，<strong>系统唯一标识</strong>。向对接方提供密钥等等</p>
+<pre><code>1. **测试联调**：分配测试的密钥，测试环境的账户和密码以及其他信息
+
+2. **上线**：上线之后需要做什么事情，如：替换生产url，替换生产环境账户密码，替换密钥为生产密钥等等</code></pre><p><strong>使用协议 + 规范</strong>：</p>
+<p>可以是本次对接使用的算法，通信协议，可以是术语说明或者和业务相关的其他说明，以及对接的要求都可以，发挥空间很大，自由设计。</p>
+<p><strong>报文规范：</strong></p>
+<p>报文规范是接口对接的核心部分，因为对接大部分的时间基本都是花在接口参数调试和请求调试等。所以报文规范算是非常重要的内容。具体内容可以参考简单版本的接口描述，也可以使用目录格式进行对应的描述</p>
+<pre><code>+ 请求报文：主要为请求的Body,以及请求的header内容，一般都是Json的格式，并且要求UTF8编码
++ 响应报文：返回的格式和内容，也是需要协商的部分
++ 公共报文头：一般需要重复使用的参数可以作为公共报文头，但是不是所有的公共报文头都是必选，存在可选的参数
++ 接口码说明：描述接口的注意事项，以及那些字段参数需要重点关注，主要为提示信息
++ 业务接口：一般表示业务的返回结果，比如统一2000作为报文的成功响应码，其他所有码都是存在对应的接口码表进行设计。
++ 查询接口：如何才算是表示查询成功，比如一个还钱的接口当中可能是受理中，拒绝或者处理完成，等查询接口的信息描述</code></pre><p><strong>加解密规范</strong>：</p>
+<p>也是比较重要的部分，也是比较花时间的地方，需要大量调试来打通接口的地方，存在以下的几个要点</p>
+<ul>
+<li><p>原则：接口存在一些简单的原则，比如<code>非对称加密</code>，<code>数字签名</code>，<code>时间戳判断有效性</code>，具体按照接口的原则自由设置</p>
+</li>
+<li><p>令牌信息：描述令牌是如何生成的，是比较重要的部分，一般由对接双方沟通完成，最好多以案例和代码辅助解释</p>
+</li>
+<li><p><strong>加密规范</strong>：描述接口数据的加密过程，比较重要的内容信息，最好多以案例和代码辅助解释</p>
+</li>
+<li><p><strong>解密规范</strong>：就是解释接口要如何解密，比如需要拿到服务端给过来的配对公钥才能解密，再比如使用签名+参数进行对照加密验证签名是否正确等。</p>
+</li>
+</ul>
+<h5 id="加解密规范参考："><a href="#加解密规范参考：" class="headerlink" title="加解密规范参考："></a>加解密规范参考：</h5><p>一般的加密方式，一般情况下做到下面这种形式基本可以屏蔽大部分的攻击：</p>
+<ol>
+<li>按照map的key进行字典排序，同时加入<code>timetamp</code>值校验核对时间</li>
+<li>把参数按照一些特殊形式拼接为<code>key=value&amp;key=value</code>的形式，末尾带入时间戳或者其他的一些信息，比如应用Id等核实身份的内容</li>
+<li>把这一串按照<strong>AES加密</strong>，然后按照<strong>BASE64编码</strong>，生成一个编码串</li>
+<li>把BASE64编码进行<strong>MD5加密</strong>，加密完成之后，得到固定长度的MD5字符串</li>
+<li>按照md5串+上面的string在进行一次md5加密，生成签名，那么这个签名基本上就唯一的</li>
+</ol>
+<p><strong>业务接口</strong></p>
+<p>这里基本可以<strong>照抄简单接口模板</strong>，因为接口描述每个人的描述不同，下面给出一些基本上涉及的点，另外，到了这一步就尽量用案例辅助，因为案例可以帮助接口阅读者更快速的上手和理解，注意这一部分的内容：<strong>实用性大于理论性</strong></p>
+<p>具体接口：</p>
+<ol>
+<li>说明</li>
+<li>规范码（查表）</li>
+<li>使用方式</li>
+<li>请求字段</li>
+<li>响应字段</li>
+<li>案例</li>
+</ol>
+<p><strong>附录</strong>：</p>
+<p>可能这部分和说明书一样基本没人看，所以不做过多的解释，个人到目前为止看过的接口文档基本没有遇到附录写的很详细的，这里可以随意施展。</p>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>本篇文章将接口文档分为两种模式来讲解：</p>
+<ol>
+<li>简单版本：核心是 <strong>怎么简单怎么来</strong>，如何工程紧或者非常讨厌写文的人可以使用这种方式，优点是出货速度快，缺点嘛，简单的东西可能造成很多细节的忽略，有时候写文的人也会忽略，所以还是需要多注意一下不要直接CV</li>
+<li>复杂版本：我想基本没几个人想写这种复杂文档，一份文档写下来基本半天没了，</li>
+</ol>
+<p>个人还是非常喜欢写文档的，一方面是写文档可以提高自己的文档功底，同时和费曼学习法的方式十分的贴切，可以通过写作来回顾和总结思路过程，另一方面，一份好文档真的可以省未来的时间成本，想象一下如何你可以在当别人来问你就甩一份文档解决问题的时候，可以给自己大量的时间减少自己的沟通成本，对于日常工作中被打断思路再常见不过了，用文档记录的形式记录可能在以后要回过来改代码的救一命。</p>
+<p>有点跑偏了，总之，这篇文章更多的目的是分享自己对于文档编写的一些个人思考，个人从实习公司到转正写了个把月文档，过程十分的枯燥乏味单调，但是当回过头来看到自己的成果的时候。还是蛮有成就感了。</p>
+<p>这是今年最后一篇文章了，个人选择<strong>锻炼</strong>给自己做未来投资，下面截个图给自己留念一下，争取年前跑满<strong>100公里</strong>吧。慢慢来……</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201229233100.jpg" alt=""></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://lazytime.site/2020/12/29/doc_write/" title="如何写一份优秀的接口文档">https://lazytime.site/2020/12/29/doc_write/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%96%87%E6%A1%A3/" rel="tag"># 文档</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/29/note/" rel="prev" title="《程序员健康指南》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《程序员健康指南》读书笔记
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何写一份优秀的接口文档"><span class="nav-number">1.</span> <span class="nav-text">如何写一份优秀的接口文档</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言："><span class="nav-number">1.1.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目的："><span class="nav-number">1.2.</span> <span class="nav-text">文章目的：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#目录："><span class="nav-number">1.3.</span> <span class="nav-text">目录：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单版本"><span class="nav-number">1.4.</span> <span class="nav-text">简单版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单版本的目录格式"><span class="nav-number">1.4.1.</span> <span class="nav-text">简单版本的目录格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#案例模板1："><span class="nav-number">1.4.2.</span> <span class="nav-text">案例模板1：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#接口说明："><span class="nav-number">1.4.2.1.</span> <span class="nav-text">接口说明：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求示例："><span class="nav-number">1.4.2.2.</span> <span class="nav-text">请求示例：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数说明"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">请求参数说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#响应示例"><span class="nav-number">1.4.2.4.</span> <span class="nav-text">响应示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#响应参数说明"><span class="nav-number">1.4.2.5.</span> <span class="nav-text">响应参数说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#案例模板2："><span class="nav-number">1.4.3.</span> <span class="nav-text">案例模板2：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#案例模板3："><span class="nav-number">1.4.4.</span> <span class="nav-text">案例模板3：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#l-属性列表"><span class="nav-number">1.4.4.1.</span> <span class="nav-text">l 属性列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#l-JSON数据示例"><span class="nav-number">1.4.4.2.</span> <span class="nav-text">l JSON数据示例**</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复杂版本"><span class="nav-number">1.5.</span> <span class="nav-text">复杂版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#复杂版本的目录格式"><span class="nav-number">1.5.1.</span> <span class="nav-text">复杂版本的目录格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#案例："><span class="nav-number">1.5.2.</span> <span class="nav-text">案例：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#封面："><span class="nav-number">1.5.2.1.</span> <span class="nav-text">封面：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文档信息："><span class="nav-number">1.5.2.2.</span> <span class="nav-text">文档信息：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#版本历史："><span class="nav-number">1.5.2.3.</span> <span class="nav-text">版本历史：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文档具体内容部分"><span class="nav-number">1.5.2.4.</span> <span class="nav-text">文档具体内容部分</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#加解密规范参考："><span class="nav-number">1.5.2.4.1.</span> <span class="nav-text">加解密规范参考：</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结："><span class="nav-number">1.6.</span> <span class="nav-text">总结：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">466k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">7:03</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
