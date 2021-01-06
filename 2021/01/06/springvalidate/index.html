@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="ZyC1bd11DZ5XV3P11yBfvTIuaPZzFxxkUEnAhZ6zQSA">
+  <meta name="baidu-site-verification" content="code-vIeEhdQrdN">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lazytime.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="对象校验是一个十分恼火的问题，但是好在有脚手架可以给我们开箱即用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一文弄懂spring validate">
+<meta property="og:url" content="https://lazytime.site/2021/01/06/springvalidate/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="对象校验是一个十分恼火的问题，但是好在有脚手架可以给我们开箱即用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-06T15:48:50.000Z">
+<meta property="article:modified_time" content="2021-01-06T15:50:17.105Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="springvalidate">
+<meta property="article:tag" content="spring">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lazytime.site/2021/01/06/springvalidate/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>一文弄懂spring validate | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lazytime.site/2021/01/06/springvalidate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一文弄懂spring validate
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-06 23:48:50 / 修改时间：23:50:17" itemprop="dateCreated datePublished" datetime="2021-01-06T23:48:50+08:00">2021-01-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/01/06/springvalidate/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/06/springvalidate/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>26k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>24 分钟</span>
+            </span>
+            <div class="post-description">对象校验是一个十分恼火的问题，但是好在有脚手架可以给我们开箱即用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>[TOC]</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言:"></a>前言:</h1><p>校验参数在以前基本都是使用大量的if/else，稍微方便一点的可以使用反射+自定义注解的形式，但是复用性不是很好，并且每个人对于的自定义注解有着自己的使用习惯，不过好在spring开发了validated框架用于注解校验，可以节省很多的校验<code>ifelse</code>代码，这篇文章通篇介绍了如何使用spring validated。</p>
+<a id="more"></a>
+
+<h1 id="文章目的："><a href="#文章目的：" class="headerlink" title="文章目的："></a>文章目的：</h1><ol>
+<li>了解 <strong>validate</strong> 校验，以及使用注解对于参数进行快速校验</li>
+<li>关于统一全局异常处理，以及一些踩坑问题</li>
+<li>如何快速的集成和使用 <strong>spring validate</strong></li>
+<li>讨论<code>list\&lt;Object\&gt;</code>校验的问题，分析如何使用list对象内容校验</li>
+</ol>
+<h1 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h1><p>spring Validation 是一种参数检验工具,集成在spring-context包中, 常用于spring mvc中Controller的参数处理,主要针对整个实体类的多个可选域进行判定.对于不合格的数据信息springMVC会把它保存在错误对象中，这些错误信息我们也可以通过SpringMVC提供的标签在前端JSP页面上进行展示。</p>
+<p>实现方式，一般使用较多的是两个注解：<code>@Validated</code>、<code>@Valid</code>，下面简单介绍一下以及分析他们的区别</p>
+<ol>
+<li>实现<code>Validator</code>,利用<code>BindingResult</code>获取Errors信息</li>
+<li>采用<code>@Valid</code> 以及 <code>JSR-303</code>中的参数判定注解</li>
+</ol>
+<h2 id="Valid和-Validated区别"><a href="#Valid和-Validated区别" class="headerlink" title="@Valid和@Validated区别"></a><code>@Valid</code>和<code>@Validated</code>区别</h2><table>
+<thead>
+<tr>
+<th>区别</th>
+<th>@Valid</th>
+<th>@Validated</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>提供者</td>
+<td>JSR-303规范</td>
+<td>Spring</td>
+</tr>
+<tr>
+<td><strong>是否支持分组</strong></td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>标注位置</td>
+<td>METHOD, FIELD, CONSTRUCTOR, PARAMETER, TYPE_USE</td>
+<td>TYPE, METHOD, PARAMETER</td>
+</tr>
+<tr>
+<td><strong>嵌套校验</strong></td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+</tbody></table>
+<h2 id="常用注解"><a href="#常用注解" class="headerlink" title="常用注解"></a>常用注解</h2><p>网上有很多类似表格，这里直接COPY了一份，对于不同的api版本可能出现部分注解过时等情况，注意！</p>
+<table>
+<thead>
+<tr>
+<th align="left">meta-data</th>
+<th align="left">comment</th>
+<th align="left">version</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">@Null</td>
+<td align="left">对象，为空</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@NotNull</td>
+<td align="left">对象，不为空</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@AssertTrue</td>
+<td align="left">布尔，为True</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@AssertFalse</td>
+<td align="left">布尔，为False</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@Min(value)</td>
+<td align="left">数字，最小为value</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@Max(value)</td>
+<td align="left">数字，最大为value</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@DecimalMin(value)</td>
+<td align="left">数字，最小为value</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@DecimalMax(value)</td>
+<td align="left">数字，最大为value</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@Size(max, min)</td>
+<td align="left">min&lt;=value&lt;=max</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@Digits (integer, fraction)</td>
+<td align="left">数字，某个范围内</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@Past</td>
+<td align="left">日期，过去的日期</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@Future</td>
+<td align="left">日期，将来的日期</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@Pattern(value)</td>
+<td align="left">字符串，正则校验</td>
+<td align="left">Bean Validation 1.0</td>
+</tr>
+<tr>
+<td align="left">@Email</td>
+<td align="left">字符串，邮箱类型</td>
+<td align="left">Bean Validation 2.0</td>
+</tr>
+<tr>
+<td align="left">@NotEmpty</td>
+<td align="left">集合，不为空</td>
+<td align="left">Bean Validation 2.0</td>
+</tr>
+<tr>
+<td align="left">@NotBlank</td>
+<td align="left">字符串，不为空字符串</td>
+<td align="left">Bean Validation 2.0</td>
+</tr>
+<tr>
+<td align="left">@Positive</td>
+<td align="left">数字，正数</td>
+<td align="left">Bean Validation 2.0</td>
+</tr>
+<tr>
+<td align="left">@PositiveOrZero</td>
+<td align="left">数字，正数或0</td>
+<td align="left">Bean Validation 2.0</td>
+</tr>
+<tr>
+<td align="left">@Negative</td>
+<td align="left">数字，负数</td>
+<td align="left">Bean Validation 2.0</td>
+</tr>
+<tr>
+<td align="left">@NegativeOrZero</td>
+<td align="left">数字，负数或0</td>
+<td align="left">Bean Validation 2.0</td>
+</tr>
+<tr>
+<td align="left">@PastOrPresent（时间）</td>
+<td align="left">过去或者现在</td>
+<td align="left">Bean Validation 2.0</td>
+</tr>
+<tr>
+<td align="left">@FutureOrPresent（时间）</td>
+<td align="left">将来或者现在</td>
+<td align="left">Bean Validation 2.0</td>
+</tr>
+</tbody></table>
+<h2 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h2><p>springvalidation入门使用都十分的简单，基本十分钟不到就能快速的集成，目前springboot的项目已经越来越多，所以本文基本都是基于<strong>springboot</strong>构建的</p>
+<p><strong>第一步：pom.xml 加入注解</strong></p>
+<p>这里为了方便版本控制增加了版本控制配置：</p>
+<blockquote>
+<p>注意：hibernate-validate 的版本到本文为止已经出现了7.0.0，这个版本的校验做了不少的改动。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmpib3NzLm9yZy9oaWJlcm5hdGUvc3RhYmxlL3ZhbGlkYXRvci9yZWZlcmVuY2UvZW4tVVMvaHRtbF9zaW5nbGUvP3Y9Ny4wI192YWxpZGF0aW5nX2NvbnN0cmFpbnRz" title="https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=7.0#_validating_constraints">https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=7.0#_validating_constraints<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">hibernate-validate.version</span>&gt;</span>5.2.0.Final<span class="tag">&lt;/<span class="name">hibernate-validate.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>增加完配置之后，增加对应的maven依赖，需要引入如下两个依赖配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">&lt;!--jsr 303--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- hibernate validator--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.hibernate<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hibernate-validator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 注意使用了版本控制 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;hibernate-validate.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>加完这两个注解之后，不要急着先进行其他的编写，可以先进行</p>
+<p><strong>第二步：增加注解</strong></p>
+<p>这里给出一个案例进行参考，验证对象增加注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestProduct</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Length</span>(max = <span class="number">7</span>)</span><br><span class="line">    <span class="meta">@Pattern</span>(regexp = <span class="string">"^(([1-9]&#123;1&#125;\\d*)|([0]&#123;1&#125;))(\\.(\\d)&#123;0,2&#125;)?$"</span>)</span><br><span class="line">    <span class="keyword">private</span> String tranAmount;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Length</span>(max = <span class="number">3</span>,min = <span class="number">3</span>)</span><br><span class="line">    <span class="meta">@Pattern</span>(regexp = <span class="string">"^[A-Z]&#123;3&#125;$"</span>)</span><br><span class="line">    <span class="keyword">private</span> String currency;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Length</span>(max = <span class="number">100</span>)</span><br><span class="line">    <span class="keyword">private</span> String tranReason;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Length</span>(max = <span class="number">100</span>)</span><br><span class="line">    <span class="keyword">private</span> String gatherName;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Length</span>(max = <span class="number">10</span>)</span><br><span class="line">    <span class="keyword">private</span> String business_type;</span><br><span class="line"></span><br><span class="line">    /</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Length</span>(max = <span class="number">10</span>)</span><br><span class="line">    <span class="keyword">private</span> String pay_channel;</span><br><span class="line"></span><br><span class="line">   	<span class="comment">// .......其他校验</span></span><br><span class="line">    <span class="comment">// 过滤 get/set 方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在<code>controller</code>层增加<code>@Validated</code>注解，加入之后成为如下的效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/test"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestController</span></span>&#123;</span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/test"</span>, method = RequestMethod.POST)</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">create</span><span class="params">(@Validated @RequestBody Product requestString, BindingResult bindResult)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 统一处理校验注解的错误信息</span></span><br><span class="line">        Result stringBuilder = dealWithError(bindResult);</span><br><span class="line">        <span class="keyword">if</span> (stringBuilder != <span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> stringBuilder;</span><br><span class="line">        &#125;</span><br><span class="line">       <span class="comment">// 自己的业务处理...</span></span><br><span class="line">        <span class="keyword">return</span> ....;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第三步：验证注解是否生效</strong></p>
+<p>到这一步就可以直接请求接口，在接口处进行断点，如果请求正确会直接进入对应的断点，否则会抛出如下案例所示的异常信息，如果校验不通过，会抛出<code>MethodArgumentNotValidException</code>或者<code>ConstraintViolationException</code>异常，下面是案例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"timestamp"</span>: <span class="string">"2021-01-01T12:08:49.859+00:00"</span>,</span><br><span class="line">    <span class="attr">"status"</span>: <span class="number">400</span>,</span><br><span class="line">    <span class="attr">"error"</span>: <span class="string">"Bad Request"</span>,</span><br><span class="line">    <span class="attr">"trace"</span>: <span class="string">"org.springframework.validation.BindException: org.springframework.validation.BeanPropertyBindingResult: 1 errors\nField error in object 'product' on field 'name': rejected value [null]; codes [NotBlank.product.name,NotBlank.name,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [product.name,name]; arguments []; default message ......"</span>,</span><br><span class="line">    <span class="attr">"message"</span>: <span class="string">"Validation failed for object='product'. Error count: 1"</span>,</span><br><span class="line">    <span class="attr">"errors"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"codes"</span>: [</span><br><span class="line">                <span class="string">"NotBlank.product.name"</span>,</span><br><span class="line">                <span class="string">"NotBlank.name"</span>,</span><br><span class="line">                <span class="string">"NotBlank.java.lang.String"</span>,</span><br><span class="line">                <span class="string">"NotBlank"</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">"arguments"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"codes"</span>: [</span><br><span class="line">                        <span class="string">"product.name"</span>,</span><br><span class="line">                        <span class="string">"name"</span></span><br><span class="line">                    ],</span><br><span class="line">                    <span class="attr">"arguments"</span>: <span class="literal">null</span>,</span><br><span class="line">                    <span class="attr">"defaultMessage"</span>: <span class="string">"name"</span>,</span><br><span class="line">                    <span class="attr">"code"</span>: <span class="string">"name"</span></span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">"defaultMessage"</span>: <span class="string">"不能为空"</span>,</span><br><span class="line">            <span class="attr">"objectName"</span>: <span class="string">"product"</span>,</span><br><span class="line">            <span class="attr">"field"</span>: <span class="string">"name"</span>,</span><br><span class="line">            <span class="attr">"rejectedValue"</span>: <span class="literal">null</span>,</span><br><span class="line">            <span class="attr">"bindingFailure"</span>: <span class="literal">false</span>,</span><br><span class="line">            <span class="attr">"code"</span>: <span class="string">"NotBlank"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"path"</span>: <span class="string">"//test/valid"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>到此，一个对象的注解校验基本实现了，但是我们发现注解校验的方式抛出的异常信息不是十分友好，基本都会配合统一的异常处理来处理请求参数的问题，下面后文会单独讲如何使用全局异常处理来统一的处理异常信息。</p>
+<h2 id="自定义注解校验："><a href="#自定义注解校验：" class="headerlink" title="自定义注解校验："></a>自定义注解校验：</h2><p>如果默认的注解规则无法满足业务需求，这时候validator提供了自定义注解的形式帮助开发者可以进行自定的规则校验。</p>
+<p>第一步：定义自定义注解：</p>
+<p>首先第一步是确定自己需要自定义的注解：比如我这里定义了一个检查时间格式的注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 日期格式校验注解</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">import</span> org.hibernate.validator.constraints.EAN;</span><br><span class="line"><span class="keyword">import</span> org.hibernate.validator.constraints.NotBlank;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.Constraint;</span><br><span class="line"><span class="keyword">import</span> javax.validation.Payload;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.*;</span><br><span class="line"><span class="comment">// 注意这里有静态导入</span></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> java.lang.annotation.ElementType.*;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> java.lang.annotation.RetentionPolicy.RUNTIME;</span><br><span class="line"></span><br><span class="line"><span class="comment">// javadoc 文档标识</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="comment">// 可以注入的类型，字段和参数类型</span></span><br><span class="line"><span class="meta">@Target</span>(&#123;PARAMETER, FIELD&#125;)</span><br><span class="line"><span class="comment">// 运行时生效</span></span><br><span class="line"><span class="meta">@Retention</span>(RUNTIME)</span><br><span class="line"><span class="comment">// 触发校验的对象</span></span><br><span class="line"><span class="meta">@Constraint</span>(validatedBy = &#123;TimeValidator<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class"><span class="title">public</span> @<span class="title">interface</span> <span class="title">Time</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 必须</span></span><br><span class="line">    <span class="function">String <span class="title">message</span><span class="params">()</span> <span class="keyword">default</span> "时间格式校验失败"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 必须</span></span><br><span class="line">    Class&lt;?&gt;[] groups() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 必须</span></span><br><span class="line">    Class&lt;? extends Payload&gt;[] payload() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line">    </span><br><span class="line">    String value = <span class="string">""</span>;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// 下面部分可以忽略</span></span><br><span class="line">    <span class="meta">@Target</span>(&#123; FIELD, METHOD, PARAMETER, ANNOTATION_TYPE &#125;)</span><br><span class="line">    <span class="meta">@Retention</span>(RUNTIME)</span><br><span class="line">    <span class="meta">@Documented</span></span><br><span class="line">    <span class="meta">@interface</span> List &#123;</span><br><span class="line">        Time[] value();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Constraint</code>注解声明约束及其可配置属性，同时在对应的真实注解处理类<code>TimeValidator</code>里面，可以随意的注入需要的<code>bean</code>（<code>AutoWired</code>等）</p>
+<p>注意除开<code>value</code>这个属性之外，其他三个属性<code>message</code>、<code>groups</code>、<code>payload</code>都是<strong>必须要</strong>定义的，否则进行校验的时候，会抛出如下的错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HV000074: com.xxx.xxx.valid.annotation.Time contains Constraint annotation, but does not contain a groups parameter.</span><br></pre></td></tr></table></figure>
+
+<p>对于注解的解释：</p>
+<ul>
+<li><code>@Retention(RUNTIME)</code>：指定此类型的注释将在运行时通过反射方式可用</li>
+<li><code>@Constraint</code>：指定用于验证元素的验证器</li>
+<li><code>@Target</code>：注解的标识范围，比如这里注解可以是参数或者字段</li>
+</ul>
+<p>对应的三个固定参数含义：</p>
+<ul>
+<li><p><code>message</code> 定制化的提示信息，主要是从ValidationMessages.properties里提取，也可以依据实际情况进行定制</p>
+</li>
+<li><p><code>groups</code>这里主要进行将validator进行分类，不同的类group中会执行不同的validator操作</p>
+</li>
+<li><p><code>payload</code> 主要是针对bean的，使用不多。</p>
+</li>
+</ul>
+<p>第二步：定义真实注解处理类：</p>
+<p>需要实现接口<code>ConstraintValidator</code>，泛型的第一个参数为注解类，第二个参数为具体校验对象的类型</p>
+<p>下面定义校验时间格式是否正确的一个案例，写的非常粗浅。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimeValidator</span> <span class="keyword">implements</span> <span class="title">ConstraintValidator</span>&lt;<span class="title">Time</span>, <span class="title">String</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 初始化注解的校验内容</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> constraintAnnotation</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">(Time constraintAnnotation)</span> </span>&#123;</span><br><span class="line">        System.err.println(<span class="string">"test"</span> + constraintAnnotation);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    具体校验代码</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isValid</span><span class="params">(String value, ConstraintValidatorContext constraintContext)</span> </span>&#123;</span><br><span class="line">        SimpleDateFormat simpleDateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy/MM/dd HH:mm:ss"</span>);</span><br><span class="line">        simpleDateFormat.setLenient(<span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">boolean</span> isValid = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            simpleDateFormat.parse(value);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            isValid = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果校验失败，设置自定义错误信息</span></span><br><span class="line">        <span class="keyword">if</span> ( !isValid ) &#123;</span><br><span class="line">            constraintContext.disableDefaultConstraintViolation();</span><br><span class="line">            constraintContext.buildConstraintViolationWithTemplate(</span><br><span class="line">                    <span class="string">"&#123;com.zxd.interview.valid.annotation."</span> +</span><br><span class="line">                            <span class="string">"Time.message&#125;"</span></span><br><span class="line">            )</span><br><span class="line">            .addConstraintViolation();<span class="comment">//很重要的一步，需要将自定义的信息提示模板加入</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> isValid;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于<code>ConstraintValidator</code>接口内容如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ConstraintValidator</span>&lt;<span class="title">A</span> <span class="keyword">extends</span> <span class="title">Annotation</span>, <span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	初始化验证器，为isValid(Object, ConstraintValidatorContext)调用做准备。传递给定约束声明的约束注释。</span></span><br><span class="line"><span class="comment">	保证在使用此实例进行验证之前调用此方法。</span></span><br><span class="line"><span class="comment">	默认的实现是no-op。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">(A constraintAnnotation)</span> </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 实现验证逻辑。值的状态不能被改变。</span></span><br><span class="line"><span class="comment">	该方法可以并发访问，实现必须确保线程安全。</span></span><br><span class="line"><span class="comment">	<span class="doctag">@value</span>：被校验的值</span></span><br><span class="line"><span class="comment">	<span class="doctag">@ConstraintValidatorContext</span> 校验上下文</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">boolean</span> <span class="title">isValid</span><span class="params">(T value, ConstraintValidatorContext context)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后只需要将注解应用到对应的对象上面，在请求的时候就可以进行对应的参数校验了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Product</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">	<span class="comment">// 自己定义的注解</span></span><br><span class="line">    <span class="meta">@Time</span></span><br><span class="line">    <span class="keyword">private</span> String time;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略get/set</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>HV000074</code>这个错误是如何来的？：</p>
+<p>首先我们需要明确一点：javax.validator - JSR303的规范是由<strong>Hibernate validate</strong>作为标准实现的，也就是说虽然Spring已经为我们进行了适配，但是在校验的时候依然使用的Hibernate Validator，所以我们定义自定义的注解需要按照固定的要求规范：</p>
+<p>旧版本的文档：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmpib3NzLm9yZy9oaWJlcm5hdGUvdmFsaWRhdG9yLzQuMi9yZWZlcmVuY2UvZW4tVVMvaHRtbF9zaW5nbGUv" title="https://docs.jboss.org/hibernate/validator/4.2/reference/en-US/html_single/">https://docs.jboss.org/hibernate/validator/4.2/reference/en-US/html_single/<i class="fa fa-external-link"></i></span></p>
+<p>较新版本的文档：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmpib3NzLm9yZy9oaWJlcm5hdGUvc3RhYmxlL3ZhbGlkYXRvci9yZWZlcmVuY2UvZW4tVVMvaHRtbF9zaW5nbGUvP3Y9Ny4wI192YWxpZGF0aW5nX2NvbnN0cmFpbnRz" title="https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=7.0#_validating_constraints">https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=7.0#_validating_constraints<i class="fa fa-external-link"></i></span></p>
+<p><code>org.hibernate.validator.internal.util.logging</code>下面的几个包中定义了日志以及异常信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String getConstraintWithoutMandatoryParameterException = <span class="string">"HV000074: %2$s contains Constraint annotation, but does not contain a %1$s parameter."</span>;</span><br></pre></td></tr></table></figure>
+
+<p>具体的提示信息如下图所示：<code>org.hibernate.validator.internal.util.logging.Log_$logger</code></p>
+<p>注解定义了如下的异常信息提示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Message</span>(</span><br><span class="line">     id = <span class="number">74</span>,</span><br><span class="line">     value = <span class="string">"%2$s contains Constraint annotation, but does not contain a %1$s parameter."</span></span><br><span class="line"> )</span><br><span class="line"> <span class="function">ConstraintDefinitionException <span class="title">getConstraintWithoutMandatoryParameterException</span><span class="params">(String var1, String var2)</span></span>;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>注意以下几个点：</p>
+<ul>
+<li>静态字段和属性无法验证。</li>
+<li>建议在一个类中坚持使用字段 <em>或</em>属性注释。不建议对字段<em>和</em>随附的getter方法进行注释<em>，</em>因为这将导致对该字段进行两次验证。</li>
+</ul>
+</blockquote>
+<h2 id="使用-Validator-校验："><a href="#使用-Validator-校验：" class="headerlink" title="使用 Validator 校验："></a>使用 <code>Validator</code> 校验：</h2><p>下面介绍一下使用<code>Validator</code>要如何校验，简单的使用可以使用<code>Validation.buildDefaultValidatorFactory()</code>获取<code>ValidatorFactory</code>，通过<code>factory.getValidator()</code>获取对应的校验器<code>Validator</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">(Product product)</span> </span>&#123;</span><br><span class="line">    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();</span><br><span class="line">    Validator validator = factory.getValidator();</span><br><span class="line">    Set&lt;ConstraintViolation&lt;Product&gt;&gt; validate = validator.validate(product);</span><br><span class="line">    Map&lt;Object, Object&gt; objectObjectMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    validate.forEach(item -&gt; &#123;</span><br><span class="line">        <span class="comment">//            System.err.println("item = "+ item);</span></span><br><span class="line">        String message = item.getMessage();</span><br><span class="line">        <span class="comment">//            System.err.println("message " + message);</span></span><br><span class="line">        objectObjectMap.put(item.getPropertyPath(), message);</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line">    objectObjectMap.forEach((k, v) -&gt; &#123;</span><br><span class="line">        System.err.println(<span class="string">"key = "</span> + k + <span class="string">" value = "</span> + v);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面构建一个工具类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValidateUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Validator validator =</span><br><span class="line">            Validation.byProvider(HibernateValidator<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">            .<span class="title">configure</span>()</span></span><br><span class="line"><span class="class">            .<span class="title">failFast</span>(<span class="title">true</span>)</span></span><br><span class="line"><span class="class">            .<span class="title">buildValidatorFactory</span>()</span></span><br><span class="line"><span class="class">            .<span class="title">getValidator</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> SmartValidator validatorAdapter = <span class="keyword">new</span> SpringValidatorAdapter(validator);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Validator <span class="title">getValidator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> validator;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> SmartValidator <span class="title">getValidatorAdapter</span><span class="params">(Validator validator)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> validatorAdapter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 校验参数，用于普通参数校验 [未测试！]</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">validateParams</span><span class="params">(Object... params)</span> </span>&#123;</span><br><span class="line">        Set&lt;ConstraintViolation&lt;Object&gt;&gt; constraintViolationSet = validator.validate(params);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!constraintViolationSet.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ConstraintViolationException(constraintViolationSet);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 校验对象</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> object</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> groups</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> &lt;T&gt;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">validate</span><span class="params">(T object, Class&lt;?&gt;... groups)</span> </span>&#123;</span><br><span class="line">        Set&lt;ConstraintViolation&lt;T&gt;&gt; constraintViolationSet = validator.validate(object, groups);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!constraintViolationSet.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ConstraintViolationException(constraintViolationSet);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 校验对象</span></span><br><span class="line"><span class="comment">     * 使用与 Spring 集成的校验方式。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> object 待校验对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> groups 待校验的组</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> BindException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">validateBySpring</span><span class="params">(T object, Class&lt;?&gt;... groups)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> BindException </span>&#123;</span><br><span class="line">        DataBinder dataBinder = getBinder(object);</span><br><span class="line">        dataBinder.validate((Object[]) groups);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (dataBinder.getBindingResult().hasErrors()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> BindException(dataBinder.getBindingResult());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">DataBinder <span class="title">getBinder</span><span class="params">(T object)</span> </span>&#123;</span><br><span class="line">        DataBinder dataBinder = <span class="keyword">new</span> DataBinder(object, ClassUtils.getShortName(object.getClass()));</span><br><span class="line">        dataBinder.setValidator(getValidatorAdapter(validator));</span><br><span class="line">        <span class="keyword">return</span> dataBinder;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的工具类代码来源于文章：<span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC8yNDMyZDBmNTFjMGU=" title="https://www.jianshu.com/p/2432d0f51c0e">https://www.jianshu.com/p/2432d0f51c0e<i class="fa fa-external-link"></i></span></p>
+<h2 id="定义分组校验："><a href="#定义分组校验：" class="headerlink" title="定义分组校验："></a>定义分组校验：</h2><p>有时候我们需要某个对象在这个接口是必填的，而在另一个参数里面又不需要必填，比如我们使用dto接受更新或者新增的参数，新增不需要校验<code>主键</code>或者其他的字段信息，但是注解校验器却拦截返回错误信息，这种情况下就需要使用分组校验的方法。</p>
+<p>第一步：设置分组接口：</p>
+<p>建议继承Default，因为默认的<code>groups</code>就是<code>groups = {Default.class}</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GroupUpdate</span> <span class="keyword">extends</span> <span class="title">Default</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第二步：在需要分组校验的注解上增加groups</p>
+<p>例如我在对象某个注解增加：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NotBlank</span>(groups = &#123;GroupUpdate<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class"><span class="title">private</span> <span class="title">String</span> <span class="title">name</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>第三步：在@validated中加入对应的分组：</p>
+<p>这里定义了两个接口来代替新增和修改</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 更新接口</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/test/update"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">update</span><span class="params">(@Validated(GroupUpdate.class)</span> Product product) <span class="keyword">throws</span> ParamException </span>&#123;</span><br><span class="line">    System.err.println(product);</span><br><span class="line">     <span class="comment">//....</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 新增接口</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/test/add"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">add</span><span class="params">(@Validated Product product)</span> <span class="keyword">throws</span> ParamException </span>&#123;</span><br><span class="line">    System.err.println(product);</span><br><span class="line">    <span class="comment">//....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第四步：分组校验结果：</p>
+<p>按照同样的参数请求两个接口，分组的不同出现了不同的情况</p>
+<p>可以看到指定分组之后，如果validated里面没有指定group，在校验的时候将会跳过指定分组的校验</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.validation.BeanPropertyBindingResult: <span class="number">2</span> errors</span><br><span class="line">Field error in object <span class="string">'product'</span> on field <span class="string">'name'</span>: .....</span><br><span class="line">Field error in object <span class="string">'product'</span> on field <span class="string">'time'</span>: .....</span><br><span class="line">org.springframework.validation.BeanPropertyBindingResult: <span class="number">1</span> errors</span><br><span class="line">Field error in object <span class="string">'product'</span> on field <span class="string">'time'</span>: .....</span><br></pre></td></tr></table></figure>
+
+<h3 id="分组继承："><a href="#分组继承：" class="headerlink" title="分组继承："></a>分组继承：</h3><p>自定义的分组可以使用继承方式进行校验，比如我们将很多个分组封装到一个特定的分组里面，方便我们自由组合多个自定义分组下面请看如下的案例：</p>
+<p>首先是实体对象，通过继承的形式的形式，对于校验对象来说继承会将父对象的属性一并校验：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Bag</span> <span class="keyword">extends</span> <span class="title">Product</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 分组使用 GroupAdd</span></span><br><span class="line">    <span class="meta">@NotNull</span>(message = <span class="string">"颜色不能为空"</span>,groups = &#123;GroupAdd<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class">    <span class="title">private</span> <span class="title">String</span> <span class="title">color</span></span>;</span><br><span class="line">  	<span class="comment">// get/set省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义对应的分组，比如我们将增删改操作的分组集成到一个叫做<code>操作</code>的分组里面：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GroupsOpration</span> <span class="keyword">extends</span> <span class="title">GroupUpdate</span>,<span class="title">GroupDel</span>,<span class="title">GroupAdd</span></span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GroupUpdate</span> <span class="keyword">extends</span> <span class="title">Default</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GroupDel</span> <span class="keyword">extends</span> <span class="title">Default</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GroupAdd</span> <span class="keyword">extends</span> <span class="title">Default</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面分别定义对应的接口进行测试</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 测试组继承</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> product</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">    * <span class="doctag">@throws</span> ParamException</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@RequestMapping</span>(<span class="string">"/test/bag1"</span>)</span><br><span class="line">   <span class="function"><span class="keyword">public</span> Object <span class="title">bag1</span><span class="params">(@Validated(GroupsOpration.class)</span> Bag product) <span class="keyword">throws</span> ParamException </span>&#123;</span><br><span class="line">       System.err.println(product);</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 测试组继承</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> product</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">    * <span class="doctag">@throws</span> ParamException</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@RequestMapping</span>(<span class="string">"/test/bag2"</span>)</span><br><span class="line">   <span class="function"><span class="keyword">public</span> Object <span class="title">bag2</span><span class="params">(@Validated Bag product)</span> <span class="keyword">throws</span> ParamException </span>&#123;</span><br><span class="line">       System.err.println(product);</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>分别请求<code>/bag1</code>和<code>/bag2</code>得到如下的结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Resolved [org.springframework.validation.BindException: org.springframework.validation.BeanPropertyBindingResult: <span class="number">2</span> errors</span><br><span class="line">Resolved [org.springframework.validation.BindException: org.springframework.validation.BeanPropertyBindingResult: <span class="number">1</span> error</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h2 id="如何处理validated异常信息"><a href="#如何处理validated异常信息" class="headerlink" title="如何处理validated异常信息"></a>如何处理validated异常信息</h2><h3 id="第一种：统一全局异常处理"><a href="#第一种：统一全局异常处理" class="headerlink" title="第一种：统一全局异常处理"></a>第一种：统一全局异常处理</h3><p>全局统一异常处理算是用的比较多的一种，可以解决基础的常见异常问题结果都返回，也可以使用</p>
+<p>基本都写法和格式如下：</p>
+<ol>
+<li>在<code>类名</code>注明：<code>@ControllerAdvice</code>或者<code>@RestControllerAdvice</code>，分别对应<code>@Controller</code>和<code>@RestController</code>，至于这两个注解的区别可以自行进行学习和补充。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line">@<span class="meta">@RestControllerAdvice</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>对应的方法内部，使用<code>@ExceptionHandler</code>进行方法标注，在请求参数里面配套使用,即可对于指定的异常，如果在参数里面加入特定异常，那么在执行改方法的时候，会将对应的对象进行方法参数注入，这样就可以拿到抛出异常的对象信息进行自定义的异常处理了。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ExceptionHandler</span>(&#123;Exception<span class="class">.<span class="keyword">class</span>&#125;)//主要注解</span></span><br><span class="line"><span class="class">@<span class="title">ResponseStatus</span>(<span class="title">HttpStatus</span>.<span class="title">OK</span>)</span></span><br><span class="line"><span class="class">@<span class="title">ResponseBody</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">Object</span> <span class="title">allError</span>(<span class="title">Exception</span> <span class="title">ex</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> HttpStatus.ACCEPTED;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>下面是一个最终完整的案例</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestControllerAdvice</span> <span class="comment">//@ControllerAdvice 对应 @Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExceptionDealHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 拦截未知的运行时异常</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@ExceptionHandler</span>(IllegalStateException<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">Object</span> <span class="title">notFount</span>(<span class="title">IllegalStateException</span> <span class="title">e</span>)</span></span><br><span class="line"><span class="class">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (AnnotationUtils.findAnnotation(e.getClass(), ResponseStatus<span class="class">.<span class="keyword">class</span>) !</span>= <span class="keyword">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> HttpStatus.ACCEPTED;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler</span>(MethodArgumentNotValidException<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">Object</span> <span class="title">doSomethings</span>(<span class="title">MethodArgumentNotValidException</span> <span class="title">e</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> HttpStatus.ACCEPTED;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler</span>(BindException<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">Object</span> <span class="title">bindError</span>(<span class="title">BindException</span> <span class="title">bind</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> HttpStatus.ACCEPTED;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler</span>(&#123;ConstraintViolationException<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class">    @<span class="title">ResponseStatus</span>(<span class="title">HttpStatus</span>.<span class="title">OK</span>)</span></span><br><span class="line"><span class="class">    @<span class="title">ResponseBody</span></span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">Object</span> <span class="title">handleConstraintViolationException</span>(<span class="title">ConstraintViolationException</span> <span class="title">ex</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> HttpStatus.ACCEPTED;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler</span>(&#123;Exception<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class">    @<span class="title">ResponseStatus</span>(<span class="title">HttpStatus</span>.<span class="title">OK</span>)</span></span><br><span class="line"><span class="class">    @<span class="title">ResponseBody</span></span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">Object</span> <span class="title">allError</span>(<span class="title">Exception</span> <span class="title">ex</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> HttpStatus.ACCEPTED;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h4 id="统一异常处理无法生效？"><a href="#统一异常处理无法生效？" class="headerlink" title="统一异常处理无法生效？"></a>统一异常处理无法生效？</h4><p>1.确保注解@RestControllerAdvice/@ControllerAdvice的类被<strong>spring容器管理到</strong>。</p>
+<blockquote>
+<p>  ①spring boot Java配置检查@SpringBootApplication(<strong>scanBasePackages</strong> = )（scanBasePackages 配置的包是否包含这个类默认情况下spring boot项目扫描的是@SpringBootApplication注解所在类的包及子包）</p>
+<p>  ② xml配置的spring 普通项目检查<strong>&lt;context:component-scan base-package=”com.test”/&gt;</strong></p>
+</blockquote>
+<ol start="2">
+<li><p>检查项目中所有的切面编程，<strong>是否在某个切面将异常try-catch然后没有扔出来</strong>。常见的就是切面的环绕处理，捕获了异常忘记抛出来。</p>
+</li>
+<li><p>检查项目中是否有其他的相同的全局异常处理类，例如BaseController中<strong>是否已经定义</strong>了</p>
+</li>
+</ol>
+<p>如果上面的排查方式都都尝试还是无法正常校验的话可能就是出现所谓统一全局处理的坑了，下面会讲解到对应的坑，如果 <strong>问题超过15分钟还没自我通过自己努力尽力解决</strong>，那么就赶紧上网找资料吧，碰运气基本都可以完美解决。</p>
+<h3 id="第二种：控制器进行特定异常处理"><a href="#第二种：控制器进行特定异常处理" class="headerlink" title="第二种：控制器进行特定异常处理"></a>第二种：控制器进行特定异常处理</h3><p>一般这种使用方式比较少，毕竟有全局异常处理的情况下很少去使用控制器层的异常处理，某些特殊情况可以用到，了解即可。</p>
+<p>和全局异常处理器类似，只不过定义方法修改到了对应的controller控制器层</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestValid</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注解校验接口</span></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/test/valid"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">test</span><span class="params">(@Validated Product product)</span> <span class="keyword">throws</span> ParamException </span>&#123;</span><br><span class="line">        System.err.println(product);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ParamException(<span class="string">""</span>,<span class="string">""</span>,<span class="string">""</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    在控制器层处理异常信息，仅仅适用于当前控制器</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="meta">@ExceptionHandler</span>(Exception<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">Object</span> <span class="title">processException</span>(<span class="title">Exception</span> <span class="title">e</span>)</span>&#123;</span><br><span class="line">        System.err.println(e.getMessage());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第三种：BindingResult对象处理异常信息："><a href="#第三种：BindingResult对象处理异常信息：" class="headerlink" title="第三种：BindingResult对象处理异常信息："></a>第三种：BindingResult对象处理异常信息：</h3><p>除开上面的方式之外，validate还提供<code>BindResult</code>对象封装异常信息，需要将该对象 <strong>紧跟</strong><code>@Validated</code>注解，就可以在校验失败之后在<code>BindResult</code>对象里面进行自定义的异常处理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 测试组继承</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> product</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ParamException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/test/bag1"</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">bag1</span><span class="params">(@Validated(GroupsOpration.class)</span> Bag product, BindingResult bindingResult) <span class="keyword">throws</span> ParamException </span>&#123;</span><br><span class="line">    <span class="comment">// 异常信息处理</span></span><br><span class="line">    <span class="keyword">if</span>(bindingResult.hasErrors())&#123;</span><br><span class="line">        List&lt;FieldError&gt; fieldErrors = bindingResult.getFieldErrors();</span><br><span class="line">        Map&lt;Object, Object&gt; objectObjectHashMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (FieldError fieldError : fieldErrors) &#123;</span><br><span class="line">            objectObjectHashMap.put(fieldError.getField(), fieldError.getRejectedValue());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> objectObjectHashMap;</span><br><span class="line">    &#125;</span><br><span class="line">    System.err.println(product);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>请求结果如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"color"</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">"time"</span>: <span class="string">"222"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="统一全局处理器的坑："><a href="#统一全局处理器的坑：" class="headerlink" title="统一全局处理器的坑："></a>统一全局处理器的坑：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ExceptionHandler</span>(IllegalStateException<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">Object</span> <span class="title">notFount</span>(<span class="title">IllegalStateException</span> <span class="title">e</span>)</span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// 处理异常结果</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是如果 @ExceptionHandler 注解中未声明要处理的异常类型，则默认为参数列表中的异常类型。注意只能绑定一个参数，如果在<strong>参数列表指定多个异常参数将无法生效</strong>，比如如下的写法是错误的，为什么会有这种情况，需要研究源码才能的得出结果。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ExceptionHandler</span>()</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">notFount</span><span class="params">(Exception e,BindException bindExce, RuntimeException run)</span> </span>&#123; <span class="comment">// 这里指定多个Exception将无法生效</span></span><br><span class="line">    <span class="comment">// 处理异常结果</span></span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的写法会出现如下的异常，大致的意思是找不到合适的解析器，就是说spring找不到合适的异常解析器去解析分发异常的请求：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Could not resolve parameter [<span class="number">2</span>] in <span class="keyword">public</span> java.lang.Object com.zxd.interview.valid.ExceptionDealHandler.notFount(java.lang.Exception,org.springframework.validation.BindException,java.lang.RuntimeException): No suitable resolver</span><br></pre></td></tr></table></figure>
+
+<p>但是万事没有绝对，下面这种写法是可行的，在抛出<code>BindException</code>的异常之后，异常处理器将会正常的处理请求</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ExceptionHandler</span>()</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">notFount</span><span class="params">(Exception e,BindException bindExce)</span> </span>&#123;<span class="comment">//BindException 正常拦截处理</span></span><br><span class="line">    <span class="comment">// 处理异常结果</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>目前个人猜测是在定义参数类型的时候，定义的异常类上面出现“雷同”的<strong>构造方法</strong>，而spring在进行反射解析时候找到了对应的重复构造方法，导致无法生成代理对象完成异常处理，导致导致抛出异常。总的来说和spring validate的代理机制有关，有兴趣的小伙伴可以自行研究一下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">自定义异常类1</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BusinessException</span> <span class="keyword">extends</span> <span class="title">Exception</span></span>&#123;</span><br><span class="line">    BusinessException(String code1, String code2, <span class="keyword">int</span> code3)&#123;</span><br><span class="line">		<span class="comment">// ......</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">自定义异常类2</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParamException</span> <span class="keyword">extends</span> <span class="title">Exception</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ParamException</span><span class="params">(String code, String message, String error)</span></span>&#123;</span><br><span class="line">		<span class="comment">// ......</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面这种写法是<strong>错误的</strong>，即使他们的构造方法不同，在抛出异常的时候依然出现了问题</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@ExceptionHandler</span>()</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">errors</span><span class="params">(ParamException e, BusinessException busine)</span></span>&#123;<span class="comment">//错误的写法</span></span><br><span class="line">    <span class="keyword">return</span> HttpStatus.ACCEPTED;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>建议的写法，也是最稳妥的写法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ExceptionHandler</span>(ParamException<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">Object</span> <span class="title">errors</span>(<span class="title">ParamException</span> <span class="title">e</span>)</span>&#123;<span class="comment">//错误的写法</span></span><br><span class="line">    <span class="keyword">return</span> HttpStatus.ACCEPTED;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总的来说，还是不建议使用<code>@ExceptionHandler()</code>这种形式，会发生各种莫名其妙的问题。</p>
+<h3 id="总结自定义异常"><a href="#总结自定义异常" class="headerlink" title="总结自定义异常"></a>总结自定义异常</h3><p>根据上面的分析可以看出，统一全局异常处理如果不好好处理，很容易出现各种莫名其妙的问题，所以总结一下统一全局异常处理需要注意的点：</p>
+<ul>
+<li>建议一个异常处理对应一个方法，不要定义多个异常用一个方法处理，<strong>特别是自定义的异常类</strong></li>
+<li>注意统一异常处理的异常处理优先级按照<strong>方法定义的顺序进行</strong>，比如如果出现BindException以及Exception，如果抛出的异常是BindException处理方法则优先定义则执行这一步，否则执行最大的<code>Exception</code></li>
+<li>注意注解的异常拦截和方法参数的异常类<strong>保持一致</strong>，否则spring mvc 代理将抛出异常。</li>
+</ul>
+<h1 id="怎样校验list-lt-Object-gt-（重点）"><a href="#怎样校验list-lt-Object-gt-（重点）" class="headerlink" title="怎样校验list&lt;Object&gt;（重点）"></a>怎样校验<code>list&lt;Object&gt;</code>（重点）</h1><p>一般来说sprIng validate使用基本多看看文档或者找找博客都能解决，但是笔者遇到一个很纠结的问题，请看如下的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/createBatch"</span>, method = RequestMethod.POST)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">createBatch</span><span class="params">(@RequestBody @Validated List&lt;ApiPaymentMsgDto&gt; list, BindingResult bindResult, HttpServletRequest httpServletRequest)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (CollectionUtils.isEmpty(list)) &#123;</span><br><span class="line">        <span class="keyword">return</span> Result.build(<span class="number">401</span>, <span class="string">"请求参数为空"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//.....省略代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用JSON数据跑接口测试发现<strong>无法对<code>list&lt;Bean&gt;</code>对象进行校验！</strong>，那么这个问题就比较蛋疼了，因为集合的对象校验还是用的非常多的，下面针对这个“坑”讨论一下产生的原因和解决方式。</p>
+<h2 id="为什么无法校验List-lt-Object-gt"><a href="#为什么无法校验List-lt-Object-gt" class="headerlink" title="为什么无法校验List&lt;Object&gt;?"></a>为什么无法校验<code>List&lt;Object&gt;</code>?</h2><p>查阅了很多资料之后，我找到了stackflow一篇文章的解释，文章原文如下：</p>
+<blockquote>
+<p>StackFlow文章地址：<span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMTcyMDc3NjYvc3ByaW5nLW12Yy12YWxpZC1vbi1saXN0LW9mLWJlYW5zLWluLXJlc3Qtc2VydmljZQ==" title="https://stackoverflow.com/questions/17207766/spring-mvc-valid-on-list-of-beans-in-rest-service">https://stackoverflow.com/questions/17207766/spring-mvc-valid-on-list-of-beans-in-rest-service<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Section 3.1.3 of the JSR-303 Specification says that:</span><br><span class="line"></span><br><span class="line">In addition to supporting instance validation, validation of graphs of object is also supported. The result of a graph validation is returned as a unified set of constraint violations. Consider the situation where bean X contains a field of type Y. By annotating field Y with the @Valid annotation, the Validator will validate Y (and its properties) when X is validated. The exact type Z of the value contained in the field declared of type Y (subclass, implementation) is determined at runtime. The constraint definitions of Z are used. This ensures proper polymorphic behavior for associations marked @Valid.</span><br><span class="line"></span><br><span class="line">Collection-valued, array-valued and generally Iterable fields and properties may also be decorated with the @Valid annotation. This causes the contents of the iterator to be validated. Any object implementing java.lang.Iterable is supported.</span><br></pre></td></tr></table></figure>
+
+<p>下面是英文的机翻：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">JSR-303规范的3.1.3节说:</span><br><span class="line">除了支持实例验证外，还支持对象图形的验证。</span><br><span class="line">图形验证的结果作为约束违反的统一集合返回。</span><br><span class="line">考虑bean X包含一个类型为Y的字段的情况，通过使用@Valid注释字段Y，验证器将在验证X时验证Y(及其属性)。</span><br><span class="line">类型Y(子类，实现)声明的字段中包含的值的确切类型Z是在运行时确定的。</span><br><span class="line">使用Z的约束定义。</span><br><span class="line">这确保标记为@Valid的关联具有正确的多态行为。</span><br><span class="line"></span><br><span class="line">集合值、数组值以及通常可迭代的字段和属性也可以用@Valid注释进行装饰。</span><br><span class="line">这将导致验证迭代器的内容。</span><br><span class="line">任何实现java.lang的对象。</span><br><span class="line">支持Iterable。</span><br></pre></td></tr></table></figure>
+
+<p><code>@Valid</code>是JSR-303批注，JSR-303适用于JavaBeans的验证。A<code>java.util.List</code>不是JavaBean（根据JavaBean的<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vamF2YWVlLzUvdHV0b3JpYWwvZG9jL2JuYWlyLmh0bWw=" title="https://docs.oracle.com/javaee/5/tutorial/doc/bnair.html">官方描述<i class="fa fa-external-link"></i></span>），因此不能使用兼容JSR-303的验证器直接对其进行验证。这有两个观察结果支持。</p>
+<h2 id="简单粗暴的方式："><a href="#简单粗暴的方式：" class="headerlink" title="简单粗暴的方式："></a>简单粗暴的方式：</h2><p>最为简单粗暴的方式是既然不能自动校验，那我们换成手动好了，这种方式的优缺点如下：</p>
+<p>优点：</p>
+<ol>
+<li>校验的细节由自己决定，可以附加业务的校验，也可以自由灵活的组合</li>
+<li>可以编写健壮的工具类代码，甚至脱离spring validator（指hibernate validator）</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>代码复用性差，这个和编程水平有关，工具类也分写的好和写的差</li>
+<li>因为需要思考细节，容易出逻辑漏洞和其他BUG，所谓做的越多越容易出错就是这个道理</li>
+<li>需要学习更多的api使用，增加学习成本</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 校验集合bean内容是否符合校验规则</span></span><br><span class="line"><span class="comment">    * </span></span><br><span class="line"><span class="comment">    返回样例：</span></span><br><span class="line"><span class="comment">        &#123;</span></span><br><span class="line"><span class="comment">           "status": 401,</span></span><br><span class="line"><span class="comment">           "msg": "第 1 条信息：手机号必须为11位,币种必须是3位大写字母|第 2 条信息：币种必须是3位大写字母,手机号必须为11位",</span></span><br><span class="line"><span class="comment">           "data": null</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> apiObj 接口传输对象</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> ZmtResult <span class="title">validListBean</span><span class="params">(List&lt;ApiPaymentMsgDto&gt; apiObj)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (CollectionUtils.isEmpty(apiObj)) &#123;</span><br><span class="line">           <span class="keyword">return</span> ZmtResult.build(<span class="number">401</span>, <span class="string">"请求参数为空"</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       StringBuilder builder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; apiObj.size(); i++) &#123;</span><br><span class="line">           ApiPaymentMsgDto apiPaymentMsgDto = apiObj.get(i);</span><br><span class="line">           <span class="keyword">if</span> (<span class="keyword">null</span> == apiPaymentMsgDto) &#123;</span><br><span class="line">               <span class="keyword">return</span> ZmtResult.build(<span class="number">400</span>, <span class="string">"第 %s 条信息请求参数为空"</span>, i);</span><br><span class="line">           &#125;</span><br><span class="line">           Validator validator = ValidatorUtil.getValidator();</span><br><span class="line">           Set&lt;ConstraintViolation&lt;ApiPaymentMsgDto&gt;&gt; validate = validator.validate(apiPaymentMsgDto);</span><br><span class="line">           <span class="comment">// 如果不存在校验异常，则返回空信息</span></span><br><span class="line">           <span class="keyword">if</span> (org.apache.commons.collections.CollectionUtils.isEmpty(validate)) &#123;</span><br><span class="line">               <span class="keyword">continue</span>;</span><br><span class="line">           &#125;</span><br><span class="line">           builder.append(String.format(<span class="string">"第 %s 条信息："</span>, i + <span class="number">1</span>));</span><br><span class="line">           <span class="keyword">for</span> (ConstraintViolation&lt;ApiPaymentMsgDto&gt; apiPaymentMsgDtoConstraintViolation : validate) &#123;</span><br><span class="line">               builder.append(apiPaymentMsgDtoConstraintViolation.getMessage());</span><br><span class="line">               builder.append(<span class="string">","</span>);</span><br><span class="line">           &#125;</span><br><span class="line">           builder.deleteCharAt(builder.length() - <span class="number">1</span>);</span><br><span class="line">           builder.append(<span class="string">"|"</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">// 如果存在错误信息，返回错误提示，否则返回空对象证明没有异常</span></span><br><span class="line">       <span class="keyword">if</span> (builder.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">           builder.deleteCharAt(builder.length() - <span class="number">1</span>);</span><br><span class="line">           <span class="keyword">return</span> ZmtResult.build(<span class="number">401</span>, builder.toString());</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="一种优雅的设计解决方案："><a href="#一种优雅的设计解决方案：" class="headerlink" title="一种优雅的设计解决方案："></a>一种优雅的设计解决方案：</h2><p>看下stackFlow的一位老哥的解决办法：</p>
+<p>原文链接：<span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMjgxNTA0MDUvdmFsaWRhdGlvbi1vZi1hLWxpc3Qtb2Ytb2JqZWN0cy1pbi1zcHJpbmcvMzYzMTM2MTUjMzYzMTM2MTU=" title="https://stackoverflow.com/questions/28150405/validation-of-a-list-of-objects-in-spring/36313615#36313615">https://stackoverflow.com/questions/28150405/validation-of-a-list-of-objects-in-spring/36313615#36313615<i class="fa fa-external-link"></i></span> （需要翻墙）</p>
+<p>下面是机翻的版本：</p>
+<blockquote>
+<p>我发现了另一种有效的方法。基本的问题是您想要一个列表作为服务的输入有效负载，但是javax验证不会验证列表，只验证JavaBean。诀窍是使用一个自定义的list类，它既是list又是JavaBean:</p>
+</blockquote>
+<p>根据大佬的说明，我尝试实现了一个针对校验使用的list，注意需要提供get/set方法，以及使用泛型，在连接里面进行了模板代码和实现，可以直接拿去复制：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 为了兼容注解校验使用的一种设计</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;&#123;<span class="doctag">@link</span> #&#123;https://stackoverflow.com/questions/28150405/validation-of-a-list-of-objects-in-spring/36313615#36313615&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zhaoxudong</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/3 23:39</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValidatorList</span>&lt;<span class="title">E</span>&gt; <span class="keyword">implements</span> <span class="title">List</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Valid</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;E&gt; list;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关键</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;E&gt; <span class="title">getList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关键</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setList</span><span class="params">(List&lt;E&gt; list)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.list = list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ValidatorList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.list = <span class="keyword">new</span> ArrayList&lt;E&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ValidatorList</span><span class="params">(List&lt;E&gt; list)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.list = list;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面这个设计由于代码内容过长这里贴链接了：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRlZS5jb20vbGF6eVRpbWVzL2ludGVydmlldy9ibG9iL21hc3Rlci9zcmMvbWFpbi9qYXZhL2NvbS96eGQvaW50ZXJ2aWV3L3ZhbGlkL3V0aWxzL1ZhbGlkYXRvckxpc3QuamF2YQ==" title="https://gitee.com/lazyTimes/interview/blob/master/src/main/java/com/zxd/interview/valid/utils/ValidatorList.java">https://gitee.com/lazyTimes/interview/blob/master/src/main/java/com/zxd/interview/valid/utils/ValidatorList.java<i class="fa fa-external-link"></i></span></p>
+<p>先不管其他的问题，先验证一下是否可以正常使用，而实际的体验：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 测试stackflow 的一种优雅设计，可以实现对应的list 集合bean对象校验</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> products      校验对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> bindingResult 异常绑定器</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ParamException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/test/testvalidList"</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">testvalidList</span><span class="params">(@RequestBody @Validated ValidatorList&lt;Product&gt; products, BindingResult bindingResult)</span> <span class="keyword">throws</span> ParamException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (bindingResult.hasErrors()) &#123;</span><br><span class="line">        List&lt;FieldError&gt; fieldErrors = bindingResult.getFieldErrors();</span><br><span class="line">        fieldErrors.forEach(item -&gt; &#123;</span><br><span class="line">            String defaultMessage = item.getDefaultMessage();</span><br><span class="line">            System.err.println(defaultMessage);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    System.err.println(products);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上就是个人经过了研究的结果，不得不感叹思路真心很不错，目前个人使用正常，如果有问题欢迎下方留言讨论</p>
+<h1 id="其他扩展"><a href="#其他扩展" class="headerlink" title="其他扩展"></a>其他扩展</h1><h2 id="JSR-303："><a href="#JSR-303：" class="headerlink" title="JSR - 303："></a>JSR - 303：</h2><p>Hibernate Validator 是 Bean Validation 的参考实现，说白了<code>Hibernate Validator</code>就是<code>JSR-303</code>。</p>
+<p>下载 JSR 303 – Bean Validation 规范 <span class="exturl" data-url="aHR0cDovL2pjcC5vcmcvZW4vanNyL2RldGFpbD9pZD0zMDM=" title="http://jcp.org/en/jsr/detail?id=303">http://jcp.org/en/jsr/detail?id=303<i class="fa fa-external-link"></i></span></p>
+<h2 id="Hibernate-validator："><a href="#Hibernate-validator：" class="headerlink" title="Hibernate - validator："></a>Hibernate - validator：</h2><p>如果想要深入了解源代码实现，有必要研究一下<code>Hibernate - validator</code>的文档，从官方文档学习是一个推荐的方法：</p>
+<p>旧版本的文档：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmpib3NzLm9yZy9oaWJlcm5hdGUvdmFsaWRhdG9yLzQuMi9yZWZlcmVuY2UvZW4tVVMvaHRtbF9zaW5nbGUv" title="https://docs.jboss.org/hibernate/validator/4.2/reference/en-US/html_single/">https://docs.jboss.org/hibernate/validator/4.2/reference/en-US/html_single/<i class="fa fa-external-link"></i></span></p>
+<p>较新版本的文档：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLmpib3NzLm9yZy9oaWJlcm5hdGUvc3RhYmxlL3ZhbGlkYXRvci9yZWZlcmVuY2UvZW4tVVMvaHRtbF9zaW5nbGUvP3Y9Ny4wI192YWxpZGF0aW5nX2NvbnN0cmFpbnRz" title="https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=7.0#_validating_constraints">https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=7.0#_validating_constraints<i class="fa fa-external-link"></i></span></p>
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><p>在学习过程中尝试看源代码，但是后来发现个人源代码学习经验不足，胡乱的看代码是很那坚持的，看了几个小时之后突然醒悟了，还是要从官方给的案例和文档的中，从易到难，而不是一上来就直接看源码，既缺少了大局，而且收效也低。</p>
+<p>另外有条件尽可能上<code>stackflow</code>，里面大神真的多，可以学到很多很棒棒的设计。</p>
+<p>文章字数比较多，感谢观看，如果觉得本文差强人意，可以查看下面的内容，里面的最后两篇文章有关于一部分原理对接讲解可以看一看，个人了解不够深入就不写出来误人子弟了。</p>
+<h1 id="巨人的肩膀："><a href="#巨人的肩膀：" class="headerlink" title="巨人的肩膀："></a>巨人的肩膀：</h1><p>Validation in Spring Boot：<span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL3NwcmluZy1ib290LWJlYW4tdmFsaWRhdGlvbg==" title="https://www.baeldung.com/spring-boot-bean-validation">https://www.baeldung.com/spring-boot-bean-validation<i class="fa fa-external-link"></i></span></p>
+<p>Spring Validation最佳实践及其实现原理，参数校验没那么简单！：<span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDAyMzQ3MTc0Mg==" title="https://segmentfault.com/a/1190000023471742">https://segmentfault.com/a/1190000023471742<i class="fa fa-external-link"></i></span></p>
+<p>spring官方那个案例：<span class="exturl" data-url="aHR0cHM6Ly9zcHJpbmcuaW8vZ3VpZGVzL2dzL3ZhbGlkYXRpbmctZm9ybS1pbnB1dC8=" title="https://spring.io/guides/gs/validating-form-input/">https://spring.io/guides/gs/validating-form-input/<i class="fa fa-external-link"></i></span></p>
+<p>Java Bean Validation（参数校验） 最佳实践： <span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vc29mdGlkZWEvcC85NzEyNTcxLmh0bWw=" title="https://www.cnblogs.com/softidea/p/9712571.html">https://www.cnblogs.com/softidea/p/9712571.html<i class="fa fa-external-link"></i></span></p>
+<p>这么写参数校验(validator)就不会被劝退了~：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82ODQ0OTAzOTAyODExMjc1Mjc4I2hlYWRpbmctMA==" title="https://juejin.cn/post/6844903902811275278#heading-0">https://juejin.cn/post/6844903902811275278#heading-0<i class="fa fa-external-link"></i></span></p>
+<p>springMVC Validation 参数检验工具：<span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC85OTljNmMxMGE1YzY=" title="https://www.jianshu.com/p/999c6c10a5c6">https://www.jianshu.com/p/999c6c10a5c6<i class="fa fa-external-link"></i></span></p>
+<p>Bean Validation: Integrating JSR-303 with Spring：<span class="exturl" data-url="aHR0cDovL3dlYi5hcmNoaXZlLm9yZy93ZWIvMjAxMjA1MDgwMzA0NTkvaHR0cDovL2Jsb2cub3JhbmdlMTEubmwvMjAwOS8wOC8wNC9iZWFuLXZhbGlkYXRpb24taW50ZWdyYXRpbmctanNyLTMwMy13aXRoLXNwcmluZy8=" title="http://web.archive.org/web/20120508030459/http://blog.orange11.nl/2009/08/04/bean-validation-integrating-jsr-303-with-spring/">http://web.archive.org/web/20120508030459/http://blog.orange11.nl/2009/08/04/bean-validation-integrating-jsr-303-with-spring/<i class="fa fa-external-link"></i></span></p>
+<p>Validation and Exception Handling with Spring：<span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL3NwcmFuZy92YWxpZGF0aW9uLWFuZC1leGNlcHRpb24taGFuZGxpbmctd2l0aC1zcHJpbmctYmE0NGIzZWUwNzIz" title="https://medium.com/sprang/validation-and-exception-handling-with-spring-ba44b3ee0723">https://medium.com/sprang/validation-and-exception-handling-with-spring-ba44b3ee0723<i class="fa fa-external-link"></i></span></p>
+<p>@ControllerAdvice + @ExceptionHandler 全局处理 Controller 层异常：<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tpbmdpbmJsdWUvYXJ0aWNsZS9kZXRhaWxzLzcwMTg2NTg2" title="https://blog.csdn.net/kinginblue/article/details/70186586">https://blog.csdn.net/kinginblue/article/details/70186586<i class="fa fa-external-link"></i></span></p>
+<p><strong>【Spring源码分析】40-Spring Validation参数校验的使用与原理</strong>：<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NoZW5jaGFvaGFvMTIzMjEvYXJ0aWNsZS9kZXRhaWxzLzEwMDE2Mzk5MQ==" title="https://blog.csdn.net/shenchaohao12321/article/details/100163991">https://blog.csdn.net/shenchaohao12321/article/details/100163991<i class="fa fa-external-link"></i></span></p>
+<p><strong>SpringBoot + Validator 参数校验配置 - - - [深度]</strong>：<span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC8yNDMyZDBmNTFjMGU=" title="https://www.jianshu.com/p/2432d0f51c0e">https://www.jianshu.com/p/2432d0f51c0e<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://lazytime.site/2021/01/06/springvalidate/" title="一文弄懂spring validate">https://lazytime.site/2021/01/06/springvalidate/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/spring/" rel="tag"># spring</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/29/doc_write/" rel="prev" title="如何写一份优秀的接口文档">
+      <i class="fa fa-chevron-left"></i> 如何写一份优秀的接口文档
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文章目的："><span class="nav-number">2.</span> <span class="nav-text">文章目的：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简单介绍"><span class="nav-number">3.</span> <span class="nav-text">简单介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Valid和-Validated区别"><span class="nav-number">3.1.</span> <span class="nav-text">@Valid和@Validated区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用注解"><span class="nav-number">3.2.</span> <span class="nav-text">常用注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速入门"><span class="nav-number">3.3.</span> <span class="nav-text">快速入门</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义注解校验："><span class="nav-number">3.4.</span> <span class="nav-text">自定义注解校验：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-Validator-校验："><span class="nav-number">3.5.</span> <span class="nav-text">使用 Validator 校验：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义分组校验："><span class="nav-number">3.6.</span> <span class="nav-text">定义分组校验：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分组继承："><span class="nav-number">3.6.1.</span> <span class="nav-text">分组继承：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何处理validated异常信息"><span class="nav-number">3.7.</span> <span class="nav-text">如何处理validated异常信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一种：统一全局异常处理"><span class="nav-number">3.7.1.</span> <span class="nav-text">第一种：统一全局异常处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#统一异常处理无法生效？"><span class="nav-number">3.7.1.1.</span> <span class="nav-text">统一异常处理无法生效？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二种：控制器进行特定异常处理"><span class="nav-number">3.7.2.</span> <span class="nav-text">第二种：控制器进行特定异常处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三种：BindingResult对象处理异常信息："><span class="nav-number">3.7.3.</span> <span class="nav-text">第三种：BindingResult对象处理异常信息：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#统一全局处理器的坑："><span class="nav-number">3.8.</span> <span class="nav-text">统一全局处理器的坑：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#总结自定义异常"><span class="nav-number">3.8.1.</span> <span class="nav-text">总结自定义异常</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#怎样校验list-lt-Object-gt-（重点）"><span class="nav-number">4.</span> <span class="nav-text">怎样校验list&lt;Object&gt;（重点）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么无法校验List-lt-Object-gt"><span class="nav-number">4.1.</span> <span class="nav-text">为什么无法校验List&lt;Object&gt;?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单粗暴的方式："><span class="nav-number">4.2.</span> <span class="nav-text">简单粗暴的方式：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一种优雅的设计解决方案："><span class="nav-number">4.3.</span> <span class="nav-text">一种优雅的设计解决方案：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他扩展"><span class="nav-number">5.</span> <span class="nav-text">其他扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JSR-303："><span class="nav-number">5.1.</span> <span class="nav-text">JSR - 303：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hibernate-validator："><span class="nav-number">5.2.</span> <span class="nav-text">Hibernate - validator：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结："><span class="nav-number">6.</span> <span class="nav-text">总结：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#巨人的肩膀："><span class="nav-number">7.</span> <span class="nav-text">巨人的肩膀：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">492k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">7:27</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
