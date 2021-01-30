@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="行为型模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈设计模式 - 策略模式（三）">
+<meta property="og:url" content="https://whitestore.top/2021/01/30/strategy1/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="行为型模式">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210126230854.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210126230938.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210128225036.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210128230115.png">
+<meta property="article:published_time" content="2021-01-30T07:39:29.000Z">
+<meta property="article:modified_time" content="2021-01-30T07:41:34.643Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210126230854.png">
+
+<link rel="canonical" href="https://whitestore.top/2021/01/30/strategy1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>浅谈设计模式 - 策略模式（三） | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/01/30/strategy1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅谈设计模式 - 策略模式（三）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-30 15:39:29 / 修改时间：15:41:34" itemprop="dateCreated datePublished" datetime="2021-01-30T15:39:29+08:00">2021-01-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/01/30/strategy1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/30/strategy1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>10k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+            <div class="post-description">行为型模式</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="浅谈设计模式-策略模式（三）"><a href="#浅谈设计模式-策略模式（三）" class="headerlink" title="浅谈设计模式 - 策略模式（三）"></a>浅谈设计模式 - 策略模式（三）</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这次我们来讲解一下策略模式，策略模式是我们日常开发天天都在用的“模式”，最简单<code>if/else</code>就是策略，而我们用不同的策略（分支）来实现结果的区分。所以策略模式是非常重要的模式，也是理解和应用最为简单的方式（大概）。</p>
+<p>这里再次提醒：不要过分拘泥于设计模式的类和形式，只要记住一点：将<strong>变与不变抽离的过程</strong>就是设计模式</p>
+<a id="more"></a>
+
+<h2 id="什么是策略模式？"><a href="#什么是策略模式？" class="headerlink" title="什么是策略模式？"></a>什么是策略模式？</h2><p>策略模式按照最简单的理解就是对<code>if/else</code>的解耦，也是他最常用的场景，最典型的应用场景就是购物的时候，选择用优惠券，还是满2件送一件，或者凑够多少金额满减等等，按照一般的写法，我们经常会写出大量的<code>if/else</code>，在代码量较少的时候，这种写的方式既简单又方便，但是一旦代码复杂，复杂的<code>if/else</code>会让代码越来越屎，策略模式也是为了解决此问题而产生的。</p>
+<p>策略模式是一种<strong>行为型模式</strong>，他将一类相似的行为解耦，并且将策略封装到具体的策略实现类。</p>
+<h2 id="策略模式结构图："><a href="#策略模式结构图：" class="headerlink" title="策略模式结构图："></a>策略模式结构图：</h2><p>下面用一张烂大街的图描绘一下策略模式的结构，切记落实设计模式到代码之后，你会对这个图的印象更加深刻。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210126230854.png" alt=""></p>
+<p>下面给出一张工厂模式的图，会发现他们长得非常像：</p>
+<blockquote>
+<p>工厂模式可以看这一篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTIyMDY1NzkyNjQ1MjAxOTM0" title="https://juejin.cn/post/6922065792645201934">工厂模式<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210126230938.png" alt=""></p>
+<h2 id="什么情况下使用策略模式？"><a href="#什么情况下使用策略模式？" class="headerlink" title="什么情况下使用策略模式？"></a>什么情况下使用策略模式？</h2><ol>
+<li>当代码充斥大量<code>if/else</code>并且他们只是行为不同的时候，建议使用</li>
+<li>将复杂的策略内容封装到单独的类情况下，比如我们的策略内容需要进行非常复杂的计算</li>
+</ol>
+<h2 id="策略模式的特点："><a href="#策略模式的特点：" class="headerlink" title="策略模式的特点："></a>策略模式的特点：</h2><ol>
+<li>将相似的行为进行封包，客户端指定策略已达到不同行为的切换</li>
+<li>将复杂的业务实现逻辑代码封装到单独的策略，可以通过context组合使用策略</li>
+</ol>
+<h2 id="工厂模式和策略模式的异同："><a href="#工厂模式和策略模式的异同：" class="headerlink" title="工厂模式和策略模式的异同："></a>工厂模式和策略模式的异同：</h2><p>相同点：</p>
+<ol>
+<li>策略的”执行对象”和工厂生产的“抽象对象”，他们都具有<strong>相似的行为</strong>。</li>
+<li>都是为了抽离<strong>过程和结果</strong>实现本身。</li>
+</ol>
+<p>不同点：</p>
+<ol>
+<li>工厂模式是为了创建对象，而策略是为了解决复杂的<code>if/else</code>嵌套</li>
+<li>工厂模式只需要传递工厂需要的参数，而策略模式则需要具体的实现类支撑。</li>
+<li>工厂模式是<strong>创建型</strong>设计模式，而策略模式是<strong>行为型</strong>模式。前者专注于对象的<strong>创建过程</strong>，后者专注于<strong>对象的具体行为</strong></li>
+</ol>
+<blockquote>
+<p>如果上面不够清晰，那么下面我给出一个具体一些的案例来说说他们的区别：</p>
+<p>​    我们都知道低价手机的生产基本都是找代工厂，而代工厂可能不止生产一个品牌的手机，他可能承接多个品牌的手机生产，经销商让工厂生产指定的手机，而工厂负责手机的“创建”，这一模式就是典型的 <strong>工厂模式</strong>，而工厂根据不同的手机品牌，投入不同的生产材料和生成力，这个抉择的过程就是<strong>策略模式</strong>。</p>
+</blockquote>
+<h2 id="实际案例："><a href="#实际案例：" class="headerlink" title="实际案例："></a>实际案例：</h2><p>光有理论是不够的，我们来实际操作一下策略模式。这次的场景模拟个人觉得还挺有意思的，看下具体的内容：</p>
+<h3 id="场景模拟："><a href="#场景模拟：" class="headerlink" title="场景模拟："></a>场景模拟：</h3><p>​    一些交易的系统，在遇到特殊情况的时候，需要进行网络监控或者管理，有时候需要根据某种条件下触发监控或者报警，比如网关接受一笔交易，需要根据交易的校验情况，在不同的校验代码段进行钉钉机器人<strong>报警</strong>，下面给出几种情况：</p>
+<ul>
+<li>查不出必要数据的时候，给出对应的告警。提醒运营人员排查线上环境</li>
+<li>当数据量到达指定的限制量的时候，给出风险告警。</li>
+<li>当出现黑名单人员进行交易拦截的时候，进行日志记录，不进行警告</li>
+</ul>
+<p>… </p>
+<h3 id="不使用设计模式："><a href="#不使用设计模式：" class="headerlink" title="不使用设计模式："></a>不使用设计模式：</h3><p>兵来将挡，谁来土掩，发现那里需要告警，就往对应的地方添加代码，这样子做完成任务是很快，当然代码烂起来也是很快的。下面看一下具体的实现：</p>
+<blockquote>
+<p>看到这里下面的代码有可能会觉得，不是说策略模式是用来解决<code>if/else</code>的么，你这看上去也没有什么<code>if/else</code>呀，这时候就是仁者见仁智者见智了，我还是保持一个观点：设计模式用来解决实际问题，而不是拘泥于套版。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 策略模式：</span></span><br><span class="line"><span class="comment"> * 不使用设计模式实现告警</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/26 23:41</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 不使用模式</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"接受交易"</span>);</span><br><span class="line">        service1();</span><br><span class="line">        service2();</span><br><span class="line">        service3();</span><br><span class="line">        System.out.println(<span class="string">"完成交易"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模拟触发了业务场景1</span></span><br><span class="line"><span class="comment">     * 出现机房断电或者查不出必要数据的时候，给出对应的告警。提醒运营人员排查线上环境</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">service1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 为了模拟异常情况，我们用 1/0 触发一个异常</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 程序到了这一步算不下去了</span></span><br><span class="line">            <span class="keyword">int</span> result = <span class="number">1</span>/<span class="number">0</span>;</span><br><span class="line">            System.out.println(<span class="string">"具体的业务"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.err.println(<span class="string">"警告，服务器出现异常"</span>);</span><br><span class="line">            System.out.println(<span class="string">"开始执行报警"</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123;</span><br><span class="line">                ex.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            System.err.println(<span class="string">"执行报警完成"</span>);</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模拟触发了业务场景2</span></span><br><span class="line"><span class="comment">     * 当数据量到达指定的限制量的时候，给出风险告警。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">service2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> limit = <span class="number">1000</span>;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">2000</span>;</span><br><span class="line">        <span class="keyword">if</span>(count &gt; limit)&#123;</span><br><span class="line">            System.out.println(<span class="string">"开始执行报警"</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123;</span><br><span class="line">                ex.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//.....</span></span><br><span class="line">            <span class="comment">// logger.info("警告，当前数据请求量达到限制值")</span></span><br><span class="line">            System.err.println(<span class="string">"执行报警完成"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模拟触发了业务场景3</span></span><br><span class="line"><span class="comment">     * 当出现黑名单人员进行交易拦截的时候，进行日志记录，不进行警告</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">service3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> flag = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">            <span class="comment">// 触犯黑名单：</span></span><br><span class="line">            <span class="comment">// logger.info("警告，当前请求");</span></span><br><span class="line">            <span class="comment">// 提前退出，结束交易</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"正常完成下面的步骤"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如上面的所示，单就这个类就以肉眼可见的速度在膨胀代码，特别是如果我们在告警的代码需要大量的操作的时候，我们会把<strong>告警的业务和原有的业务逻辑不断纠缠</strong>，最后代码就变成了 <strong>面向实现编程</strong>，下一个接手的人看到这样的代码，也会接着往后面累加，一个臃肿的结构就此诞生了。</p>
+<p>上面的代码存在如下的问题：</p>
+<ol>
+<li>当我们需要新增一处监控的时候，需要在对应的代码块增加监控和报警的逻辑</li>
+<li>所有的改动都在一处，如果代码内容复杂会造成业务逻辑混淆</li>
+<li>当告警的业务日趋复杂，告警的代码将变得难以维护</li>
+</ol>
+<h3 id="使用工厂模式："><a href="#使用工厂模式：" class="headerlink" title="使用工厂模式："></a>使用工厂模式：</h3><p>没有学习策略模式的时候，我们尝试使用工厂模式尝试改写一下这一段代码，同时在使用工厂模式之前，我们回顾一下<strong>工厂模式</strong>的图，下面画图:</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210128225036.png" alt=""></p>
+<p>下面是使用工厂模式设计出来的关系类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+ BlackListStrategy.java 黑名单策略</span><br><span class="line">+ NoResultStrategy.java 无返回值</span><br><span class="line">+ QuantityStrategy.java 数量监控策略</span><br><span class="line">+ 测试类</span><br><span class="line">+ StrategyFactory.java 策略工厂，负责生产需要的策略</span><br></pre></td></tr></table></figure>
+
+<p>策略工厂，用于生产策略:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zhaoxudong</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> v1.0.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Package</span> : com.headfirst.strategy.factory</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> : 策略工厂，根据参数生产对应的策略条件</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Create</span> on : 2021/1/27 13:24</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StrategyFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建策略</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> service</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CaveatStrategy <span class="title">createStrategy</span><span class="params">(String service)</span></span>&#123;</span><br><span class="line">        <span class="comment">// 数量监控</span></span><br><span class="line">        <span class="keyword">if</span>(Objects.equals(service, <span class="string">"quantity"</span>))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> QuantityStrategy();</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(Objects.equals(service, <span class="string">"noresult"</span>))&#123;</span><br><span class="line">            <span class="comment">// 没有返回值</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> NoResultStrategy();</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(Objects.equals(service, <span class="string">"blacklist"</span>))&#123;</span><br><span class="line">            <span class="comment">// 黑名单</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> BlackListStrategy();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>黑名单策略类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 当出现黑名单人员进行交易拦截的时候，进行日志记录，不进行警告</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/28 21:52</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BlackListStrategy</span> <span class="keyword">implements</span> <span class="title">CaveatStrategy</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">warning</span><span class="params">(Map&lt;String, Object&gt; params)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> flag = Boolean.parseBoolean(params.get(<span class="string">"flag"</span>).toString());</span><br><span class="line">        <span class="keyword">if</span> (flag) &#123;</span><br><span class="line">            System.err.println(<span class="string">"触犯黑名单列表，但不警告"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>数量监控策略类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zhaoxudong</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> v1.0.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Package</span> : com.headfirst.strategy.use</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> : 数量监控</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Create</span> on : 2021/1/27 13:27</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">QuantityStrategy</span> <span class="keyword">implements</span> <span class="title">CaveatStrategy</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">warning</span><span class="params">(Map&lt;String, Object&gt; params)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> limit = Integer.parseInt(params.get(<span class="string">"limit"</span>).toString());</span><br><span class="line">        <span class="keyword">int</span> count = Integer.parseInt(params.get(<span class="string">"count"</span>).toString());</span><br><span class="line">        <span class="keyword">if</span>(count &gt; limit)&#123;</span><br><span class="line">            System.err.println(<span class="string">"警告，当前数据内容无法获取返回值"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>单元测试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 单元测试</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/28 22:01</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 模拟交易流转参数对象</span></span><br><span class="line">        Map&lt;String, Object&gt; objectObjectHashMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        StrategyFactory strategyFactory = <span class="keyword">new</span> StrategyFactory();</span><br><span class="line">        CaveatStrategy strategy = strategyFactory.createStrategy(<span class="string">"quantity"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 表示除数和被除数</span></span><br><span class="line">        objectObjectHashMap.put(<span class="string">"limit"</span>, <span class="string">"1000"</span>);</span><br><span class="line">        objectObjectHashMap.put(<span class="string">"count"</span>, <span class="string">"2000"</span>);</span><br><span class="line">        strategy.warning(objectObjectHashMap);</span><br><span class="line"></span><br><span class="line">        strategy = strategyFactory.createStrategy(<span class="string">"noresult"</span>);</span><br><span class="line">        objectObjectHashMap.put(<span class="string">"divisor"</span>, <span class="string">"1"</span>);</span><br><span class="line">        objectObjectHashMap.put(<span class="string">"dividend"</span>, <span class="string">"0"</span>);</span><br><span class="line">        strategy.warning(objectObjectHashMap);</span><br><span class="line"></span><br><span class="line">        strategy = strategyFactory.createStrategy(<span class="string">"blacklist"</span>);</span><br><span class="line">        objectObjectHashMap.put(<span class="string">"flag"</span>, <span class="keyword">true</span>);</span><br><span class="line">        strategy.warning(objectObjectHashMap);</span><br><span class="line">    &#125;<span class="comment">/*结果如下：</span></span><br><span class="line"><span class="comment">    警告，当前数据内容无法获取返回值</span></span><br><span class="line"><span class="comment">    触犯黑名单列表，但不警告</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码存在如下的问题：</p>
+<ol>
+<li>策略工厂虽然解决了策略的生产问题，但是需要自己指定策略，而且每次更换策略内容会导致工厂的代码也需要随之改动</li>
+<li>维护和扩展都需要依赖工厂，我们每多一个策略都需要更换工厂的内容</li>
+<li>当告警的业务日趋复杂，工厂的代码将会越发的臃肿</li>
+</ol>
+<h3 id="使用策略模式："><a href="#使用策略模式：" class="headerlink" title="使用策略模式："></a>使用策略模式：</h3><p>在具体的实现之前，我们根据上面提到的图，照着模样画葫芦画一个图出来:</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210128230115.png" alt=""></p>
+<p>策略的实现类在上上面的工厂模式，这里给出上下文以及使用的具体方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">+ StrategyContext 策略上下文</span><br><span class="line">+ 策略模式的单元测试</span><br></pre></td></tr></table></figure>
+
+<p>策略类的上下文：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 策略的上下文</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/28 22:52</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StrategyContext</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> CaveatStrategy strategy;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">StrategyContext</span><span class="params">(CaveatStrategy strategy)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.strategy = strategy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doStrategy</span><span class="params">(Map&lt;String, Object&gt; params)</span></span>&#123;</span><br><span class="line">        strategy.warning(params);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>策略模式的单元测试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 单元测试</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/28 22:53</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 使用策略模式</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; objectObjectHashMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        objectObjectHashMap.put(<span class="string">"limit"</span>, <span class="string">"1000"</span>);</span><br><span class="line">        objectObjectHashMap.put(<span class="string">"count"</span>, <span class="string">"2000"</span>);</span><br><span class="line">        objectObjectHashMap.put(<span class="string">"divisor"</span>, <span class="string">"1"</span>);</span><br><span class="line">        objectObjectHashMap.put(<span class="string">"dividend"</span>, <span class="string">"0"</span>);</span><br><span class="line">        objectObjectHashMap.put(<span class="string">"flag"</span>, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        CaveatStrategy blackListStrategy = <span class="keyword">new</span> BlackListStrategy();</span><br><span class="line">        CaveatStrategy noResultStrategy = <span class="keyword">new</span> NoResultStrategy();</span><br><span class="line">        CaveatStrategy quantityStrategy = <span class="keyword">new</span> QuantityStrategy();</span><br><span class="line">        <span class="comment">// 三种策略独立</span></span><br><span class="line">        StrategyContext strategyContext = <span class="keyword">new</span> StrategyContext(blackListStrategy);</span><br><span class="line">        strategyContext.doStrategy(objectObjectHashMap);</span><br><span class="line">        StrategyContext strategyContext2 = <span class="keyword">new</span> StrategyContext(noResultStrategy);</span><br><span class="line">        strategyContext2.doStrategy(objectObjectHashMap);</span><br><span class="line">        StrategyContext strategyContext3 = <span class="keyword">new</span> StrategyContext(quantityStrategy);</span><br><span class="line">        strategyContext3.doStrategy(objectObjectHashMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 简化一下：</span></span><br><span class="line">        StrategyContext strategyContext4 = <span class="keyword">new</span> StrategyContext(blackListStrategy);</span><br><span class="line">        strategyContext4.doStrategy(objectObjectHashMap);</span><br><span class="line">        strategyContext4 = <span class="keyword">new</span> StrategyContext(noResultStrategy);</span><br><span class="line">        strategyContext4.doStrategy(objectObjectHashMap);</span><br><span class="line">        strategyContext4 = <span class="keyword">new</span> StrategyContext(quantityStrategy);</span><br><span class="line">        strategyContext4.doStrategy(objectObjectHashMap);</span><br><span class="line">    &#125;<span class="comment">/*</span></span><br><span class="line"><span class="comment">    触犯黑名单列表，但不警告</span></span><br><span class="line"><span class="comment">    警告，当前数据内容无法获取返回值</span></span><br><span class="line"><span class="comment">    触犯黑名单列表，但不警告</span></span><br><span class="line"><span class="comment">    警告，当前数据内容无法获取返回值</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的内容可以看出，我们只需要把策略传给上下文，上下文会根据传入的策略自动匹配对应的策略执行报警。</p>
+<p>但是我们也发现了一些问题：</p>
+<ol>
+<li>代码存在new策略类，这又回到以前不使用工厂的时候情况了</li>
+<li>如果我们用策略组合，虽然少了很多的if/else，但是建立策略的细节依旧在客户端。</li>
+</ol>
+<p>答案已经很明显了，策略和工厂双方各有利弊，果断用策略和工厂模式组合起来进行重写。</p>
+<h3 id="简单工厂和策略模式结合："><a href="#简单工厂和策略模式结合：" class="headerlink" title="简单工厂和策略模式结合："></a>简单工厂和策略模式结合：</h3><p>工厂和策略结合之后，这里我们结合context上下文和工厂看一下效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 改写策略的上下文</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/28 22:52</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StrategyContext</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> CaveatStrategyFactory caveatStrategyFactory = <span class="keyword">new</span> CaveatStrategyFactory();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doStrategy</span><span class="params">(String service, Map&lt;String, Object&gt; params)</span></span>&#123;</span><br><span class="line">        caveatStrategyFactory.createStrategy(service).warning(params);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个工厂和上面工厂模式的工厂没有区别，个人为了区分换了个名字：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 警告策略的生成厂</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/26 23:28</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CaveatStrategyFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建策略</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> service 策略</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CaveatStrategy <span class="title">createStrategy</span><span class="params">(String service)</span></span>&#123;</span><br><span class="line">        <span class="comment">// 数量监控</span></span><br><span class="line">        <span class="keyword">if</span>(Objects.equals(service, <span class="string">"quantity"</span>))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> QuantityStrategy();</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(Objects.equals(service, <span class="string">"noresult"</span>))&#123;</span><br><span class="line">            <span class="comment">// 没有返回值</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> NoResultStrategy();</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(Objects.equals(service, <span class="string">"blacklist"</span>))&#123;</span><br><span class="line">            <span class="comment">// 黑名单</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> BlackListStrategy();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码有了如下的好处：</p>
+<ol>
+<li>客户端不在需要手动new对象，由工厂来完成</li>
+<li>指定策略只需要的参数和指定策略的名称，上下文“自动”帮我们完成结果</li>
+<li>将策略的<strong>生成过程</strong>和策略的<strong>执行过程</strong>更进一步的解耦</li>
+</ol>
+<p>到此，这样的代码可维护性和阅读性能大大提高，后续如果还需要扩展策略直接实现抽象接口同时工厂新增判断，然后客户端指定新的策略服务名称即可让整个流程自动化。</p>
+<p>顺带一提的是，策略和简单工厂的结合是受到了 <strong>《大话设计模式》</strong>的启发，大致的思路也做了参考，顿时感觉这样才算是有点学以致用的感觉，撸完代码的感觉还是非常快乐。</p>
+<h3 id="更好的“策略”："><a href="#更好的“策略”：" class="headerlink" title="更好的“策略”："></a>更好的“策略”：</h3><p>上面的代码还不是最优的，在spring当中，我们的策略一般会作为一个<strong>bean</strong>使用，而不需要每次都使用<code>new</code>去构建我们的策略，因为我们的策略基本都是<strong>单例</strong>的。下面给出一些建议的写法：</p>
+<p>这里我们按照单独的策略类为例，他应该如下：</p>
+<p><strong>被spring管理的策略bean:</strong></p>
+<ul>
+<li>NoResultStrategyImpl 无返回值的策略实现bean</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 无结果的业务实现</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/28 23:08</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">//@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NoResultStrategyImpl</span> <span class="keyword">implements</span> <span class="title">CaveatStrategy</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一般此处会组合一些mapper或者引入一些日志记录logger</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">warning</span><span class="params">(Map&lt;String, Object&gt; params)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// loggger.info("记录需要的信息");</span></span><br><span class="line">        <span class="keyword">int</span> divisor = Integer.parseInt(params.get(<span class="string">"divisor"</span>).toString());</span><br><span class="line">        <span class="keyword">int</span> dividend = Integer.parseInt(params.get(<span class="string">"dividend"</span>).toString());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> result = dividend / divisor;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.err.println(<span class="string">"警告，服务器出现异常"</span>);</span><br><span class="line">            System.out.println(<span class="string">"开始执行报警"</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123;</span><br><span class="line">                ex.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// logger.info("日志记录");</span></span><br><span class="line">            System.err.println(<span class="string">"执行报警完成"</span>);</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 执行一些策略等</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>SpringCaveaStrategy spring<strong>工具类</strong>，使用工具类获取注解对应的bean，这样可以实现从一个接口获取他所管理的多个子类（建议自定义service的Bean名称防止冲突）</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 使用Spring 工具获取指定的Bean</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/28 23:11</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">//@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringCaveaStrategy</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//使用spring编写的工具类进行bean的获取</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CaveatStrategy <span class="title">getBean</span><span class="params">(String service)</span></span>&#123;</span><br><span class="line">        <span class="comment">// return SpringUtils.getBean(service);</span></span><br><span class="line">        <span class="comment">// 不建议直接调用，做一下null指针判断</span></span><br><span class="line">        <span class="keyword">return</span> SpringUtils.getBean(service).warning(params);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在最后我们结合spring实现 <strong>单例</strong>之后，我们成功将 单例 + 策略 + 简单工厂进行了整合，这样的代码写起来才爽呀，然而现实生活中我们大多数在一个已经建立好的结构上做优化，这时候就需要更多思考了……</p>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>本文在策略模式上做了进一步的深入思考，我对比了一下简单工厂和策略工厂，这两个模式可以说长得还是非常像的，仅仅靠这些简单的案例是不够的，还需要更多的灵活运用。</p>
+<p>个人学习的思路一致按照 模仿 -&gt; 熟练 -&gt;创新，同时按照自己的理解去设计场景，这样给自己的学习是很大的，能看到自己知识的模糊点。</p>
+<p>如果这篇文章对你有帮助或者有任何建议意见欢迎讨论。后续会更新更多关于设计模式的内容。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/01/30/strategy1/" title="浅谈设计模式 - 策略模式（三）">https://whitestore.top/2021/01/30/strategy1/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/30/simplefactory/" rel="prev" title="浅谈设计模式 - 简单工厂模式（二）">
+      <i class="fa fa-chevron-left"></i> 浅谈设计模式 - 简单工厂模式（二）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/30/javatank/" rel="next" title="JAVA基础小项目 - 坦克大战">
+      JAVA基础小项目 - 坦克大战 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#浅谈设计模式-策略模式（三）"><span class="nav-number">1.</span> <span class="nav-text">浅谈设计模式 - 策略模式（三）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是策略模式？"><span class="nav-number">1.2.</span> <span class="nav-text">什么是策略模式？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#策略模式结构图："><span class="nav-number">1.3.</span> <span class="nav-text">策略模式结构图：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么情况下使用策略模式？"><span class="nav-number">1.4.</span> <span class="nav-text">什么情况下使用策略模式？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#策略模式的特点："><span class="nav-number">1.5.</span> <span class="nav-text">策略模式的特点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工厂模式和策略模式的异同："><span class="nav-number">1.6.</span> <span class="nav-text">工厂模式和策略模式的异同：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实际案例："><span class="nav-number">1.7.</span> <span class="nav-text">实际案例：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#场景模拟："><span class="nav-number">1.7.1.</span> <span class="nav-text">场景模拟：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不使用设计模式："><span class="nav-number">1.7.2.</span> <span class="nav-text">不使用设计模式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用工厂模式："><span class="nav-number">1.7.3.</span> <span class="nav-text">使用工厂模式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用策略模式："><span class="nav-number">1.7.4.</span> <span class="nav-text">使用策略模式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单工厂和策略模式结合："><span class="nav-number">1.7.5.</span> <span class="nav-text">简单工厂和策略模式结合：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更好的“策略”："><span class="nav-number">1.7.6.</span> <span class="nav-text">更好的“策略”：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结："><span class="nav-number">1.8.</span> <span class="nav-text">总结：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">53</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">552k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">8:22</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="坦克大战的源代码学习使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA基础小项目 - 坦克大战">
+<meta property="og:url" content="https://whitestore.top/2021/01/30/javatank/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="坦克大战的源代码学习使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130151243.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130151301.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130151329.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210129160413.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130150035.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210129173134.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130145231.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130145253.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130145348.png">
+<meta property="article:published_time" content="2021-01-30T07:41:47.000Z">
+<meta property="article:modified_time" content="2021-01-30T07:42:41.866Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="坦克大战的源代码学习使用">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130151243.png">
+
+<link rel="canonical" href="https://whitestore.top/2021/01/30/javatank/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JAVA基础小项目 - 坦克大战 | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/01/30/javatank/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JAVA基础小项目 - 坦克大战
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-30 15:41:47 / 修改时间：15:42:41" itemprop="dateCreated datePublished" datetime="2021-01-30T15:41:47+08:00">2021-01-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%87%AA%E5%AD%A6%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">自学编程</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/01/30/javatank/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/30/javatank/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>14k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>13 分钟</span>
+            </span>
+            <div class="post-description">坦克大战的源代码学习使用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="JAVA基础小项目-坦克大战"><a href="#JAVA基础小项目-坦克大战" class="headerlink" title="JAVA基础小项目 - 坦克大战"></a>JAVA基础小项目 - 坦克大战</h1><h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><p>这个项目是之前备份电脑资料的时候看到的，不禁一阵感慨自己当初自学编程的心酸和泪水。所以分享一下自己当初写的的垃圾代码。虽然我不是任天堂忠实粉丝，但是对于90后来说坦克大战基本是人人都玩过的一款小霸王游戏机的游戏。</p>
+<p>这个项目对于已经入行的人来说没有价值，分享出来主要是希望对于初学编程的人给一点 “吸引”吧，原来代码可以做到这么愉快的事情。这个坦克大战也是自己跟着培训机构的教学视频边看边敲的。</p>
+<p>花了一天左右的时间把代码稍微整理了一下代码同时写了这份文档，这里分享出来。</p>
+<p>对于入行编程的同学个人的建议如果要快速成长还是多练，多做。很多东西做多了之后，涉及自己的盲区会促使你不断的学习和进步。</p>
+<blockquote>
+<p>PS：代码使用Eclipse写的，这里用IDEA整理了一下代码</p>
+<p>此代码如果阅读存在难度，建议看一下韩顺平的JAVA基础坦克大战的课程。这里的源代码也是跟着课程敲的。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL0JWMTU3NDExZzc4eT9wPTQ3" title="https://www.bilibili.com/video/BV157411g78y?p=47">https://www.bilibili.com/video/BV157411g78y?p=47<i class="fa fa-external-link"></i></span></p>
+<p>真是一个好时代，当初这些资源还要网上翻半天</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="项目地址"><a href="#项目地址" class="headerlink" title="项目地址"></a>项目地址</h2><p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcy9UYW5rX2NsYXNzX215VGFuaw==" title="https://github.com/lazyTimes/Tank_class_myTank">https://github.com/lazyTimes/Tank_class_myTank<i class="fa fa-external-link"></i></span></p>
+<blockquote>
+<p>后续文档更新请看readne</p>
+</blockquote>
+<h2 id="项目简介："><a href="#项目简介：" class="headerlink" title="项目简介："></a>项目简介：</h2><p>个人前几年自学的时候从一个教学视频的，<strong>韩顺平老师的JAVA初级坦克大战</strong>。个人跟着视频边学边敲之后，对于编程的兴趣大大的提升。后面越学越快乐。</p>
+<h2 id="所用技术"><a href="#所用技术" class="headerlink" title="所用技术"></a>所用技术</h2><ol>
+<li>JAVA GUI（远古技术，<strong>千万别深入</strong>，看看即可）</li>
+<li>JAVA</li>
+</ol>
+<h2 id="面向群体："><a href="#面向群体：" class="headerlink" title="面向群体："></a>面向群体：</h2><ol>
+<li>初学JAVA者，可以看看这个项目锻炼动手能力</li>
+<li>完全不了解什么是面向对象</li>
+<li>对于小游戏有点兴趣的</li>
+<li>如果你厌恶枯燥的学习，做一个小游戏或许能给你一点动力</li>
+</ol>
+<h2 id="项目截图："><a href="#项目截图：" class="headerlink" title="项目截图："></a>项目截图：</h2><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130151243.png" alt=""></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130151301.png" alt=""></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130151329.png" alt=""></p>
+<h2 id="操作坦克的方法："><a href="#操作坦克的方法：" class="headerlink" title="操作坦克的方法："></a>操作坦克的方法：</h2><p>最后一版本有效，早起版本部分功能或者所有功能按键无效</p>
+<ul>
+<li>WASD</li>
+<li>J：为射出子弹</li>
+</ul>
+<h2 id="需求文档（或许是）："><a href="#需求文档（或许是）：" class="headerlink" title="需求文档（或许是）："></a>需求文档（或许是）：</h2><p>由于当初是跟着视频做的，虽然具体的记忆忘了，但是自己跟着敲的同时忘了做需求的更新，所以这里有部分需求和思路断了。如果有不同的，后续补充GIT的README文档。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;*</span><br><span class="line"> * 		需求：</span><br><span class="line"> * 			坦克大战:</span><br><span class="line"> * 			功能：	</span><br><span class="line"> * 				1.画出坦克，</span><br><span class="line"> * 		</span><br><span class="line"> * 		思路：</span><br><span class="line"> * 			1.首先坦克想象由五个部件组成两个矩形，一个长方形或者正方形，一个圆</span><br><span class="line"> * 				一条直线</span><br><span class="line"> * </span><br><span class="line"> * 			2.画坦克的时候需要使用到画笔工具</span><br><span class="line"> * 				必须在构造函数初始化使用画笔工具</span><br><span class="line"> * </span><br><span class="line"> * 			3.在设置方向以及画出不同方向的坦克</span><br><span class="line"> * </span><br><span class="line"> * 			4.敌方坦克画出来需要使用父类方法</span><br><span class="line"> * 				敌方坦克的坐标需要设置，	</span><br><span class="line"> * 				使用一个集合保存敌方坦克Vector集合便于删除和添加 </span><br><span class="line"> * </span><br><span class="line"> * 			5.发射子弹是一个线程</span><br><span class="line"> * 				具有线程的功能</span><br><span class="line"> * 				另外线程对与子弹方向运动轨迹不同</span><br><span class="line"> * </span><br><span class="line"> * 			6.需要把子弹画出来</span><br><span class="line"> * 				在按下J键的时候发射子弹</span><br><span class="line"> * 					实现连发使用集合存储</span><br><span class="line"> * 				</span><br><span class="line"> * 		升级：</span><br><span class="line"> * 			1.让敌人能够发射子弹</span><br><span class="line">				解决方法</span><br><span class="line">					1.敌人发射子弹是一个多线程方法，应当在敌人的run函数当中实现</span><br><span class="line">					2.坦克发射子弹和移动都是坦克本身具有的功能</span><br><span class="line"> * </span><br><span class="line"> * 			思路：</span><br><span class="line"> * 				1.在敌人类里面需要添加一个射击方法</span><br><span class="line"> * 					与我方一样，但是敌人是自动射击或者说每过几秒射击一次</span><br><span class="line"> * </span><br><span class="line"> * 				2.我方坦克子弹连发</span><br><span class="line"> * 					使用一个集合保存建立的对象，画出子弹使用集合中的对象</span><br><span class="line"> * 					我方坦克子弹连发过快，需要限定		</span><br><span class="line"> * 			</span><br><span class="line"> * 				3.</span><br><span class="line"> * 					我方坦克击中敌人坦克之后，敌人坦克就要消失</span><br><span class="line"> * 					需要获取到敌人的一个定点坐标，然后界定一个范围</span><br><span class="line"> * 					写一个专门的函数判断是否击中敌人</span><br><span class="line"> * 					</span><br><span class="line"> * 					在哪里判断是否击中敌人</span><br><span class="line"> * ·				因为每一颗子弹都要与所有的坦克匹配，并且每一次匹配都要</span><br><span class="line"> * 					双重判断每次都要进行建立对象</span><br><span class="line"> * 					图片问题没有得到解决</span><br><span class="line"> * </span><br><span class="line"> * 		升级</span><br><span class="line"> * 				1.需要实现敌人的坦克不断的移动使用多线程的手段实现</span><br><span class="line"> * </span><br><span class="line"> * 				2.需要实现敌人能够发射子弹的功能</span><br><span class="line"> * 				实现方法：</span><br><span class="line"> * 					建立一个敌人的子弹集合</span><br><span class="line"> * 					如何敌人何时发射子弹？</span><br><span class="line"> * 					使用多重循环判断是否需要添加薪子弹</span><br><span class="line"> * </span><br><span class="line"> * 				3.实现自己被子弹击中也会消失</span><br><span class="line"> * 					对于摧毁坦克进行升级</span><br><span class="line"> * </span><br><span class="line"> * 				4.</span><br><span class="line"> * 					较难！</span><br><span class="line"> * 					实现坦克不覆盖运动，</span><br><span class="line"> * 					1.首先改判断在坦克类中实现</span><br><span class="line"> * 					2.需要用到一个方法获取到生成的坦克类</span><br><span class="line"> * 					3.对于地方其中一辆坦克的选择，都要循环与其他所有坦克进行比对</span><br><span class="line"> * 						并且要事先判断是否为我方坦克</span><br><span class="line"> * 					4.**对于点位的判断要判断两个点，才能够保证不会产生碰撞</span><br><span class="line"> * </span><br><span class="line"> * 				5.实现选择关卡的功能</span><br><span class="line"> * 					思路：</span><br><span class="line"> * 						1.可以建立一个选择关卡的面板</span><br><span class="line"> * 						2.暂时先实现不同的关卡敌人坦克的数量不同</span><br><span class="line"> * 						3.实现闪烁功能，使用多线程的方法,注意线程的关闭</span><br><span class="line"> * 						4.对于选项添加事件属性,添加事件</span><br><span class="line"> * </span><br><span class="line"> * 				5.画出我方坦克击中了多少辆地方坦克</span><br><span class="line"> * 					1.对于总体界面进行修改</span><br><span class="line"> * 					2.显示敌人坦克的数量</span><br><span class="line"> * 					扩展：</span><br><span class="line"> * 						1.建立帮助文档</span><br><span class="line"> * 					3.扩展:我方坦克的生命值，当生命值为0的时候游戏结束</span><br><span class="line"> * 					4.记录我方击中了多少地方坦克</span><br><span class="line"> * 						使用文件操作完成</span><br><span class="line"> * </span><br><span class="line"> * 				6.实现重新开始的功能</span><br><span class="line"> * </span><br><span class="line"> * 				7.实现存盘退出的功能</span><br><span class="line"> * 					思路：</span><br><span class="line"> * 						选在主界面增加两个按钮</span><br><span class="line"> * 						1.记录所有坦克的坐标</span><br><span class="line"> * 						</span><br><span class="line"> * 				8.实现暂停的功能</span><br><span class="line"> * 					思路：</span><br><span class="line"> * 						暂停功能可以通过一个布尔值进行判断，当按下某个按钮的时候就要进行布尔值的改变</span><br><span class="line"> * 						需要暂停的对象</span><br><span class="line"> * 							将多线程子弹的速度前进功能暂停</span><br><span class="line"> * 							敌人坦克无法转向和前进</span><br><span class="line"> * 							我方坦克无法转向和前进</span><br><span class="line"> * </span><br><span class="line"> * 				9.实现播放音乐的功能</span><br><span class="line"> * 					自学 - 未实现</span><br><span class="line"> * </span><br><span class="line"> * 				</span><br><span class="line"> * 					</span><br><span class="line"> * </span><br><span class="line"> * *&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h2 id="版本迭代和介绍："><a href="#版本迭代和介绍：" class="headerlink" title="版本迭代和介绍："></a>版本迭代和介绍：</h2><h3 id="介绍："><a href="#介绍：" class="headerlink" title="介绍："></a>介绍：</h3><p>代码比较多，我会抽几处理解起来比较难以理解的地方说明一下，其他的代码需要看细节。如果有不懂的欢迎在issue提出，个人只要有空一定给予答复。</p>
+<h3 id="第一个版本"><a href="#第一个版本" class="headerlink" title="第一个版本"></a>第一个版本</h3><p>版本概述：画出坦克(version1)</p>
+<p>我们的第一步是画出我们的坦克，画出我方坦克的方法还是非常简单的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">* 		思路：</span><br><span class="line">* 			1.首先坦克想象由五个部件组成两个矩形，一个长方形或者正方形，一个圆</span><br><span class="line">* 				一条直线</span><br><span class="line">* </span><br><span class="line">* 			2.画坦克的时候需要使用到画笔工具</span><br><span class="line">* 				必须在构造函数初始化使用画笔工具</span><br><span class="line">* </span><br><span class="line">* 			3.在设置方向以及画出不同方向的坦克</span><br></pre></td></tr></table></figure>
+
+<p>拥有坦克的第一步是画出坦克</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210129160413.png" alt=""></p>
+<p>画出坦克的核心代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 画坦克需要提取封装</span></span><br><span class="line"><span class="comment">     * 1.画出来之前先确定颜色，是敌人坦克还是我方坦克</span></span><br><span class="line"><span class="comment">     * 2.参数为坐标做，画笔（重要）,以及坦克类型和方向</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">paintMyTank</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y, Graphics g, <span class="keyword">int</span> direct, String type)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//画之前先确定坦克的颜色</span></span><br><span class="line">        <span class="keyword">switch</span> (type) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">"mytank"</span>: &#123;</span><br><span class="line">                g.setColor(Color.red);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">"enemytank"</span>: &#123;</span><br><span class="line">                g.setColor(Color.cyan);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//向上</span></span><br><span class="line">        <span class="keyword">if</span> (direct == <span class="number">0</span>) &#123;<span class="comment">//先画出我的坦克</span></span><br><span class="line">            <span class="comment">//画出左边的矩形，先设置颜色</span></span><br><span class="line">            g.fill3DRect(x, x, <span class="number">5</span>, <span class="number">30</span>, <span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//画出中间的长方形</span></span><br><span class="line">            g.fill3DRect(x + <span class="number">5</span>, x + <span class="number">5</span>, <span class="number">10</span>, <span class="number">20</span>, <span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//画出中间圆圈,使用填充椭圆</span></span><br><span class="line">            g.fillOval(x + <span class="number">6</span>, x + <span class="number">9</span>, <span class="number">7</span>, <span class="number">7</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//画出一条直线</span></span><br><span class="line">            g.drawLine(x + <span class="number">10</span>, x, x + <span class="number">10</span>, x + <span class="number">15</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//画出另一边矩形</span></span><br><span class="line">            g.fill3DRect(x + <span class="number">15</span>, x, <span class="number">5</span>, <span class="number">30</span>, <span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果知道数字的意思，直接将数字修改大小就可以知道效果了</p>
+<h3 id="第二个版本"><a href="#第二个版本" class="headerlink" title="第二个版本"></a>第二个版本</h3><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130150035.png" alt=""></p>
+<p>版本概述：画出我方坦克不同形状，敌方坦克(version2)，我方坦克可以进行行动</p>
+<p>在上个版本当中，我们发现我们的坦克只有一个朝向，在这个版本中，增加了坦克的不同朝向。同时增加了敌人的坦克类。</p>
+<p>由于敌人有很多个，所以用了一个集合来维护和设置。同时加入了坐标系统，可以实现不同的坦克挪到不同的位置。</p>
+<p>这个版本的关键代码，不是在画坦克的上面，而是在于加入了键盘的监听事件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// version2.DrawTank.java 更多细节请查看</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DrawTank</span> <span class="keyword">extends</span> <span class="title">JPanel</span> <span class="keyword">implements</span> <span class="title">KeyListener</span> </span>&#123; </span><br><span class="line">    <span class="comment">// 省略一大坨代码</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 使用wsad进行控制</span></span><br><span class="line"><span class="comment">     * 也可以改为上下左右键</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> e</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">keyPressed</span><span class="params">(KeyEvent e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (e.getKeyCode() == KeyEvent.VK_W) &#123;</span><br><span class="line">            <span class="keyword">this</span>.mytank.setDirect(<span class="number">0</span>);</span><br><span class="line">            <span class="keyword">this</span>.mytank.move_up();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (e.getKeyCode() == KeyEvent.VK_D) &#123;</span><br><span class="line">            <span class="keyword">this</span>.mytank.setDirect(<span class="number">1</span>);</span><br><span class="line">            <span class="keyword">this</span>.mytank.move_right();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (e.getKeyCode() == KeyEvent.VK_S) &#123;</span><br><span class="line">            <span class="keyword">this</span>.mytank.setDirect(<span class="number">2</span>);</span><br><span class="line">            <span class="keyword">this</span>.mytank.move_down();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (e.getKeyCode() == KeyEvent.VK_A) &#123;</span><br><span class="line">            <span class="comment">//改变方向</span></span><br><span class="line">            <span class="keyword">this</span>.mytank.setDirect(<span class="number">3</span>);</span><br><span class="line">            <span class="keyword">this</span>.mytank.move_left();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>实现<code>KeyListener</code>接口并且监听对应的方法。</p>
+<p>JAVA的GUI有一个事件监听驱动模型，意思就是说我们实现对应的驱动接口，并且覆盖对应的方法，在代码运行并且触发相关事件的适合，模型就可以触发我们实现定义好的代码，这里很明显就是设计模式，有兴趣可以去了解一下</p>
+</blockquote>
+<h3 id="第三个版本"><a href="#第三个版本" class="headerlink" title="第三个版本"></a>第三个版本</h3><p>从这个版本就开始变得稍微复杂一点了，用了多线程的内容，因为要让我们的坦克和敌人的坦克“动”起来，其实让坦克移动和我方坦克移动的道理都是一样的：高速的<strong>擦写和描绘</strong>。和我们的鼠标以及计算机显示画面的本质都是一样的。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210129173134.png" alt=""></p>
+<p>这个版本中，比较核心的内容是如何发射子弹和让子弹消失：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Bullet</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 定义子弹的xy坐标</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> x, y;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 子弹的颜色</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> color;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 子弹的方向</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> direct;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 子弹移动速度</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> screed;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否越界</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">boolean</span> isOut = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 越界范围</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> outx = <span class="number">400</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 越界范围</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> outy = <span class="number">300</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Bullet</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y, <span class="keyword">int</span> direct)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.x = x;</span><br><span class="line">        <span class="keyword">this</span>.y = y;</span><br><span class="line">        <span class="keyword">this</span>.direct = direct;</span><br><span class="line">        <span class="keyword">this</span>.screed = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 省略get/set</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//坦克一旦建立就要运动</span></span><br><span class="line">        <span class="comment">//因为移动的太快，需要减慢速度</span></span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">10</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                <span class="comment">//</span></span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">switch</span> (<span class="keyword">this</span>.direct) &#123;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                    y -= screed;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                    x += screed;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                    y += screed;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">                    x -= screed;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(x + <span class="string">"..."</span> + y);</span><br><span class="line">            <span class="comment">//碰到边缘消失</span></span><br><span class="line">            <span class="keyword">if</span> (x &lt; <span class="number">0</span> || x &gt; outx || y &lt; <span class="number">0</span> || y &gt; outy) &#123;</span><br><span class="line">                isOut = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 子弹什么时候消亡？</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否越界</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">outLine</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>在坦克的内部维护一个变量<code>isOut</code>，判定有没有越界</li>
+<li>如果出现了越界，则flag进行设置</li>
+</ol>
+<p>接着，在绘画的方法里面，判定有没有越界：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 绘画方法</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> g</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">paint</span><span class="params">(Graphics g)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.paint(g);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//画出背景色</span></span><br><span class="line">    g.fill3DRect(<span class="number">0</span>, <span class="number">0</span>, <span class="number">600</span>, <span class="number">400</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">//画出自己的坦克</span></span><br><span class="line">    paintMyTank(mytank.getX(), mytank.getY(), g, mytank.getDirect(), mytank.getColor());</span><br><span class="line">    <span class="comment">//画出敌人的坦克</span></span><br><span class="line">    paintEnemyTank(g);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//画出子弹并且确定没有越界</span></span><br><span class="line">    <span class="keyword">if</span> (mytank.but != <span class="keyword">null</span> &amp;&amp; !mytank.but.isOut) &#123;</span><br><span class="line">        g.fill3DRect(mytank.but.getX(), mytank.but.getY(), <span class="number">5</span>, <span class="number">5</span>, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四个版本："><a href="#第四个版本：" class="headerlink" title="第四个版本："></a>第四个版本：</h3><p>从这一个版本开始，一个游戏的简单雏形已经有了，这一个版本实现了让敌人移动的同时发射子弹的功能，同时我方的坦克射击敌人的时候，可以让敌人消失</p>
+<h4 id="怎么样让敌人可以边移动边发射子弹："><a href="#怎么样让敌人可以边移动边发射子弹：" class="headerlink" title="怎么样让敌人可以边移动边发射子弹："></a>怎么样让敌人可以边移动边发射子弹：</h4><p>我们需要在敌人的多线程<code>run</code>代码里面，然敌人进行间歇性的走动：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="comment">//我们发现坦克在原地抽搐，我们要实现坦克的平稳运行</span></span><br><span class="line">   <span class="comment">//实现坦克运动不会越界</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">       <span class="keyword">do</span> &#123;</span><br><span class="line">           <span class="keyword">switch</span> (<span class="keyword">this</span>.direct) &#123;</span><br><span class="line">               <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">30</span>; i++) &#123;</span><br><span class="line">                       <span class="keyword">if</span> (y &gt; <span class="number">0</span>)</span><br><span class="line">                           y -= sreed;</span><br><span class="line">                       <span class="keyword">try</span> &#123;</span><br><span class="line">                           Thread.sleep(<span class="number">50</span>);</span><br><span class="line">                       &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line"></span><br><span class="line">                           e.printStackTrace();</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">30</span>; i++) &#123;</span><br><span class="line">                       <span class="keyword">if</span> (x &lt; <span class="number">500</span>)</span><br><span class="line">                           x += sreed;</span><br><span class="line">                       <span class="keyword">try</span> &#123;</span><br><span class="line">                           <span class="comment">// 短暂的停顿</span></span><br><span class="line">                           Thread.sleep(<span class="number">50</span>);</span><br><span class="line">                       &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                           e.printStackTrace();</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">30</span>; i++) &#123;</span><br><span class="line">                       <span class="keyword">if</span> (y &lt; <span class="number">400</span>)</span><br><span class="line">                           y += sreed;</span><br><span class="line">                       <span class="keyword">try</span> &#123;</span><br><span class="line">                           Thread.sleep(<span class="number">50</span>);</span><br><span class="line">                       &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line"></span><br><span class="line">                           e.printStackTrace();</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">                   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">30</span>; i++) &#123;</span><br><span class="line">                       <span class="keyword">if</span> (x &gt; <span class="number">0</span>)</span><br><span class="line">                           x -= sreed;</span><br><span class="line">                       <span class="keyword">try</span> &#123;</span><br><span class="line">                           Thread.sleep(<span class="number">50</span>);</span><br><span class="line">                       &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line"></span><br><span class="line">                           e.printStackTrace();</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">           &#125;</span><br><span class="line">           <span class="comment">//不同的方向移动的方向不同</span></span><br><span class="line">           <span class="keyword">this</span>.direct = (<span class="keyword">int</span>) (Math.random() * <span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">       &#125; <span class="keyword">while</span> (<span class="keyword">this</span>.isLive);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>至于生成子弹，需要定时去轮询所有的坦克，检查坦克中组合的子弹集合是否存在子弹，如果小于一定的数量，需要生成对应的子弹对象同时加入到敌人的坦克当中。由于子弹创建就会开始执行线程进行</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//限定一段时间重新绘制</span></span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">100</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//判断是否击中</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; mytank.vecs.size(); x++) &#123;</span><br><span class="line">                <span class="comment">//每一颗子弹和每一个坦克匹配</span></span><br><span class="line">                <span class="comment">//取出一颗子弹之前判断是否有子弹</span></span><br><span class="line">                buts = mytank.vecs.get(x);</span><br><span class="line"></span><br><span class="line">                <span class="comment">//判断子弹是否有效</span></span><br><span class="line">                <span class="keyword">if</span> (buts.isOut()) &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//取出每一个坦克与它判断</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> y = <span class="number">0</span>; y &lt; vec.size(); y++) &#123;</span><br><span class="line">                    <span class="comment">//判断敌方坦克是否死亡</span></span><br><span class="line">                    <span class="keyword">if</span> (vec.get(y).isLive) &#123;</span><br><span class="line">                        en = vec.get(y);</span><br><span class="line">                        <span class="comment">//记性判断是否击中操作</span></span><br><span class="line">                        hitTank(en, buts);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//如果子弹数小于一定数目</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; vec.size(); x++) &#123;</span><br><span class="line">                EnemyTank et = vec.get(x);</span><br><span class="line">                <span class="comment">//遍历每一辆坦克的子弹集合</span></span><br><span class="line">                <span class="keyword">if</span> (!et.isLive()) &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (et.vecs.size() &lt; <span class="number">1</span>) &#123;</span><br><span class="line">                    <span class="comment">//对于不同的坦克方向生成子弹的方向也不同</span></span><br><span class="line">                    Bullet enybut = <span class="keyword">null</span>;</span><br><span class="line">                    <span class="keyword">switch</span> (et.getDirect()) &#123;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                            enybut = <span class="keyword">new</span> Bullet(et.getX() + <span class="number">10</span>, et.getY(), <span class="number">0</span>);</span><br><span class="line">                            <span class="comment">//将创建的子弹加入到集合当中</span></span><br><span class="line">                            et.vecs.addElement(enybut);</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                            enybut = <span class="keyword">new</span> Bullet(et.getX() + <span class="number">30</span>, et.getY() + <span class="number">10</span>, <span class="number">1</span>);</span><br><span class="line">                            et.vecs.addElement(enybut);</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                            enybut = <span class="keyword">new</span> Bullet(et.getX() + <span class="number">10</span>, et.getY() + <span class="number">30</span>, <span class="number">2</span>);</span><br><span class="line">                            et.vecs.addElement(enybut);</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">                            enybut = <span class="keyword">new</span> Bullet(et.getX(), et.getY() + <span class="number">10</span>, <span class="number">3</span>);</span><br><span class="line">                            et.vecs.addElement(enybut);</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">new</span> Thread(enybut).start();</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//重绘</span></span><br><span class="line">            <span class="keyword">this</span>.repaint();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在子弹类当中进行不断的数值改变：</p>
+<p>下面的内容表示子弹的类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Bullet</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="comment">//隐藏一大段代码：</span></span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      </span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">10</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">switch</span> (<span class="keyword">this</span>.direct) &#123;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                    <span class="keyword">this</span>.y -= screed;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                    <span class="keyword">this</span>.x += screed;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                    <span class="keyword">this</span>.y += screed;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">                    <span class="keyword">this</span>.x -= screed;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//碰到边缘消失</span></span><br><span class="line">            <span class="keyword">if</span> (x &lt; <span class="number">0</span> || x &gt; outx || y &lt; <span class="number">0</span> || y &gt; outy) &#123;</span><br><span class="line">                isOut = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">           </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第五个版本："><a href="#第五个版本：" class="headerlink" title="第五个版本："></a>第五个版本：</h3><p>在第五个版本当中，我们实现了开始菜单的界面，同时视线菜单的不断显示：</p>
+<p>界面会不断的闪烁</p>
+<p>接着，敌人增加了子弹可以摧毁我们的方法</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130145231.png" alt=""></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130145253.png" alt=""></p>
+<p>接着，我们可以实现爆炸的效果：</p>
+<blockquote>
+<p>由于爆炸的效果不好截图，请看源代码</p>
+</blockquote>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210130145348.png" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 实现闪烁功能</span></span><br><span class="line"><span class="comment"> * 重构坦克 - 第五版</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/29 23:54</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SelectIsSallup</span> <span class="keyword">extends</span> <span class="title">JPanel</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 时间属性</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">int</span> times = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">paint</span><span class="params">(Graphics g)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.paint(g);</span><br><span class="line">        g.fillRect(<span class="number">0</span>, <span class="number">0</span>, <span class="number">600</span>, <span class="number">400</span>);</span><br><span class="line">        <span class="keyword">if</span> (times % <span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//画出文字</span></span><br><span class="line">            Font font1 = <span class="keyword">new</span> Font(<span class="string">"华文新魏"</span>, Font.BOLD, <span class="number">20</span>);</span><br><span class="line">            <span class="comment">//设置字体的颜色</span></span><br><span class="line">            g.setColor(Color.yellow);</span><br><span class="line">            g.setFont(font1);</span><br><span class="line">            g.drawString(<span class="string">"stage 1"</span>, <span class="number">200</span>, <span class="number">150</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">750</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line"></span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (times &gt; <span class="number">500</span>)</span><br><span class="line">                times = <span class="number">0</span>;</span><br><span class="line">            times++;</span><br><span class="line">            <span class="keyword">this</span>.repaint();</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="如何让敌人的子弹对我们造成伤害："><a href="#如何让敌人的子弹对我们造成伤害：" class="headerlink" title="如何让敌人的子弹对我们造成伤害："></a>如何让敌人的子弹对我们造成伤害：</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 建立一个方法，判断是否产生碰撞</span></span><br><span class="line"><span class="comment">	 * 是否攻击了其他的坦克</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isTouchOther</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 根据自己的方向进行选择判断</span></span><br><span class="line">        <span class="keyword">switch</span> (<span class="keyword">this</span>.direct) &#123;</span><br><span class="line">            <span class="comment">// 坦克向上走的时候</span></span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                <span class="comment">// 取出所有的坦克对象</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; enevec.size(); x++) &#123;</span><br><span class="line">                    EnemyTank et = enevec.get(x);</span><br><span class="line">                    <span class="comment">//如果不是自己的坦克</span></span><br><span class="line">                    <span class="keyword">if</span> (et != <span class="keyword">this</span>) &#123;</span><br><span class="line">                        <span class="comment">//如果敌人的坦克朝上或者朝下的时候</span></span><br><span class="line">                        <span class="keyword">if</span> (et.direct == <span class="number">0</span> || et.direct == <span class="number">2</span>) &#123;</span><br><span class="line">                            <span class="comment">//判断边界</span></span><br><span class="line">                            <span class="comment">//对于第一个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x &lt;= et.x + <span class="number">20</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">30</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">//对于第二个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x + <span class="number">20</span> &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x + <span class="number">20</span> &lt;= et.x + <span class="number">20</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">30</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">//如果敌人是朝左边或者右边的时候</span></span><br><span class="line">                        <span class="keyword">if</span> (et.direct == <span class="number">1</span> || et.direct == <span class="number">3</span>) &#123;</span><br><span class="line">                            <span class="comment">//判断边界</span></span><br><span class="line">                            <span class="comment">//对于第一个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x &lt;= et.x + <span class="number">30</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">20</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">//对于第二个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x + <span class="number">20</span> &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x + <span class="number">20</span> &lt;= et.x + <span class="number">30</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">20</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="comment">//	坦克想右边走的时候</span></span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                <span class="comment">// 取出所有的坦克对象</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; enevec.size(); x++) &#123;</span><br><span class="line">                    EnemyTank et = enevec.get(x);</span><br><span class="line">                    <span class="comment">//如果不是自己的坦克</span></span><br><span class="line">                    <span class="keyword">if</span> (et != <span class="keyword">this</span>) &#123;</span><br><span class="line">                        <span class="comment">//如果敌人的坦克朝上或者朝下的时候</span></span><br><span class="line">                        <span class="keyword">if</span> (et.direct == <span class="number">0</span> || et.direct == <span class="number">2</span>) &#123;</span><br><span class="line">                            <span class="comment">//判断边界</span></span><br><span class="line">                            <span class="comment">//对于第一个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x + <span class="number">30</span> &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x + <span class="number">30</span> &lt;= et.x + <span class="number">20</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">30</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">//对于第二个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x + <span class="number">30</span> &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x + <span class="number">30</span> &lt;= et.x + <span class="number">20</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">30</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">//如果敌人是朝左边或者右边的时候</span></span><br><span class="line">                        <span class="keyword">if</span> (et.direct == <span class="number">1</span> || et.direct == <span class="number">3</span>) &#123;</span><br><span class="line">                            <span class="comment">//判断边界</span></span><br><span class="line">                            <span class="comment">//对于第一个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x + <span class="number">30</span> &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x + <span class="number">30</span> &lt;= et.x + <span class="number">30</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y + <span class="number">20</span> &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">20</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">//对于第二个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x + <span class="number">30</span> &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x + <span class="number">30</span> &lt;= et.x + <span class="number">30</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y + <span class="number">20</span> &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">20</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 坦克想下的时候</span></span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                <span class="comment">// 取出所有的坦克对象</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; enevec.size(); x++) &#123;</span><br><span class="line">                    EnemyTank et = enevec.get(x);</span><br><span class="line">                    <span class="comment">//如果不是自己的坦克</span></span><br><span class="line">                    <span class="keyword">if</span> (et != <span class="keyword">this</span>) &#123;</span><br><span class="line">                        <span class="comment">//如果敌人的坦克朝上或者朝下的时候</span></span><br><span class="line">                        <span class="keyword">if</span> (et.direct == <span class="number">0</span> || et.direct == <span class="number">2</span>) &#123;</span><br><span class="line">                            <span class="comment">//判断边界</span></span><br><span class="line">                            <span class="comment">//对于第一个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x &lt;= et.x + <span class="number">20</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y + <span class="number">30</span> &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y + <span class="number">30</span> &lt;= et.y + <span class="number">30</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">//对于第二个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x + <span class="number">20</span> &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x + <span class="number">20</span> &lt;= et.x + <span class="number">20</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y + <span class="number">30</span> &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y + <span class="number">30</span> &lt;= et.y + <span class="number">30</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">//如果敌人是朝左边或者右边的时候</span></span><br><span class="line">                        <span class="keyword">if</span> (et.direct == <span class="number">1</span> || et.direct == <span class="number">3</span>) &#123;</span><br><span class="line">                            <span class="comment">//判断边界</span></span><br><span class="line">                            <span class="comment">//对于第一个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x &lt;= et.x + <span class="number">30</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y + <span class="number">30</span> &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y + <span class="number">30</span> &lt;= et.y + <span class="number">20</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">//对于第二个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x + <span class="number">20</span> &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x + <span class="number">20</span> &lt;= et.x + <span class="number">30</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y + <span class="number">30</span> &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y + <span class="number">30</span> &lt;= et.y + <span class="number">20</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 坦克向左移动的时候</span></span><br><span class="line">            <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">                <span class="comment">// 取出所有的坦克对象</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; enevec.size(); x++) &#123;</span><br><span class="line">                    EnemyTank et = enevec.get(x);</span><br><span class="line">                    <span class="comment">//如果不是自己的坦克</span></span><br><span class="line">                    <span class="keyword">if</span> (et != <span class="keyword">this</span>) &#123;</span><br><span class="line">                        <span class="comment">//如果敌人的坦克朝上或者朝下的时候</span></span><br><span class="line">                        <span class="keyword">if</span> (et.direct == <span class="number">0</span> || et.direct == <span class="number">2</span>) &#123;</span><br><span class="line">                            <span class="comment">//判断边界</span></span><br><span class="line">                            <span class="comment">//对于第一个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x &lt;= et.x + <span class="number">20</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">30</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">//对于第二个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x &lt;= et.x + <span class="number">20</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y + <span class="number">20</span> &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y + <span class="number">20</span> &lt;= et.y + <span class="number">30</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">//如果敌人是朝左边或者右边的时候</span></span><br><span class="line">                        <span class="keyword">if</span> (et.direct == <span class="number">1</span> || et.direct == <span class="number">3</span>) &#123;</span><br><span class="line">                            <span class="comment">//判断边界</span></span><br><span class="line">                            <span class="comment">//对于第一个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x &lt;= et.x + <span class="number">30</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y &lt;= et.y + <span class="number">20</span>) &#123;</span><br><span class="line"></span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">//对于第二个点进行判断</span></span><br><span class="line">                            <span class="keyword">if</span> (<span class="keyword">this</span>.x &gt;= et.x &amp;&amp; <span class="keyword">this</span>.x &lt;= et.x + <span class="number">30</span></span><br><span class="line">                                    &amp;&amp; <span class="keyword">this</span>.y + <span class="number">20</span> &gt;= et.y &amp;&amp; <span class="keyword">this</span>.y + <span class="number">20</span> &lt;= et.y + <span class="number">20</span>) &#123;</span><br><span class="line">                                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="最终版本："><a href="#最终版本：" class="headerlink" title="最终版本："></a>最终版本：</h3><p>在最终的版本当中，一个坦克大战的基本游戏算是完成了，当然还有很多需要完成点。</p>
+<p>这里主要提示一下暂停这一个功能点：</p>
+<p>暂停的主要思想是为坦克加一个状态去控制坦克的所有行为。让暂停的flag为false的时候，线程不在执行，绘画每次都是绘制在同一个位置。这样就造成了“暂停”的假象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//暂停功能</span></span><br><span class="line"><span class="keyword">if</span>(e.getKeyCode()==KeyEvent.VK_P)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">this</span>.clickcount%<span class="number">2</span> == <span class="number">0</span>)</span><br><span class="line">        mytank.setSuspend(<span class="keyword">false</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        mytank.setSuspend(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//利用循环将坦克类中的子弹速度变成0</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> x=<span class="number">0</span>; x&lt;vec.size(); x++)</span><br><span class="line">    &#123;</span><br><span class="line">        en = vec.get(x);</span><br><span class="line">        <span class="comment">//敌方坦克移动速度归于0</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//坦克不允许移动</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.clickcount%<span class="number">2</span> == <span class="number">0</span>)</span><br><span class="line">            en.setSuspend(<span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            en.setSuspend(<span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> y=<span class="number">0</span>; y&lt;en.vecs.size(); y++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//子弹的速度变成0</span></span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">this</span>.clickcount%<span class="number">2</span> == <span class="number">0</span>)</span><br><span class="line">                en.vecs.get(y).setSuspend(<span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                en.vecs.get(y).setSuspend(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.clickcount++;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><p>这个文档不是最终版本，如果有不懂的欢迎提issue，承诺给予答复但是不会再改动代码了。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/01/30/javatank/" title="JAVA基础小项目 - 坦克大战">https://whitestore.top/2021/01/30/javatank/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/30/strategy1/" rel="prev" title="浅谈设计模式 - 策略模式（三）">
+      <i class="fa fa-chevron-left"></i> 浅谈设计模式 - 策略模式（三）
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA基础小项目-坦克大战"><span class="nav-number">1.</span> <span class="nav-text">JAVA基础小项目 - 坦克大战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言："><span class="nav-number">1.1.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目地址"><span class="nav-number">1.2.</span> <span class="nav-text">项目地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目简介："><span class="nav-number">1.3.</span> <span class="nav-text">项目简介：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#所用技术"><span class="nav-number">1.4.</span> <span class="nav-text">所用技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#面向群体："><span class="nav-number">1.5.</span> <span class="nav-text">面向群体：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目截图："><span class="nav-number">1.6.</span> <span class="nav-text">项目截图：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作坦克的方法："><span class="nav-number">1.7.</span> <span class="nav-text">操作坦克的方法：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#需求文档（或许是）："><span class="nav-number">1.8.</span> <span class="nav-text">需求文档（或许是）：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#版本迭代和介绍："><span class="nav-number">1.9.</span> <span class="nav-text">版本迭代和介绍：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍："><span class="nav-number">1.9.1.</span> <span class="nav-text">介绍：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第一个版本"><span class="nav-number">1.9.2.</span> <span class="nav-text">第一个版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二个版本"><span class="nav-number">1.9.3.</span> <span class="nav-text">第二个版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三个版本"><span class="nav-number">1.9.4.</span> <span class="nav-text">第三个版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四个版本："><span class="nav-number">1.9.5.</span> <span class="nav-text">第四个版本：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#怎么样让敌人可以边移动边发射子弹："><span class="nav-number">1.9.5.1.</span> <span class="nav-text">怎么样让敌人可以边移动边发射子弹：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第五个版本："><span class="nav-number">1.9.6.</span> <span class="nav-text">第五个版本：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#如何让敌人的子弹对我们造成伤害："><span class="nav-number">1.9.6.1.</span> <span class="nav-text">如何让敌人的子弹对我们造成伤害：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最终版本："><span class="nav-number">1.9.7.</span> <span class="nav-text">最终版本：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结："><span class="nav-number">2.</span> <span class="nav-text">总结：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">53</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">552k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">8:22</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
