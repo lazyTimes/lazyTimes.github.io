@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="模板方法提取公共方法，并且延迟算法到子类实现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈设计模式 - 模板方法（十）">
+<meta property="og:url" content="https://whitestore.top/2021/03/07/templatemethod/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="模板方法提取公共方法，并且延迟算法到子类实现">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210305225616.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210307112758.png">
+<meta property="article:published_time" content="2021-03-07T09:04:19.000Z">
+<meta property="article:modified_time" content="2021-03-07T11:26:35.366Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="模板方法">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210305225616.png">
+
+<link rel="canonical" href="https://whitestore.top/2021/03/07/templatemethod/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>浅谈设计模式 - 模板方法（十） | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/03/07/templatemethod/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅谈设计模式 - 模板方法（十）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-07 17:04:19 / 修改时间：19:26:35" itemprop="dateCreated datePublished" datetime="2021-03-07T17:04:19+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/03/07/templatemethod/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/07/templatemethod/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+            <div class="post-description">模板方法提取公共方法，并且延迟算法到子类实现</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="浅谈设计模式-模板方法（十）"><a href="#浅谈设计模式-模板方法（十）" class="headerlink" title="浅谈设计模式 - 模板方法（十）"></a>浅谈设计模式 - 模板方法（十）</h1><h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>​    模板方法模式在JAVA当中最为熟知的就是<code>spring</code>的<code>template</code>对象，模板方法和策略这两个模式需要小心的区分，关于模板方法模式只需要重点记忆一句话：<strong>模板方法的模式定义了算法的骨架</strong>。同时针对模板方法的的一项设计原则<strong>好莱坞原则</strong>也是对 <strong>依赖倒转</strong>原则一种很好的补充和扩展。</p>
+<a id="more"></a>
+
+<h1 id="文章目的："><a href="#文章目的：" class="headerlink" title="文章目的："></a>文章目的：</h1><ol>
+<li>了解模板方法，同时了解模板方法是如何体现好莱坞原则的。</li>
+<li>模板方法与策略模式的对比，以及模板方法灵活运用钩子函数。</li>
+<li>模板方法的简单案例，以及在spring框架当中的具体体现。</li>
+</ol>
+<h1 id="什么是模板方法"><a href="#什么是模板方法" class="headerlink" title="什么是模板方法"></a>什么是模板方法</h1><h2 id="基本定义"><a href="#基本定义" class="headerlink" title="基本定义"></a>基本定义</h2><p>定义：在一个方法当中定义了算法的骨架，而将具体的实现延迟到子类当中。模板方法在不改变算法结构的情况下，重构算法的某些步骤。</p>
+<h2 id="从现实看模板方法"><a href="#从现实看模板方法" class="headerlink" title="从现实看模板方法"></a>从现实看模板方法</h2><p>​    我们都知道现代各式各样的蛋糕都是使用模具做成的，而同一个形状的蛋糕却可以使用不同的配料，此时模具便是模板方法的骨架，通过定义具体的配料细节对应了“算法”的细节。</p>
+<h2 id="钩子函数"><a href="#钩子函数" class="headerlink" title="钩子函数"></a>钩子函数</h2><p>​    钩子函数是一种编程上比较常用的技巧，在框架设计当中十分常见，什么是钩子呢？从个人的理解来看，钩子像是可以延迟定义的匿名函数，钩子可以“勾”住某个算法的中间过程，让外部环境可以干涉内部算法实现的同时，又能让内部的函数进行自由控制钩子的使用。</p>
+<p>​    钩子函数一般实现方式为抽象类或者不做任何动作的函数。</p>
+<p>​    钩子函数在脚本语言里面经常被用作回调函数。包括java的许多框架也用钩子让用户可以干涉一些算法的细节。但是需要注意的是，钩子这个东西很容易破坏代码的可阅读性，所以不建议经常使用这种函数，可以用组合以及其他的设计模式对于结构进行优化。</p>
+<h2 id="模板方法的结构图"><a href="#模板方法的结构图" class="headerlink" title="模板方法的结构图"></a>模板方法的结构图</h2><p>​    下面是模板方法的结构图，模板方法对比其他设计模式应该算是最简单的一个结构图了，比较容易理解：</p>
+<p>​    模板方法的模式定义了算法的骨架，那么什么是定义算法的骨架，从下面的图表很好的看到，父类定义为抽象类，定义模板的算法方法和抽象的算法细节。</p>
+<p>这里要实现算法需要由子类实现具体的算法业务</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210305225616.png" alt="模板方法结构图"></p>
+<h2 id="模板方法的优缺点"><a href="#模板方法的优缺点" class="headerlink" title="模板方法的优缺点"></a>模板方法的优缺点</h2><p>优点：</p>
+<ul>
+<li>模板方法可以让算法的细节掩盖在子类，同时抽取公共的算法，提高代码复用程度</li>
+<li>模板方法可以让修改控制在子类，而父类方法不需要进行改动，符合开放关闭原则。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>模板方法类的改动对于所有的算法实现子类都会产生影响，同时模板父类改动违背“开放-关闭”原则</li>
+<li>模板方法由于利用钩子控制父类方法，会导致反向控制代码，对于代码的阅读不是十分友好。</li>
+</ul>
+<h2 id="模板方法与好莱坞原则"><a href="#模板方法与好莱坞原则" class="headerlink" title="模板方法与好莱坞原则"></a>模板方法与好莱坞原则</h2><p>什么是好莱坞原则？</p>
+<pre><code>首先需要了解一下什么是好莱坞原则：**让我们调用你们，而不是让你们调用我**。</code></pre><p>和依赖倒转原则有什么关联？</p>
+<p>​    好莱坞原则更像是对于依赖倒转的一种扩展技巧。依赖倒转更加关注的是如何在设计中避免面向实现编程，而好莱坞则是将实现的调用在低层的结构进行隐藏。</p>
+<p>为什么不建议低层组件调用高层组件？</p>
+<p>​    为了防止环形依赖，在高层组件里面调用了抽象方法，而抽象方法又调用高层组件的方法。</p>
+<h2 id="策略模式和模板方法对比"><a href="#策略模式和模板方法对比" class="headerlink" title="策略模式和模板方法对比"></a>策略模式和模板方法对比</h2><p>策略模式和模板方法模式的对比</p>
+<ol>
+<li>策略是定义一整个算法，使用组合的形式实现不同的对象切换</li>
+<li>模板方法的是定义一个超类，在超类中通过高层调用底层实现的具体方法的实现，来实现方法的延迟功能</li>
+</ol>
+<h1 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h1><p>​    这次的案例以个人小时候做过的一件事情举例，以前外婆兼职从厂里拿来一堆玩具零件的成品，而工作就是把成品进行“反转”（就是把做好的玩具翻面），还非常清楚的记得大概是一分钱一个，靠着帮忙那时候还拿了一些零花钱，每天放学做完作业之后就是帮外婆做“兼职”。这种重复性劳动，在代码的构建很容易想到模板方法的模式，由于各种玩具的形状不同，所以翻面的方式以及效率和速度都不同，我们将重复劳动的部分定义为顶层的模板，而具体的玩具构建细节，需要根据不同的玩具进行不同的操作，下面定义这个工作的大致流程：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210307112758.png" alt="玩具构建流程图"></p>
+<p>下面是根据结构图绘制一个基本的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 玩具制造模板类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">TemplateWorkFlow</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">productToy</span><span class="params">()</span></span>&#123;</span><br><span class="line">        takeToy();</span><br><span class="line">        reverseToy();</span><br><span class="line">        putBasket();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">putBasket</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"把玩具放到玩具篮"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">takeToy</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"拿起玩具"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">reverseToy</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AntlersToyWorkFlow</span> <span class="keyword">extends</span> <span class="title">TemplateWorkFlow</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reverseToy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"把主干翻面"</span>);</span><br><span class="line">        System.out.println(<span class="string">"把鹿角的分叉翻页"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChristmasHatWorkFlow</span> <span class="keyword">extends</span> <span class="title">TemplateWorkFlow</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reverseToy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"圣诞帽反转"</span>);</span><br><span class="line">        System.out.println(<span class="string">"圣诞帽帽子顶部的小秋顶出去"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        TemplateWorkFlow templateWorkFlow = <span class="keyword">new</span> ChristmasHatWorkFlow();</span><br><span class="line">        TemplateWorkFlow templateWorkFlow1 = <span class="keyword">new</span> AntlersToyWorkFlow();</span><br><span class="line">        templateWorkFlow.productToy();</span><br><span class="line">        templateWorkFlow1.productToy();</span><br><span class="line">    &#125;<span class="comment">/*</span></span><br><span class="line"><span class="comment">    拿起玩具</span></span><br><span class="line"><span class="comment">    圣诞帽反转</span></span><br><span class="line"><span class="comment">    圣诞帽帽子顶部的小秋顶出去</span></span><br><span class="line"><span class="comment">    把玩具放到玩具篮</span></span><br><span class="line"><span class="comment">    拿起玩具</span></span><br><span class="line"><span class="comment">    把主干翻面</span></span><br><span class="line"><span class="comment">    把鹿角的分叉翻页</span></span><br><span class="line"><span class="comment">    把玩具放到玩具篮</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果不使用设计模式，他大致的设计代码如下，可以看到很多方法都干了相似的事情，这些方法可能本质上只是一两行代码甚至只是取名不一样，当然现代的编译器都很“聪明”，会发现重复的点，所以最最基本的要求，是编写出编译器都无法发现的重复代码，当然仅仅凭借这一点显然要求有点低</p>
+<p>​    下面看下不使用模板方法的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChristmasHatWorkFlow</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">productToy</span><span class="params">()</span></span>&#123;</span><br><span class="line">        takeToy();</span><br><span class="line">        reverseToy();</span><br><span class="line">        putBasket();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">putBasket</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"把玩具放到玩具篮"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">takeToy</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"拿起玩具"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reverseToy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"圣诞帽反转"</span>);</span><br><span class="line">        System.out.println(<span class="string">"圣诞帽帽子顶部的小秋顶出去"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AntlersToyWorkFlow</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">productToy</span><span class="params">()</span></span>&#123;</span><br><span class="line">        takeToy();</span><br><span class="line">        reverseToy();</span><br><span class="line">        putBasket();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">putBasket</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"把玩具放到玩具篮"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">takeToy</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"拿起玩具"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reverseToy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"把主干翻面"</span>);</span><br><span class="line">        System.out.println(<span class="string">"把鹿角的分叉翻页"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        AntlersToyWorkFlow antlersToyWorkFlow = <span class="keyword">new</span> AntlersToyWorkFlow();</span><br><span class="line">        antlersToyWorkFlow.productToy();</span><br><span class="line">        ChristmasHatWorkFlow christmasHatWorkFlow = <span class="keyword">new</span> ChristmasHatWorkFlow();</span><br><span class="line">        christmasHatWorkFlow.productToy();</span><br><span class="line"></span><br><span class="line">    &#125;<span class="comment">/*</span></span><br><span class="line"><span class="comment">    拿起玩具</span></span><br><span class="line"><span class="comment">    把主干翻面</span></span><br><span class="line"><span class="comment">    把鹿角的分叉翻页</span></span><br><span class="line"><span class="comment">    把玩具放到玩具篮</span></span><br><span class="line"><span class="comment">    拿起玩具</span></span><br><span class="line"><span class="comment">    圣诞帽反转</span></span><br><span class="line"><span class="comment">    圣诞帽帽子顶部的小秋顶出去</span></span><br><span class="line"><span class="comment">    把玩具放到玩具篮</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="spring当中的模板方法"><a href="#spring当中的模板方法" class="headerlink" title="spring当中的模板方法"></a>spring当中的模板方法</h2><p>spring最为典型的案例便是<code>Tempalte</code>框架，但是需要注意spring多数情况下并没有使用经典的模板方法结构，而是使用了<code>CallBack函数</code>的形式，避开了继承结构的同时，每个类可以单独实现自己的具体功能：</p>
+<p>我们看一下<code>RedisTempalte</code>当中的<code>StringRedisTemplate</code>，这里调用父类的<code>afterPropertiesSet()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringRedisTemplate</span> <span class="keyword">extends</span> <span class="title">RedisTemplate</span>&lt;<span class="title">String</span>, <span class="title">String</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Constructs a new &lt;code&gt;StringRedisTemplate&lt;/code&gt; instance ready to be used.</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> connectionFactory connection factory for creating new connections</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">StringRedisTemplate</span><span class="params">(RedisConnectionFactory connectionFactory)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">this</span>();</span><br><span class="line">      setConnectionFactory(connectionFactory);</span><br><span class="line">      afterPropertiesSet();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">protected</span> RedisConnection <span class="title">preProcessConnection</span><span class="params">(RedisConnection connection, <span class="keyword">boolean</span> existingConnection)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> DefaultStringRedisConnection(connection);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>父类同样继承的手段，在如下方法当中调用了<code>afterProperteisSet()</code>，通过super引用父类的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPropertiesSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 注意</span></span><br><span class="line">   <span class="keyword">super</span>.afterPropertiesSet();</span><br><span class="line"></span><br><span class="line">   <span class="keyword">boolean</span> defaultUsed = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (defaultSerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line"></span><br><span class="line">      defaultSerializer = <span class="keyword">new</span> JdkSerializationRedisSerializer(</span><br><span class="line">            classLoader != <span class="keyword">null</span> ? classLoader : <span class="keyword">this</span>.getClass().getClassLoader());</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (enableDefaultSerializer) &#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (keySerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">         keySerializer = defaultSerializer;</span><br><span class="line">         defaultUsed = <span class="keyword">true</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (valueSerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">         valueSerializer = defaultSerializer;</span><br><span class="line">         defaultUsed = <span class="keyword">true</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (hashKeySerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">         hashKeySerializer = defaultSerializer;</span><br><span class="line">         defaultUsed = <span class="keyword">true</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (hashValueSerializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">         hashValueSerializer = defaultSerializer;</span><br><span class="line">         defaultUsed = <span class="keyword">true</span>;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (enableDefaultSerializer &amp;&amp; defaultUsed) &#123;</span><br><span class="line">      Assert.notNull(defaultSerializer, <span class="string">"default serializer null and not all serializers initialized"</span>);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (scriptExecutor == <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>.scriptExecutor = <span class="keyword">new</span> DefaultScriptExecutor&lt;&gt;(<span class="keyword">this</span>);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   initialized = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面引用父类<code>RedisAccesor</code>类当中的<code>afterPropertiesSet()</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPropertiesSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   Assert.state(getConnectionFactory() != <span class="keyword">null</span>, <span class="string">"RedisConnectionFactory is required"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过定义<code>getConnectionFactory()</code>方法，子类可以自由的配置连接工厂，也可以直接沿用父类的默认实现。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    模板方法是一个比较重要的设计模式，他可以从结构上帮助程序员构建一个良好的抽象概念，同时模板方法提供的钩子函数，通过定义抽象方法延迟到子类实现这一技巧非常符合“开放-关闭”原则，灵活运用模板方法模式有利于构建更加灵活的软件骨架，同时可以定义各种多变的算法体系。但是需要注意的是传统的模板方法这种继承的结构 <strong>并不推崇</strong>，因为我们都知道继承对于所有子类都会产生影响。</p>
+<p>​    另外模板方法这个模式对于阅读代码的体验不是很好，经常需要各个类之间不断切换，有时候甚至会莫名其妙为什么突然跑到另一个方法里面，模板方法有时候比较影响阅读体验。</p>
+<p>​    另外设计模式最大的目的就是 <strong>减少重复代码</strong> 以及 <strong>用最小的代价进行扩展</strong>，个人认为如果代码符合这两个点基本就是一个好代码，然而这个点确实日常工作最难实现的。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/03/07/templatemethod/" title="浅谈设计模式 - 模板方法（十）">https://whitestore.top/2021/03/07/templatemethod/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/07/outward/" rel="prev" title="浅谈设计模式 - 外观模式（九）">
+      <i class="fa fa-chevron-left"></i> 浅谈设计模式 - 外观模式（九）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/07/luolita/" rel="next" title="《洛丽塔》读书笔记">
+      《洛丽塔》读书笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#浅谈设计模式-模板方法（十）"><span class="nav-number">1.</span> <span class="nav-text">浅谈设计模式 - 模板方法（十）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言："><span class="nav-number">2.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文章目的："><span class="nav-number">3.</span> <span class="nav-text">文章目的：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是模板方法"><span class="nav-number">4.</span> <span class="nav-text">什么是模板方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本定义"><span class="nav-number">4.1.</span> <span class="nav-text">基本定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从现实看模板方法"><span class="nav-number">4.2.</span> <span class="nav-text">从现实看模板方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#钩子函数"><span class="nav-number">4.3.</span> <span class="nav-text">钩子函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板方法的结构图"><span class="nav-number">4.4.</span> <span class="nav-text">模板方法的结构图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板方法的优缺点"><span class="nav-number">4.5.</span> <span class="nav-text">模板方法的优缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板方法与好莱坞原则"><span class="nav-number">4.6.</span> <span class="nav-text">模板方法与好莱坞原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#策略模式和模板方法对比"><span class="nav-number">4.7.</span> <span class="nav-text">策略模式和模板方法对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#案例"><span class="nav-number">5.</span> <span class="nav-text">案例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#spring当中的模板方法"><span class="nav-number">5.1.</span> <span class="nav-text">spring当中的模板方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">91</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">663k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">10:03</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

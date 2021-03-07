@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="适配器是一种新瓶装酒的设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈设计模式 - 适配器模式（八）">
+<meta property="og:url" content="https://whitestore.top/2021/03/07/adaptermethod/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="适配器是一种新瓶装酒的设计模式">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210301230256.png">
+<meta property="article:published_time" content="2021-03-07T09:03:56.000Z">
+<meta property="article:modified_time" content="2021-03-07T11:23:29.955Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="设计模式">
+<meta property="article:tag" content="适配器模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210301230256.png">
+
+<link rel="canonical" href="https://whitestore.top/2021/03/07/adaptermethod/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>浅谈设计模式 - 适配器模式（八） | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/03/07/adaptermethod/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅谈设计模式 - 适配器模式（八）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-07 17:03:56 / 修改时间：19:23:29" itemprop="dateCreated datePublished" datetime="2021-03-07T17:03:56+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/03/07/adaptermethod/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/07/adaptermethod/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">适配器是一种新瓶装酒的设计模式</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="浅谈设计模式-适配器模式（八）"><a href="#浅谈设计模式-适配器模式（八）" class="headerlink" title="浅谈设计模式 - 适配器模式（八）"></a>浅谈设计模式 - 适配器模式（八）</h1><h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>适配器模式大概是系统用的最多的模式，在<code>spring</code>框架当中可以看到他的各种应用，比如我们想要注册自己的拦截器，或者需要沿用旧接口完成一些自己的实现，都可以使用适配器模式进行实现，适配器模式是一种非常贴合<strong>最少知识原则</strong>的设计模式，这篇文章将会详细介绍一下适配器模式。</p>
+<h2 id="文章目的："><a href="#文章目的：" class="headerlink" title="文章目的："></a>文章目的：</h2><ol>
+<li>了解什么是适配器模式</li>
+<li>适配器模式的优缺点</li>
+<li>实战，了解适配器模式</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="什么是适配器模式？"><a href="#什么是适配器模式？" class="headerlink" title="什么是适配器模式？"></a>什么是适配器模式？</h1><p>定义：在不改动客户代码的情况下实现一个接口向另一个接口的自由转化，让原本不能适配的接口具备相似的功能。</p>
+<p>适配器存在三个角色，客户端，适配器，被适配者。适配器实现目标的接口，并且持有被适配者的实例</p>
+<p>适配器模式是一种：<strong>行为型模式</strong>。因为他将一个接口的行为转化为另一个接口的行为。</p>
+<h1 id="适配器模式优缺点："><a href="#适配器模式优缺点：" class="headerlink" title="适配器模式优缺点："></a>适配器模式优缺点：</h1><p>先说说适配器模式的优点：</p>
+<ol>
+<li>可以让客户从接口的实现当中解放</li>
+<li>让客户由原本的面向实现转变为面向接口</li>
+<li>让被适配对象具备接口功能的同时可以实现自由的扩展</li>
+</ol>
+<p>下面说说缺点，其实适配器的缺点也比较明显：</p>
+<ol>
+<li>由于JAVA不支持多继承，无法完成多个对象的适配工作，只能使用多接口的形式适配，实现起来要比其他的语言稍微复杂一些。</li>
+<li>适配器最难改动的地方在于适配目标的方法，假设适配目标的方法组合了多个被适配对象，此时改动任意一个被适配对象，都会对适配的方法带来影响，同时适配方法也是最难以改动的。</li>
+</ol>
+<blockquote>
+<p>关于适配器使用的建议：</p>
+<ol>
+<li>一个适配器最好做一个类的适配工作。</li>
+<li>如果一个适配器需要适配多个类，需要考虑是否存在关联性</li>
+<li><strong>可以使用双向接口适配器，既可以实现旧接口的方法不改动，同时实现新接口的新实现。要做到这一步，关键是确保：两个接口</strong></li>
+</ol>
+</blockquote>
+<h1 id="使用继承还是使用组合"><a href="#使用继承还是使用组合" class="headerlink" title="使用继承还是使用组合"></a>使用继承还是使用组合</h1><pre><code>对于适配这一个概念，我们可以使用两种形式：**继承** 和 **组合**
+
+首先说下继承，继承是指对于一个类进行“超类”的扩展，如果此时我们使用继承的形式去扩展目标对象，虽然从理论上可以实现一个适配器直接具备两个对象的功能，但是由于JAVA本身是不支持多继承的，同时**多用组合，少用继承**是软件设计行业一条非常推崇的定律。所以继承的形式“不太友好”。
+
+再说下使用组合的形式，组合是比较推崇的形式，我们在实现目标接口的基础之上，组合被适配的对象，让旧接口的功能可以兼容新接口的实现。这也是JAVA代码当中经常会见到的一种形式，同时在框架中以类似“套版”的形式出现。</code></pre><h1 id="适配器模式的特点："><a href="#适配器模式的特点：" class="headerlink" title="适配器模式的特点："></a>适配器模式的特点：</h1><p><strong>适配器的实现就是把客户类的请求转化为对适配者的相应接口的调用</strong>，当客户端进行请求的时候，目标对象通过适配器，将请求的逻辑转变为“适合”被适配对象的请求，由适配器完成这一转化细节，适配过后执行被适配对象的功能，这种转化对于客户端来说是隐蔽的，同时会让客户端误认为是目标对象完成的了工作，所以这种模式的最大特点是：<strong>请求代码可以完全不需要改变</strong>。</p>
+<h1 id="适配器模式理解"><a href="#适配器模式理解" class="headerlink" title="适配器模式理解"></a>适配器模式理解</h1><p>下面根据适配器模式，介绍一下个人对于适配器模式的一些理解。</p>
+<h2 id="从插头引申适配器模式"><a href="#从插头引申适配器模式" class="headerlink" title="从插头引申适配器模式"></a>从插头引申适配器模式</h2><pre><code>插头有很多中规范，但是日常生活常用的插头一般是两孔或者三孔的插头，一般情况下一个新厂商的插头需要兼容旧厂商生产的插头，同时需要兼容旧厂商的方法，不想改变旧厂商的实现情况下，需要实现新厂商的实现，这时候通常需要依赖一个适配器去做适配，适配器如同一个中间通信人，可以将看起来毫不相干的两个对象之间产生一定的关联特性。</code></pre><h2 id="单向适配和双向适配"><a href="#单向适配和双向适配" class="headerlink" title="单向适配和双向适配"></a>单向适配和双向适配</h2><pre><code>需要注意的是适配器模式一定不要教条的认为只能单向的适配，适配器是可以进行双向适配的，但是此时我们通常需要**两个接口**来完成双向的适配。</code></pre><h2 id="适配器模式和最少知识原则"><a href="#适配器模式和最少知识原则" class="headerlink" title="适配器模式和最少知识原则"></a>适配器模式和最少知识原则</h2><p>适配器模式对应的一个软件设计原则是：<strong>最少知识原则</strong></p>
+<p>最少知识原则：接口负责尽可能少的功能。用白话来讲就是<strong>简洁</strong></p>
+<h3 id="遵循最少知识原则"><a href="#遵循最少知识原则" class="headerlink" title="遵循最少知识原则"></a>遵循最少知识原则</h3><p>对于任何对象，在他的方法内他应该做这些事情</p>
+<ul>
+<li>只操作对象自己本身</li>
+<li>传递的对象参数或者和该对象返回的结果对象（但是会有依赖传递的问题）</li>
+<li>方法本身创建的对象</li>
+<li>对象的任何组件：HAS-A（组合）的内部对象</li>
+</ul>
+<blockquote>
+<p>这里需要小心依赖磁铁，也就是依赖了依赖对象的对象，简单理解就是使用了其他对象返回的另一个对象，这种情况很容易被忽视，而且通常情况下是 <strong>不会出现问题</strong>的，但是一旦要进行重构，这种代码就很容易造成逻辑混乱。</p>
+</blockquote>
+<h2 id="适配器的调用流程"><a href="#适配器的调用流程" class="headerlink" title="适配器的调用流程"></a>适配器的调用流程</h2><ol>
+<li>客户端通过目标接口调用适配器的方法发送对应的请求。</li>
+<li>适配器用适配方法转化为一个或者多个被适配器的多种方法</li>
+<li>客户端得到的接口会误以为是目标对象在工作。同时不需要进行任何变动就可以实现新的功能或者方法。</li>
+</ol>
+<h1 id="适配器模式的结构图"><a href="#适配器模式的结构图" class="headerlink" title="适配器模式的结构图"></a>适配器模式的结构图</h1><p>下面是适配器模式的结构图：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210301230256.png" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+ client 客户端</span><br><span class="line">+ Target 目标接口，</span><br><span class="line">+ Adapter 适配器，负责将两个对象进行关联，产生相似的业务</span><br><span class="line">+ Appropriate object 被适配对象,代表了需要适配的对象内容</span><br></pre></td></tr></table></figure>
+
+<p>上面的结构图展示了如何目标接口转化为被适配对象的行为。</p>
+<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><p>说了不少的理论内容，下面我们根据一个模拟场景制定一份适配器的代码：</p>
+<h2 id="模拟场景"><a href="#模拟场景" class="headerlink" title="模拟场景"></a>模拟场景</h2><pre><code>在任天堂发售的`switch`在日版和港版的两个版本当中，充电充电器的设计是不一样的，由于港版沿用了英国使用的是三插式（大部分电器都是这种情况），而我国使用的是较为通用二插式，日本在设计的时候也是使用二插式，所以在充电器的设计下，日本不需要进行适配，直接可以插到我国的插座上，而港版通常需要购买转接头或者买其他的适配器。</code></pre><h2 id="不使用设计模式"><a href="#不使用设计模式" class="headerlink" title="不使用设计模式"></a>不使用设计模式</h2><pre><code>笔者在构思这一块没有考虑好不使用设计模式如何实现，其实这种情况下，不使用设计模式最好办法通常就是找一个第三方工具进行替代，比如我们可以买一个switch的充电宝，每次充电只要充充电宝就行了，连充电器都省了......</code></pre><h2 id="使用设计模式"><a href="#使用设计模式" class="headerlink" title="使用设计模式"></a>使用设计模式</h2><pre><code>还是直接从设计模式开干把，很显然，既然港版都是用的转接头，那么我们的代码就使用转接头来实现这一块的功能：</code></pre><p>下面是根据模拟场景进行分析，我们依照适配器的结构设计出基本对象：</p>
+<ul>
+<li>switch：我们姑且把它想象是客户端，我们把它想象成一个想要充电的“人”。发起了充电这一个请求来匹配合适的充电器</li>
+<li>JapanMouth：日版充电器，直接对标国内的插口</li>
+<li>Mouth：插口接口。</li>
+<li>EngMouth：英式插口，按照英国的标准设计的插口。</li>
+<li>Adapter：适配器，在这里充当的是转接器，负责转接插口</li>
+</ul>
+<p>有了上面这些定义，下面根据具体的设计出代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Switch</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> TwoHoleCharge twoHoleCharge;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Switch</span><span class="params">(TwoHoleCharge twoHoleCharge)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.twoHoleCharge = twoHoleCharge;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模拟充电方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">recharge</span><span class="params">()</span></span>&#123;</span><br><span class="line">        twoHoleCharge.jack();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TwoHoleCharge <span class="title">getTwoHoleCharge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> twoHoleCharge;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTwoHoleCharge</span><span class="params">(TwoHoleCharge twoHoleCharge)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.twoHoleCharge = twoHoleCharge;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 插口接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Mouth</span> </span>&#123;</span><br><span class="line">   </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">jack</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JapanMouth</span> <span class="keyword">implements</span> <span class="title">Mouth</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">jack</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"日版：开始充电"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EngMouth</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">specialJack</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"港版：开始充电"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//==关键==适配器</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Adapter</span> <span class="keyword">implements</span> <span class="title">Mouth</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> EngMouth engMouth;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Adapter</span><span class="params">(EngMouth engMouth)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.engMouth = engMouth;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">jack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        engMouth.specialJack();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 日版插口可以直接使用</span></span><br><span class="line">        Mouth mouth = <span class="keyword">new</span> JapanCharge();</span><br><span class="line">        Switch aSwitch = <span class="keyword">new</span> Switch(mouth);</span><br><span class="line">        aSwitch.recharge();</span><br><span class="line">        <span class="comment">// 港版插口需要转接口</span></span><br><span class="line">        Mouth mouth2 = <span class="keyword">new</span> Adapter(<span class="keyword">new</span> EngMouth());</span><br><span class="line">        aSwitch.setMouth(mouth2);</span><br><span class="line">        aSwitch.recharge();</span><br><span class="line">    &#125;<span class="comment">/*运行结果：</span></span><br><span class="line"><span class="comment">    日版：开始充电</span></span><br><span class="line"><span class="comment">    港版：开始充电</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码比较简单，应该比较好理解，这里重点关注一下<code>Adapter</code>的适配器对象，通过组合的形式，将被适配对象“隐藏”到了目标对象的方法内部，实现了接口的适配，客户在使用的时候，只需要用一个适配器就可以让港版可以直接兼容到国内的电网。</p>
+<p>当然，在现实生活中使用适配器其实比较麻烦，因为总要多带点东西，比如我个人就比较反感现在的手机都把耳机孔给削掉了，出门用个有线听歌还得买个转接口……</p>
+<h2 id="总结案例"><a href="#总结案例" class="headerlink" title="总结案例"></a>总结案例</h2><p>适配器的案例生活中还是十分常见的，可以举出许许多多的场景出来，同时不需要考虑过多的其他因素，适配器非常贴合“开放-关闭”的原则，对于修改进行了开放，对于原有的代码没有进行修改，然开发人员只需要关注如何适配，而不需要太关心原来的实现，</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><pre><code>适配器模式是一个重点模式，他可以实现在不改动旧代码的基础上对于一个目标对象进行二次扩展和升级，并且只需要付出很小的代价就可以完成很多自定义的操作，总体上来说，适配器的弊端在实际的编码过程中往往被规范化的设计而弱化，当然，更多的使用场景可能还是在框架当中，因为框架中使用适配器是一种很常见的行为。</code></pre><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/03/07/adaptermethod/" title="浅谈设计模式 - 适配器模式（八）">https://whitestore.top/2021/03/07/adaptermethod/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/07/command/" rel="prev" title="浅谈设计模式 - 命令模式（七）">
+      <i class="fa fa-chevron-left"></i> 浅谈设计模式 - 命令模式（七）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/07/outward/" rel="next" title="浅谈设计模式 - 外观模式（九）">
+      浅谈设计模式 - 外观模式（九） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#浅谈设计模式-适配器模式（八）"><span class="nav-number">1.</span> <span class="nav-text">浅谈设计模式 - 适配器模式（八）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言："><span class="nav-number">2.</span> <span class="nav-text">前言：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目的："><span class="nav-number">2.1.</span> <span class="nav-text">文章目的：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是适配器模式？"><span class="nav-number">3.</span> <span class="nav-text">什么是适配器模式？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#适配器模式优缺点："><span class="nav-number">4.</span> <span class="nav-text">适配器模式优缺点：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用继承还是使用组合"><span class="nav-number">5.</span> <span class="nav-text">使用继承还是使用组合</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#适配器模式的特点："><span class="nav-number">6.</span> <span class="nav-text">适配器模式的特点：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#适配器模式理解"><span class="nav-number">7.</span> <span class="nav-text">适配器模式理解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#从插头引申适配器模式"><span class="nav-number">7.1.</span> <span class="nav-text">从插头引申适配器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单向适配和双向适配"><span class="nav-number">7.2.</span> <span class="nav-text">单向适配和双向适配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#适配器模式和最少知识原则"><span class="nav-number">7.3.</span> <span class="nav-text">适配器模式和最少知识原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#遵循最少知识原则"><span class="nav-number">7.3.1.</span> <span class="nav-text">遵循最少知识原则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#适配器的调用流程"><span class="nav-number">7.4.</span> <span class="nav-text">适配器的调用流程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#适配器模式的结构图"><span class="nav-number">8.</span> <span class="nav-text">适配器模式的结构图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实战"><span class="nav-number">9.</span> <span class="nav-text">实战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#模拟场景"><span class="nav-number">9.1.</span> <span class="nav-text">模拟场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不使用设计模式"><span class="nav-number">9.2.</span> <span class="nav-text">不使用设计模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用设计模式"><span class="nav-number">9.3.</span> <span class="nav-text">使用设计模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结案例"><span class="nav-number">9.4.</span> <span class="nav-text">总结案例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">10.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">91</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">663k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">10:03</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

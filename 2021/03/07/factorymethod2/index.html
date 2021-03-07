@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="工厂模式三种形式转变">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈设计模式 - 工厂模式（六）">
+<meta property="og:url" content="https://whitestore.top/2021/03/07/factorymethod2/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="工厂模式三种形式转变">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210214170935.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216124726.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216234144.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210126000032.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216124726.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216234144.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216195237.png">
+<meta property="article:published_time" content="2021-03-07T08:50:34.000Z">
+<meta property="article:modified_time" content="2021-03-07T11:20:55.709Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="设计模式">
+<meta property="article:tag" content="工厂模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210214170935.png">
+
+<link rel="canonical" href="https://whitestore.top/2021/03/07/factorymethod2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>浅谈设计模式 - 工厂模式（六） | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/03/07/factorymethod2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅谈设计模式 - 工厂模式（六）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-07 16:50:34 / 修改时间：19:20:55" itemprop="dateCreated datePublished" datetime="2021-03-07T16:50:34+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/03/07/factorymethod2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/07/factorymethod2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>14k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+            <div class="post-description">工厂模式三种形式转变</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="浅谈设计模式-工厂模式（六）"><a href="#浅谈设计模式-工厂模式（六）" class="headerlink" title="浅谈设计模式 - 工厂模式（六）"></a>浅谈设计模式 - 工厂模式（六）</h1><h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><pre><code>在第一篇里面已经介绍过简单工厂了，但是工厂模式里面不仅仅是简单工厂，还存在工厂方法和抽象工厂，并且从严格意义来讲简单工厂不能算是一种设计模式，本次的文章针对工厂的进化来展开讲一讲工厂模式的三种常见形式：简单工厂、工厂方法、抽象工厂。</code></pre><h2 id="文章目的"><a href="#文章目的" class="headerlink" title="文章目的"></a>文章目的</h2><ol>
+<li>了解简单工厂这种代码编写形式的优点，回顾工厂模式</li>
+<li>了解如何从简单工厂扩展到工厂方法以及抽象工厂</li>
+<li>对比工厂方法和抽象工厂的异同。</li>
+<li>总结简单工厂，工厂方法和抽象工厂，对比优缺点和特点</li>
+</ol>
+<a id="more"></a>
+
+<h2 id="如何辨别工厂模式"><a href="#如何辨别工厂模式" class="headerlink" title="如何辨别工厂模式"></a>如何辨别工厂模式</h2><p>工厂模式一般从类的命名就可以直接看到含义，所以一般情况下很容易看出工厂模式的应用。</p>
+<ul>
+<li>工厂模式主要是负责对象的创建</li>
+<li>无论是创建者还是使用者，都是针对一个抽象对象的实现。</li>
+<li>工厂模式最关注的是对象是如何创建的而不是对象的使用。它针对的是创建这一个过程。</li>
+</ul>
+<h2 id="工厂模式的具体介绍"><a href="#工厂模式的具体介绍" class="headerlink" title="工厂模式的具体介绍"></a>工厂模式的具体介绍</h2><h3 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h3><p>简单工厂模式的介绍：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTIyMDY1NzkyNjQ1MjAxOTM0" title="https://juejin.cn/post/6922065792645201934">https://juejin.cn/post/6922065792645201934<i class="fa fa-external-link"></i></span></p>
+<p>之前文章已经介绍过简单工厂模式，我们直接看一下简单工厂是如何设计的，从严格的意义上来说，简单工厂是一种良好的“编程习惯”，他很好的解耦了创建对象和使用对象这两个不同的过程。做到“单一职责”的原则</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210214170935.png" alt="简单工厂"></p>
+<p>从上面的图当中我们构建基本的工厂类和对应的实现子类以及对应的产品抽象类。</p>
+<p>下面回顾一下简单工厂的优缺点</p>
+<p>优点：</p>
+<ol>
+<li>使用创建工厂的方法，我们实现了获取具体对象和生产对象的解耦，由生产对象的工厂通过我们传入的参数生产对应的对象，调用方只需要传递需要生产的对象来实现具体的效果。</li>
+<li>解耦了<strong>创建</strong>和<strong>被创建</strong>的过程。</li>
+<li>根据不同的逻辑判断生成不同的具体对象。</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>每增加一个工厂对象具体的实现类，就需要增加<code>if/else</code>不利于维护</li>
+<li>大量的子类会造成工厂类的代码迅速膨胀和臃肿</li>
+<li>简单工厂的方法一般处理简单的业务逻辑，如果创建逻辑复杂<strong>不建议</strong>使用。</li>
+</ol>
+<p>从上面的优缺点分析可以知道，简单工厂并不能完全解决对象的创建解耦，对于对象的创建细节容易造成耦合，同时如果创建的对象过多容易出现臃肿的工厂代码。</p>
+<h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><p>工厂方法模式：定义了创建对象的接口方法，但是具体的创建过程由子类来决定。工厂方法将<strong>创建的过程延迟到子类</strong>，工厂方法是对简单工厂的扩展和升级，为了解决简单工厂破坏了“开放-关闭原则”的问题而做的改进。我们将具体的产品进行了抽象的同时，将创建对象的过程<strong>延迟到子类</strong>进行实现。</p>
+<h4 id="工厂方法的结构图"><a href="#工厂方法的结构图" class="headerlink" title="工厂方法的结构图"></a>工厂方法的结构图</h4><p>下面为工厂方法的结构图，我们由简单工厂转变为工厂方法之后，工厂类定义增加了抽象的对象创建方法，由子类通过继承的方式实现工厂的抽象方法并且实现自己的构建过程。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216124726.png" alt="工厂方法"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+ Product 产品类，定义产品的公用方法和抽象类</span><br><span class="line">+ ConcreteProduct 产品的具体实现子类，包含具体产品的实现</span><br><span class="line">+ Factory 工厂类，定义工厂的创建方法以及需要子类继承实现的方法</span><br><span class="line">+ ConcreteFactory 工厂的实现类，由子工厂来决定生成的具体产品和定义生产的具体过程。</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="工厂方法的特点"><a href="#工厂方法的特点" class="headerlink" title="工厂方法的特点"></a>工厂方法的特点</h4><p>下面是工厂方法的具体特点</p>
+<ul>
+<li>创建的过程解耦到子类，由子类决定创建的过程和结果</li>
+<li>具体的产品和工厂之间存在必要关联，同时可以使用任意子类产品进行替换</li>
+<li>需要依靠<strong>继承</strong>的形式由子工厂来决定生产的过程，子类决定产品创建的结果</li>
+</ul>
+<blockquote>
+<p>提醒：子类决定创建的结果并不是字面上的创建，而是由调用者决定的。子类决定的是具体针对哪一个实例进行生产，但是生成的具体结果还是控制在创建者的身上</p>
+</blockquote>
+<h4 id="简单工厂和工厂方法有什么区别"><a href="#简单工厂和工厂方法有什么区别" class="headerlink" title="简单工厂和工厂方法有什么区别"></a>简单工厂和工厂方法有什么区别</h4><ol>
+<li>简单工厂是对产品的创建过程进行“封装”，同时创建新的产品必须改动工厂代码。</li>
+<li>工厂方法是对简单工厂的升级，工厂方法可以控制具体对象的创建以及由子类来决定具体需要创建哪一个对象。</li>
+<li>简单工厂只是单纯的解耦创建者和使用者，但是简单工厂无法改变创建的结果。</li>
+</ol>
+<h3 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h3><p>抽象工厂模式：提供接口，通过定义抽象方法的形式，通过实现具体工厂方法实现创建具体对象家族，同时不需要指定特殊的类。</p>
+<p>抽象工厂的内部往往使用工厂方法进行实现，两者经常被弄混，从结构上来看，他们最大的区别在于工厂方法往往使用继承实现，而抽象工厂往往使用内部继承工厂方法的接口实现。区分工厂方法和抽象工厂也是工厂模式的学习关键。</p>
+<h4 id="抽象工厂的结构图"><a href="#抽象工厂的结构图" class="headerlink" title="抽象工厂的结构图"></a>抽象工厂的结构图</h4><p>由于抽象工厂更像是对工厂方法的改进，我们定义抽象工厂的结构图，抽象工厂的结构相比工厂方法要复杂一些：</p>
+<blockquote>
+<p>可以参考抽象工厂和工厂方法的结构图，看看两者的异同</p>
+</blockquote>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216234144.png" alt="抽象工厂"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ FactoryInterface 	抽象工厂接口，定义一批抽象对象的生产接口</span><br><span class="line"> + ConcreteFactoryA	抽象工厂实现类A，实现抽象工厂接口。</span><br><span class="line"> + ConcreteFactoryB	抽象工厂实现类B，实现抽象工厂接口。</span><br><span class="line">+ ProductA			抽象产品A，定义公共的抽象方法或者公用属性</span><br><span class="line"> + ConcreteProductA	具体实现产品A</span><br><span class="line"> + ConcreteProductA	具体实现产品A</span><br><span class="line">+ ProductB			抽象产品B，定义公共的抽象方法或者公用属性</span><br><span class="line"> + ConcreteProductB	具体实现产品B</span><br><span class="line"> + ConcreteProductB	具体实现产品B</span><br></pre></td></tr></table></figure>
+
+<h4 id="抽象工厂的特点："><a href="#抽象工厂的特点：" class="headerlink" title="抽象工厂的特点："></a>抽象工厂的特点：</h4><ol>
+<li>所有的具体工厂都实现同一个抽象工厂接口。</li>
+<li>生产的结果实现类可以自由实现具体类或者其扩展类的实例。</li>
+<li>抽象工厂的痛点在于扩展一个新的产品生产会造成所有的具体工厂的改动，也包含了产品类的变动。</li>
+<li>抽象工厂往往包含了一系列的工厂方法</li>
+</ol>
+<h4 id="抽象工厂和工厂方法的区别"><a href="#抽象工厂和工厂方法的区别" class="headerlink" title="抽象工厂和工厂方法的区别"></a>抽象工厂和工厂方法的区别</h4><ol>
+<li>抽象工厂定义抽象接口依靠子类实现创建的过程，而工厂方法针对子类实现具体的对象创建细节</li>
+<li>工厂方法需要使用继承的手段实现工厂方法“埋藏”工厂创建具体对象的细节</li>
+<li>工厂方法对于处理“独立”产品的创建非常有效，而抽象工厂往往用于处理生产多个存在关联的产品对象。</li>
+</ol>
+<h2 id="实际案例"><a href="#实际案例" class="headerlink" title="实际案例"></a>实际案例</h2><p>依旧参考坦克大战的案例，介绍如何改造坦克大战的具体代码。</p>
+<h3 id="模拟场景"><a href="#模拟场景" class="headerlink" title="模拟场景"></a>模拟场景</h3><p> 依然以经典的任天堂游戏坦克大战为例，在进入游戏的关卡的时候，会出现我方的坦克和敌人的坦克，我方坦克和地方坦克不仅形状不同，而且很脆，但是敌人的坦克根据颜色需要打好几枪才会毁灭，那么如果用代码来模拟是什么样的呢？</p>
+<h3 id="简单工厂实现："><a href="#简单工厂实现：" class="headerlink" title="简单工厂实现："></a>简单工厂实现：</h3><p>使用简单工厂实现的代码如下:</p>
+<p>使用简单工厂类来管理坦克的创建过程，简单工厂顾名思义，就是简单的将创建对象的过程进行管理。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210126000032.png" alt=""></p>
+<p>增加工厂类 <code>TankFactory.java</code></p>
+<p>用工厂来管理具体的坦克创建过程:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 坦克工厂，专门负责生产坦克</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/25 22:27</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TankFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建坦克</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Tank <span class="title">createTank</span><span class="params">(String check)</span></span>&#123;</span><br><span class="line">        Tank tank = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span>(Objects.equals(check, <span class="string">"my"</span>))&#123;</span><br><span class="line">            tank = <span class="keyword">new</span> MyTank();</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(Objects.equals(check, <span class="string">"mouse"</span>))&#123;</span><br><span class="line">            tank = <span class="keyword">new</span> MouseTank();</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> (Objects.equals(check, <span class="string">"big"</span>))&#123;</span><br><span class="line">            tank = <span class="keyword">new</span> BigTank();</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"当前坦克不支持生产"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> tank;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面是对应的坦克以及坦克的子类实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 坦克的父类，定义坦克的行为</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/25 0:14</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Tank</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 坦克hp</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> hp;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 坦克子弹</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> List&lt;Object&gt; bullet;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 移动的方法s</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">move</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 攻击</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">attack</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 停止</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我方的坦克继承坦克的父类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 我方坦克</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/25 21:58</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyTank</span> <span class="keyword">extends</span> <span class="title">Tank</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyTank</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 我方坦克假设只有一条命</span></span><br><span class="line">        hp = <span class="number">1</span>;</span><br><span class="line">        bullet = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="comment">// 初始化添加三发子弹</span></span><br><span class="line">        bullet.add(<span class="keyword">new</span> Object());</span><br><span class="line">        bullet.add(<span class="keyword">new</span> Object());</span><br><span class="line">        bullet.add(<span class="keyword">new</span> Object());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">move</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.err.println(<span class="string">"移动"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">attack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.err.println(<span class="string">"攻击地方坦克"</span>);</span><br><span class="line">        <span class="comment">// ..弹出子弹</span></span><br><span class="line">        <span class="keyword">if</span>(bullet.size() == <span class="number">0</span>)&#123;</span><br><span class="line">            System.err.println(<span class="string">"没有子弹了"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        bullet.remove(bullet.get(bullet.size() -<span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.err.println(<span class="string">"停止"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>敌人的坦克如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 老鼠坦克</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/25 22:02</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MouseTank</span> <span class="keyword">extends</span> <span class="title">Tank</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">display</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.err.println(<span class="string">"长得尖尖的，很像老鼠"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MouseTank</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 坦克假设只有一条命</span></span><br><span class="line">        hp = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">this</span>).start();</span><br><span class="line">        bullet = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="comment">// 初始化添加六发子弹</span></span><br><span class="line">        bullet.add(<span class="keyword">new</span> Object());</span><br><span class="line">        bullet.add(<span class="keyword">new</span> Object());</span><br><span class="line">        bullet.add(<span class="keyword">new</span> Object());</span><br><span class="line">        bullet.add(<span class="keyword">new</span> Object());</span><br><span class="line">        bullet.add(<span class="keyword">new</span> Object());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">move</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.err.println(<span class="string">"老鼠坦克移动"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">attack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.err.println(<span class="string">"老鼠坦克开枪"</span>);</span><br><span class="line">        <span class="comment">// ..弹出子弹</span></span><br><span class="line">        <span class="keyword">if</span> (bullet.size() &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            System.err.println(<span class="string">"老鼠坦克没有子弹了"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 老鼠坦克一次性开两枪</span></span><br><span class="line">        bullet.remove(bullet.get(bullet.size() - <span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.err.println(<span class="string">"停止"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="comment">// 一旦创建就开始移动</span></span><br><span class="line">            move();</span><br><span class="line">            <span class="comment">// 漫无目的开枪</span></span><br><span class="line">            attack();</span><br><span class="line">            attack();</span><br><span class="line">            <span class="comment">// 做完一轮操作歇一秒</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 随机停止</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">new</span> Random(<span class="number">100</span>).nextInt() % <span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">                stop();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后编写单元测试如下，我们使用简单工厂生产出不同的坦克，但是客户端不需要纠结生产的细节：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 单元测试</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/25 22:15</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 我们将生产坦克的过程全部交给了工厂来处理</span></span><br><span class="line"><span class="comment">     * 可能还是奇怪，这和刚才没有什么区别呀？</span></span><br><span class="line"><span class="comment">     * 我们来看下区别：</span></span><br><span class="line"><span class="comment">     * 1. 创建的过程没有了，虽然是一个简单的new，但是new的过程交给了工厂</span></span><br><span class="line"><span class="comment">     * 2. 我们后续如果要在坦克加入别的东西，只需要去改工厂类和具体的实现类，不需要该此处代码</span></span><br><span class="line"><span class="comment">     * 3. 如果不支持的操作，工厂还可以通知我们这样做不对</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        TankFactory tankFactory = <span class="keyword">new</span> TankFactory();</span><br><span class="line"></span><br><span class="line">        Tank my = tankFactory.createTank(<span class="string">"my"</span>);</span><br><span class="line">        Tank mouse = tankFactory.createTank(<span class="string">"mouse"</span>);</span><br><span class="line">        Tank big = tankFactory.createTank(<span class="string">"big"</span>);</span><br><span class="line">        <span class="comment">// 我要一个没有的设计过的坦克</span></span><br><span class="line">        Tank mybig = tankFactory.createTank(<span class="string">"mybig"</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;<span class="comment">/*//</span></span><br><span class="line"><span class="comment">    运行结果：</span></span><br><span class="line"><span class="comment">    Exception in thread "main" 老鼠坦克移动</span></span><br><span class="line"><span class="comment">    巨型坦克移动</span></span><br><span class="line"><span class="comment">    老鼠坦克开枪</span></span><br><span class="line"><span class="comment">    巨型坦克开枪</span></span><br><span class="line"><span class="comment">    老鼠坦克开枪</span></span><br><span class="line"><span class="comment">    java.lang.UnsupportedOperationException: 当前坦克不支持生产</span></span><br><span class="line"><span class="comment">	at com.headfirst.factory.use.TankFactory.createTank(TankFactory.java:27)</span></span><br><span class="line"><span class="comment">	at com.headfirst.factory.use.Main.main(Main.java:33)</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的代码可以看到，对于坦克的创建和使用过程虽然进行解耦了，但是可以看到创建的过程耦合在了简单工厂的内部，工厂创建的方法耦合了过多的细节，同时如果需要创建新的产品需要改动工厂代码，这违背了开放-关闭原则。</p>
+<p>针对上面的问题，我们显然需要使用工厂方法进行改良，我们让工厂的创建细节延迟到子类去实现，子类只需要关注创建的细节，不需要了解客户端的调用，下面我们针对上面的代码使用工厂方法进行改进。</p>
+<blockquote>
+<p>这种改动也符合开放-关闭原则</p>
+</blockquote>
+<h3 id="工厂方法实现："><a href="#工厂方法实现：" class="headerlink" title="工厂方法实现："></a>工厂方法实现：</h3><p>从简单工厂可以看出，如果每次修改产品都需要牵动工厂的代码改动，同时针对创建的过程都被“耦合”在单独的工厂创建方法内部，我们根据工厂方法的结构图看一下如何改进坦克大战的代码：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216124726.png" alt="工厂方法"></p>
+<p>首先，我们需要依照工厂方法的定义，将原本的简单工厂类改造为具备工厂方法的工厂，在下面的代码当中，工厂类具备两个方法，一个用于创建具体的对象，由客户端调用，并且提供一个抽象的方法，由工厂子类实现并且定义具体的工厂生产过程。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 坦克工厂</span></span><br><span class="line"><span class="comment"> * 工厂增加抽象方法由子类进行构建</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 17:33</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">TankFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建坦克</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Tank <span class="title">createTank</span><span class="params">(String check)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> createConcreteTankMethod(check);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 构建具体产品过程的方法</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Tank <span class="title">createConcreteTankMethod</span><span class="params">(String check)</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>子类不需要关心<code>createTank()</code>方法是如何运行的，只需要实现自己的工厂方法同时定义生产的细节提供支持即可。</p>
+<p>下面的代码为我方坦克的生产工厂</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 我方坦克的创建工厂</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 14:28</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OurTankFactory</span> <span class="keyword">extends</span> <span class="title">TankFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Tank <span class="title">createConcreteTankMethod</span><span class="params">(String check)</span> </span>&#123;</span><br><span class="line">        Tank tank = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span>(Objects.equals(check, <span class="string">"my"</span>))&#123;</span><br><span class="line">            tank = <span class="keyword">new</span> MyTank();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> tank;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面的代码为敌人的坦克的生产工厂实现子类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 敌人坦克的构建工厂</span></span><br><span class="line"><span class="comment"> * 老鼠坦克</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 14:28</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MouseTankFactory</span> <span class="keyword">extends</span> <span class="title">TankFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Tank <span class="title">createConcreteTankMethod</span><span class="params">(String check)</span> </span>&#123;</span><br><span class="line">        Tank tank = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span>(Objects.equals(check, <span class="string">"mouse"</span>))&#123;</span><br><span class="line">            tank = <span class="keyword">new</span> MouseTank();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> tank;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过这样的调整之后，我们每次增加新的产品，只需要继承具备工厂方法的工厂并且实现对应的方法完成自己的坦克创建细节，就将原本耦合的创建规则从父类从剥离，延迟到子类完成，下面来看下单元测试的代码，可以看到工厂的生产具体具体化到子类工厂的内部，而对外依旧是坦克的生成工厂，这样既符合<code>依赖倒转</code>的原则，也方便后续的扩展和更多实现工厂的添加：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 工厂方法的单元测试</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 17:50</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        TankFactory tankFactory = <span class="keyword">new</span> MouseTankFactory();</span><br><span class="line">        TankFactory ourTankFactory = <span class="keyword">new</span> OurTankFactory();</span><br><span class="line">        Tank my = tankFactory.createTank(<span class="string">"mouse"</span>);</span><br><span class="line">        Tank mouse = ourTankFactory.createTank(<span class="string">"my"</span>);</span><br><span class="line">        System.err.println(my);</span><br><span class="line">        System.err.println(mouse);</span><br><span class="line">    &#125;<span class="comment">/*运行结果：</span></span><br><span class="line"><span class="comment">    com.headfirst.factory.use.MouseTank@677327b6</span></span><br><span class="line"><span class="comment">    老鼠坦克移动</span></span><br><span class="line"><span class="comment">    com.headfirst.factory.use.MyTank@14ae5a5</span></span><br><span class="line"><span class="comment">    老鼠坦克开枪</span></span><br><span class="line"><span class="comment">    老鼠坦克开枪</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>工厂方法的问题：虽然工厂方法很好的为我们解决了创建过程由子类进行构建的问题，但是如果我们需要往坦克的产品里面提供配对的零件，此时会发现一些问题，<strong>我们的工厂方法只能提供一种产品的生产</strong>，如果我们需要生产很多的产品，工厂方法此时就遇到的瓶颈，因为需要调整继承结构，同时扩展非常不便。</p>
+<blockquote>
+<p>注意点：工厂方法的另一个问题在于他需要依赖继承来实现对象创建过程定义，此时如果改动整个顶层的抽象方法会导致依赖磁铁导致所有的子类都需要改变。假如需要加入多个产品的生产，此时对于所有的子类改动来看都是十分麻烦的事情.</p>
+</blockquote>
+<p>总结：工厂方法在构建一类产品的时候非常有效，但是需要构建很多种产品的时候会产生大量的继承具体化问题</p>
+<h3 id="抽象工厂的实现："><a href="#抽象工厂的实现：" class="headerlink" title="抽象工厂的实现："></a>抽象工厂的实现：</h3><p>我们之前讲过抽象工厂实际上是对工厂方法的进一步提取，抽象工厂需要的是一系列产品的接口，由子工厂负责一系列产品的接口生产，同时更多的需要依赖组合的形式为具体的产品进行扩展。</p>
+<p>在具体的案例代码介绍之前，我们需要对于案例进行改动，由于之前只存在坦克父类和具体的实现子类，为了详细介绍抽象工厂，我们针对坦克类增加一个大炮类，大炮类提供展示外观的方法，和坦克类的产品完全不同，我们需要定义坦克的大炮产品父类和具体的不同实现子类，在抽象工厂提供大炮的生产接口抽象同时，我们需要在大炮的类内部组合大炮的对象，为坦克增加不同的大炮外观，下面我们根据抽象工厂的结构图，构建如下的结构图：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216234144.png" alt="抽象工厂"></p>
+<p>我们参考结构图，定义类似的坦克结构，下面是加入新需求之后的结构图：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210216195237.png" alt="根据抽象工厂绘制"></p>
+<p>根据上面的结构图，我们先将工厂有具体类改造为工厂接口，不再持有具体的创建过程，将一系列创建的细节分布到子类进行，同时定义接口的方式可以创建多个产品。（这里简化为2个不同的产品）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 坦克工厂，专门负责生产坦克</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/25 22:27</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TankFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 坦克创建方法抽象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Tank <span class="title">createTank</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 大炮的创建方法</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Cannon <span class="title">createCannon</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们根据抽象工厂接口创建具体的生产工厂，我们在子类可以返回具体的产品子类也可以返回抽象的父类，下面定义我方坦克的工厂类，同时定义一个特定敌人坦克的工厂类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 我方坦克的创建工厂</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 14:28</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OurTankFactory</span> <span class="keyword">implements</span> <span class="title">TankFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建自带大炮的坦克</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Tank <span class="title">createTanAndCannon</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Tank myTank = createTank();</span><br><span class="line">        myTank.setCannon(createCannon());</span><br><span class="line">        <span class="keyword">return</span> myTank;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Tank <span class="title">createTank</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MyTank();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Cannon <span class="title">createCannon</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Artillery();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>敌人坦克的工厂实现子类:敌人的坦克工厂实现子类，可以生产不同抽象产品的不同具体实现子类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 敌人坦克的构建工厂</span></span><br><span class="line"><span class="comment"> * 老鼠坦克</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 14:28</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MouseTankFactory</span> <span class="keyword">implements</span> <span class="title">TankFactory</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MouseTank <span class="title">createTank</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MouseTank();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Cannon <span class="title">createCannon</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RocketLauncher();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着我们定义另一个独立的产品，定义顶层的抽象类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 大炮抽象类</span></span><br><span class="line"><span class="comment"> * 子类具备不同的大炮形式</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 18:15</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Cannon</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 外观</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">display</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据对应上面的抽象父类，定义对应点具体实现子类，这里为了简单将两个具体实现子类放到一块：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 火炮</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 19:06</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Artillery</span> <span class="keyword">extends</span> <span class="title">Cannon</span></span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">display</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"火箭炮"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 火箭炮</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 19:06</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RocketLauncher</span> <span class="keyword">extends</span> <span class="title">Cannon</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">display</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"火箭炮"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里扩展了一下坦克类，为坦克类组合了大炮的对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 坦克的父类，定义坦克的行为</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/1/25 0:14</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Tank</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 坦克hp</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> hp;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 坦克子弹</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> List&lt;Object&gt; bullet;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Cannon cannon;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 移动的方法s</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">move</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 攻击</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">attack</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 停止</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Cannon <span class="title">getCannon</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> cannon;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCannon</span><span class="params">(Cannon cannon)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.cannon = cannon;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Tank&#123;"</span> +</span><br><span class="line">                <span class="string">"hp="</span> + hp +</span><br><span class="line">                <span class="string">", bullet="</span> + bullet +</span><br><span class="line">                <span class="string">", cannon="</span> + cannon +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面是单元测试代码，我们在坦克的对象里面设置或者组合其他的对象，并且由工厂提供生产：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 单元测试</span></span><br><span class="line"><span class="comment"> * 抽象工厂</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zxd</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/2/16 16:32</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        TankFactory ourTankFactory = <span class="keyword">new</span> OurTankFactory();</span><br><span class="line">        TankFactory mouseTankFactory = <span class="keyword">new</span> MouseTankFactory();</span><br><span class="line">        Tank ourTankFactoryTank = ourTankFactory.createTank();</span><br><span class="line">        Cannon cannon = ourTankFactory.createCannon();</span><br><span class="line">        Tank mouseTankFactoryTank = mouseTankFactory.createTank();</span><br><span class="line">        Cannon cannon1 = mouseTankFactory.createCannon();</span><br><span class="line">        ourTankFactoryTank.setCannon(cannon);</span><br><span class="line">        mouseTankFactoryTank.setCannon(cannon1);</span><br><span class="line">        System.err.println(<span class="string">"our = "</span> + ourTankFactoryTank);</span><br><span class="line">        System.err.println(<span class="string">"mouse = "</span> + mouseTankFactoryTank);</span><br><span class="line">    &#125;<span class="comment">/*</span></span><br><span class="line"><span class="comment">        our = Tank&#123;hp=1, bullet=[java.lang.Object@677327b6, java.lang.Object@14ae5a5, java.lang.Object@7f31245a],</span></span><br><span class="line"><span class="comment">        cannon=com.headfirst.factory.abstractfac.Artillery@6d6f6e28&#125;</span></span><br><span class="line"><span class="comment">        老鼠坦克移动</span></span><br><span class="line"><span class="comment">        mouse = Tank&#123;hp=1, bullet=[java.lang.Object@135fbaa4, java.lang.Object@45ee12a7, java.lang.Object@330bedb4, java.lang.Object@2503dbd3, java.lang.Object@4b67cf4d],</span></span><br><span class="line"><span class="comment">        cannon=com.headfirst.factory.abstractfac.RocketLauncher@7ea987ac&#125;</span></span><br><span class="line"><span class="comment">        老鼠坦克开枪</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>工厂模式的变化：</p>
+<p>从上面的案例和具体实现我们分析了工厂模式的三种变化：<strong>简单工厂、工厂方法、抽象工厂</strong>。他们的递进次序也是<code>简单工厂 -&gt; 工厂方法 -&gt; 抽象工厂</code>这种顺序。</p>
+<p>我们可以发现简单工厂是一种非常简单的设计思路，他仅仅定义了的创建和使用过程的接口，同时产品具备最基本的抽象和继承设计，这类设计往往用于<strong>简单的对象构建</strong>。而一旦出现大量的具体对象，简单工厂的代码将会不断的膨胀，同时产生很多的<code>if/else</code>代码。</p>
+<p>此时就需要使用工厂方法对于简单工厂的结构进行升级，工厂方法通过继承的方式（定义抽象的方法），<strong>推迟具体对象的创建到子类</strong>，工厂父类既可以控制子类的创建结果，同时又不需要关心具体对象的创建过程，这种设计非常巧妙，很好的解决了工厂的对象创建方法代码臃肿的问题。</p>
+<p>但是我们也发现了问题，工厂方法扩展会导致所有的子类进行强制实现，不利于后期的维护，同时如果需要一系列相关产品的生成，使用工厂方法进行继承实现会造成高度的继承耦合，不利于工厂的产品生产扩展，此时就可以运用抽象工厂进行改进，我们用抽象工厂扩展工厂方法，使用接口的形式定义一批接口，由子类工厂进行实现和后续的所有生产细节，同时还可以自定义生产的具体产品。</p>
+<p>上面是根据案例对于本次的设计模式进行一个模式的总结，可以看到工厂模式的应用还是非常多的，在WEB领域最常用的<code>Spring</code>框架就是的Bean工厂就是一个非常良好的工厂模式的实践案例。</p>
+<h2 id="工厂模式的总结："><a href="#工厂模式的总结：" class="headerlink" title="工厂模式的总结："></a>工厂模式的总结：</h2><p>下面用一张表格总结工厂模式的三种形态，优缺点以及相关总结：</p>
+<table>
+<thead>
+<tr>
+<th>模式名称</th>
+<th>简单工厂</th>
+<th>工厂方法</th>
+<th>抽象方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>特点</td>
+<td>根据产品按照客户端的需求生产不同的具体对象，将生产和使用的过程进行解耦</td>
+<td>将工厂的创建细节延迟到工厂的子类实现。</td>
+<td>定义一系列工厂方法，由子工厂负责具体的多类产品的生产</td>
+</tr>
+<tr>
+<td>派生方式</td>
+<td>需要修改简单工厂的代码</td>
+<td>顶层工厂增加方法需要所有的子类强制实现。生产多个产品需要改动继承结构</td>
+<td>扩展产品和生产具体产品非常方便。但是扩展新对象需要改动抽象工厂接口</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>1. 简单工厂将创建对象的过程和使用对象的过程进行解耦<br />2. 工厂可以创建生产对象的不同实现子类，扩展子类实现非常方便</td>
+<td>1. 工厂方法将工厂生产对象的创建细节延迟到子类<br />2.  克服了简单工厂部分缺点，比如符合开放-关闭原则<br />3.  同样可以对客户端和创建对象工厂进行解耦</td>
+<td>1. 有利于多个产品的对象创建扩展<br />2.  将抽象类转变为接口，可以定义更高级的抽象。方便向上扩展<br />3.  类似制定工厂的生产规则，而具体的细节交由实现接口的子类完成</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>1. 工厂扩展新的对象需要改动代码，不符合开放-关闭原则<br />2. 简单工厂对应简单的创建过程，所以创建过程复杂会造成工厂的臃肿</td>
+<td>1. 不利于维护，加入工厂方法需要扩展所有的子类都需要实现工厂方法<br />2. 当需要多个产品类的时候，更改会相当的麻烦</td>
+<td>1.  面对新的产品，需要所有的工厂实现类进行实现。<br />2.  最大的缺点是难以扩展新的产品，或者说扩展新产品的代价很大</td>
+</tr>
+<tr>
+<td>总结</td>
+<td>是一种良好的编码和思考方式，但是严格意义上不能算是设计模式</td>
+<td>将具体对象的创建过程延迟到子类，符合开放-关闭原则</td>
+<td>抽象工厂是对工厂方法的升级，分离了多个产品的生产同时，子工厂可以对多个产品的生产细节进行自由控制。</td>
+</tr>
+</tbody></table>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>本次设计模式的文章内容比较长，由于本次设计模式虽然是一个设计模式，但是他存在三种“变体”，所以在什么使用哪一种设计还是需要依靠具体的需求环境来决定。可以看到该设计模式最容易混淆的是工厂方法和抽象工厂。希望通过本文的总结和案例可以让读者更好的了解工厂模式下这两者的使用场景和区别。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/03/07/factorymethod2/" title="浅谈设计模式 - 工厂模式（六）">https://whitestore.top/2021/03/07/factorymethod2/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/14/dingding/" rel="prev" title="钉钉机器人简单使用">
+      <i class="fa fa-chevron-left"></i> 钉钉机器人简单使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/07/command/" rel="next" title="浅谈设计模式 - 命令模式（七）">
+      浅谈设计模式 - 命令模式（七） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#浅谈设计模式-工厂模式（六）"><span class="nav-number">1.</span> <span class="nav-text">浅谈设计模式 - 工厂模式（六）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言："><span class="nav-number">1.1.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目的"><span class="nav-number">1.2.</span> <span class="nav-text">文章目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何辨别工厂模式"><span class="nav-number">1.3.</span> <span class="nav-text">如何辨别工厂模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工厂模式的具体介绍"><span class="nav-number">1.4.</span> <span class="nav-text">工厂模式的具体介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单工厂模式"><span class="nav-number">1.4.1.</span> <span class="nav-text">简单工厂模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工厂方法模式"><span class="nav-number">1.4.2.</span> <span class="nav-text">工厂方法模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#工厂方法的结构图"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">工厂方法的结构图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#工厂方法的特点"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">工厂方法的特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#简单工厂和工厂方法有什么区别"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">简单工厂和工厂方法有什么区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抽象工厂模式"><span class="nav-number">1.4.3.</span> <span class="nav-text">抽象工厂模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#抽象工厂的结构图"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">抽象工厂的结构图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#抽象工厂的特点："><span class="nav-number">1.4.3.2.</span> <span class="nav-text">抽象工厂的特点：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#抽象工厂和工厂方法的区别"><span class="nav-number">1.4.3.3.</span> <span class="nav-text">抽象工厂和工厂方法的区别</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实际案例"><span class="nav-number">1.5.</span> <span class="nav-text">实际案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟场景"><span class="nav-number">1.5.1.</span> <span class="nav-text">模拟场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单工厂实现："><span class="nav-number">1.5.2.</span> <span class="nav-text">简单工厂实现：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工厂方法实现："><span class="nav-number">1.5.3.</span> <span class="nav-text">工厂方法实现：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抽象工厂的实现："><span class="nav-number">1.5.4.</span> <span class="nav-text">抽象工厂的实现：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工厂模式的总结："><span class="nav-number">1.6.</span> <span class="nav-text">工厂模式的总结：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结："><span class="nav-number">1.7.</span> <span class="nav-text">总结：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">91</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">663k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">10:03</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
