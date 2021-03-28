@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="一个数据库的使用经验技巧">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何实现update select 语句">
+<meta property="og:url" content="https://whitestore.top/2021/03/28/updateselect/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="一个数据库的使用经验技巧">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210315133417.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210315134419.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210315134505.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210315143721.png">
+<meta property="article:published_time" content="2021-03-28T07:01:30.000Z">
+<meta property="article:modified_time" content="2021-03-28T07:02:22.974Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="updateselect">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210315133417.png">
+
+<link rel="canonical" href="https://whitestore.top/2021/03/28/updateselect/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>如何实现update select 语句 | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/03/28/updateselect/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何实现update select 语句
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-28 15:01:30 / 修改时间：15:02:22" itemprop="dateCreated datePublished" datetime="2021-03-28T15:01:30+08:00">2021-03-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/03/28/updateselect/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/28/updateselect/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">一个数据库的使用经验技巧</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="如何实现update-select-语句"><a href="#如何实现update-select-语句" class="headerlink" title="如何实现update select 语句"></a>如何实现update select 语句</h1><h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><p>​    有些时候我们会遇到如下情况，我们需要依赖一张表的查询结果来更新另一张表，比如我们存在一张主表和一张关联表，我们需要把关联表的部分字段数据同步到主表的里面。</p>
+<p>​    这次的文章出现也是因为这样一个类似的需求，个人需要把一个<strong>30万行</strong>（后续会发文介绍常见的处理手段）的数据文件入库，同时需要将部分字段迁移到另一张表，两个表之间通过<strong>两个字段</strong>进行and匹配。下面画一下结构图：</p>
+<p>​    <img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210315133417.png" alt=""></p>
+<p>​    处理方式也比较简单，直接使用sql就可以完成，这篇文章针对这个小需求，总结一下update select 的几种实现方式。</p>
+<a id="more"></a>
+
+<h1 id="文章目的："><a href="#文章目的：" class="headerlink" title="文章目的："></a>文章目的：</h1><ol>
+<li>实现update select 的几种常见方法<ol>
+<li>join</li>
+<li>merge</li>
+<li>子查询</li>
+</ol>
+</li>
+<li>merge的踩坑和问题</li>
+</ol>
+<h1 id="准备数据"><a href="#准备数据" class="headerlink" title="准备数据"></a>准备数据</h1><p>​    为了更好的进行实际操作，这里构建两张简单的表来模拟场景。直接复制下面的db即可，由于不同数据库sql不同，这里使用的是<strong>postgreSql</strong> 数据库。</p>
+<h2 id="旧表"><a href="#旧表" class="headerlink" title="旧表"></a>旧表</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">"public"</span>.<span class="string">"olddb"</span> (</span><br><span class="line">  <span class="string">"id"</span> int4 <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">"relevance1"</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">COLLATE</span> <span class="string">"pg_catalog"</span>.<span class="string">"default"</span>,</span><br><span class="line">  <span class="string">"relevance2"</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">COLLATE</span> <span class="string">"pg_catalog"</span>.<span class="string">"default"</span>,</span><br><span class="line">  <span class="string">"new_field"</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">COLLATE</span> <span class="string">"pg_catalog"</span>.<span class="string">"default"</span>,</span><br><span class="line">  <span class="keyword">CONSTRAINT</span> <span class="string">"olddb_pkey"</span> PRIMARY <span class="keyword">KEY</span> (<span class="string">"id"</span>)</span><br><span class="line">)</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">"public"</span>.<span class="string">"olddb"</span> </span><br><span class="line">  OWNER <span class="keyword">TO</span> <span class="string">"postgres"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">COMMENT</span> <span class="keyword">ON</span> <span class="keyword">COLUMN</span> <span class="string">"public"</span>.<span class="string">"olddb"</span>.<span class="string">"id"</span> <span class="keyword">IS</span> <span class="string">'主键'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">COMMENT</span> <span class="keyword">ON</span> <span class="keyword">COLUMN</span> <span class="string">"public"</span>.<span class="string">"olddb"</span>.<span class="string">"relevance1"</span> <span class="keyword">IS</span> <span class="string">'关联字段1'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">COMMENT</span> <span class="keyword">ON</span> <span class="keyword">COLUMN</span> <span class="string">"public"</span>.<span class="string">"olddb"</span>.<span class="string">"relevance2"</span> <span class="keyword">IS</span> <span class="string">'关联字段2'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">COMMENT</span> <span class="keyword">ON</span> <span class="keyword">COLUMN</span> <span class="string">"public"</span>.<span class="string">"olddb"</span>.<span class="string">"new_field"</span> <span class="keyword">IS</span> <span class="string">'新字段，需要由关联表同步'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>表成功创建之后，在内部加入一些简单的数据：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210315134419.png" alt=""></p>
+<h2 id="新表"><a href="#新表" class="headerlink" title="新表"></a>新表</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">"public"</span>.<span class="string">"newdb"</span> (</span><br><span class="line">  <span class="string">"id"</span> int4 <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">"relevance1"</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">COLLATE</span> <span class="string">"pg_catalog"</span>.<span class="string">"default"</span>,</span><br><span class="line">  <span class="string">"relevance2"</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">COLLATE</span> <span class="string">"pg_catalog"</span>.<span class="string">"default"</span>,</span><br><span class="line">  <span class="string">"new_field"</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">COLLATE</span> <span class="string">"pg_catalog"</span>.<span class="string">"default"</span>,</span><br><span class="line">  <span class="keyword">CONSTRAINT</span> <span class="string">"newdb_pkey"</span> PRIMARY <span class="keyword">KEY</span> (<span class="string">"id"</span>)</span><br><span class="line">)</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">"public"</span>.<span class="string">"newdb"</span> </span><br><span class="line">  OWNER <span class="keyword">TO</span> <span class="string">"postgres"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">COMMENT</span> <span class="keyword">ON</span> <span class="keyword">COLUMN</span> <span class="string">"public"</span>.<span class="string">"newdb"</span>.<span class="string">"id"</span> <span class="keyword">IS</span> <span class="string">'主键'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">COMMENT</span> <span class="keyword">ON</span> <span class="keyword">COLUMN</span> <span class="string">"public"</span>.<span class="string">"newdb"</span>.<span class="string">"relevance1"</span> <span class="keyword">IS</span> <span class="string">'关联字段1'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">COMMENT</span> <span class="keyword">ON</span> <span class="keyword">COLUMN</span> <span class="string">"public"</span>.<span class="string">"newdb"</span>.<span class="string">"relevance2"</span> <span class="keyword">IS</span> <span class="string">'关联字段2'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">COMMENT</span> <span class="keyword">ON</span> <span class="keyword">COLUMN</span> <span class="string">"public"</span>.<span class="string">"newdb"</span>.<span class="string">"new_field"</span> <span class="keyword">IS</span> <span class="string">'新字段，需要同步到旧表'</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>提醒：注意数据库是<strong>postgresql</strong>，其他数据库可能存在字段等差别而无法成功 </p>
+</blockquote>
+<p>表成功创建之后，在内部加入一些简单的数据：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210315134505.png" alt=""></p>
+<h1 id="实现方式汇总"><a href="#实现方式汇总" class="headerlink" title="实现方式汇总"></a>实现方式汇总</h1><h2 id="join"><a href="#join" class="headerlink" title="join"></a>join</h2><p>​    第一种的连接方式使用的是连接表的<code>join</code>方法，我们通过关联字段查出对应的关联记录，同时在关联之后将关联新字段的数据更新到旧表，这样就实现了每关联一条记录就更新一条记录数据：</p>
+<p>​    实现方式也比较简单，只需要使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">UPDATE olddb aa</span><br><span class="line">SET new_field &#x3D; bb.new_field</span><br><span class="line">FROM</span><br><span class="line">	 newdb bb where aa.relevance1 &#x3D; bb.relevance1 </span><br><span class="line">	AND aa.relevance2 &#x3D; bb.relevance2</span><br></pre></td></tr></table></figure>
+
+<p>他的执行结果如下：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210315143721.png" alt=""></p>
+<blockquote>
+<p>下面的下方是错的，这时候sql会抛出一个错误。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> olddb <span class="keyword">ALIAS</span> </span><br><span class="line"><span class="keyword">SET</span> ( new_field ) = (</span><br><span class="line">	<span class="keyword">SELECT</span></span><br><span class="line">		( bb.new_field ) </span><br><span class="line">	<span class="keyword">FROM</span></span><br><span class="line">		olddb aa</span><br><span class="line">		<span class="keyword">JOIN</span> newdb bb <span class="keyword">ON</span> aa.relevance2 = bb.relevance2 </span><br><span class="line">		<span class="keyword">AND</span> aa.relevance1 = bb.relevance1 </span><br><span class="line">	)</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="Merge（未验证）"><a href="#Merge（未验证）" class="headerlink" title="Merge（未验证）"></a>Merge（未验证）</h2><p>第二种方式可能比较陌生，因为<code>merge</code>算是对于insert以及update的一个统合，粗略了解了一下发现能干不少事情，下面说下。</p>
+<p>注意下面的方法在postgresql <strong>报错</strong>，原因是是我的postgresql<strong>版本太低</strong>，但是个人在升级过后还不能支持使用merge方法 ，所以这里保存了sql，可以改动后尝试到其它的数据库语言进行使用。</p>
+<blockquote>
+<p>ERROR:  syntax error at or near “MERGE” </p>
+<p>很头疼，在stackflow也没用找到答案。</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">merge</span> <span class="keyword">into</span> olddb <span class="keyword">as</span> olds</span><br><span class="line"><span class="keyword">using</span> newdb news <span class="keyword">on</span> olds.new_field = news.new_field</span><br><span class="line"><span class="keyword">when</span> <span class="keyword">matched</span></span><br><span class="line"><span class="keyword">update</span> <span class="keyword">set</span> </span><br><span class="line">olds.new_field = news.new_field</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是不同的数据库对于merge的特性是不一致的，建议查看当前安装数据库的版本以及文档进行确认比较稳妥。</p>
+<p>下面是 <strong>postgresql</strong> 的<code>merge</code>使用案例，注意一般建议版本为<code>11</code>以上再使用<code>merge</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MERGE INTO wines </span><br><span class="line">USING (VALUES(&#39;Chateau Lafite 2003&#39;, &#39;24&#39;)) v</span><br><span class="line">ON v.column1 &#x3D; w.winename</span><br><span class="line">WHEN NOT MATCHED </span><br><span class="line">  INSERT VALUES(v.column1, v.column2)</span><br><span class="line">WHEN MATCHED</span><br><span class="line">  UPDATE SET stock &#x3D; stock + v.column2;</span><br></pre></td></tr></table></figure>
+
+<h2 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h2><p>​    子查询是最简单也是最容易想到的一种方式，不过子查询有一个明显的缺点就是数据量较大的情况下通常性能都比较差， 这种操作通常适合数据量比较小的情况，下面是对应的案例语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> olddb </span><br><span class="line"><span class="keyword">SET</span> new_field = ( <span class="keyword">SELECT</span> newdb.new_field <span class="keyword">FROM</span> newdb <span class="keyword">WHERE</span> olddb.relevance1 = newdb.relevance1 <span class="keyword">AND</span> olddb.relevance2 = newdb.relevance2 )</span><br></pre></td></tr></table></figure>
+
+<p>下面是子查询需要注意的点：</p>
+<ul>
+<li>如果子查询无法找到任何匹配的行，则更新后的值将被更改为NULL</li>
+<li>如果子查询找到多个匹配的行，update查询将返回一个错误。</li>
+</ul>
+<blockquote>
+<p>错误的信息如下：</p>
+<p><code>&gt; ERROR:  more than one row returned by a subquery used as an expression</code></p>
+<p>(&gt;错误:作为表达式使用的子查询返回多行)</p>
+</blockquote>
+<ul>
+<li>多数情况下子查询的性能较差，尽量避免使用</li>
+</ul>
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><p>​    由于merge个人使用经验不足，花了较多时间依然没有解决，所以文章标题进行了标记，后续使用了其他的方式避开问题。</p>
+<p>​    update select的实现实际情况复杂多变，这里只列举了最简单的使用情况。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/03/28/updateselect/" title="如何实现update select 语句">https://whitestore.top/2021/03/28/updateselect/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AE%9E%E7%94%A8/" rel="tag"># 实用</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/28/navicatcopy/" rel="prev" title="Navicat如何复制数据库">
+      <i class="fa fa-chevron-left"></i> Navicat如何复制数据库
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/28/bigdatacompile/" rel="next" title="一次大数据文件处理日记">
+      一次大数据文件处理日记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何实现update-select-语句"><span class="nav-number">1.</span> <span class="nav-text">如何实现update select 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言："><span class="nav-number">1.1.</span> <span class="nav-text">前言：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文章目的："><span class="nav-number">2.</span> <span class="nav-text">文章目的：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备数据"><span class="nav-number">3.</span> <span class="nav-text">准备数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#旧表"><span class="nav-number">3.1.</span> <span class="nav-text">旧表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新表"><span class="nav-number">3.2.</span> <span class="nav-text">新表</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现方式汇总"><span class="nav-number">4.</span> <span class="nav-text">实现方式汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#join"><span class="nav-number">4.1.</span> <span class="nav-text">join</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Merge（未验证）"><span class="nav-number">4.2.</span> <span class="nav-text">Merge（未验证）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子查询"><span class="nav-number">4.3.</span> <span class="nav-text">子查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结："><span class="nav-number">5.</span> <span class="nav-text">总结：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">680k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">10:18</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

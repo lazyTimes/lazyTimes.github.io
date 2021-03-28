@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="如何对于一个巨型文件进行分批处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次大数据文件处理日记">
+<meta property="og:url" content="https://whitestore.top/2021/03/28/bigdatacompile/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="如何对于一个巨型文件进行分批处理">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-28T07:02:44.000Z">
+<meta property="article:modified_time" content="2021-03-28T07:04:00.796Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="大数据">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://whitestore.top/2021/03/28/bigdatacompile/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>一次大数据文件处理日记 | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/03/28/bigdatacompile/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一次大数据文件处理日记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-28 15:02:44 / 修改时间：15:04:00" itemprop="dateCreated datePublished" datetime="2021-03-28T15:02:44+08:00">2021-03-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%97%A5%E5%B8%B8/" itemprop="url" rel="index"><span itemprop="name">日常</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/03/28/bigdatacompile/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/28/bigdatacompile/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">如何对于一个巨型文件进行分批处理</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一次大数据文件处理日记"><a href="#一次大数据文件处理日记" class="headerlink" title="一次大数据文件处理日记"></a>一次大数据文件处理日记</h1><h1 id="文章推荐"><a href="#文章推荐" class="headerlink" title="文章推荐"></a>文章推荐</h1><p><span class="exturl" data-url="aHR0cHM6Ly9tcC53ZWl4aW4ucXEuY29tL3MvX0dTcS1VWG5EaGdHNmswcUhxTS02QQ==" title="https://mp.weixin.qq.com/s/_GSq-UXnDhgG6k0qHqM-6A">https://mp.weixin.qq.com/s/_GSq-UXnDhgG6k0qHqM-6A<i class="fa fa-external-link"></i></span></p>
+<h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>​    最近在做业务功能的时候，拿到一个非常”简单”的需求，把一个 <strong>30万行</strong>的数据文件按照特定的格式进行入库，文件格式和字段的内容都有对应的规定。这种需求其实还算比较常见，通常这一类需求不管系统配置多么强悍，都不可能无脑的读取插入。趁着这个需求搜集了一下几种常见的做法。下面就来介绍一下解决这种大数据文件的常用套路。</p>
+<a id="more"></a>
+
+<h1 id="文章目的："><a href="#文章目的：" class="headerlink" title="文章目的："></a>文章目的：</h1><ol>
+<li>在JAVA中如何安全的将一份超大文件进行安全入库处理方式。</li>
+<li>大文件读写可能产生的性能问题和瓶颈分析</li>
+<li>关于分析大文件读写的常见套路<ol>
+<li>使用单线程还是多线程</li>
+<li>多线程的相关问题讨论</li>
+</ol>
+</li>
+</ol>
+<h1 id="文件内容分析"><a href="#文件内容分析" class="headerlink" title="文件内容分析"></a>文件内容分析</h1><p>​    由于实际的情况复杂多变，在做具体的编码之前，需要先梳理有可能存在的情况，下面简单列举系统有可能的存在的问题，和一些常见的注意事项：</p>
+<ul>
+<li>系统硬件水平，服务器是否会因为读写大量的数据文件占用大量资源<ul>
+<li>内存问题：加载大数据最容易出的问题那就是爆内存，建议至少使用<strong>缓冲流</strong>进行读写</li>
+<li>硬盘问题：读写的限制另一种体现就是硬盘的好坏，固态优于机械的读写.</li>
+</ul>
+</li>
+<li>文件的读写方式，JAVA的IO比较复杂，这里简化为三种也就是常见的BIO、NIO、和AIO（具体代表含义请自行百度）。<ul>
+<li>异步IO虽然看起来很美，但是需要考虑顺序入库的问题。</li>
+<li>多线程异步读写比较考验机器性能，请谨慎使用。</li>
+<li>顺序读写永远是硬盘最快捷的一种方式</li>
+</ul>
+</li>
+<li>完成一次完整的操作时间估量，既然是大文件，就必然需要考虑整个操作的执行时间，一份几十万的数据跑一轮下来不管如何优化肯定需要不少的时间，所以操作的时间消耗需要考虑在可接受的范围</li>
+<li>大数据文件读写的时间选择<ul>
+<li>通常比较重和累的活都放大半夜去干</li>
+<li>估量整个任务的执行时间消耗</li>
+</ul>
+</li>
+</ul>
+<p>这些分析只是一些最基本的要求，不同的业务场景会有更多的细节考量，文章不可能面面俱到，这些分析更多的是帮助个人提高警惕性，只有考虑到所有可能想到的细节，这样的大文件读写才可能是安全可靠的，同时可以保证突发情况可以及时的反应。</p>
+<p>最后，这类开销比较大的操作，对于<strong>日志打印和记录</strong>的计算需要额外小心，最好在一次较大操作中记录操作成功失败记录数，同时在整个记录完成之后通过日志持久化整个操作的结果。</p>
+<h1 id="大文件读写的常见套路"><a href="#大文件读写的常见套路" class="headerlink" title="大文件读写的常见套路"></a>大文件读写的常见套路</h1><p>​    其实这些套路网上多看看资料基本都可以有自己的一套方案，下面给出的建议可能不是最好的方式，有些可能在实际业务场景下走不通。（完全有可能）但是借着这些套路希望可以给读者一些启发，下面我们直接进入主题。</p>
+<h2 id="分批入库"><a href="#分批入库" class="headerlink" title="分批入库"></a>分批入库</h2><p>​    分批入库是最容易想到的方式，也是最保险最稳妥的方式，这里包含了一个隐式的条件，就是数据都是<strong>增量不改动</strong>数据，大致意思就是不会改动的固定数据库数据。</p>
+<p>​    现在我们来看下分批入库是如何处理的，分批的意思就是说每N条进行一次操作，防止数据库突然收到一个巨量的Insert请求导致锁表并且影响业务（弱一点的服务器直接满载），下面根据一段案例代码来说明做法：</p>
+<blockquote>
+<p>个人公司的电脑是一块SATA的固态硬盘，在开启批量操作之后，经常100%读写占用系统假死，所以如果要进行试验，建议先设置一个很小的值慢慢加量，否则你的电脑可能会卡的动不了。</p>
+</blockquote>
+<ul>
+<li>首先需要编写一个批量插入的sql语句，网上对应案例的语句如下（如果是mybatis，需要使用<foreach>标签标记需要循环的对象内容）：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO table ( &quot;clo1&quot;, &quot;col2&quot;, &quot;col3&quot;, &quot;col4&quot;, &quot;col5&quot; )</span><br><span class="line">VALUES</span><br><span class="line">( 1, 10, NULL, &#39;2019-12-19 13:38:35&#39;, &#39;新年活动16张卡券&#39;),</span><br><span class="line">( 2, 11, NULL, &#39;2019-12-19 15:05:13&#39;, &#39;圣诞活动11张卡券&#39;),</span><br><span class="line">( 3, 12, NULL, &#39;2019-12-19 15:05:13&#39;, &#39;圣诞活动12张卡券&#39;),</span><br><span class="line">( 4, 13, NULL, &#39;2019-12-19 15:05:13&#39;, &#39;圣诞活动13张卡券&#39;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>下面是分批操作的JAVA代码，大致逻辑是打开一个文件，然后将一行数据转为一个对象，同时塞入到一个集合当中，当集合的内容超过限制的时候，进行一次入库的操作。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">private void insert2DbByBatchList(Config config, String line) throws IOException &#123;</span><br><span class="line">        List&lt;VisaNewBinVo&gt; insertList &#x3D; new ArrayList&lt;&gt;(1000);</span><br><span class="line">        Map configValue &#x3D; readConfigValue();</span><br><span class="line">        while (StringUtils.isNotEmpty(line)) &#123;</span><br><span class="line">            Timestamp timestamp &#x3D; new Timestamp(System.currentTimeMillis());</span><br><span class="line">            VisaNewBin visaNewBin &#x3D; new VisaNewBin();</span><br><span class="line">            configValue.forEach((key, value) -&gt; &#123;</span><br><span class="line">                Map&lt;String, Object&gt; visaBinField &#x3D; (Map&lt;String, Object&gt;) value;</span><br><span class="line">                Integer endInex &#x3D; (Integer) visaBinField.get(&quot;endInex&quot;);</span><br><span class="line">                Integer startIndex &#x3D; (Integer) visaBinField.get(&quot;startIndex&quot;);</span><br><span class="line">                if (startIndex &lt; line.length() &amp;&amp; endInex &lt; line.length()) &#123;</span><br><span class="line">                    String substring &#x3D; line.substring(startIndex, endInex);</span><br><span class="line">                    FieldReflectionUtil.setFieldValueByFieldName(visaNewBin, key.toString(), substring);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            VisaNewBinVo visaNewBinVo &#x3D; new VisaNewBinVo();</span><br><span class="line">            BeanUtils.copyProperties(visaNewBin, visaNewBinVo);</span><br><span class="line">            visaNewBinVo.setBinId(UUID.randomUUID().toString());</span><br><span class="line">            visaNewBinVo.setBatchNo(getVisaNewCardBinDecAfterFileName(config));</span><br><span class="line">            visaNewBinVo.setCreateTime(timestamp);</span><br><span class="line">            insertList.add(visaNewBinVo);</span><br><span class="line">            &#x2F;&#x2F; 限制部分</span><br><span class="line">            if (rechLimitValue(insertList)) &#123;</span><br><span class="line">                int count &#x3D; visaNewBinMapper.batchInsertNewBins(insertList);</span><br><span class="line">                logger.info(&quot;当前批次数据为：&#123;&#125; 条，成功入库: &#123;&#125; 条数据&quot;, insertList.size(), count);</span><br><span class="line">                insertList.clear();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    	&#x2F;&#x2F; 存在纰漏，在最后一批不足的情况下，需要把剩下的数据入库</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private boolean rechLimitValue(List insertList) &#123;</span><br><span class="line">        return insertList.size() % 500 &#x3D;&#x3D; 0;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>小贴士：很多人可能会认为可以用<code>Thread.sleep(1000)</code>类似的线程休眠的方式让计算机“冷静”一下，给数据库一些缓冲时间，但是其实从大文件读写的角度来看，<strong>没有太大的意义</strong>，因为我们的文件读写要么需要开一条“河流”，要么就像新的方式直接开一条“矿道”（底层IO）。我们一旦打开流或者开通矿道就是在占用系统资源。用这种休眠的方式无非就是拉长了整个工作的时间，其实并没有太大的实际意义。</p>
+<p>​    当然这种形式并不是完全没有任何作用，有些情况下比如之前个人曾经做过关于一个百度的分析接口存在<strong>QPS个位数限制</strong>的情况下，这种时候最简单的方法就是使用线程休眠来限制调用。</p>
+<p>​    当然这种形式在编码里面比价丑陋，可以使用JDK的工具类<code>TimeUtil</code>来更加优雅的细粒度控制线程休眠时间控制。</p>
+</blockquote>
+<blockquote>
+<p>这里有个八股文的面试题<code>Thread.sleep(0)</code>的含义。</p>
+</blockquote>
+<h3 id="分批入库存在的问题"><a href="#分批入库存在的问题" class="headerlink" title="分批入库存在的问题"></a>分批入库存在的问题</h3><p>​    分批入库虽然是最无脑的一种方式，但是这里其实是存在限制的，一般会存在下面这些问题：</p>
+<ul>
+<li>数据库对于preSql的占位符限制：<strong>比如postgreSql 的限制为Short类型的最大值</strong>，即<strong>32747</strong>，超过这个值就会抛出如下的异常：</li>
+</ul>
+<blockquote>
+<p><strong>Tried to send an out-of-range integer as a 2-byte value</strong></p>
+<p>github上面有人提过这个issue，里面还有一些老外的吐槽，挺有意思的，文章连接：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3BnamRiYy9wZ2pkYmMvaXNzdWVzLzEzMTE=" title="https://github.com/pgjdbc/pgjdbc/issues/1311">https://github.com/pgjdbc/pgjdbc/issues/1311<i class="fa fa-external-link"></i></span> <code>如何解决&quot;尝试将超范围整数发送为 2 个按次值&quot;的错误#1311</code></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMjc2MzkyMzkvcG9zdGdyZXNxbC1lcnJvci1pbnNlcnQtaGFzLW1vcmUtdGFyZ2V0LWNvbHVtbnMtdGhhbi1leHByZXNzaW9ucy13aGVuLWl0LWRvZXNu77yI6ZyA6KaB6Ieq5aSH5bel5YW377yJ" title="https://stackoverflow.com/questions/27639239/postgresql-error-insert-has-more-target-columns-than-expressions-when-it-doesn（需要自备工具）">https://stackoverflow.com/questions/27639239/postgresql-error-insert-has-more-target-columns-than-expressions-when-it-doesn（需要自备工具）<i class="fa fa-external-link"></i></span> <code>PostgreSQL ERROR: INSERT has more target columns than expressions, when it doesn&#39;t</code></p>
+<p>如果想要绕开这个问题，可以自己手写一个实现类进行替换。还有一种办法就是减少占位符，增加批次然后减少每次批次的插入数据量。</p>
+</blockquote>
+<ul>
+<li>硬件水平的限制：这里主要说的是硬盘上的限制，一块差点的硬盘即使是分批操作也会卡死，需要注意分批之后不是高枕无忧了</li>
+</ul>
+<blockquote>
+<p>硬件问题不能完全作为无法解决问题的借口。</p>
+</blockquote>
+<ul>
+<li>程序中断的影响：分批的方式比较常见的一个问题是处理入库过程中 <strong>程序异常</strong>，<strong>断电</strong>，<strong>系统故障（蓝屏）</strong>。</li>
+</ul>
+<blockquote>
+<p>一种推荐的解决方式是数据库设置唯一校验字段，每次入库之前检查是否存在标记，可以使用redis进行辅助。（布隆过滤器）</p>
+</blockquote>
+<h2 id="多线程读写"><a href="#多线程读写" class="headerlink" title="多线程读写"></a>多线程读写</h2><p>多线程的处理方式也比较容易理解，既然一个人读写吃力，那就把文件“劈”成很多份，比如文件的第1条到1万条为线程1，第10001条到20000条为线程2， 依次类推，这种方式需要提前计算数据行的总量，然后开启线程将数据行分配给多个线程，由于个人处理的时候，被禁止使用多线程的处理方式，这里的代码为一些案例作用。</p>
+<p>（建议PC端查看）</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuemhpaHUuY29tL3F1ZXN0aW9uLzIwMTQ5Mzk1" title="https://www.zhihu.com/question/20149395">java读取大文件，采用多线程处理对提高效率可有帮助？<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dpdGh1Yl8zNzM4MjMxOS9hcnRpY2xlL2RldGFpbHMvMTA0NzIzNDIx" title="https://blog.csdn.net/github_37382319/article/details/104723421">使用多线程会加快文件读取速度吗？<i class="fa fa-external-link"></i></span></p>
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><p>​    通过这次的小需求整理了一下大数据问题的处理经验，也算是对个人的一点提升。比较关键的是掌握多线程写入文件，需要考虑的内容还不少。不过网上的资料并不是特别多，还需要花更多的时间去研究。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/03/28/bigdatacompile/" title="一次大数据文件处理日记">https://whitestore.top/2021/03/28/bigdatacompile/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AE%9E%E7%94%A8/" rel="tag"># 实用</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/28/updateselect/" rel="prev" title="如何实现update select 语句">
+      <i class="fa fa-chevron-left"></i> 如何实现update select 语句
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/28/readbookok/" rel="next" title="《如何有效读一本书》读书笔记">
+      《如何有效读一本书》读书笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一次大数据文件处理日记"><span class="nav-number">1.</span> <span class="nav-text">一次大数据文件处理日记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文章推荐"><span class="nav-number">2.</span> <span class="nav-text">文章推荐</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言："><span class="nav-number">3.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文章目的："><span class="nav-number">4.</span> <span class="nav-text">文章目的：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件内容分析"><span class="nav-number">5.</span> <span class="nav-text">文件内容分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#大文件读写的常见套路"><span class="nav-number">6.</span> <span class="nav-text">大文件读写的常见套路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分批入库"><span class="nav-number">6.1.</span> <span class="nav-text">分批入库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分批入库存在的问题"><span class="nav-number">6.1.1.</span> <span class="nav-text">分批入库存在的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程读写"><span class="nav-number">6.2.</span> <span class="nav-text">多线程读写</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结："><span class="nav-number">7.</span> <span class="nav-text">总结：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">680k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">10:18</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
