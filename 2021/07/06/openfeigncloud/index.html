@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="源码阅读">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Cloud openFeign学习【3.0.2版本】">
+<meta property="og:url" content="https://whitestore.top/2021/07/06/openfeigncloud/index.html">
+<meta property="og:site_name" content="LazyTimes的博客">
+<meta property="og:description" content="源码阅读">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/B837F406-A869-4803-AC74-1B592F4BAF28.png?ynotemdtimestamp=1625580577970">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210526144216.png?ynotemdtimestamp=1625580577970">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210526181412.png?ynotemdtimestamp=1625580577970">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210527141927.png?ynotemdtimestamp=1625580577970">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210527115406.png?ynotemdtimestamp=1625580577970">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210527120005.png?ynotemdtimestamp=1625580577970">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210527160429.png?ynotemdtimestamp=1625580577970">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/openFeign%E8%B0%83%E7%94%A8%E9%93%BE%E8%B7%AF.png?ynotemdtimestamp=1625580577970">
+<meta property="article:published_time" content="2021-07-06T15:11:40.000Z">
+<meta property="article:modified_time" content="2021-07-06T15:13:13.793Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="openfeign">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/B837F406-A869-4803-AC74-1B592F4BAF28.png?ynotemdtimestamp=1625580577970">
+
+<link rel="canonical" href="https://whitestore.top/2021/07/06/openfeigncloud/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Spring Cloud openFeign学习【3.0.2版本】 | LazyTimes的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LazyTimes的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LazyTimes的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">生死有命，富贵在天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/07/06/openfeigncloud/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LazyTimes的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring Cloud openFeign学习【3.0.2版本】
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-07-06 23:11:40 / 修改时间：23:13:13" itemprop="dateCreated datePublished" datetime="2021-07-06T23:11:40+08:00">2021-07-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/springcloud/" itemprop="url" rel="index"><span itemprop="name">springcloud</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/07/06/openfeigncloud/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/06/openfeigncloud/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>34k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>31 分钟</span>
+            </span>
+            <div class="post-description">源码阅读</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Spring-Cloud-openFeign学习【3-0-2版本】"><a href="#Spring-Cloud-openFeign学习【3-0-2版本】" class="headerlink" title="Spring Cloud openFeign学习【3.0.2版本】"></a>Spring Cloud openFeign学习【3.0.2版本】</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    内容分为openFeign大致的使用和源码的个人解读，里面参考了不少其他优秀博客作者的内容，很多地方基本算是拾人牙慧了，不过还是顺着源码读了一遍加深理解。</p>
+<a id="more"></a>
+
+<h1 id="openFeign-是什么？"><a href="#openFeign-是什么？" class="headerlink" title="openFeign 是什么？"></a>openFeign 是什么？</h1><p>​    Feign是一个<strong>声明性web服务客户端</strong>。它使编写web服务客户机更加容易，要使用Feign，需要创建一个接口并对其进行注释。它具有可插入注释支持，包括Feign注释和JAX-RS注释。</p>
+<p>​    Feign还支持<strong>可插拔编码器和解码器</strong>。Spring Cloud增加了对Spring MVC注解的支持，并支持使用Spring Web中默认使用的相同HttpMessageConverters。</p>
+<p>​    Spring Cloud集成了Eureka、Spring Cloud CircuitBreaker和Spring Cloud LoadBalancer，在使用Feign时提供一个<strong>负载均衡的http客户端</strong>。</p>
+<h1 id="如何学习？"><a href="#如何学习？" class="headerlink" title="如何学习？"></a>如何学习？</h1><p>​    框架最大的意义在于使用，其实最好的教程就是边做边参考官方的文档学习。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zcHJpbmcuaW8vcHJvamVjdHMvc3ByaW5nLWNsb3VkLW9wZW5mZWlnbg==" title="https://spring.io/projects/spring-cloud-openfeign">官方文档目录地址<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLnNwcmluZy5pby9zcHJpbmctY2xvdWQtb3BlbmZlaWduL2RvY3MvY3VycmVudC9yZWZlcmVuY2UvaHRtbC8=" title="https://docs.spring.io/spring-cloud-openfeign/docs/current/reference/html/">官方openFeign的文档<i class="fa fa-external-link"></i></span></p>
+<h1 id="应用场景？"><a href="#应用场景？" class="headerlink" title="应用场景？"></a>应用场景？</h1><p>​    可以看到openFeign作为服务的调用中转，负责服务之间的连接和请求转发的操作。OpenFeign作为编写服务调用支持组件在spring cloud中占有极为重要的位置。</p>
+<p>​    和RPC的通信框架不同，openFeign使用了传统的http作为传输结构。</p>
+<p>​    在以往使用Ribbon的时候，服务调用通常使用的是手动调用，这需要花费大量的人工协调时间。现在通过openFeign把服务调用“本地化”。调用其他的服务的接口API像调用本地方法一样。这样既不需要频繁的改动接口，又可以控制服务的调用，而不会导致服务提供方的变动而“失效”。</p>
+<h1 id="Ribbon、Feign和OpenFeign的区别"><a href="#Ribbon、Feign和OpenFeign的区别" class="headerlink" title="Ribbon、Feign和OpenFeign的区别"></a>Ribbon、Feign和OpenFeign的区别</h1><p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3ppbW91NTU4MS9hcnRpY2xlL2RldGFpbHMvODk5NDk4NTI=" title="https://blog.csdn.net/zimou5581/article/details/89949852">Ribbon、Feign和OpenFeign的区别<i class="fa fa-external-link"></i></span></p>
+<h2 id="Ribbon"><a href="#Ribbon" class="headerlink" title="Ribbon"></a>Ribbon</h2><p>​    Ribbon 是 Netflix开源的<strong>基于HTTP和TCP</strong>等协议负载均衡组件</p>
+<p>​    Ribbon 可以用来做<strong>客户端负载均衡</strong>，调用注册中心的服务</p>
+<p>​    Ribbon的使用需要代码里<strong>手动调用目标服务</strong>，请参考官方示例：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL05ldGZsaXgvcmliYm9u" title="https://github.com/Netflix/ribbon">官方示例<i class="fa fa-external-link"></i></span></p>
+<h2 id="Feign"><a href="#Feign" class="headerlink" title="Feign"></a>Feign</h2><p>​    Feign是Spring Cloud组件中的一个<strong>轻量级RESTful的HTTP服务</strong>客户端。</p>
+<p>​    Feign内置了Ribbon，用来做<strong>客户端负载均衡</strong>，去调用<strong>服务注册中心的服务</strong>。</p>
+<p>​    Feign的使用方式是：<strong>使用Feign的注解</strong>定义接口，调用这个接口，就可以调用服务注册中心的服务。</p>
+<p>​    Feign支持的注解和用法请参考官方文档：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL09wZW5GZWlnbi9mZWlnbg==" title="https://github.com/OpenFeign/feign">官方文档<i class="fa fa-external-link"></i></span>。</p>
+<p>​    <strong>Feign本身不支持Spring MVC的注解，它有一套自己的注解</strong>。</p>
+<h2 id="OpenFeign"><a href="#OpenFeign" class="headerlink" title="OpenFeign"></a>OpenFeign</h2><p>​    OpenFeign是Spring Cloud 在Feign的基础上支持了Spring MVC的注解，如@RequesMapping等等。OpenFeign的@FeignClient可以解析SpringMVC的<strong>@RequestMapping</strong>注解下的接口，并通过动态代理的方式产生实现类，实现类中做负载均衡并调用其他服务。</p>
+<p>​    根据上面的描述，绘制如下的表格内容：</p>
+<table>
+<thead>
+<tr>
+<th>-</th>
+<th>Ribbon</th>
+<th>Feign</th>
+<th>OpenFeign</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>使用方式</td>
+<td>手动调用目标服务</td>
+<td>Feign的注解定义接口，调用接口就可以调用注册中心服务</td>
+<td>可以直接使用服务调用的方式调用对应的服务</td>
+</tr>
+<tr>
+<td>作用</td>
+<td>客户端负载均衡，服务注册中心的服务调用</td>
+<td>客户端负载均衡，服务注册中心的服务调用</td>
+<td>动态代理的方式产生实现类，实现类中做负载均衡并调用其他服务</td>
+</tr>
+<tr>
+<td>开发商</td>
+<td>Netfix</td>
+<td>Spring Cloud</td>
+<td>Spring Cloud</td>
+</tr>
+<tr>
+<td>特点</td>
+<td><strong>基于HTTP和TCP</strong>等协议负载均衡组件</td>
+<td><strong>轻量级RESTful的HTTP服务</strong>客户端。依靠自我实现的注解进行请求处理</td>
+<td>支持了Spring MVC的注解的<strong>轻量级RESTful的HTTP服务</strong>客户端</td>
+</tr>
+<tr>
+<td>目前情况</td>
+<td>维护中</td>
+<td>停止维护</td>
+<td>维护中</td>
+</tr>
+</tbody></table>
+<h1 id="openFeign增加了那些功能："><a href="#openFeign增加了那些功能：" class="headerlink" title="openFeign增加了那些功能："></a>openFeign增加了那些功能：</h1><ol>
+<li>可插拔的注解支持，包括Feign注解和JSX-RS注解。</li>
+<li>支持可插拔的HTTP编码器和解码器。</li>
+<li>支持Hystrix和它的Fallback。</li>
+<li>支持Ribbon的负载均衡。</li>
+<li>支持HTTP请求和响应的压缩。</li>
+</ol>
+<h1 id="openFeign的client实现方替换："><a href="#openFeign的client实现方替换：" class="headerlink" title="openFeign的client实现方替换："></a>openFeign的client实现方替换：</h1><ol>
+<li>可以使用http client 替换，并且openFeign 提供了良好的配置，可以支持httpclient的细节化配置。</li>
+<li>使用okHttpClient, 可以实现 okhttpClient 实现自定义的httpclient注入模式，但是会出现一定的问题。</li>
+</ol>
+<h1 id="使用方式："><a href="#使用方式：" class="headerlink" title="使用方式："></a>使用方式：</h1><h2 id="1-添加依赖"><a href="#1-添加依赖" class="headerlink" title="1. 添加依赖"></a>1. 添加依赖</h2><p>​    按照maven的依赖管理，我们需要使用此方式进行处理</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> &lt;dependency&gt;</span><br><span class="line">     &lt;groupId&gt;org.springframework.cloud&lt;&#x2F;groupId&gt;</span><br><span class="line">     &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;&#x2F;artifactId&gt;</span><br><span class="line">     &lt;version&gt;$&#123;feign.version&#125;&lt;&#x2F;version&gt;</span><br><span class="line">     &lt;scope&gt;compile&lt;&#x2F;scope&gt;</span><br><span class="line">     &lt;optional&gt;true&lt;&#x2F;optional&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-开启注解-EnableFeignClients"><a href="#2-开启注解-EnableFeignClients" class="headerlink" title="2. 开启注解@EnableFeignClients"></a>2. 开启注解@EnableFeignClients</h2><p>​    <code>application</code>启动类 需要添加对应的配置：<code>@EnableFeignClients</code>用于允许访问。</p>
+<blockquote>
+<p>spring cloud feign的默认配置：</p>
+<p>Spring Cloud OpenFeign默认为伪装提供以下bean（<code>BeanType</code>beanName ：）<code>ClassName</code>：</p>
+<ul>
+<li><code>Decoder</code>feignDecoder ：（<code>ResponseEntityDecoder</code>包含<code>SpringDecoder</code>）</li>
+<li><code>Encoder</code> feignEncoder： <code>SpringEncoder</code></li>
+<li><code>Logger</code> feignLogger： <code>Slf4jLogger</code></li>
+<li><code>MicrometerCapability</code>micrometerCapability：如果<code>feign-micrometer</code>在类路径上并且<code>MeterRegistry</code>可用</li>
+<li><code>Contract</code> feignContract： <code>SpringMvcContract</code></li>
+<li><code>Feign.Builder</code> feignBuilder： <code>FeignCircuitBreaker.Builder</code></li>
+<li><code>Client</code>feignClient：如果在类路径<code>FeignBlockingLoadBalancerClient</code>上使用Spring Cloud <strong>LoadBalancer</strong>，则使用。如果它们都不在类路径上，则使用默认的伪装客户端。</li>
+</ul>
+</blockquote>
+<h2 id="3-yml增加配置："><a href="#3-yml增加配置：" class="headerlink" title="3. yml增加配置："></a>3. yml增加配置：</h2><p>​    yml文件内部的文件内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">feign:</span><br><span class="line">    client:</span><br><span class="line">        config:</span><br><span class="line">            feignName:</span><br><span class="line">                connectTimeout: 5000</span><br><span class="line">                readTimeout: 5000</span><br><span class="line">                loggerLevel: full</span><br><span class="line">                errorDecoder: com.example.SimpleErrorDecoder</span><br><span class="line">                retryer: com.example.SimpleRetryer</span><br><span class="line">                defaultQueryParameters:</span><br><span class="line">                    query: queryValue</span><br><span class="line">                defaultRequestHeaders:</span><br><span class="line">                    header: headerValue</span><br><span class="line">                requestInterceptors:</span><br><span class="line">                    - com.example.FooRequestInterceptor</span><br><span class="line">                    - com.example.BarRequestInterceptor</span><br><span class="line">                decode404: false</span><br><span class="line">                encoder: com.example.SimpleEncoder</span><br><span class="line">                decoder: com.example.SimpleDecoder</span><br><span class="line">                contract: com.example.SimpleContract</span><br><span class="line">                capabilities:</span><br><span class="line">                    - com.example.FooCapability</span><br><span class="line">                    - com.example.BarCapability</span><br><span class="line">                metrics.enabled: false</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-具体使用"><a href="#4-具体使用" class="headerlink" title="4. 具体使用:"></a>4. 具体使用:</h2><p>​    更多的用法请根据网上资料或者官方文档，下面列举一些具体的配置或者使用方法:</p>
+<blockquote>
+<p>如果openFeign的名称发生冲突，需要使用<code>contextId</code>对于防止bean的名称冲突</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@FeignClient(contextId &#x3D; &quot;fooClient&quot;, name &#x3D; &quot;stores&quot;, configuration &#x3D; FooConfiguration.class)</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="上下文继承"><a href="#上下文继承" class="headerlink" title="上下文继承"></a>上下文继承</h3><p>​    如果将FeignClient配置为不从父上下文继承bean，可以使用下面的写法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class CustomConfiguration&#123;</span><br><span class="line"></span><br><span class="line">    @Bean</span><br><span class="line">    public FeignClientConfigurer feignClientConfigurer() &#123;</span><br><span class="line">        return new FeignClientConfigurer() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public boolean inheritParentConfiguration() &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：默认情况下feign不会对与斜杠进行编码，如果要对斜杠编码，需要使用如下方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feign.client.decodeSlash：false</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="日志输出"><a href="#日志输出" class="headerlink" title="日志输出"></a>日志输出</h3><p>​    feign的默认日志输出等级如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logging.level.project.user.UserClient: DEBUG</span><br></pre></td></tr></table></figure>
+
+<p>​    下面是日志打印的内容：</p>
+<ul>
+<li><code>NONE</code>：默认不记录任何日志（默认设置）</li>
+<li><code>BASIC</code>：只记录和请求以及响应时间相关的日志信息</li>
+<li><code>HEADERS</code>：记录基本信息以及请求和响应<strong>头</strong></li>
+<li><code>FULL</code>:记录请求和响应的头、主体和元数据。(所有信息记录)</li>
+</ul>
+<h3 id="开启压缩"><a href="#开启压缩" class="headerlink" title="开启压缩"></a>开启压缩</h3><p>​    可以通过如下配置，开始http压缩：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">feign.compression.request.enabled&#x3D;true</span><br><span class="line">feign.compression.response.enabled&#x3D;true</span><br></pre></td></tr></table></figure>
+
+<p>​    如果需要更进一步的配置，可以使用如下的形式进行配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">feign.compression.request.enabled&#x3D;true</span><br><span class="line">feign.compression.request.mime-types&#x3D;text&#x2F;xml,application&#x2F;xml,application&#x2F;json</span><br><span class="line">feign.compression.request.min-request-size&#x3D;2048</span><br></pre></td></tr></table></figure>
+
+<p>​    注意<strong>2048</strong>值为压缩请求的最小阈值，因为如果对于所有请求进行gzip压缩，对于小文件的性能开销要反而要更大</p>
+<p>​    通过下面的配置来开启gzip压缩（压缩编码为UTF-8，默认）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">feign.compression.response.enabled&#x3D;true</span><br><span class="line">feign.compression.response.useGzipDecoder&#x3D;true</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-附录："><a href="#5-附录：" class="headerlink" title="5. 附录："></a>5. 附录：</h2><h3 id="yml相关配置表："><a href="#yml相关配置表：" class="headerlink" title="yml相关配置表："></a>yml相关配置表：</h3><p>​    这部分配置可以直接参考官网的处理：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLnNwcmluZy5pby9zcHJpbmctY2xvdWQtb3BlbmZlaWduL2RvY3MvY3VycmVudC9yZWZlcmVuY2UvaHRtbC9hcHBlbmRpeC5odG1s" title="https://docs.spring.io/spring-cloud-openfeign/docs/current/reference/html/appendix.html">yml相关配置表<i class="fa fa-external-link"></i></span></p>
+<h1 id="openFeign的源码解读-重点"><a href="#openFeign的源码解读-重点" class="headerlink" title="openFeign的源码解读(重点)"></a>openFeign的源码解读(重点)</h1><p>​    下面为借助文章理解和自己看源码的总结。整个调用过程还是比较好理解的。因为说白了本身就是对于一次http请求的抽象和封装而已。不过这部分用到了很多的设计模式，比如随处可见的建造者模式和策略模式。同时这一块的设计使用大量的包访问结构闭包，所以要对其进行二次开发会稍微麻烦一些，但是使用反射这些屏障基本算是形同虚设了。</p>
+<p>​    参考资料：<strong>掘金【【图文】Spring Cloud OpenFeign 源码解析】：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82ODQ0OTA0MDY2MjI5OTI3OTUwI2hlYWRpbmctMjQ=" title="https://juejin.cn/post/6844904066229927950#heading-24">https://juejin.cn/post/6844904066229927950#heading-24<i class="fa fa-external-link"></i></span></strong></p>
+<h2 id="feign工作流程图"><a href="#feign工作流程图" class="headerlink" title="feign工作流程图"></a>feign工作流程图</h2><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/B837F406-A869-4803-AC74-1B592F4BAF28.png?ynotemdtimestamp=1625580577970" alt="img"></p>
+<h2 id="工作流程概览"><a href="#工作流程概览" class="headerlink" title="工作流程概览"></a>工作流程概览</h2><p>这里主要介绍一次<strong>openFeign</strong>请求调用的流程，对于注解处理以及组件注册的部分放到了文章的结尾部分。</p>
+<ul>
+<li><strong>Feign</strong>实例化<strong>newInstance()</strong><ul>
+<li>实例化<strong>SyncronizedMethodHandler</strong>以及<strong>ParseHandlersByName</strong>，注入到<strong>ReflectFeign</strong>对象。</li>
+</ul>
+</li>
+<li>构建<strong>ParseHandlersByName</strong>对象，对于参数进行转化</li>
+<li>构建<strong>Contract</strong>对象，对于请求参数进行校验和解析<ul>
+<li>实例化<strong>SpringMvcContract</strong>对象（继承自Contract对象）</li>
+<li>调用<strong>parseAndValidateMetadata()</strong> 处理和校验数据类型</li>
+</ul>
+</li>
+<li>通过<strong>jdk动态代理</strong>Proxy创建动态代理对象<strong>MethodInvocationHandler</strong>，调用动态代理对象的<strong>invoke()</strong>方法</li>
+<li>代理类<strong>SyncronizedInvocationHandler</strong>构建 <strong>requestTeamplate</strong>对象，并发送请求<ul>
+<li>调用<strong>create()</strong>构建请求实体对象</li>
+<li>对于请求参数进行<strong>encode()</strong>操作</li>
+<li>构建<strong>client</strong>对象，执行请求</li>
+<li>返回请求结果</li>
+</ul>
+</li>
+<li>获取请求结果，请求完成</li>
+</ul>
+<h2 id="详解openFeign工作流程（重点）"><a href="#详解openFeign工作流程（重点）" class="headerlink" title="详解openFeign工作流程（重点）"></a>详解openFeign工作流程（重点）</h2><h3 id="1-Feign-实例化-newInstance"><a href="#1-Feign-实例化-newInstance" class="headerlink" title="1. Feign 实例化 - newInstance()"></a>1. Feign 实例化 - newInstance()</h3><p>​    当服务通过feign调用另一个服务的时候，在<strong>Fegin.builder</strong>对象中，会调用构造器构造一个<strong>Fegin</strong>实例，下面是<strong>feign.Feign.Builder#build</strong>的代码内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public Feign build() &#123;</span><br><span class="line">      &#x2F;&#x2F; 构建核心组件和相关内容</span><br><span class="line">      Client client &#x3D; Capability.enrich(this.client, capabilities);</span><br><span class="line">      Retryer retryer &#x3D; Capability.enrich(this.retryer, capabilities);</span><br><span class="line">      List&lt;RequestInterceptor&gt; requestInterceptors &#x3D; this.requestInterceptors.stream()</span><br><span class="line">          .map(ri -&gt; Capability.enrich(ri, capabilities))</span><br><span class="line">          .collect(Collectors.toList());</span><br><span class="line">      Logger logger &#x3D; Capability.enrich(this.logger, capabilities);</span><br><span class="line">      Contract contract &#x3D; Capability.enrich(this.contract, capabilities);</span><br><span class="line">      Options options &#x3D; Capability.enrich(this.options, capabilities);</span><br><span class="line">      Encoder encoder &#x3D; Capability.enrich(this.encoder, capabilities);</span><br><span class="line">      Decoder decoder &#x3D; Capability.enrich(this.decoder, capabilities);</span><br><span class="line">      InvocationHandlerFactory invocationHandlerFactory &#x3D;</span><br><span class="line">          Capability.enrich(this.invocationHandlerFactory, capabilities);</span><br><span class="line">      QueryMapEncoder queryMapEncoder &#x3D; Capability.enrich(this.queryMapEncoder, capabilities);</span><br><span class="line">	</span><br><span class="line">      &#x2F;&#x2F; 初始化SynchronousMethodHandler.Factory工厂，后续使用该工厂生成代理对象的方法</span><br><span class="line">      SynchronousMethodHandler.Factory synchronousMethodHandlerFactory &#x3D;</span><br><span class="line">          new SynchronousMethodHandler.Factory(client, retryer, requestInterceptors, logger,</span><br><span class="line">              logLevel, decode404, closeAfterDecode, propagationPolicy, forceDecoding);</span><br><span class="line">      &#x2F;&#x2F; 请求参数解析对象以及参数处理对象。负责根据请求类型构建对应的请求参数处理器</span><br><span class="line">      ParseHandlersByName handlersByName &#x3D;</span><br><span class="line">          new ParseHandlersByName(contract, options, encoder, decoder, queryMapEncoder,</span><br><span class="line">              errorDecoder, synchronousMethodHandlerFactory);</span><br><span class="line">    &#x2F;&#x2F; 这里的 ReflectiveFeign 是整个核心的部分</span><br><span class="line">      return new ReflectiveFeign(handlersByName, invocationHandlerFactory, queryMapEncoder);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    执行ReflectiveFeign构建之后，会立马执行该Fegin子类的<code>ReflectiveFeign#newInstance()</code>方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public &lt;T&gt; T target(Target&lt;T&gt; target) &#123;</span><br><span class="line">      return build().newInstance(target);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里设计的比较巧妙。但是并不是特别难以理解</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">下面是&#96;ReflectiveFeign#newInstance&#96;方法的代码：</span><br><span class="line"> public &lt;T&gt; T newInstance(Target&lt;T&gt; target) &#123;</span><br><span class="line">     &#x2F;&#x2F; ParseHandlersByName::apply 方法构建请求参数解析模板和验证handler是否有效</span><br><span class="line">    Map&lt;String, MethodHandler&gt; nameToHandler &#x3D; targetToHandlersByName.apply(target);</span><br><span class="line">    Map&lt;Method, MethodHandler&gt; methodToHandler &#x3D; new LinkedHashMap&lt;Method, MethodHandler&gt;();</span><br><span class="line">    List&lt;DefaultMethodHandler&gt; defaultMethodHandlers &#x3D; new LinkedList&lt;DefaultMethodHandler&gt;();</span><br><span class="line">	&#x2F;&#x2F; 对于方法handler进行处理</span><br><span class="line">    for (Method method : target.type().getMethods()) &#123;</span><br><span class="line">      if (method.getDeclaringClass() &#x3D;&#x3D; Object.class) &#123;</span><br><span class="line">        continue;</span><br><span class="line">      &#125; else if (Util.isDefault(method)) &#123;</span><br><span class="line">        DefaultMethodHandler handler &#x3D; new DefaultMethodHandler(method);</span><br><span class="line">        defaultMethodHandlers.add(handler);</span><br><span class="line">        methodToHandler.put(method, handler);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        methodToHandler.put(method, nameToHandler.get(Feign.configKey(target.type(), method)));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">     &#x2F;&#x2F; 创建接口代理对象。factory在父类build方法进行初始化</span><br><span class="line">    InvocationHandler handler &#x3D; factory.create(target, methodToHandler);</span><br><span class="line">    T proxy &#x3D; (T) Proxy.newProxyInstance(target.type().getClassLoader(),</span><br><span class="line">        new Class&lt;?&gt;[] &#123;target.type()&#125;, handler);</span><br><span class="line">	&#x2F;&#x2F; 绑定代理对象</span><br><span class="line">    for (DefaultMethodHandler defaultMethodHandler : defaultMethodHandlers) &#123;</span><br><span class="line">      defaultMethodHandler.bindTo(proxy);</span><br><span class="line">    &#125;</span><br><span class="line">    return proxy;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    下面就上面这段代码进行深入的剖析。</p>
+<h3 id="2-ParseHandlersByName-参数解析处理-apply"><a href="#2-ParseHandlersByName-参数解析处理-apply" class="headerlink" title="2. ParseHandlersByName 参数解析处理 - apply()"></a>2. ParseHandlersByName 参数解析处理 - apply()</h3><p>​    <code>ReflectiveFeign#newInstance()</code>当中首先执行的是<code>feign.ReflectiveFeign.ParseHandlersByName</code>对象的<code>aplly()</code>方法，进行参数解析和参数解析构建器的构建。同时可以注意到，如果发现<code>methodHandler</code> 没有在<strong>feign</strong>中找到对应配置，会抛出<code>IllegalStateException</code>异常。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public Map&lt;String, MethodHandler&gt; apply(Target target) &#123;</span><br><span class="line">    	&#x2F;&#x2F; 2.1 小节进行讲解</span><br><span class="line">      List&lt;MethodMetadata&gt; metadata &#x3D; contract.parseAndValidateMetadata(target.type());</span><br><span class="line">      Map&lt;String, MethodHandler&gt; result &#x3D; new LinkedHashMap&lt;String, MethodHandler&gt;();</span><br><span class="line">      for (MethodMetadata md : metadata) &#123;</span><br><span class="line">        BuildTemplateByResolvingArgs buildTemplate;</span><br><span class="line">          &#x2F;&#x2F; 根据请求参数的类型，实例化不同的请求参数构建器</span><br><span class="line">        if (!md.formParams().isEmpty() &amp;&amp; md.template().bodyTemplate() &#x3D;&#x3D; null) &#123;</span><br><span class="line">          &#x2F;&#x2F; form表单提交形式</span><br><span class="line">            buildTemplate &#x3D;</span><br><span class="line">              new BuildFormEncodedTemplateFromArgs(md, encoder, queryMapEncoder, target);</span><br><span class="line">        &#125; else if (md.bodyIndex() !&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 普通编码形式处理</span><br><span class="line">          buildTemplate &#x3D; new BuildEncodedTemplateFromArgs(md, encoder, queryMapEncoder, target);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">          buildTemplate &#x3D; new BuildTemplateByResolvingArgs(md, queryMapEncoder, target);</span><br><span class="line">        &#125;</span><br><span class="line">        if (md.isIgnored()) &#123;</span><br><span class="line">          result.put(md.configKey(), args -&gt; &#123;</span><br><span class="line">            throw new IllegalStateException(md.configKey() + &quot; is not a method handled by feign&quot;);</span><br><span class="line">          &#125;);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">          result.put(md.configKey(),</span><br><span class="line">              factory.create(target, md, buildTemplate, options, decoder, errorDecoder));</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      return result;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-1-Contract-方法参数注解解析和校验-parseAndValidateMetadata"><a href="#2-1-Contract-方法参数注解解析和校验-parseAndValidateMetadata" class="headerlink" title="2.1 Contract 方法参数注解解析和校验 - parseAndValidateMetadata()"></a>2.1 Contract 方法参数注解解析和校验 - parseAndValidateMetadata()</h4><p>​    此方法的作用是：<strong>调用以解析链接到HTTP请求的类中的方法</strong>。</p>
+<p>​    默认实例化对象为：<strong>SpringMvcContract</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">由于这部分涉及子父类的调用以及多个内部方法的调用并且方法内容较多，下面先介绍下**父类**的&#96;parseAndValidateMetadata()&#96;大致的代码工作流程。</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>检查handler是否为<strong>单继承</strong>（单实现接口），并且<strong>不支持参数化类型</strong>。否则将会抛出异常</p>
+</li>
+<li><p>遍历所有的内部方法</p>
+<ol>
+<li>如果是静态方法跳过当前循环</li>
+<li>获取method对象以及目标class，执行内部方法<code>parseAndValidateMetadata()</code></li>
+</ol>
+<blockquote>
+<p>内部方法为处理注解方法和参数内容，感兴趣可以自行了解源代码</p>
+</blockquote>
+</li>
+<li><p>检查是否为重写方法，如果是则抛出异常<code>Overrides unsupported</code></p>
+</li>
+</ol>
+<p>根据上面的介绍，下面看一下具体的逻辑代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;MethodMetadata&gt; parseAndValidateMetadata(Class&lt;?&gt; targetType) &#123;</span><br><span class="line">      checkState(targetType.getTypeParameters().length &#x3D;&#x3D; 0, &quot;Parameterized types unsupported: %s&quot;,</span><br><span class="line">          targetType.getSimpleName());</span><br><span class="line">      checkState(targetType.getInterfaces().length &lt;&#x3D; 1, &quot;Only single inheritance supported: %s&quot;,</span><br><span class="line">          targetType.getSimpleName());</span><br><span class="line">      if (targetType.getInterfaces().length &#x3D;&#x3D; 1) &#123;</span><br><span class="line">        checkState(targetType.getInterfaces()[0].getInterfaces().length &#x3D;&#x3D; 0,</span><br><span class="line">            &quot;Only single-level inheritance supported: %s&quot;,</span><br><span class="line">            targetType.getSimpleName());</span><br><span class="line">      &#125;</span><br><span class="line">      final Map&lt;String, MethodMetadata&gt; result &#x3D; new LinkedHashMap&lt;String, MethodMetadata&gt;();</span><br><span class="line">      for (final Method method : targetType.getMethods()) &#123;</span><br><span class="line">        if (method.getDeclaringClass() &#x3D;&#x3D; Object.class ||</span><br><span class="line">            (method.getModifiers() &amp; Modifier.STATIC) !&#x3D; 0 ||</span><br><span class="line">            Util.isDefault(method)) &#123;</span><br><span class="line">          continue;</span><br><span class="line">        &#125;</span><br><span class="line">          &#x2F;&#x2F; 调用内部方法, 处理注解方法和参数信息</span><br><span class="line">        final MethodMetadata metadata &#x3D; parseAndValidateMetadata(targetType, method);</span><br><span class="line">        checkState(!result.containsKey(metadata.configKey()), &quot;Overrides unsupported: %s&quot;,</span><br><span class="line">            metadata.configKey());</span><br><span class="line">        result.put(metadata.configKey(), metadata);</span><br><span class="line">      &#125;</span><br><span class="line">      return new ArrayList&lt;&gt;(result.values());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-SpringMvcContract-方法参数注解解析和校验"><a href="#2-2-SpringMvcContract-方法参数注解解析和校验" class="headerlink" title="2.2 SpringMvcContract 方法参数注解解析和校验"></a>2.2 SpringMvcContract 方法参数注解解析和校验</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">public MethodMetadata parseAndValidateMetadata(Class&lt;?&gt; targetType, Method method) &#123;</span><br><span class="line">	processedMethods.put(Feign.configKey(targetType, method), method);</span><br><span class="line">       &#x2F;&#x2F; 使用父类方法获取 MethodMetadata</span><br><span class="line">	MethodMetadata md &#x3D; super.parseAndValidateMetadata(targetType, method);</span><br><span class="line"></span><br><span class="line">	RequestMapping classAnnotation &#x3D; findMergedAnnotation(targetType,</span><br><span class="line">			RequestMapping.class);</span><br><span class="line">	if (classAnnotation !&#x3D; null) &#123;</span><br><span class="line">		&#x2F;&#x2F; produces - use from class annotation only if method has not specified this</span><br><span class="line">           &#x2F;&#x2F; produces - 只有当方法未指定时才从类注释产生</span><br><span class="line">		if (!md.template().headers().containsKey(ACCEPT)) &#123;</span><br><span class="line">			parseProduces(md, method, classAnnotation);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		&#x2F;&#x2F; consumes -- use from class annotation only if method has not specified this</span><br><span class="line">           &#x2F;&#x2F; consumes - 只有当method没有指定时才使用from类注释</span><br><span class="line">		if (!md.template().headers().containsKey(CONTENT_TYPE)) &#123;</span><br><span class="line">			parseConsumes(md, method, classAnnotation);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		&#x2F;&#x2F; headers -- class annotation is inherited to methods, always write these if</span><br><span class="line">		&#x2F;&#x2F; present</span><br><span class="line">           &#x2F;&#x2F; headers -- 类注解被继承到方法，如果有的话，一定要写下来</span><br><span class="line">		parseHeaders(md, method, classAnnotation);</span><br><span class="line">	&#125;</span><br><span class="line">	return md;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-创建接口动态代理"><a href="#3-创建接口动态代理" class="headerlink" title="3. 创建接口动态代理"></a>3. 创建接口动态代理</h3><p>​    下面根据一个动态代理的结构图来理解feign是如何完成创建接口的代理对象的。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210526144216.png?ynotemdtimestamp=1625580577970" alt="img"></p>
+<p>​    首先target就是我们想要调用的目标服务的方法，在进过contract的注解处理之后，会交给proxy对象创建代理对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">InvocationHandler handler &#x3D; factory.create(target, methodToHandler);</span><br><span class="line">    T proxy &#x3D; (T) Proxy.newProxyInstance(target.type().getClassLoader(),</span><br><span class="line">        new Class&lt;?&gt;[] &#123;target.type()&#125;, handler);</span><br></pre></td></tr></table></figure>
+
+<p>​    在这里的代码利用工厂构建一个<code>InvocationHandler</code>实例，然后再使用<code>proxy.newInstance</code>根据代理目标方法对象的类型构建接口代理对象。</p>
+<p>​    而<code>invocationHandler</code>的构建操作由<code>InvocationHandlerFactory</code>工厂构建而成，而工厂的构建细节又由<code>ReflectiveFeign.FeignInvocationHandler</code>决定。最终返回<code>FeignInvocationHandler</code>完成动态代理的后续代理动作和内容处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">static final class Default implements InvocationHandlerFactory &#123;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public InvocationHandler create(Target target, Map&lt;Method, MethodHandler&gt; dispatch) &#123;</span><br><span class="line">    return new ReflectiveFeign.FeignInvocationHandler(target, dispatch);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    创建接口代理对象之后，会执行FeignInvocationHandler 的<code>invoke()</code>方法，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">  if (&quot;equals&quot;.equals(method.getName())) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">      Object otherHandler &#x3D;</span><br><span class="line">          args.length &gt; 0 &amp;&amp; args[0] !&#x3D; null ? Proxy.getInvocationHandler(args[0]) : null;</span><br><span class="line">      return equals(otherHandler);</span><br><span class="line">    &#125; catch (IllegalArgumentException e) &#123;</span><br><span class="line">      return false;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else if (&quot;hashCode&quot;.equals(method.getName())) &#123;</span><br><span class="line">    return hashCode();</span><br><span class="line">  &#125; else if (&quot;toString&quot;.equals(method.getName())) &#123;</span><br><span class="line">    return toString();</span><br><span class="line">  &#125;</span><br><span class="line"> &#x2F;&#x2F; 通过dispatch 获取所有方法的handler的引用，执行具体的handler方法</span><br><span class="line">  return dispatch.get(method).invoke(args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里涉及了一个数据结构：</p>
+<p><code>Map&lt;Method, MethodHandler&gt; methodToHandler</code>，也是动态代理的核心部分</p>
+<p>MehtodHandler 是一个 LinkedHashMap的数据结构，他存储的了所有的方法对应接口代理对象的映射。</p>
+<p>此属性由<code>new ReflectiveFeign.FeignInvocationHandler(target, dispatch);</code>创建。</p>
+</blockquote>
+<h4 id="3-1-接口代理对象调用feign-SynchronousMethodHandler-invoke-请求逻辑"><a href="#3-1-接口代理对象调用feign-SynchronousMethodHandler-invoke-请求逻辑" class="headerlink" title="3.1 接口代理对象调用feign.SynchronousMethodHandler#invoke()请求逻辑"></a>3.1 接口代理对象调用<code>feign.SynchronousMethodHandler#invoke()</code>请求逻辑</h4><p>​    到了这一步，就是代理对象执行具体请求逻辑的部分了，这一部分包括创建一个请求模板，参数解析，根据参数配置client，请求编码和请求解码，以及拦截器等等…..涉及的内容比较多。这个小节作为1-3这三个部分的一个分割线。</p>
+<h3 id="4-SynchronousMethodHandler动态代理对象处理详解"><a href="#4-SynchronousMethodHandler动态代理对象处理详解" class="headerlink" title="4. SynchronousMethodHandler动态代理对象处理详解"></a>4. SynchronousMethodHandler动态代理对象处理详解</h3><p>​    首先我们看下整改<strong>SynchronousMethodHandler</strong>的<code>invoke()</code>处理代码逻辑：</p>
+<p>​    这里还是比较容易理解的，最开始先构建一个<code>requestTemplate</code>模板，同时构建请求的相关<strong>option</strong>，复制一个重试器配置给当前的线程使用。然后是核心的<code>executeAndDecode()</code>对于请求进行解码和返回结果，如果整个请求执行过程出现重试异常，则尝试调用重试器进行处理，如果重试依然失败，则抛出未受检查的异常或者抛出受检查的异常。最后根据日志的配置登记判断日志的打印和处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public Object invoke(Object[] argv) throws Throwable &#123;</span><br><span class="line">    &#x2F;&#x2F; 构建请求处理模板</span><br><span class="line">    RequestTemplate template &#x3D; buildTemplateFromArgs.create(argv);</span><br><span class="line">    &#x2F;&#x2F; 配置接口请求参数</span><br><span class="line">    Options options &#x3D; findOptions(argv);</span><br><span class="line">    &#x2F;&#x2F; 重试器创建</span><br><span class="line">    Retryer retryer &#x3D; this.retryer.clone();</span><br><span class="line">    while (true) &#123;</span><br><span class="line">      try &#123;</span><br><span class="line">          &#x2F;&#x2F; 执行请求</span><br><span class="line">        return executeAndDecode(template, options);</span><br><span class="line">      &#125; catch (RetryableException e) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F; 尝试重试和处理</span><br><span class="line">          retryer.continueOrPropagate(e);</span><br><span class="line">        &#125; catch (RetryableException th) &#123;</span><br><span class="line">            &#x2F;&#x2F; 受检异常处理</span><br><span class="line">          Throwable cause &#x3D; th.getCause();</span><br><span class="line">          if (propagationPolicy &#x3D;&#x3D; UNWRAP &amp;&amp; cause !&#x3D; null) &#123;</span><br><span class="line">            throw cause;</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">            throw th;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">          &#x2F;&#x2F; 日志打印和处理</span><br><span class="line">        if (logLevel !&#x3D; Logger.Level.NONE) &#123;</span><br><span class="line">          logger.logRetry(metadata.configKey(), logLevel);</span><br><span class="line">        &#125;</span><br><span class="line">        continue;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>下面是阅读源码时临时做的部分笔记，大致浏览即可。</p>
+<ol>
+<li><p>通过<code>methodHandlerMap</code> 分发到不同的请求实现处理器当中</p>
+</li>
+<li><p>默认走<code>SynchronousMethodHandler</code> 处理不同的请求</p>
+<ul>
+<li>构建<code>requestTemplate</code> 模板</li>
+<li>构建<code>requestOptions</code> 配置</li>
+<li>获取重试器<code>Retry</code></li>
+</ul>
+</li>
+<li><p>使用while(true) 进行无线循环. 执行请求并且对于请求的<strong>template</strong>和请求参数进行<strong>decode</strong>处理</p>
+<ul>
+<li>调用拦截器对于请求进行拦截处理（使用了责任链模式）<ul>
+<li><code>BasicAuthRequestInterceptor</code>：默认的调用权限验证拦截</li>
+<li><code>FeignAcceptGzipEncodingInterceptor</code> gzip编码处理开关连接器。用于判断是否允许开启gzip压缩</li>
+<li><code>FeignContentGzipEncodingInterceptor</code>：请求报文内容gzip压缩拦截处理器</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>如果日志的配置等级不为none，进行对应日志级别的输出</p>
+</blockquote>
+</li>
+<li><p>执行<code>client.execute()</code> 方法，发送http请求</p>
+<ul>
+<li>使用<code>response.toBuilder</code> 对于响应内容进行构建起的处理（注意源代码里面标注后续版本会废弃这种方式? <strong>为什么要废弃？</strong> <strong>那里不好</strong>）</li>
+</ul>
+</li>
+<li><p>对于返回结果解码，调用<code>AsyncResponseHandler.handlerResponse</code>对于结果进行处理</p>
+<ul>
+<li>这里的判断逻辑比较多，判断的顺序如下：<ul>
+<li>如果返回类型为<code>Response.class</code></li>
+<li>如果<code>Body</code>内容为null，执行complete调用</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>这里使用了<strong>CompletableFuture</strong> 异步调用处理执行结果。保证整个处理过程是异步执行并且返回的</p>
+<ul>
+<li>CompletableFuture.complete()、</li>
+<li>CompletableFuture.completeExceptionally 只能被调用一次需要注意。</li>
+</ul>
+</blockquote>
+<p>如果长度为空或者长度超过 <strong>缓存结果最大长度。\</strong>需要设置<code>shouldClose</code>为*<em>false*</em>，并且同样执行complete调用</p>
+<ul>
+<li><p>如果返回状态大于</p>
+<p>200</p>
+<p>并且小于</p>
+<p>300</p>
+<ul>
+<li>如果是void返回类型，直接调用<code>complete</code></li>
+<li>否则对于返回结果进行解码，是否需要关闭根据解码之后的结果状态决定<strong>（没看懂）</strong></li>
+<li>如果是404 并且返回值不为void，则错误处理方法</li>
+<li>如果上述都不满足，根据返回结果的错误信息封装错误结果，并且根据错误结果构建错误对象。最后通过：<code>resultFuture.completeExceptionally</code>进行处理</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>特殊处理：如果上面的所有判断出现异常信息，除开io异常需要二次封装处理之外，都会触发默认的<code>comoleteExceptionally</code> 方法抛出一个终止异步线程的调用.</p>
+</blockquote>
+<p>​    + 验证任务是否完成，如果没有完成任务，调用 <code>resultFuture.join()</code> 方法将会在当前线程抛出一个未受检查的异常。</p>
+<ol>
+<li>如果抛出异常，使用retry进行定时重试</li>
+</ol>
+</blockquote>
+<h4 id="构建RequestTemplate模板"><a href="#构建RequestTemplate模板" class="headerlink" title="构建RequestTemplate模板"></a>构建RequestTemplate模板</h4><p>​    作用是使用传递给方法调用的参数来创建请求模板。主要内容为请求的各种url处理包括参数处理，url参数处理，对于迭代参数进行展开等等操作。这部分细节处理比较多，由于篇幅有限这里挑重点讲一下：<code>RequestTemplate template = resolve(argv, mutable, varBuilder);</code>这个方法，这里会根据事先定义的参数处理器处理参数，具体的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RequestTemplate resolve(Object[] argv,</span><br><span class="line">                                      RequestTemplate mutable,</span><br><span class="line">                                      Map&lt;String, Object&gt; variables) &#123;</span><br><span class="line">      return mutable.resolve(variables);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    内部调用的是<code>mutable</code>对象的<code>resolve</code>方法，那么它又是如何处理请求的呢？</p>
+<h5 id="根据不同的参数请求模板进行处理"><a href="#根据不同的参数请求模板进行处理" class="headerlink" title="根据不同的参数请求模板进行处理:"></a>根据不同的参数请求模板进行处理:</h5><p>​    feign通过不同的参数请求模板提供多样化的参数请求处理。 下面先看一下具体的构造图:</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210526181412.png?ynotemdtimestamp=1625580577970" alt="img"></p>
+<p>​    这里很明显使用了策略模式，代码先根据参数找到具体的参数请求处理对象对于参数进行自定义的处理，在处理完成之后，<strong>调用super.resolve()</strong>进行其他内容统一处理（模板方法）。设计的十分优秀并且巧妙，下面是对应的方法签名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#96;feign.RequestTemplate#resolve(java.util.Map&lt;java.lang.String,?&gt;)&#96;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里可能会有疑问，这个<strong>BuildTemplateByResolvingArgs</strong>是在哪里被初始化的？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">BuildTemplateByResolvingArgs buildTemplate;</span><br><span class="line">&#x2F;&#x2F; 根据请求参数的类型，实例化不同的请求参数构建器</span><br><span class="line">if (!md.formParams().isEmpty() &amp;&amp; md.template().bodyTemplate() &#x3D;&#x3D; null) &#123;</span><br><span class="line">    &#x2F;&#x2F; form表单提交形式</span><br><span class="line">    buildTemplate &#x3D;</span><br><span class="line">        new BuildFormEncodedTemplateFromArgs(md, encoder, queryMapEncoder, target);</span><br><span class="line">&#125; else if (md.bodyIndex() !&#x3D; null) &#123;</span><br><span class="line">    &#x2F;&#x2F; 普通编码形式处理</span><br><span class="line">    buildTemplate &#x3D; new BuildEncodedTemplateFromArgs(md, encoder, queryMapEncoder, target);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    &#x2F;&#x2F; 使用默认的处理模板</span><br><span class="line">    buildTemplate &#x3D; new BuildTemplateByResolvingArgs(md, queryMapEncoder, target);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>解答：其实早在第二步<strong>ParseHandlersByName</strong>这一步就对于整个请求处理模板进行确认，同时代理对象也会沿用此处理模板保证请求的幂等性.</p>
+</blockquote>
+<h5 id="请求参数处理细节对比："><a href="#请求参数处理细节对比：" class="headerlink" title="请求参数处理细节对比："></a>请求参数处理细节对比：</h5><p>​    如果是<strong>form表单</strong>提交的参数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, Object&gt; formVariables &#x3D; new LinkedHashMap&lt;String, Object&gt;();</span><br><span class="line">      for (Entry&lt;String, Object&gt; entry : variables.entrySet()) &#123;</span><br><span class="line">        if (metadata.formParams().contains(entry.getKey())) &#123;</span><br><span class="line">          formVariables.put(entry.getKey(), entry.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    如果<strong>form</strong>格式，一般会将map转为<strong>formVariables</strong> 的格式，注意内部使用的是<strong>LinkedHashMap</strong>进行处理的</p>
+<p>​    如果是<strong>Body</strong>的处理方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Object body &#x3D; argv[metadata.bodyIndex()];</span><br><span class="line">      checkArgument(body !&#x3D; null, &quot;Body parameter %s was null&quot;, metadata.bodyIndex());</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：</p>
+<p>这部分后续的版本可能会增加更多的处理形式，一切以最新的源码为准。注意文章标题声明的版本</p>
+</blockquote>
+<h5 id="关于报文数据编码和解码的细节："><a href="#关于报文数据编码和解码的细节：" class="headerlink" title="关于报文数据编码和解码的细节："></a>关于报文数据编码和解码的细节：</h5><p>​    加密的工作是在: <strong>requestTemplate</strong>当中完成的，并且是在<strong>BuildTemplateByResolvingArgs#resolve</strong>中进行处理，根据不同的请求参数类型进行细微的加密操作调整，但是代码基本类似.</p>
+<p>​    下面是<strong>Encoder</strong>接口的默认实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class Default implements Encoder &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void encode(Object object, Type bodyType, RequestTemplate template) &#123;</span><br><span class="line">      if (bodyType &#x3D;&#x3D; String.class) &#123;</span><br><span class="line">        template.body(object.toString());</span><br><span class="line">      &#125; else if (bodyType &#x3D;&#x3D; byte[].class) &#123;</span><br><span class="line">        template.body((byte[]) object, null);</span><br><span class="line">      &#125; else if (object !&#x3D; null) &#123;</span><br><span class="line">        throw new EncodeException(</span><br><span class="line">            format(&quot;%s is not a type supported by this encoder.&quot;, object.getClass()));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>如果是字符串类型，则调用对象的tostring 方法</li>
+<li>如果是字节数组则转为字节数组进行存储</li>
+<li>如果对象为空，则抛出加密encode异常</li>
+</ol>
+<p>说完了加密，自然也要说下解码的动作如何处理的，下面是默认的解码接口的实现（注意父类是StringDecoder而不是Decoder）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class Default extends StringDecoder &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object decode(Response response, Type type) throws IOException &#123;</span><br><span class="line">        &#x2F;&#x2F; 这里的硬编码感觉挺突兀的，不知道是否为设计有失误还是单纯程序员偷懒。</span><br><span class="line">        &#x2F;&#x2F; 比较倾向于加入 if(response &#x3D;&#x3D; null ) return null; 这一段代码</span><br><span class="line">      if (response.status() &#x3D;&#x3D; 404 || response.status() &#x3D;&#x3D; 204)</span><br><span class="line">        return Util.emptyValueOf(type);</span><br><span class="line">      if (response.body() &#x3D;&#x3D; null)</span><br><span class="line">        return null;</span><br><span class="line">      if (byte[].class.equals(type)) &#123;</span><br><span class="line">        return Util.toByteArray(response.body().asInputStream());</span><br><span class="line">      &#125;</span><br><span class="line">      return super.decode(response, type);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里很奇怪居然用了硬编码的形式。（老外编码总是十分自由）当返回状态为404或者204的时候。则根据对象的数据类型构建相关的数据类型默认值，如果是对象则返回一个空对象</p>
+<ul>
+<li>204编码代表了空文件的请求</li>
+<li>200代表成功响应请求</li>
+</ul>
+</blockquote>
+<p>​    最后一行表示如果类型都不符合情况下使用父类 <strong>StringDecoder</strong> 字符串的类型解码的操作，如果字符串无法解码，则抛出异常信息。感兴趣可以看下<code>StringDecoder#decode()</code>的实现细节，这里不再展示。</p>
+<h5 id="如果发生错误，如何对错误信息进行编码？"><a href="#如果发生错误，如何对错误信息进行编码？" class="headerlink" title="如果发生错误，如何对错误信息进行编码？"></a>如果发生错误，如何对错误信息进行编码？</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public Exception decode(String methodKey, Response response) &#123;</span><br><span class="line">      FeignException exception &#x3D; errorStatus(methodKey, response);</span><br><span class="line">      Date retryAfter &#x3D; retryAfterDecoder.apply(firstOrNull(response.headers(), RETRY_AFTER));</span><br><span class="line">      if (retryAfter !&#x3D; null) &#123;</span><br><span class="line">        return new RetryableException(</span><br><span class="line">            response.status(),</span><br><span class="line">            exception.getMessage(),</span><br><span class="line">            response.request().httpMethod(),</span><br><span class="line">            exception,</span><br><span class="line">            retryAfter,</span><br><span class="line">            response.request());</span><br><span class="line">      &#125;</span><br><span class="line">      return exception;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>根据错误信息和方法签名，构建异常对象</li>
+<li>使用重试编码进行返回请求头的处理动作，开启失败之后的稍后重试操作</li>
+<li>如果稍后重试失败，则抛出相关异常</li>
+<li>返回异常信息</li>
+</ol>
+<h3 id="4-2-option配置获取"><a href="#4-2-option配置获取" class="headerlink" title="4.2 option配置获取"></a>4.2 option配置获取</h3><p>​    代码比较简单，这里直接展开了，如果没有调用参数，返回默认的option陪孩子，否则按照制定条件构建Options配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Options findOptions(Object[] argv) &#123;</span><br><span class="line">   if (argv &#x3D;&#x3D; null || argv.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">     return this.options;</span><br><span class="line">   &#125;</span><br><span class="line">   return Stream.of(argv)</span><br><span class="line">       .filter(Options.class::isInstance)</span><br><span class="line">       .map(Options.class::cast)</span><br><span class="line">       .findFirst()</span><br><span class="line">       .orElse(this.options);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-构建重试器"><a href="#4-3-构建重试器" class="headerlink" title="4.3 构建重试器"></a>4.3 构建重试器</h3><p>​    重试器这部分会调用一个叫做<code>clone()</code>的方法，注意这个clone方法是被重写过的，使用的是默认实现的重试器。另外，个人认为这个方法的起名容易造成误解，个人比较倾向于构建一个叫做<code>new Default()</code>的构造函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public Retryer clone() &#123;</span><br><span class="line">     return new Default(period, maxPeriod, maxAttempts);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    异常重试代码如下，逻辑比较简单，大致浏览即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public void continueOrPropagate(RetryableException e) &#123;</span><br><span class="line">     if (attempt++ &gt;&#x3D; maxAttempts) &#123;</span><br><span class="line">       throw e;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     long interval;</span><br><span class="line">     if (e.retryAfter() !&#x3D; null) &#123;</span><br><span class="line">       interval &#x3D; e.retryAfter().getTime() - currentTimeMillis();</span><br><span class="line">       if (interval &gt; maxPeriod) &#123;</span><br><span class="line">         interval &#x3D; maxPeriod;</span><br><span class="line">       &#125;</span><br><span class="line">       if (interval &lt; 0) &#123;</span><br><span class="line">         return;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125; else &#123;</span><br><span class="line">       interval &#x3D; nextMaxInterval();</span><br><span class="line">     &#125;</span><br><span class="line">     try &#123;</span><br><span class="line">       Thread.sleep(interval);</span><br><span class="line">     &#125; catch (InterruptedException ignored) &#123;</span><br><span class="line">       Thread.currentThread().interrupt();</span><br><span class="line">       throw e;</span><br><span class="line">     &#125;</span><br><span class="line">     sleptForMillis +&#x3D; interval;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    这里的重试间隔按照<strong>1.5的倍数</strong>进行重试，如果超过重试设置的最大因子数则停止重试。</p>
+<h3 id="4-4-请求发送和结果处理"><a href="#4-4-请求发送和结果处理" class="headerlink" title="4.4 请求发送和结果处理"></a>4.4 请求发送和结果处理</h3><p>​    当进行上面的基础配置之后紧接着就是执行请求的发送操作了，在发送只求之前还有一步关键的操作：<strong>拦截器处理</strong></p>
+<p>​    这里会遍历事先配置的拦截器，<strong>对于请求模板做最后的处理操作</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Request targetRequest(RequestTemplate template) &#123;</span><br><span class="line">  for (RequestInterceptor interceptor : requestInterceptors) &#123;</span><br><span class="line">    interceptor.apply(template);</span><br><span class="line">  &#125;</span><br><span class="line">  return target.apply(template);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="关于日志输出级别的控制"><a href="#关于日志输出级别的控制" class="headerlink" title="关于日志输出级别的控制"></a>关于日志输出级别的控制</h4><p>​    执行请求这部分代码当中，会出现比较多类似下面的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (logLevel !&#x3D; Logger.Level.NONE) &#123;</span><br><span class="line">      logger.logRequest(metadata.configKey(), logLevel, request);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    关于日志输出的级别根据如下的内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public enum Level &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * No logging.</span><br><span class="line">     	不进行打印，也是默认配置</span><br><span class="line">     *&#x2F;</span><br><span class="line">    NONE,</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Log only the request method and URL and the response status code and execution time.</span><br><span class="line">     	只记录请求方法和URL以及响应状态代码和执行时间。</span><br><span class="line">     *&#x2F;</span><br><span class="line">    BASIC,</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Log the basic information along with request and response headers.</span><br><span class="line">     	记录基本信息以及请求和响应头。</span><br><span class="line">     *&#x2F;</span><br><span class="line">    HEADERS,</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Log the headers, body, and metadata for both requests and responses.</span><br><span class="line">     	记录请求和响应的头、主体和元数据。</span><br><span class="line">     *&#x2F;</span><br><span class="line">    FULL</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="client发送请求（重点）"><a href="#client发送请求（重点）" class="headerlink" title="client发送请求（重点）"></a>client发送请求（重点）</h4><p>​    这里同样截取了<code>feign.SynchronousMethodHandler#executeAndDecode</code>的部分代码，毫无疑问最关键的部分是<code>client.execute(request, options)</code>方法。下面是对应的代码内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Response response;</span><br><span class="line">long start &#x3D; System.nanoTime();</span><br><span class="line">try &#123;</span><br><span class="line">  response &#x3D; client.execute(request, options);</span><br><span class="line">  &#x2F;&#x2F; ensure the request is set. TODO: remove in Feign 12</span><br><span class="line">  response &#x3D; response.toBuilder()</span><br><span class="line">      .request(request)</span><br><span class="line">      .requestTemplate(template)</span><br><span class="line">      .build();</span><br><span class="line">&#125; catch (IOException e) &#123;</span><br><span class="line">  if (logLevel !&#x3D; Logger.Level.NONE) &#123;</span><br><span class="line">    logger.logIOException(metadata.configKey(), logLevel, e, elapsedTime(start));</span><br><span class="line">  &#125;</span><br><span class="line">  throw errorExecuting(request, e);</span><br><span class="line">&#125;</span><br><span class="line">long elapsedTime &#x3D; TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);</span><br></pre></td></tr></table></figure>
+
+<p>​    下面是<strong>client</strong>对象的继承结构图：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210527141927.png?ynotemdtimestamp=1625580577970" alt="img"></p>
+<p>​    根据上面的结构图，简单说明<strong>client</strong>的默认实现：</p>
+<ol>
+<li>请求方策略实现，定义顶层接口 <strong>client</strong>，在默认的情况下使用<strong>Default</strong> 类作为实现类。通过子类<strong>proxied</strong>对象实现 <strong><span class="exturl" data-url="aHR0cDovL2phdmEubmV0" title="http://java.net">java.net<i class="fa fa-external-link"></i></span></strong> 的<strong>URL请求方式</strong>。也就是说即使没有任何的辅助三方工具，也可以通过此方法api模拟构建http请求。</li>
+<li>可以使用<strong>okhttp</strong>和<strong>httpclient</strong> 高性能实现进行替代，需要引入对应的feign接入实现。</li>
+</ol>
+<p><strong>client对应的Default代码逻辑：</strong></p>
+<ul>
+<li>构建请求URL对象<strong>HttpUrlConnection</strong></li>
+<li>如果是Http请求对象，可以根据条件设置ssl或者域名签名</li>
+<li>设置http基本请求参数</li>
+<li>收集Header信息，设置GZIP压缩编码</li>
+<li>设置accept：<em>/</em></li>
+<li>检查是否开启内部缓冲，如果设置了则按照指定长度缓冲</li>
+</ul>
+<p>​    代码调用的核心部分，默认按照<strong><span class="exturl" data-url="aHR0cDovL2phdmEubmV0" title="http://java.net">java.net<i class="fa fa-external-link"></i></span></strong>的<strong>httpconnection</strong> 进行处理。使用原始的网络IO流进行请求的处理，效率比较低下面是对应的具体实现代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public Response execute(Request request, Options options) throws IOException &#123;</span><br><span class="line">      HttpURLConnection connection &#x3D; convertAndSend(request, options);</span><br><span class="line">      return convertResponse(connection, request);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    通过数据转化和请求发送之后下面根据结果进行响应内容的封装和处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 请求结果处理</span><br><span class="line">Response convertResponse(HttpURLConnection connection, Request request) throws IOException &#123;</span><br><span class="line">    int status &#x3D; connection.getResponseCode();</span><br><span class="line">    String reason &#x3D; connection.getResponseMessage();</span><br><span class="line">	&#x2F;&#x2F; 状态码异常处理</span><br><span class="line">    if (status &lt; 0) &#123;</span><br><span class="line">        throw new IOException(format(&quot;Invalid status(%s) executing %s %s&quot;, status,</span><br><span class="line">                                     connection.getRequestMethod(), connection.getURL()));</span><br><span class="line">    &#125;</span><br><span class="line">	&#x2F;&#x2F; 请求头的处理</span><br><span class="line">    Map&lt;String, Collection&lt;String&gt;&gt; headers &#x3D; new LinkedHashMap&lt;&gt;();</span><br><span class="line">    for (Map.Entry&lt;String, List&lt;String&gt;&gt; field : connection.getHeaderFields().entrySet()) &#123;</span><br><span class="line">        &#x2F;&#x2F; response message</span><br><span class="line">        if (field.getKey() !&#x3D; null) &#123;</span><br><span class="line">            headers.put(field.getKey(), field.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    Integer length &#x3D; connection.getContentLength();</span><br><span class="line">    if (length &#x3D;&#x3D; -1) &#123;</span><br><span class="line">        length &#x3D; null;</span><br><span class="line">    &#125;</span><br><span class="line">    InputStream stream;</span><br><span class="line">    &#x2F;&#x2F; 对于状态码400以上的内容进行错误处理</span><br><span class="line">    if (status &gt;&#x3D; 400) &#123;</span><br><span class="line">        stream &#x3D; connection.getErrorStream();</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        stream &#x3D; connection.getInputStream();</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 构建返回结果</span><br><span class="line">    return Response.builder()</span><br><span class="line">        .status(status)</span><br><span class="line">        .reason(reason)</span><br><span class="line">        .headers(headers)</span><br><span class="line">        .request(request)</span><br><span class="line">        .body(stream, length)</span><br><span class="line">        .build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>小插曲：关于reason属性（可以跳过）</p>
+<p>​    查看源代码的时候无意间看到这里有一个个人比较在意的点，下面是respose中有一个叫做reason的字段：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Nullable and not set when using http&#x2F;2</span><br><span class="line"> * 作者如下说明 在http2中可以不设置改属性</span><br><span class="line"> * See https:&#x2F;&#x2F;github.com&#x2F;http2&#x2F;http2-spec&#x2F;issues&#x2F;202</span><br><span class="line"> *&#x2F;</span><br><span class="line">public String reason() &#123;</span><br><span class="line">  return reason;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    看到这一段顿时有些好奇<strong>为什么不需要设置reason</strong>，当然github上面也有类似的提问。</p>
+<p>这个老哥是在2013年是这么回答的，直白翻译就是：<strong>关我卵事</strong>！</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210527115406.png?ynotemdtimestamp=1625580577970" alt="img"></p>
+<p>然而事情没有结束，后面又有人详细的进行了提问</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">原文</span><br><span class="line">i&#39;m curious what was the logical reason for dropping the reason phrase?</span><br><span class="line">i was using the reason phrase as a title for messages presented to a user in the web browser client. i think most users are accustomed to such phrases, &quot;Bad Request&quot;, &quot;Not Found&quot;, etc. Now I will just have to write a mapping from status codes to my own reason phrases in the client.</span><br><span class="line">机翻：</span><br><span class="line">我很好奇，放弃&quot;reason&quot;这个词的逻辑原因是什么? 我使用“reason”作为在web浏览器客户端向用户呈现的消息的标题。我认为大多数用户习惯于这样的短语，“错误请求”，“未找到”等。现在我只需要在客户机中编写一个从状态代码到我自己的理由短语的映射。</span><br></pre></td></tr></table></figure>
+
+<p>然后估计是受不了各种提问，上文的<strong>mnot</strong>五年后给出了一个明确的回答：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210527120005.png?ynotemdtimestamp=1625580577970" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">原因短语——即使在HTTP&#x2F;1.1中——也不能保证端到端携带;</span><br><span class="line">实现可以(也确实)忽略它并替换自己的值(例如，200总是“OK”，不管在网络上发生什么)。</span><br><span class="line"></span><br><span class="line">考虑到这一点，再加上携带额外字节的开销，将其从线路上删除是有意义的。</span><br></pre></td></tr></table></figure>
+
+<p>为了证实他的说法，从 <strong><span class="exturl" data-url="aHR0cHM6Ly93d3cudzMub3JnL1Byb3RvY29scy9yZmMyNjE2L3JmYzI2MTYtc2VjNi5odG1s" title="https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html">https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html<i class="fa fa-external-link"></i></span></strong> w3c的网站中找到的如下的说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The Status-Code is intended for use by automata and the Reason-Phrase is intended for the human user. The client is not required to examine or display the Reason- Phrase.</span><br><span class="line">状态代码用于自动机，而原因短语用于人类用户。客户端不需要检查或显示原因-短语。</span><br></pre></td></tr></table></figure>
+
+<p>这一段来源于Http1.1的规范描述。</p>
+<p><strong>所以有时候能从源码发掘出不少的故事，挺有趣的</strong></p>
+</blockquote>
+<h4 id="FeignBlockingLoadBalancerClient-作为负载均衡使用："><a href="#FeignBlockingLoadBalancerClient-作为负载均衡使用：" class="headerlink" title="FeignBlockingLoadBalancerClient 作为负载均衡使用："></a>FeignBlockingLoadBalancerClient 作为负载均衡使用：</h4><p>​    这个类相当于openFeign和ribbon的中转类，将openfeign的请求转接给ribbon实现负载均衡。到这里会有一个疑问：client是如何做出选择使用ribbon还是spring cloud的呢的呢？</p>
+<p>​    其实仔细想想不难理解，负载均衡肯定是在spring bean初始化的时候完成的。<strong>FeignClientFactoryBean</strong>是整个实现的关键。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class FeignClientFactoryBean implements FactoryBean&lt;Object&gt;, InitializingBean, ApplicationContextAware</span><br></pre></td></tr></table></figure>
+
+<p>​    下面是<code>org.springframework.cloud.openfeign.FeignClientFactoryBean#getTarget</code>方法代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line"></span><br><span class="line">  public Object getObject() **throws** Exception &#123;</span><br><span class="line"></span><br><span class="line">    return getTarget();</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"></span><br><span class="line">   \* @param &lt;T&gt; the target type of the Feign client 客户端的目标类型</span><br><span class="line"></span><br><span class="line">   \* @return a &#123;@link Feign&#125; client created with the specified data and the context 指定数据或者上下文</span><br><span class="line"></span><br><span class="line">   \* information</span><br><span class="line"></span><br><span class="line">   *&#x2F;</span><br><span class="line"></span><br><span class="line">  &lt;T&gt; T getTarget() &#123;</span><br><span class="line"></span><br><span class="line">    FeignContext context &#x3D; applicationContext.getBean(FeignContext.class);</span><br><span class="line"></span><br><span class="line">    Feign.Builder builder &#x3D; feign(context);</span><br><span class="line"></span><br><span class="line">       &#x2F;&#x2F; 如果URL为空，默认会尝试使用**</span><br><span class="line"></span><br><span class="line">    if (!StringUtils.hasText(url)) &#123;</span><br><span class="line"></span><br><span class="line">      if (!name.startsWith(&quot;http&quot;)) &#123;</span><br><span class="line"></span><br><span class="line">        url &#x3D; &quot;http:&#x2F;&#x2F;&quot; + name;</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      else &#123;</span><br><span class="line"></span><br><span class="line">        url &#x3D; name;</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      url +&#x3D; cleanPath();</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; **默认使用ribbon作为负载均衡，如果没有找到，会抛出异常**</span><br><span class="line"></span><br><span class="line">      return (T) loadBalance(builder, context,</span><br><span class="line"></span><br><span class="line">          new HardCodedTarget&lt;&gt;(type, name, url));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (StringUtils.hasText(url) &amp;&amp; !url.startsWith(&quot;http&quot;)) &#123;</span><br><span class="line"></span><br><span class="line">      url &#x3D; &quot;http:&#x2F;&#x2F;&quot; + url;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    String url &#x3D; this.url + cleanPath();</span><br><span class="line"></span><br><span class="line">    Client client &#x3D; getOptional(context, Client.class);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 根据当前的系统设置实例化不同的负载均衡器</span><br><span class="line"></span><br><span class="line">    if (client !&#x3D; null) &#123;</span><br><span class="line"></span><br><span class="line">      if (client instanceof LoadBalancerFeignClient) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; not load balancing because we have a url,but ribbon is on the classpath, so unwrap</span><br><span class="line">          &#x2F;&#x2F; 不是负载平衡，因为我们有一个url，但是ribbon在类路径上，所以展开</span><br><span class="line">        client &#x3D; ((LoadBalancerFeignClient) client).getDelegate();</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      if (client instanceof FeignBlockingLoadBalancerClient) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; not load balancing because we have a url, but Spring Cloud LoadBalancer is on the classpath, so unwrap</span><br><span class="line">          &#x2F;&#x2F; 不是负载平衡，因为我们有一个url，但Spring Cloud LoadBalancer是在类路径上，所以展开</span><br><span class="line"></span><br><span class="line">        client &#x3D; ((FeignBlockingLoadBalancerClient) client).getDelegate();</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      builder.client(client);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Targeter targeter &#x3D; get(context, Targeter.class);</span><br><span class="line"></span><br><span class="line">    return (T) targeter.target(this, builder, context,</span><br><span class="line"></span><br><span class="line">        new HardCodedTarget&lt;&gt;(type, name, url));</span><br><span class="line"></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    上面的内容描述了一个负载均衡器的初始化的完整过程。也证明了<strong>spring cloud 使用 ribbon 作为默认的初始化</strong>，感兴趣可以全局搜索一下这一段异常，间接说明默认使用的是ribbon作为负载均衡：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">throw new IllegalStateException(&quot;No Feign Client for defined. Did you forget to include spring-cloud-starter-netflix-ribbon?&quot;);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>拓展：</p>
+<p>​    在feign.Client.Default#convertAndSend()，有一段如下的代码设置</p>
+<p>​    <code>connection.setChunkedStreamingMode(8196);</code></p>
+<p>​    如果在代码中禁用ChunkedStreamMode，与设置4096的代码相比有什么效果？</p>
+<p>​    <strong>这样做的结果是整个输出都被缓冲，直到关闭为止，这样Content-length标头可以被首先设置和发送，这增加了很多延迟和内存。对于大文件，不建议使用。</strong></p>
+<p>答案来源：<span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvNDYyNDk0MDEvZWZmZWN0LW9mLWh0dHB1cmxjb25uZWN0aW9uLXNldGNodW5rZWRzdHJlYW1pbmdtb2Rl" title="https://stackoverflow.com/questions/46249401/effect-of-httpurlconnection-setchunkedstreamingmode">HttpUrlConnection.setChunkedStreamingMode的效果<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h4 id="关于编解码的处理"><a href="#关于编解码的处理" class="headerlink" title="关于编解码的处理"></a>关于编解码的处理</h4><p>​    这一部分请阅读4.1 部分的<strong>关于报文数据编码和解码的细节</strong>部分内容</p>
+<p>至此一个基本的调用流程基本就算是完成了。</p>
+<h2 id="openFeign-整体调用链路图"><a href="#openFeign-整体调用链路图" class="headerlink" title="openFeign 整体调用链路图"></a>openFeign 整体调用链路图</h2><p>​    先借（偷）一张参考资料的图来看下整个openFeign的链路调用：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210527160429.png?ynotemdtimestamp=1625580577970" alt="img"></p>
+<p>​    下面是个人根据资料自己画的图：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/openFeign%E8%B0%83%E7%94%A8%E9%93%BE%E8%B7%AF.png?ynotemdtimestamp=1625580577970" alt="img"></p>
+<h2 id="openFeign注解处理流程"><a href="#openFeign注解处理流程" class="headerlink" title="openFeign注解处理流程"></a>openFeign注解处理流程</h2><p>​    我们先看下开启openFeign的方式注解：<strong>@EnableFeignClients</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Target(ElementType.TYPE)</span><br><span class="line">@Documented</span><br><span class="line">@Import(FeignClientsRegistrar.class)</span><br><span class="line">public @interface EnableFeignClients &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    注意这里的一个注解<code>@Import(FeignClientsRegistrar.class)</code>。毫无疑问，实现的细节在<code>FeignClientsRegistrar.class</code>内部：</p>
+<p>​    剔除掉其他的逻辑和细节，关键代码在这一块：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for (String basePackage : basePackages) &#123;</span><br><span class="line">         &#x2F;&#x2F;….</span><br><span class="line">registerFeignClient(registry, annotationMetadata, attributes);</span><br><span class="line">	        &#x2F;&#x2F;….</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    这里调用了<code>registerFeignClient</code>注册feign，根据注解配置扫描得到响应的basepakage，如果没有配置，则默认按照注解所属类的路径进行扫描。</p>
+<p>​    下面的代码根据扫描的结果注入相关的bean信息，比如url，path，name，回调函数等。最后使用BeanDefinitionReaderUtils 对于bean的方法和内容进行注入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">private void registerFeignClient(BeanDefinitionRegistry registry,</span><br><span class="line">            AnnotationMetadata annotationMetadata, Map&lt;String, Object&gt; attributes) &#123;</span><br><span class="line">        String className &#x3D; annotationMetadata.getClassName();</span><br><span class="line">    &#x2F;&#x2F;bean配置</span><br><span class="line">    </span><br><span class="line">        BeanDefinitionBuilder definition &#x3D; BeanDefinitionBuilder</span><br><span class="line">                .genericBeanDefinition(FeignClientFactoryBean.class);</span><br><span class="line">        validate(attributes);</span><br><span class="line">        definition.addPropertyValue(&quot;url&quot;, getUrl(attributes));</span><br><span class="line">        definition.addPropertyValue(&quot;path&quot;, getPath(attributes));</span><br><span class="line">        String name &#x3D; getName(attributes);</span><br><span class="line">        definition.addPropertyValue(&quot;name&quot;, name);</span><br><span class="line">        String contextId &#x3D; getContextId(attributes);</span><br><span class="line">        definition.addPropertyValue(&quot;contextId&quot;, contextId);</span><br><span class="line">        definition.addPropertyValue(&quot;type&quot;, className);</span><br><span class="line">        definition.addPropertyValue(&quot;decode404&quot;, attributes.get(&quot;decode404&quot;));</span><br><span class="line">        definition.addPropertyValue(&quot;fallback&quot;, attributes.get(&quot;fallback&quot;));</span><br><span class="line">        definition.addPropertyValue(&quot;fallbackFactory&quot;, attributes.get(&quot;fallbackFactory&quot;));</span><br><span class="line">        definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);</span><br><span class="line"> </span><br><span class="line">        String alias &#x3D; contextId + &quot;FeignClient&quot;;</span><br><span class="line">        AbstractBeanDefinition beanDefinition &#x3D; definition.getBeanDefinition();</span><br><span class="line">        beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, className);</span><br><span class="line"> </span><br><span class="line">        &#x2F;&#x2F; has a default, won&#39;t be null</span><br><span class="line">    	&#x2F;&#x2F; 如果未配置会存在默认的配置</span><br><span class="line">        boolean primary &#x3D; (Boolean) attributes.get(&quot;primary&quot;);</span><br><span class="line"> </span><br><span class="line">        beanDefinition.setPrimary(primary);</span><br><span class="line"> </span><br><span class="line">        String qualifier &#x3D; getQualifier(attributes);</span><br><span class="line">        if (StringUtils.hasText(qualifier)) &#123;</span><br><span class="line">            alias &#x3D; qualifier;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        BeanDefinitionHolder holder &#x3D; new BeanDefinitionHolder(beanDefinition, className,</span><br><span class="line">                new String[] &#123; alias &#125;);</span><br><span class="line">    	&#x2F;&#x2F; 注册Bean</span><br><span class="line">        BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    看完了基本的注册机制，我们再来看看Bean是如何完成自动注入的：这里又牵扯到另一个注解-@FeignAutoConfiguration</p>
+<h3 id="FeignAutoConfiguration-简单介绍"><a href="#FeignAutoConfiguration-简单介绍" class="headerlink" title="@FeignAutoConfiguration 简单介绍"></a>@FeignAutoConfiguration 简单介绍</h3><p>​    关于feign的注入，在此类中提供了两种的形式：</p>
+<ul>
+<li><p>如果存在<strong>HystrixFeign</strong>，则使用 <strong>HystrixTargeter</strong> 方法。</p>
+</li>
+<li><p>如果不存在，此时会实例化一个<strong>DefaultTargeter</strong> 作为默认的实现者</p>
+<p>具体的操作代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">@Configuration(proxyBeanMethods &#x3D; false)</span><br><span class="line">   @ConditionalOnClass(name &#x3D; &quot;feign.hystrix.HystrixFeign&quot;)</span><br><span class="line">   protected static class HystrixFeignTargeterConfiguration &#123;</span><br><span class="line"></span><br><span class="line">       @Bean</span><br><span class="line">          &#x2F;&#x2F; 优先使用Hystrix</span><br><span class="line">       @ConditionalOnMissingBean</span><br><span class="line">       public Targeter feignTargeter() &#123;</span><br><span class="line">           return new HystrixTargeter();</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   @Configuration(proxyBeanMethods &#x3D; false)</span><br><span class="line">	&#x2F;&#x2F;如果不存在Hystrix，则使用默认的tagerter</span><br><span class="line">   @ConditionalOnMissingClass(&quot;feign.hystrix.HystrixFeign&quot;)</span><br><span class="line">   protected static class DefaultFeignTargeterConfiguration &#123;</span><br><span class="line"></span><br><span class="line">       @Bean</span><br><span class="line">       @ConditionalOnMissingBean</span><br><span class="line">       public Targeter feignTargeter() &#123;</span><br><span class="line">           return new DefaultTargeter();</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<blockquote>
+<p>复习一下springboot几个核心的注解代表的含义：</p>
+<ul>
+<li><strong>@ConditionalOnBean</strong> // 当给定的在bean存在时,则实例化当前Bean</li>
+<li><strong>@ConditionalOnMissingBean</strong> // 当给定的在bean不存在时,则实例化当前Bean</li>
+<li><strong>@ConditionalOnClass</strong> // 当给定的类名在类路径上存在，则实例化当前Bean</li>
+<li><strong>@ConditionalOnMissingClass</strong> // 当给定的类名在类路径上不存在，则实例化当前Bea</li>
+</ul>
+</blockquote>
+<h3 id="关于HystrixInvocationHandler的invoke方法："><a href="#关于HystrixInvocationHandler的invoke方法：" class="headerlink" title="关于HystrixInvocationHandler的invoke方法："></a>关于HystrixInvocationHandler的invoke方法：</h3><p>​    <code>Feign.hystrix.HystrixInvocationHandler</code> <em>当中执行的<strong>invoke</strong>实际上还是SyncronizedMethodHandler</em> <em>方法</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HystrixInvocationHandler.this.dispatch.get(method).invoke(args);</span><br></pre></td></tr></table></figure>
+
+<p>​    内部代码同时还使用了命令模式的命令 <strong>HystrixCommand</strong> 进行封装。由于不是本文重点，这里不做扩展。</p>
+<blockquote>
+<p><strong>HystrixCommand 这个对象又是拿来干嘛的？</strong></p>
+<p>简介：用于包装代码，将执行具有潜在风险的功能(通常是指通过网络的服务调用)与故障和延迟容忍，统计和性能指标捕获，断路器和隔板功能。这个命令本质上是一个阻塞命令，但如果与<code>observe()</code>一起使用，它提供了一个可观察对象外观。</p>
+<p>实现接口：<code>HystrixObservable</code> / <code>HystrixInvokableInfo</code></p>
+<p><code>HystrixInvokableInfo</code>: 存储命令接口的规范，子类要求实现</p>
+<p><code>HystrixObservable</code>: 变成观察者支持非阻塞调用</p>
+</blockquote>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    第一次总结源码，更多的是参考网上的资料顺着别人的思路自己去一点点看的。（哈哈，闻道有先后，术业有专攻）如果有错误欢迎指出。</p>
+<p>​    不同于spring那复杂层层抽象，openFeign的学习和“模仿”价值更具有意义，很多代码一眼就可以看到设计模式的影子，比较适合自己练手和学习提高个人的编程技巧。</p>
+<p>​    另外，openFeign使用了很多的包访问结构，这对于在此基础上二次扩展的sentianl框架是个头疼的问题，不过好在可以站在反射大哥的背后，直接暴力访问。</p>
+<h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><p><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82ODQ0OTA0MDY2MjI5OTI3OTUwI2hlYWRpbmctMTY=" title="https://juejin.cn/post/6844904066229927950#heading-16">掘金博客【非常好】<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9teS5vc2NoaW5hLm5ldC93ZWNhbndldXAvYmxvZy8zMjM4MjYx" title="https://my.oschina.net/wecanweup/blog/3238261">关于负载均衡的介绍来源<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLnNwcmluZy5pby9zcHJpbmctY2xvdWQtb3BlbmZlaWduL2RvY3MvY3VycmVudC9yZWZlcmVuY2UvaHRtbC8jZmVpZ24tbWV0cmljcw==" title="https://docs.spring.io/spring-cloud-openfeign/docs/current/reference/html/#feign-metrics">官方文档<i class="fa fa-external-link"></i></span></p>
+<blockquote>
+<p>结合源码再回顾官方文档提到的功能</p>
+</blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly90b29sLm9zY2hpbmEubmV0L2hpZ2hsaWdodA==" title="https://tool.oschina.net/highlight">在线代码格式化<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cud2Vic2VxdWVuY2VkaWFncmFtcy5jb20v" title="https://www.websequencediagrams.com/">在线画图软件<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/07/06/openfeigncloud/" title="Spring Cloud openFeign学习【3.0.2版本】">https://whitestore.top/2021/07/06/openfeigncloud/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/springcloud/" rel="tag"># springcloud</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/06/xmindipad/" rel="prev" title="【ipad】xmind使用快捷键技巧">
+      <i class="fa fa-chevron-left"></i> 【ipad】xmind使用快捷键技巧
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/06/youxibiji/" rel="next" title="《有限与无限的游戏》读书笔记">
+      《有限与无限的游戏》读书笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Cloud-openFeign学习【3-0-2版本】"><span class="nav-number">1.</span> <span class="nav-text">Spring Cloud openFeign学习【3.0.2版本】</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openFeign-是什么？"><span class="nav-number">3.</span> <span class="nav-text">openFeign 是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何学习？"><span class="nav-number">4.</span> <span class="nav-text">如何学习？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#应用场景？"><span class="nav-number">5.</span> <span class="nav-text">应用场景？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ribbon、Feign和OpenFeign的区别"><span class="nav-number">6.</span> <span class="nav-text">Ribbon、Feign和OpenFeign的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ribbon"><span class="nav-number">6.1.</span> <span class="nav-text">Ribbon</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Feign"><span class="nav-number">6.2.</span> <span class="nav-text">Feign</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenFeign"><span class="nav-number">6.3.</span> <span class="nav-text">OpenFeign</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openFeign增加了那些功能："><span class="nav-number">7.</span> <span class="nav-text">openFeign增加了那些功能：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openFeign的client实现方替换："><span class="nav-number">8.</span> <span class="nav-text">openFeign的client实现方替换：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用方式："><span class="nav-number">9.</span> <span class="nav-text">使用方式：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-添加依赖"><span class="nav-number">9.1.</span> <span class="nav-text">1. 添加依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-开启注解-EnableFeignClients"><span class="nav-number">9.2.</span> <span class="nav-text">2. 开启注解@EnableFeignClients</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-yml增加配置："><span class="nav-number">9.3.</span> <span class="nav-text">3. yml增加配置：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-具体使用"><span class="nav-number">9.4.</span> <span class="nav-text">4. 具体使用:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#上下文继承"><span class="nav-number">9.4.1.</span> <span class="nav-text">上下文继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#日志输出"><span class="nav-number">9.4.2.</span> <span class="nav-text">日志输出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开启压缩"><span class="nav-number">9.4.3.</span> <span class="nav-text">开启压缩</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-附录："><span class="nav-number">9.5.</span> <span class="nav-text">5. 附录：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#yml相关配置表："><span class="nav-number">9.5.1.</span> <span class="nav-text">yml相关配置表：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openFeign的源码解读-重点"><span class="nav-number">10.</span> <span class="nav-text">openFeign的源码解读(重点)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#feign工作流程图"><span class="nav-number">10.1.</span> <span class="nav-text">feign工作流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工作流程概览"><span class="nav-number">10.2.</span> <span class="nav-text">工作流程概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#详解openFeign工作流程（重点）"><span class="nav-number">10.3.</span> <span class="nav-text">详解openFeign工作流程（重点）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Feign-实例化-newInstance"><span class="nav-number">10.3.1.</span> <span class="nav-text">1. Feign 实例化 - newInstance()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ParseHandlersByName-参数解析处理-apply"><span class="nav-number">10.3.2.</span> <span class="nav-text">2. ParseHandlersByName 参数解析处理 - apply()</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-Contract-方法参数注解解析和校验-parseAndValidateMetadata"><span class="nav-number">10.3.2.1.</span> <span class="nav-text">2.1 Contract 方法参数注解解析和校验 - parseAndValidateMetadata()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-SpringMvcContract-方法参数注解解析和校验"><span class="nav-number">10.3.2.2.</span> <span class="nav-text">2.2 SpringMvcContract 方法参数注解解析和校验</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-创建接口动态代理"><span class="nav-number">10.3.3.</span> <span class="nav-text">3. 创建接口动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-接口代理对象调用feign-SynchronousMethodHandler-invoke-请求逻辑"><span class="nav-number">10.3.3.1.</span> <span class="nav-text">3.1 接口代理对象调用feign.SynchronousMethodHandler#invoke()请求逻辑</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-SynchronousMethodHandler动态代理对象处理详解"><span class="nav-number">10.3.4.</span> <span class="nav-text">4. SynchronousMethodHandler动态代理对象处理详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#构建RequestTemplate模板"><span class="nav-number">10.3.4.1.</span> <span class="nav-text">构建RequestTemplate模板</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#根据不同的参数请求模板进行处理"><span class="nav-number">10.3.4.1.1.</span> <span class="nav-text">根据不同的参数请求模板进行处理:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#请求参数处理细节对比："><span class="nav-number">10.3.4.1.2.</span> <span class="nav-text">请求参数处理细节对比：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关于报文数据编码和解码的细节："><span class="nav-number">10.3.4.1.3.</span> <span class="nav-text">关于报文数据编码和解码的细节：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#如果发生错误，如何对错误信息进行编码？"><span class="nav-number">10.3.4.1.4.</span> <span class="nav-text">如果发生错误，如何对错误信息进行编码？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-option配置获取"><span class="nav-number">10.3.5.</span> <span class="nav-text">4.2 option配置获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-构建重试器"><span class="nav-number">10.3.6.</span> <span class="nav-text">4.3 构建重试器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-请求发送和结果处理"><span class="nav-number">10.3.7.</span> <span class="nav-text">4.4 请求发送和结果处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#关于日志输出级别的控制"><span class="nav-number">10.3.7.1.</span> <span class="nav-text">关于日志输出级别的控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#client发送请求（重点）"><span class="nav-number">10.3.7.2.</span> <span class="nav-text">client发送请求（重点）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FeignBlockingLoadBalancerClient-作为负载均衡使用："><span class="nav-number">10.3.7.3.</span> <span class="nav-text">FeignBlockingLoadBalancerClient 作为负载均衡使用：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关于编解码的处理"><span class="nav-number">10.3.7.4.</span> <span class="nav-text">关于编解码的处理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#openFeign-整体调用链路图"><span class="nav-number">10.4.</span> <span class="nav-text">openFeign 整体调用链路图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#openFeign注解处理流程"><span class="nav-number">10.5.</span> <span class="nav-text">openFeign注解处理流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FeignAutoConfiguration-简单介绍"><span class="nav-number">10.5.1.</span> <span class="nav-text">@FeignAutoConfiguration 简单介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于HystrixInvocationHandler的invoke方法："><span class="nav-number">10.5.2.</span> <span class="nav-text">关于HystrixInvocationHandler的invoke方法：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料："><span class="nav-number">12.</span> <span class="nav-text">参考资料：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">111</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">749k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">11:20</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
