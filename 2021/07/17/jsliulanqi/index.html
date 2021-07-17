@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="获取浏览器信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何获取浏览器访问信息？">
+<meta property="og:url" content="https://whitestore.top/2021/07/17/jsliulanqi/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="获取浏览器信息">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210607151659.png?ynotemdtimestamp=1626477082791">
+<meta property="article:published_time" content="2021-07-17T07:46:36.000Z">
+<meta property="article:modified_time" content="2021-07-17T07:47:53.836Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210607151659.png?ynotemdtimestamp=1626477082791">
+
+<link rel="canonical" href="https://whitestore.top/2021/07/17/jsliulanqi/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>如何获取浏览器访问信息？ | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/07/17/jsliulanqi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何获取浏览器访问信息？
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-07-17 15:46:36 / 修改时间：15:47:53" itemprop="dateCreated datePublished" datetime="2021-07-17T15:46:36+08:00">2021-07-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/07/17/jsliulanqi/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/17/jsliulanqi/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>54k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>49 分钟</span>
+            </span>
+            <div class="post-description">获取浏览器信息</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="如何使用javascript获取浏览器访问信息？"><a href="#如何使用javascript获取浏览器访问信息？" class="headerlink" title="如何使用javascript获取浏览器访问信息？"></a>如何使用javascript获取浏览器访问信息？</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    我们都知道我们进行web请求的时候，使用浏览器是可以获取到当前机器的访问信息的，目前市面上也有不少的工具或者API可以方便快速的获取用户的浏览器动态信息。整个过程比较简单，这里作为一次笔记进行简单记录。</p>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>​    使用前端的工具或者插件，获取起前端的浏览器信息，在登录的时候，将前端的信息发送到后台数据库进行存储。</p>
+<a id="more"></a>
+
+<h1 id="组件地址："><a href="#组件地址：" class="headerlink" title="组件地址："></a>组件地址：</h1><p>​    这里主要依赖的组件为fingerprintjs，能获取的内容算是比较详细的，用法也十分简单。</p>
+<ul>
+<li>fingerprintjs：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2ZpbmdlcnByaW50anMvZmluZ2VycHJpbnRqcw==" title="https://github.com/fingerprintjs/fingerprintjs">https://github.com/fingerprintjs/fingerprintjs<i class="fa fa-external-link"></i></span></li>
+</ul>
+<blockquote>
+<p>demo地址：<span class="exturl" data-url="aHR0cHM6Ly90Y3ptaC5naXRlZS5pby9maW5nZXJwcmludDJkZW1vLw==" title="https://tczmh.gitee.io/fingerprint2demo/">https://tczmh.gitee.io/fingerprint2demo/<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h1 id="表设计"><a href="#表设计" class="headerlink" title="表设计"></a>表设计</h1><p>​    下面根据具体需求构建一张对应的表：</p>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>字段说明</th>
+<th>字段类型</th>
+<th>字段长度</th>
+<th>是否为空</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>uuid</td>
+<td>主键</td>
+<td>varchar</td>
+<td>255</td>
+<td>否</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>fingerprint</td>
+<td>指纹ID</td>
+<td>varchar</td>
+<td>255</td>
+<td>是</td>
+<td>指纹是每次请求的唯一id</td>
+</tr>
+<tr>
+<td>clientTime</td>
+<td>请求耗时</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>请求耗时</td>
+</tr>
+<tr>
+<td>userAgent</td>
+<td>用户代理</td>
+<td>varchar</td>
+<td>500</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>webdriver</td>
+<td>网络驱动</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>language</td>
+<td>语言</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>colorDepth</td>
+<td>颜色深度</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>deviceMemory</td>
+<td>设备内存</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>pixelRatio</td>
+<td>像素比例</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>hardwareConcurrency</td>
+<td>硬件并发</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td>16</td>
+</tr>
+<tr>
+<td>screenResolution</td>
+<td>屏幕分辨率</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td>长，宽</td>
+</tr>
+<tr>
+<td>availableScreenResolution</td>
+<td>可用屏幕分辨率</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td>长，宽</td>
+</tr>
+<tr>
+<td>timezoneOffset</td>
+<td>时区偏移</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>timezone</td>
+<td>时区</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>sessionStorage</td>
+<td>是否开启会话存储</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>localStorage</td>
+<td>是否开启本地存储</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>indexedDb</td>
+<td>索引的Db</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>addBehavior</td>
+<td>是否存在增加行为</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>openDatabase</td>
+<td>是否开启数据库</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>cpuClass</td>
+<td>cpu类</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td>无案例数据，不明白具体含义</td>
+</tr>
+<tr>
+<td>platform</td>
+<td>平台</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>doNotTrack</td>
+<td>不跟踪</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>plugins</td>
+<td>浏览器插件</td>
+<td>textarea</td>
+<td>0</td>
+<td>是</td>
+<td>Chrome PDF Plugin;Chrome PDF Viewer;Native Client;</td>
+</tr>
+<tr>
+<td>canvas</td>
+<td>画布</td>
+<td>textarea</td>
+<td>0</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>webgl</td>
+<td>网页</td>
+<td>textarea</td>
+<td>0</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>webglVendorAndRenderer</td>
+<td>webgl供应商和渲染器</td>
+<td>varchar</td>
+<td>1000</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>adBlock</td>
+<td>分贝锁定</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>hasLiedLanguages</td>
+<td>是否伪造语言</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>hasLiedResolution</td>
+<td>是否伪造决议</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>hasLiedOs</td>
+<td>是否伪造os</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>hasLiedBrowser</td>
+<td>是否伪造浏览器</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>touchSupport</td>
+<td>触摸支持</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>较特殊，使用逗号分割</td>
+</tr>
+<tr>
+<td>fonts</td>
+<td>字体</td>
+<td>textarea</td>
+<td>0</td>
+<td>是</td>
+<td>支持字体</td>
+</tr>
+<tr>
+<td>fontsFlash</td>
+<td>字体Flash</td>
+<td>varchar</td>
+<td>100</td>
+<td>是</td>
+<td>swf object not loaded</td>
+</tr>
+<tr>
+<td>audio</td>
+<td>媒体</td>
+<td>varchar</td>
+<td>100</td>
+<td>是</td>
+<td>124.0434753</td>
+</tr>
+<tr>
+<td>enumerateDevices</td>
+<td>枚举设备</td>
+<td>textarea</td>
+<td>0</td>
+<td>是</td>
+<td>d=;gid=5fd3caefe1a38ae1bc997527a026ffad</td>
+</tr>
+<tr>
+<td>mineType</td>
+<td>浏览器的MIME类型</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>1.2.3.4 RFC-822 Standard for ARPA Internet text messages RFC-2045 MIME Part 1: Format of Internet Message Bodies RFC-2046 MIME Part 2: Media Types RFC-2047 MIME Part 3: Header Extensions for Non-ASCII Text RFC-2048 MIME Part 4: Registration Procedures RFC-2049 MIME Part 5: Conformance Criteria and Examples</td>
+</tr>
+<tr>
+<td>cookieEnable</td>
+<td>浏览器的是否启用了cookie</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>macAddr</td>
+<td>MAC地址</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td>xxxx</td>
+</tr>
+<tr>
+<td>ipAddr</td>
+<td>IP地址</td>
+<td>varchar</td>
+<td>50</td>
+<td>是</td>
+<td>xxxxx</td>
+</tr>
+<tr>
+<td>systemTime</td>
+<td>系统时间</td>
+<td>varchar</td>
+<td>200</td>
+<td>是</td>
+<td>Fri May 28 2021 11:07:46 GMT+0800 (中国标准时间)</td>
+</tr>
+<tr>
+<td>enableMediaPalyer</td>
+<td>是否有MediaPlayer</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>enableRealPlayer</td>
+<td>是否有realPlayer</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+<tr>
+<td>enableQuickTime</td>
+<td>是否有quickTime</td>
+<td>int</td>
+<td>0</td>
+<td>是</td>
+<td>boolean，1为true，0为false</td>
+</tr>
+</tbody></table>
+<p>下面是对应的<strong>sql-server</strong>的建表sql：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br></pre></td><td class="code"><pre><span class="line">-- ----------------------------</span><br><span class="line">-- Table structure for browser_frontend_info</span><br><span class="line">-- ----------------------------</span><br><span class="line">IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id &#x3D; OBJECT_ID(N&#39;[dbo].[browser_frontend_info]&#39;) AND type IN (&#39;U&#39;))</span><br><span class="line">	DROP TABLE [dbo].[browser_frontend_info]</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">CREATE TABLE [dbo].[browser_frontend_info] (</span><br><span class="line">  [uuid] varchar(255) COLLATE Chinese_PRC_CI_AS  NOT NULL,</span><br><span class="line">  [fingerprint] varchar(100) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [clientTime] int  NULL,</span><br><span class="line">  [userAgent] text COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [webdriver] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [language] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [colorDepth] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [deviceMemory] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [pixelRatio] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [hardwareConcurrency] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [screenResolution] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [availableScreenResolution] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [timezoneOffset] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [timezone] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [sessionStorage] int  NULL,</span><br><span class="line">  [localStorage] int  NULL,</span><br><span class="line">  [indexedDb] int  NULL,</span><br><span class="line">  [addBehavior] int  NULL,</span><br><span class="line">  [openDatabase] int  NULL,</span><br><span class="line">  [cpuClass] varchar(255) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [platform] varchar(255) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [doNotTrack] varchar(255) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [plugins] text COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [canvas] text COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [webgl] text COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [webglVendorAndRenderer] text COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [adBlock] int  NULL,</span><br><span class="line">  [hasLiedLanguages] int  NULL,</span><br><span class="line">  [hasLiedResolution] int  NULL,</span><br><span class="line">  [hasLiedOs] int  NULL,</span><br><span class="line">  [hasLiedBrowser] int  NULL,</span><br><span class="line">  [touchSupport] int  NULL,</span><br><span class="line">  [fonts] text COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [fontsFlash] varchar(255) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [audio] varchar(255) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [enumerateDevices] text COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [mineType] varchar(255) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [cookieEnable] int  NULL,</span><br><span class="line">  [macAddr] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [ipAddr] varchar(50) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [systemTime] varchar(200) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [enableMediaPalyer] int DEFAULT &#39;&#39; NULL,</span><br><span class="line">  [enableRealPlayer] int  NULL,</span><br><span class="line">  [loginType] int  NULL,</span><br><span class="line">  [merchNo] varchar(255) COLLATE Chinese_PRC_CI_AS  NULL,</span><br><span class="line">  [userName] varchar(255) COLLATE Chinese_PRC_CI_AS  NULL</span><br><span class="line">)</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">ALTER TABLE [dbo].[browser_frontend_info] SET (LOCK_ESCALATION &#x3D; TABLE)</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;主键&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;uuid&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;指纹ID。指纹是每次请求的唯一id&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;fingerprint&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;请求耗时&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;clientTime&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;用户代理&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;userAgent&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;网络驱动&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;webdriver&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;语言&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;language&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;颜色深度&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;colorDepth&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;设备内存&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;deviceMemory&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;像素比例&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;pixelRatio&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;硬件并发&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;hardwareConcurrency&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;屏幕分辨率&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;screenResolution&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;可用屏幕分辨率&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;availableScreenResolution&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;时区偏移&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;timezoneOffset&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;时区&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;timezone&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否开启会话存储&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;sessionStorage&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否开启本地存储&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;localStorage&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;索引的Db&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;indexedDb&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否存在增加行为&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;addBehavior&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否伪造浏览器&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;openDatabase&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;cpu类&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;cpuClass&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;平台&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;platform&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;不跟踪&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;doNotTrack&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;浏览器插件&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;plugins&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;画布&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;canvas&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;网页&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;webgl&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;webgl供应商和渲染器&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;webglVendorAndRenderer&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;分贝锁定&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;adBlock&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否伪造语言&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;hasLiedLanguages&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否伪造决议&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;hasLiedResolution&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否伪造os&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;hasLiedOs&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否伪造浏览器&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;hasLiedBrowser&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;触摸支持&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;touchSupport&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;字体&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;fonts&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;字体Flash&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;fontsFlash&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;媒体&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;audio&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;枚举设备&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;enumerateDevices&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;浏览器的MIME类型&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;mineType&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;浏览器的是否启用了cookie&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;cookieEnable&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;MAC地址&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;macAddr&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;IP地址&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;ipAddr&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;系统时间&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;systemTime&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否有MediaPlayer&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;enableMediaPalyer&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;是否有realPlayer&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;enableRealPlayer&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;登录类型（1.商户，2.机构）&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;loginType&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;商户号&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;merchNo&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line">EXEC sp_addextendedproperty</span><br><span class="line">&#39;MS_Description&#39;, N&#39;用户名&#39;,</span><br><span class="line">&#39;SCHEMA&#39;, N&#39;dbo&#39;,</span><br><span class="line">&#39;TABLE&#39;, N&#39;browser_frontend_info&#39;,</span><br><span class="line">&#39;COLUMN&#39;, N&#39;userName&#39;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Primary Key structure for table browser_frontend_info</span><br><span class="line">-- ----------------------------</span><br><span class="line">ALTER TABLE [dbo].[browser_frontend_info] ADD CONSTRAINT [PK__browser___7F427930F38BE804] PRIMARY KEY CLUSTERED ([uuid])</span><br><span class="line">WITH (PAD_INDEX &#x3D; OFF, STATISTICS_NORECOMPUTE &#x3D; OFF, IGNORE_DUP_KEY &#x3D; OFF, ALLOW_ROW_LOCKS &#x3D; ON, ALLOW_PAGE_LOCKS &#x3D; ON)  </span><br><span class="line">ON [PRIMARY]</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 接入案例代码：</span><br><span class="line"></span><br><span class="line">	如果需要正常运行，需要引入对应的三方代码或者ip获取网址，这里用了搜狐的IP信息捕获：</span><br><span class="line"></span><br><span class="line">​&#96;&#96;&#96;java</span><br><span class="line">&lt;script src&#x3D;&quot;http:&#x2F;&#x2F;pv.sohu.com&#x2F;cityjson?ie&#x3D;utf-8&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;script type&#x3D;&quot;text&#x2F;javascript&quot; th:src&#x3D;&quot;@&#123;&#x2F;js&#x2F;front&#x2F;fingerprint2.min.js&#125;&quot;&gt;&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>​    下面是针对API使用的简单接入，组装报文JSON：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line">function fingerDefaultConfig()&#123;</span><br><span class="line">    let excludes &#x3D; &#123;&#125;;</span><br><span class="line">    excludes.userAgent &#x3D; false;</span><br><span class="line">    excludes.audio &#x3D; false;</span><br><span class="line">    excludes.enumerateDevices &#x3D; false;</span><br><span class="line">    excludes.fonts &#x3D; false;</span><br><span class="line">    excludes.fontsFlash &#x3D; false;</span><br><span class="line">    excludes.webgl &#x3D; false;</span><br><span class="line">    excludes.canvas &#x3D; false;</span><br><span class="line">    return excludes;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 获取浏览器信息</span><br><span class="line"> *&#x2F;</span><br><span class="line">function getFingerInfo()&#123;</span><br><span class="line">    const start &#x3D; new Date().getTime();</span><br><span class="line">    let excludes &#x3D; fingerDefaultConfig();</span><br><span class="line">    let options &#x3D; &#123;excludes: excludes&#125;;</span><br><span class="line">    var requestParam &#x3D; &#123;&#125;;</span><br><span class="line">    Fingerprint2.get(options, function (components) &#123;</span><br><span class="line">        &#x2F;&#x2F; 参数</span><br><span class="line">        const values &#x3D; components.map(function (component) &#123;</span><br><span class="line">            return component.value</span><br><span class="line">        &#125;);</span><br><span class="line">        &#x2F;&#x2F; 指纹</span><br><span class="line">        requestParam[&#39;murmur&#39;] &#x3D; Fingerprint2.x64hash128(values.join(&#39;&#39;), 31);</span><br><span class="line">        &#x2F;&#x2F; 请求耗时</span><br><span class="line">        requestParam[&#39;time&#39;] &#x3D; (new Date().getTime() - start);</span><br><span class="line">        for (const c of components) &#123;</span><br><span class="line">            requestParam[c[&#39;key&#39;]] &#x3D; c[&#39;value&#39;];</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 获取其他模组的参数</span><br><span class="line">        requestParam &#x3D; otherRequestParam(requestParam);</span><br><span class="line">        requestParam &#x3D; intenetInfo(requestParam);</span><br><span class="line">        requestParam &#x3D; timeRequestParam(requestParam);</span><br><span class="line">        requestParam &#x3D; userRequestParam(requestParam);</span><br><span class="line">        wrapParamAndStart(requestParam);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function timeRequestParam(requestParam)&#123;</span><br><span class="line">    requestParam[&#39;systemTime&#39;] &#x3D; new Date();</span><br><span class="line">    return requestParam;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 用户信息</span><br><span class="line"> *&#x2F;</span><br><span class="line">function userRequestParam(requestParam)&#123;</span><br><span class="line">    var loginType &#x3D; $(&quot;#loginType&quot;).find(&#39;option:selected&#39;).val();</span><br><span class="line">    requestParam[&#39;loginType&#39;] &#x3D; loginType!&#x3D;null &amp;&amp; loginType!&#x3D;undefined ? parseInt(loginType):1;</span><br><span class="line">    requestParam[&#39;merchNo&#39;] &#x3D; $(&quot;#InputMerNo&quot;).val()||&#39;&#39;;</span><br><span class="line">    requestParam[&#39;userName&#39;] &#x3D; $(&quot;#InputUsername&quot;).val()||&#39;&#39;;</span><br><span class="line">    return requestParam;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function otherRequestParam(requestParam)&#123;</span><br><span class="line">    var mimeType &#x3D; navigator.mimeTypes; &#x2F;&#x2F; 浏览器支持的所有MIME类型的数组</span><br><span class="line">    var cookieEnabled &#x3D; navigator.cookieEnabled; &#x2F;&#x2F; 返回用户浏览器是否启用了cookie</span><br><span class="line">    requestParam[&#39;mimeType&#39;] &#x3D; mimeType;</span><br><span class="line">    requestParam[&#39;cookieEnabled&#39;] &#x3D; cookieEnabled;</span><br><span class="line">    requestParam[&#39;enableMediaPalyer&#39;] &#x3D; checkePlugs(&quot;MediaPlayer&quot;);</span><br><span class="line">    requestParam[&#39;enableRealPlayer&#39;] &#x3D; checkePlugs(&quot;RealPlayer&quot;);</span><br><span class="line">    requestParam[&#39;enableQuickTime&#39;] &#x3D; checkePlugs(&quot;QuickTime&quot;);</span><br><span class="line">    return requestParam;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 网络信息获取</span><br><span class="line"> * @param requestParam</span><br><span class="line"> *&#x2F;</span><br><span class="line">function intenetInfo(requestParam)&#123;</span><br><span class="line">    requestParam[&#39;macAddr&#39;] &#x3D; returnCitySN[&quot;cname&quot;];</span><br><span class="line">    requestParam[&#39;ipAddr&#39;] &#x3D; returnCitySN[&quot;cip&quot;];</span><br><span class="line">    return requestParam;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;检查是否安装了某插件，如果安装了返回版本号</span><br><span class="line">function checkePlugs(pluginname) &#123;</span><br><span class="line">    var f &#x3D; &quot;-&quot;</span><br><span class="line">    var plugins &#x3D; navigator.plugins;</span><br><span class="line">    if (plugins.length &gt; 0) &#123;</span><br><span class="line">        for (i &#x3D; 0; i &lt; navigator.plugins.length; i++) &#123;</span><br><span class="line">            if (navigator.plugins[i].name.indexOf(pluginname) &gt;&#x3D; 0) &#123;</span><br><span class="line">                f &#x3D; navigator.plugins[i].description.split(pluginname)[1];</span><br><span class="line">                return f;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function wrapParamAndStart(requestParam) &#123;</span><br><span class="line">    start(JSON.stringify(requestParam));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 前端抓取开启，根据使用的模块进行重写或者替换</span><br><span class="line"> *&#x2F;</span><br><span class="line">function start(info) &#123;</span><br><span class="line">    $.ajax(&#123;</span><br><span class="line">        url : ROOT+&quot;&#x2F;front&#x2F;record&quot;,</span><br><span class="line">        type : &#39;POST&#39;,</span><br><span class="line">        &#x2F;&#x2F; async: false,</span><br><span class="line">        dataType : &#39;json&#39;,</span><br><span class="line">        data : info,</span><br><span class="line">        contentType:&#39;application&#x2F;json&#39;,</span><br><span class="line">        success : function(data) &#123;</span><br><span class="line"></span><br><span class="line">        &#125;,</span><br><span class="line">        error : function(e) &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="运行效果："><a href="#运行效果：" class="headerlink" title="运行效果："></a>运行效果：</h2><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210607151659.png?ynotemdtimestamp=1626477082791" alt="img"></p>
+<h1 id="补充资料："><a href="#补充资料：" class="headerlink" title="补充资料："></a>补充资料：</h1><h2 id="获取前端用户访问信息"><a href="#获取前端用户访问信息" class="headerlink" title="获取前端用户访问信息"></a>获取前端用户访问信息</h2><p>​    需要用户手动的开启权限，才可以进行正常的使用或者访问，同时这个对象主要为ie使用。</p>
+<p>​    实现方式：</p>
+<p>​    <code>var locator = new ActiveXObject(&quot;WbemScripting.SWbemLocator&quot;);</code></p>
+<p>​    参考博客： <span class="exturl" data-url="aHR0cDovL3d3dy5ibG9namF2YS5uZXQvcmVkaGF0bGludXgvYXJjaGl2ZS8yMDA5LzAyLzExLzI1NDI1NC5odG1s" title="http://www.blogjava.net/redhatlinux/archive/2009/02/11/254254.html">JavaScript 获取客户端计算机硬件及系统信息<i class="fa fa-external-link"></i></span></p>
+<h2 id="获取摄像头信息"><a href="#获取摄像头信息" class="headerlink" title="获取摄像头信息"></a>获取摄像头信息</h2><p>摄像头需要用户开启权限方可使用。</p>
+<ul>
+<li>webcamjs：<span class="exturl" data-url="aHR0cHM6Ly9waXhsY29yZS5jb20vZGVtb3Mvd2ViY2FtanMvZGVtb3MvYmFzaWMuaHRtbA==" title="https://pixlcore.com/demos/webcamjs/demos/basic.html">https://pixlcore.com/demos/webcamjs/demos/basic.html<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9jcmF6eWh1aWxpYW5nLmdpdGJvb2tzLmlvL2phdmFzY3JpcHQvY29udGVudC9XZWJjYW1KUy5odG1s" title="https://crazyhuiliang.gitbooks.io/javascript/content/WebcamJS.html">在网页当中进行拍照<i class="fa fa-external-link"></i></span></li>
+</ul>
+<p>WebcamJS 已经在下面的浏览器／系统中进行了测试:</p>
+<table>
+<thead>
+<tr>
+<th>OS</th>
+<th>Browser</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mac OS X</td>
+<td>Chrome 30+</td>
+<td>Works – <strong>Chrome 47+ requires HTTPS</strong></td>
+</tr>
+<tr>
+<td>Mac OS X</td>
+<td>Firefox 20+</td>
+<td>Works</td>
+</tr>
+<tr>
+<td>Mac OS X</td>
+<td>Safari 6+</td>
+<td><strong>Requires Adobe Flash Player</strong></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>Chrome 30+</td>
+<td>Works – <strong>Chrome 47+ requires HTTPS</strong></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>Firefox 20+</td>
+<td>Works</td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>IE 9</td>
+<td><strong>Requires Adobe Flash Player</strong></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>IE 10</td>
+<td><strong>Requires Adobe Flash Player</strong></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>IE 11</td>
+<td><strong>Requires Adobe Flash Player</strong></td>
+</tr>
+</tbody></table>
+<h2 id="录音"><a href="#录音" class="headerlink" title="录音"></a>录音</h2><p>录音和摄像头信息一样，需要用户的授权。</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3hpYW5neXVlY24vUmVjb3JkZXI=" title="https://github.com/xiangyuecn/Recorder">https://github.com/xiangyuecn/Recorder<i class="fa fa-external-link"></i></span></li>
+</ul>
+<h2 id="前端信息捕获html："><a href="#前端信息捕获html：" class="headerlink" title="前端信息捕获html："></a>前端信息捕获html：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br><span class="line">469</span><br><span class="line">470</span><br><span class="line">471</span><br><span class="line">472</span><br><span class="line">473</span><br><span class="line">474</span><br><span class="line">475</span><br><span class="line">476</span><br><span class="line">477</span><br><span class="line">478</span><br><span class="line">479</span><br><span class="line">480</span><br><span class="line">481</span><br><span class="line">482</span><br><span class="line">483</span><br><span class="line">484</span><br><span class="line">485</span><br><span class="line">486</span><br><span class="line">487</span><br><span class="line">488</span><br><span class="line">489</span><br><span class="line">490</span><br><span class="line">491</span><br><span class="line">492</span><br><span class="line">493</span><br><span class="line">494</span><br><span class="line">495</span><br><span class="line">496</span><br><span class="line">497</span><br><span class="line">498</span><br><span class="line">499</span><br><span class="line">500</span><br><span class="line">501</span><br><span class="line">502</span><br><span class="line">503</span><br><span class="line">504</span><br><span class="line">505</span><br><span class="line">506</span><br><span class="line">507</span><br><span class="line">508</span><br><span class="line">509</span><br><span class="line">510</span><br><span class="line">511</span><br><span class="line">512</span><br><span class="line">513</span><br><span class="line">514</span><br><span class="line">515</span><br><span class="line">516</span><br><span class="line">517</span><br><span class="line">518</span><br><span class="line">519</span><br><span class="line">520</span><br><span class="line">521</span><br><span class="line">522</span><br><span class="line">523</span><br><span class="line">524</span><br><span class="line">525</span><br><span class="line">526</span><br><span class="line">527</span><br><span class="line">528</span><br><span class="line">529</span><br><span class="line">530</span><br><span class="line">531</span><br><span class="line">532</span><br><span class="line">533</span><br><span class="line">534</span><br><span class="line">535</span><br><span class="line">536</span><br><span class="line">537</span><br><span class="line">538</span><br><span class="line">539</span><br><span class="line">540</span><br><span class="line">541</span><br><span class="line">542</span><br><span class="line">543</span><br><span class="line">544</span><br><span class="line">545</span><br><span class="line">546</span><br><span class="line">547</span><br><span class="line">548</span><br><span class="line">549</span><br><span class="line">550</span><br><span class="line">551</span><br><span class="line">552</span><br><span class="line">553</span><br><span class="line">554</span><br><span class="line">555</span><br><span class="line">556</span><br><span class="line">557</span><br><span class="line">558</span><br><span class="line">559</span><br><span class="line">560</span><br><span class="line">561</span><br><span class="line">562</span><br><span class="line">563</span><br><span class="line">564</span><br><span class="line">565</span><br><span class="line">566</span><br><span class="line">567</span><br><span class="line">568</span><br><span class="line">569</span><br><span class="line">570</span><br><span class="line">571</span><br><span class="line">572</span><br><span class="line">573</span><br><span class="line">574</span><br><span class="line">575</span><br><span class="line">576</span><br><span class="line">577</span><br><span class="line">578</span><br><span class="line">579</span><br><span class="line">580</span><br><span class="line">581</span><br><span class="line">582</span><br><span class="line">583</span><br><span class="line">584</span><br><span class="line">585</span><br><span class="line">586</span><br><span class="line">587</span><br><span class="line">588</span><br><span class="line">589</span><br><span class="line">590</span><br><span class="line">591</span><br><span class="line">592</span><br><span class="line">593</span><br><span class="line">594</span><br><span class="line">595</span><br><span class="line">596</span><br><span class="line">597</span><br><span class="line">598</span><br><span class="line">599</span><br><span class="line">600</span><br><span class="line">601</span><br><span class="line">602</span><br><span class="line">603</span><br><span class="line">604</span><br><span class="line">605</span><br><span class="line">606</span><br><span class="line">607</span><br><span class="line">608</span><br><span class="line">609</span><br><span class="line">610</span><br><span class="line">611</span><br><span class="line">612</span><br><span class="line">613</span><br><span class="line">614</span><br><span class="line">615</span><br><span class="line">616</span><br><span class="line">617</span><br><span class="line">618</span><br><span class="line">619</span><br><span class="line">620</span><br><span class="line">621</span><br><span class="line">622</span><br><span class="line">623</span><br><span class="line">624</span><br><span class="line">625</span><br><span class="line">626</span><br><span class="line">627</span><br><span class="line">628</span><br><span class="line">629</span><br><span class="line">630</span><br><span class="line">631</span><br><span class="line">632</span><br><span class="line">633</span><br><span class="line">634</span><br><span class="line">635</span><br><span class="line">636</span><br><span class="line">637</span><br><span class="line">638</span><br><span class="line">639</span><br><span class="line">640</span><br><span class="line">641</span><br><span class="line">642</span><br><span class="line">643</span><br><span class="line">644</span><br><span class="line">645</span><br><span class="line">646</span><br><span class="line">647</span><br><span class="line">648</span><br><span class="line">649</span><br><span class="line">650</span><br><span class="line">651</span><br><span class="line">652</span><br><span class="line">653</span><br><span class="line">654</span><br><span class="line">655</span><br><span class="line">656</span><br><span class="line">657</span><br><span class="line">658</span><br><span class="line">659</span><br><span class="line">660</span><br><span class="line">661</span><br><span class="line">662</span><br><span class="line">663</span><br><span class="line">664</span><br><span class="line">665</span><br><span class="line">666</span><br><span class="line">667</span><br><span class="line">668</span><br><span class="line">669</span><br><span class="line">670</span><br><span class="line">671</span><br><span class="line">672</span><br><span class="line">673</span><br><span class="line">674</span><br><span class="line">675</span><br><span class="line">676</span><br><span class="line">677</span><br><span class="line">678</span><br><span class="line">679</span><br><span class="line">680</span><br><span class="line">681</span><br><span class="line">682</span><br><span class="line">683</span><br><span class="line">684</span><br><span class="line">685</span><br><span class="line">686</span><br><span class="line">687</span><br><span class="line">688</span><br><span class="line">689</span><br><span class="line">690</span><br><span class="line">691</span><br><span class="line">692</span><br><span class="line">693</span><br><span class="line">694</span><br><span class="line">695</span><br><span class="line">696</span><br><span class="line">697</span><br><span class="line">698</span><br><span class="line">699</span><br><span class="line">700</span><br><span class="line">701</span><br><span class="line">702</span><br><span class="line">703</span><br><span class="line">704</span><br><span class="line">705</span><br><span class="line">706</span><br><span class="line">707</span><br><span class="line">708</span><br><span class="line">709</span><br><span class="line">710</span><br><span class="line">711</span><br><span class="line">712</span><br><span class="line">713</span><br><span class="line">714</span><br><span class="line">715</span><br><span class="line">716</span><br><span class="line">717</span><br><span class="line">718</span><br><span class="line">719</span><br><span class="line">720</span><br><span class="line">721</span><br><span class="line">722</span><br><span class="line">723</span><br><span class="line">724</span><br><span class="line">725</span><br><span class="line">726</span><br><span class="line">727</span><br><span class="line">728</span><br><span class="line">729</span><br><span class="line">730</span><br><span class="line">731</span><br><span class="line">732</span><br><span class="line">733</span><br><span class="line">734</span><br><span class="line">735</span><br><span class="line">736</span><br><span class="line">737</span><br><span class="line">738</span><br><span class="line">739</span><br><span class="line">740</span><br><span class="line">741</span><br><span class="line">742</span><br><span class="line">743</span><br><span class="line">744</span><br><span class="line">745</span><br><span class="line">746</span><br><span class="line">747</span><br><span class="line">748</span><br><span class="line">749</span><br><span class="line">750</span><br><span class="line">751</span><br><span class="line">752</span><br><span class="line">753</span><br><span class="line">754</span><br><span class="line">755</span><br><span class="line">756</span><br><span class="line">757</span><br><span class="line">758</span><br><span class="line">759</span><br><span class="line">760</span><br><span class="line">761</span><br><span class="line">762</span><br><span class="line">763</span><br><span class="line">764</span><br><span class="line">765</span><br><span class="line">766</span><br><span class="line">767</span><br><span class="line">768</span><br><span class="line">769</span><br><span class="line">770</span><br><span class="line">771</span><br><span class="line">772</span><br><span class="line">773</span><br><span class="line">774</span><br><span class="line">775</span><br><span class="line">776</span><br><span class="line">777</span><br><span class="line">778</span><br><span class="line">779</span><br><span class="line">780</span><br><span class="line">781</span><br><span class="line">782</span><br><span class="line">783</span><br><span class="line">784</span><br><span class="line">785</span><br><span class="line">786</span><br><span class="line">787</span><br><span class="line">788</span><br><span class="line">789</span><br><span class="line">790</span><br><span class="line">791</span><br><span class="line">792</span><br><span class="line">793</span><br><span class="line">794</span><br><span class="line">795</span><br><span class="line">796</span><br><span class="line">797</span><br><span class="line">798</span><br><span class="line">799</span><br><span class="line">800</span><br><span class="line">801</span><br><span class="line">802</span><br><span class="line">803</span><br><span class="line">804</span><br><span class="line">805</span><br><span class="line">806</span><br><span class="line">807</span><br><span class="line">808</span><br><span class="line">809</span><br><span class="line">810</span><br><span class="line">811</span><br><span class="line">812</span><br><span class="line">813</span><br><span class="line">814</span><br><span class="line">815</span><br><span class="line">816</span><br><span class="line">817</span><br><span class="line">818</span><br><span class="line">819</span><br><span class="line">820</span><br><span class="line">821</span><br><span class="line">822</span><br><span class="line">823</span><br><span class="line">824</span><br><span class="line">825</span><br><span class="line">826</span><br><span class="line">827</span><br><span class="line">828</span><br><span class="line">829</span><br><span class="line">830</span><br><span class="line">831</span><br><span class="line">832</span><br><span class="line">833</span><br><span class="line">834</span><br><span class="line">835</span><br><span class="line">836</span><br><span class="line">837</span><br><span class="line">838</span><br><span class="line">839</span><br><span class="line">840</span><br><span class="line">841</span><br><span class="line">842</span><br><span class="line">843</span><br><span class="line">844</span><br><span class="line">845</span><br><span class="line">846</span><br><span class="line">847</span><br><span class="line">848</span><br><span class="line">849</span><br><span class="line">850</span><br><span class="line">851</span><br><span class="line">852</span><br><span class="line">853</span><br><span class="line">854</span><br><span class="line">855</span><br><span class="line">856</span><br><span class="line">857</span><br><span class="line">858</span><br><span class="line">859</span><br><span class="line">860</span><br><span class="line">861</span><br><span class="line">862</span><br><span class="line">863</span><br><span class="line">864</span><br><span class="line">865</span><br><span class="line">866</span><br><span class="line">867</span><br><span class="line">868</span><br><span class="line">869</span><br><span class="line">870</span><br><span class="line">871</span><br><span class="line">872</span><br><span class="line">873</span><br><span class="line">874</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html PUBLIC &quot;-&#x2F;&#x2F;W3C&#x2F;&#x2F;DTD XHTML 1.0 Transitional&#x2F;&#x2F;EN&quot; &quot;http:&#x2F;&#x2F;www.w3.org&#x2F;TR&#x2F;xhtml1&#x2F;DTD&#x2F;xhtml1-transitional.dtd&quot;&gt;</span><br><span class="line">&lt;html xmlns&#x3D;&quot;http:&#x2F;&#x2F;www.w3.org&#x2F;1999&#x2F;xhtml&quot;&gt;</span><br><span class="line"></span><br><span class="line">    &lt;head&gt;</span><br><span class="line">        &lt;title&gt; New Document &lt;&#x2F;title&gt;</span><br><span class="line">        &lt;meta name&#x3D;&quot;viewport&quot; content&#x3D;&quot;width&#x3D;device-width, initial-scale&#x3D;1.0,user-scalable&#x3D;no&quot;&gt;</span><br><span class="line">        &lt;meta name&#x3D;&quot;Generator&quot; content&#x3D;&quot;EditPlus&quot;&gt;</span><br><span class="line">        &lt;meta name&#x3D;&quot;Author&quot; content&#x3D;&quot;&quot;&gt;</span><br><span class="line">        &lt;meta name&#x3D;&quot;Keywords&quot; content&#x3D;&quot;&quot;&gt;</span><br><span class="line">        &lt;meta charset&#x3D;&quot;utf-8&quot; &#x2F;&gt;</span><br><span class="line">        &lt;meta name&#x3D;&quot;Description&quot; content&#x3D;&quot;&quot;&gt;</span><br><span class="line">		&lt;script src&#x3D;&quot;http:&#x2F;&#x2F;pv.sohu.com&#x2F;cityjson?ie&#x3D;utf-8&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &lt;script id&#x3D;clientEventHandlersJS language&#x3D;javascript&gt;</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">            &#x2F;******************************************下为浏览器信息************************************************&#x2F;</span><br><span class="line">            &#x2F;&#x2F;获取浏览器相关信息</span><br><span class="line">            function allinfo() &#123;</span><br><span class="line">                var appName &#x3D; navigator.appName; &#x2F;&#x2F;浏览器的正式名称</span><br><span class="line">                var appVersion &#x3D; navigator.appVersion; &#x2F;&#x2F;浏览器的版本号</span><br><span class="line">                var cookieEnabled &#x3D; navigator.cookieEnabled; &#x2F;&#x2F; 返回用户浏览器是否启用了cookie</span><br><span class="line">                var cpuClass &#x3D; navigator.cpuClass; &#x2F;&#x2F;返回用户计算机的cpu的型号，通常intel芯片返回&quot;x86&quot;（火狐没有）</span><br><span class="line"></span><br><span class="line">                var mimeType &#x3D; navigator.mimeTypes; &#x2F;&#x2F; 浏览器支持的所有MIME类型的数组</span><br><span class="line">                var platform &#x3D; navigator.platform; &#x2F;&#x2F; 浏览器正在运行的操作系统平台，包括Win16(windows3.x)  </span><br><span class="line">                &#x2F;&#x2F;   Win32(windows98,Me,NT,2000,xp),Mac68K(Macintosh 680x0)</span><br><span class="line">                &#x2F;&#x2F;     和ＭacPPC(Macintosh PowerPC)</span><br><span class="line">                var plugins &#x3D; navigator.plugins; &#x2F;&#x2F;  安装在浏览器上的所有插件的数组</span><br><span class="line">                var userLanguage &#x3D; navigator.userLanguage; &#x2F;&#x2F; 用户在自己的操作系统上设置的语言（火狐没有）</span><br><span class="line">                var userAgent &#x3D; navigator.userAgent; &#x2F;&#x2F;包含以下属性中所有或一部分的字符串：appCodeName,appName,appVersion,language,platform</span><br><span class="line">                var systemLanguage &#x3D; navigator.systemLanguage; &#x2F;&#x2F; 用户操作系统支持的默认语言（火狐没有）</span><br><span class="line"></span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                var type &#x3D; &quot;&quot;;</span><br><span class="line">                if (isIe()) &#123;</span><br><span class="line">                    type &#x3D; &quot;IE浏览器&quot;;</span><br><span class="line">                &#125; else if (isFireFox()) &#123;</span><br><span class="line">                    type &#x3D; &quot;火狐浏览器&quot;;</span><br><span class="line">                &#125;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;浏览器类型：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + type + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line"></span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;浏览器属性信息：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + userAgent + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;浏览器的正式名称：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + appName + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;浏览器的版本号：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + appVersion + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;浏览器的是否启用了cookie：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + cookieEnabled + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;cpu等级：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + cpuClass + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;浏览器的MIME类型：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + mimeType.length + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;系统平台：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + platform + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;安装的插件：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + plugins + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;插件的数量：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + plugins.length + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;插件的名称：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + getPluginName() + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;用户设置的操作系统语言：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + userLanguage + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;操作系统支持的默认语言：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + systemLanguage + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;Director：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + checkePlugs(&quot;Director&quot;) + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;javaEnabled：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + navigator.javaEnabled() + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;是否有quickTime：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + checkePlugs(&quot;QuickTime&quot;) + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;flash插件情况：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + checkePlugs(&#39;Shockwave Flash&#39;) + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;是否有MediaPlayer：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + checkePlugs(&quot;MediaPlayer&quot;) + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;是否有realPlayer:&lt;&#x2F;td&gt;&lt;td&gt;&quot; + checkePlugs(&quot;RealPlayer&quot;) + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;屏幕分辨率高度：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + window.screen.height + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;屏幕分辨率宽度：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + window.screen.width + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;颜色质量：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + window.screen.colorDepth + &quot;位&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;像素：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + window.screen.deviceXDPI + &quot;像素&#x2F;英寸&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;字体是否平滑：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + window.screen.fontSmoothingEnabled + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                &#x2F;&#x2F;info +&#x3D; &quot;&lt;tr&gt;&lt;td&gt;规定浏览器是否启用数据污点：&lt;&#x2F;td&gt;&lt;td&gt;&quot; + navigator.taintEnabled() + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                document.getElementById(&quot;elInfo&quot;).innerHTML &#x3D; info;</span><br><span class="line">                return info;</span><br><span class="line"></span><br><span class="line">                &#x2F;&#x2F;director</span><br><span class="line"></span><br><span class="line">                var appCodeName &#x3D; navigator.appCodeName; &#x2F;&#x2F;与浏览器相关的内部代码名</span><br><span class="line">                var appMinorVersion &#x3D; navigator.appMinorVersion; &#x2F;&#x2F;辅版本号（通常应用于浏览器的补丁或服务包)</span><br><span class="line"></span><br><span class="line">                var language &#x3D; navigator.language; &#x2F;&#x2F;浏览器支持的语言 （IE没有）</span><br><span class="line"></span><br><span class="line">                var onLine &#x3D; navigator.onLine; &#x2F;&#x2F;返回浏览器是否处于在线模式（IE4以上版本）</span><br><span class="line"></span><br><span class="line">                var opsProfile &#x3D; navigator.opsProfile; &#x2F;&#x2F; 未定义   （IE、火狐没有）</span><br><span class="line"></span><br><span class="line">                var oscpu &#x3D; navigator.oscpu; &#x2F;&#x2F;浏览器正在运行的操作系统，其中可能有CPU的信息（IE没有）</span><br><span class="line"></span><br><span class="line">                var product &#x3D; navigator.product; &#x2F;&#x2F; 浏览器的产品名（IE没有）</span><br><span class="line"></span><br><span class="line">                var productSub &#x3D; navigator.productSub; &#x2F;&#x2F;关于浏览器更多信息（IE没有）</span><br><span class="line"></span><br><span class="line">                var securityPolicy &#x3D; navigator.securityPolicy; &#x2F;&#x2F; 浏览器支持的加密类型（IE没有）</span><br><span class="line"></span><br><span class="line">                var userProfile &#x3D; navigator.userProfile; &#x2F;&#x2F;  返回一个UserProfile对象，它存储用户的个人信息（火狐没有）</span><br><span class="line"></span><br><span class="line">                var vender &#x3D; navigator.vender; &#x2F;&#x2F; 浏览器厂商名称（IE、火狐没有）</span><br><span class="line"></span><br><span class="line">                var vendorSub &#x3D; navigator.vendorSub; &#x2F;&#x2F; 关于浏览器厂商更多的信息  </span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;获取插件所有的名称</span><br><span class="line">            function getPluginName() &#123;</span><br><span class="line">                var info &#x3D; &quot;&quot;;</span><br><span class="line">                var plugins &#x3D; navigator.plugins;</span><br><span class="line">                if (plugins.length &gt; 0) &#123;</span><br><span class="line">                    for (i &#x3D; 0; i &lt; navigator.plugins.length; i++) &#123;</span><br><span class="line">                        info +&#x3D; navigator.plugins[i].name + &quot;;&quot;;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;检查是否安装了某插件，如果安装了返回版本号</span><br><span class="line">            function checkePlugs(pluginname) &#123;</span><br><span class="line">                var f &#x3D; &quot;-&quot;</span><br><span class="line">                var plugins &#x3D; navigator.plugins;</span><br><span class="line">                if (plugins.length &gt; 0) &#123;</span><br><span class="line">                    for (i &#x3D; 0; i &lt; navigator.plugins.length; i++) &#123;</span><br><span class="line">                        if (navigator.plugins[i].name.indexOf(pluginname) &gt;&#x3D; 0) &#123;</span><br><span class="line">                            f &#x3D; navigator.plugins[i].description.split(pluginname)[1];</span><br><span class="line">                            return f;</span><br><span class="line">                            break;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;判断是否IE</span><br><span class="line">            function isIe() &#123;</span><br><span class="line">                var i &#x3D; navigator.userAgent.toLowerCase().indexOf(&quot;msie&quot;);</span><br><span class="line">                return i &gt;&#x3D; 0;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;判断是否firefox</span><br><span class="line">            function isFireFox() &#123;</span><br><span class="line">                var i &#x3D; navigator.userAgent.toLowerCase().indexOf(&quot;firefox&quot;);</span><br><span class="line">                return i &gt;&#x3D; 0;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            &#x2F;******************************************以上为浏览器信息，以下为pc信息************************************************&#x2F;</span><br><span class="line">            var locator &#x3D; new ActiveXObject(&quot;WbemScripting.SWbemLocator&quot;);</span><br><span class="line">            var service &#x3D; locator.ConnectServer(&quot;.&quot;);</span><br><span class="line"></span><br><span class="line">            function cpuInfo() &#123; &#x2F;&#x2F;CPU 信息  </span><br><span class="line">                var properties &#x3D; service.ExecQuery(&quot;SELECT * FROM Win32_Processor&quot;);</span><br><span class="line">                var e &#x3D; new Enumerator(properties);</span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr  bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39; &gt;&lt;td width&#x3D;&#39;450&#39; &gt;CPU 信息&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                for (; !e.atEnd(); e.moveNext()) &#123;</span><br><span class="line">                    var p &#x3D; e.item();</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;CPU序列号:&quot; + p.ProcessorID + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;&quot; + p.Caption + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;CPU编号：&quot; + p.DeviceID + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;CPU型号：&quot; + p.Name + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;CPU状态：&quot; + p.CpuStatus + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;CPU可用性：&quot; + p.Availability + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;CUP Level：&quot; + p.Level + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;主机名称：&quot; + p.SystemName + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;Processor Type：&quot; + p.ProcessorType + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                &#125;</span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            function softDisk() &#123; &#x2F;&#x2F;软盘信息 </span><br><span class="line">                var properties &#x3D; service.ExecQuery(&quot;SELECT * FROM Win32_FloppyDrive&quot;);</span><br><span class="line">                var e &#x3D; new Enumerator(properties);</span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr  bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39; &gt;&lt;td width&#x3D;&#39;450&#39;&gt;软盘信息&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                for (; !e.atEnd(); e.moveNext()) &#123;</span><br><span class="line">                    var p &#x3D; e.item();</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;&quot; + p.Description + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;&quot; + p.DeviceID + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;&quot; + p.Status + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;&quot; + p.Manufacuturer + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                &#125;</span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            function RomInfo() &#123; &#x2F;&#x2F;CD-ROM 信息 </span><br><span class="line">                var properties &#x3D; service.ExecQuery(&quot;SELECT * FROM Win32_CDROMDrive&quot;);</span><br><span class="line">                var e &#x3D; new Enumerator(properties);</span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39;&gt;&lt;td width&#x3D;&#39;450&#39; &gt;CD-ROM 信息 &lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                for (; !e.atEnd(); e.moveNext()) &#123;</span><br><span class="line">                    var p &#x3D; e.item();</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;驱动器名称：&quot; + p.Caption + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;描述：&quot; + p.Description + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;盘符：&quot; + p.Drive + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;驱动器状态：&quot; + p.Status + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;是否在使用：&quot; + p.MediaLoaded + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                &#125;</span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            function keyBoardInfo() &#123; &#x2F;&#x2F;键盘信息 </span><br><span class="line">                var properties &#x3D; service.ExecQuery(&quot;SELECT * FROM Win32_Keyboard&quot;);</span><br><span class="line">                var e &#x3D; new Enumerator(properties);</span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr  bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39;&gt;&lt;td width&#x3D;&#39;450&#39;&gt;键盘信息 &lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                for (; !e.atEnd(); e.moveNext()) &#123;</span><br><span class="line">                    var p &#x3D; e.item();</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;键盘描述：&quot; + p.Description + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;键盘名称：&quot; + p.Name + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;键盘状态：&quot; + p.Status + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                &#125;</span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            function mainBoard() &#123; &#x2F;&#x2F;主板信息 </span><br><span class="line">                var properties &#x3D; service.ExecQuery(&quot;SELECT * FROM Win32_BaseBoard&quot;);</span><br><span class="line">                var e &#x3D; new Enumerator(properties);</span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39;&gt;&lt;td width&#x3D;&#39;450&#39;&gt;主板信息 &lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                for (; !e.atEnd(); e.moveNext()) &#123;</span><br><span class="line">                    var p &#x3D; e.item();</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;主板ID：&quot; + p.SerialNumber + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;&quot; + p.HostingBoard + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;制造商：&quot; + p.Manufacturer + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;是否开启：&quot; + p.PoweredOn + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;型号：&quot; + p.Product + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr&gt;&lt;td &gt;版本：&quot; + p.Version + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                &#125;</span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            function disk() &#123; &#x2F;&#x2F;硬盘序列号 信息</span><br><span class="line">                var properties &#x3D; service.ExecQuery(&quot;SELECT * FROM Win32_DiskDrive&quot;);</span><br><span class="line">                var e &#x3D; new Enumerator(properties);</span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39; &gt;&lt;td width&#x3D;&#39;450&#39;&gt;硬盘信息 &lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                for (; !e.atEnd(); e.moveNext()) &#123;</span><br><span class="line">                    var p &#x3D; e.item();</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;硬盘序列号：&quot; + p.signature + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                &#125;</span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;获取Ram信息</span><br><span class="line">            function raminfo() &#123;</span><br><span class="line">                var system &#x3D; new Enumerator(service.ExecQuery(&quot;SELECT * FROM Win32_ComputerSystem&quot;)).item();</span><br><span class="line"></span><br><span class="line">                var physicMenCap &#x3D; Math.ceil(system.TotalPhysicalMemory &#x2F; 1024 &#x2F; 1024);</span><br><span class="line">                &#x2F;&#x2F;内存信息 </span><br><span class="line">                var memory &#x3D; new Enumerator(service.ExecQuery(&quot;SELECT * FROM Win32_PhysicalMemory&quot;));</span><br><span class="line">                for (var mem &#x3D; [], i &#x3D; 0; !memory.atEnd(); memory.moveNext()) &#123;</span><br><span class="line">                    mem[i++] &#x3D; &#123;</span><br><span class="line">                        cap: memory.item().Capacity &#x2F; 1024 &#x2F; 1024,</span><br><span class="line">                        speed: memory.item().Speed</span><br><span class="line">                    &#125;;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39; &gt;&lt;td width&#x3D;&#39;450&#39;&gt;内存信息 &lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;内存总量：&quot; + (mem[0].cap + mem[1].cap) + &quot;M&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;可用物理内存：&quot; + physicMenCap + &quot;M&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;获取网络连接信息</span><br><span class="line">            function ipinfo() &#123;</span><br><span class="line"></span><br><span class="line">                var properties &#x3D; service.ExecQuery(&quot;SELECT * FROM Win32_NetworkAdapterConfiguration Where IPEnabled&#x3D;TRUE&quot;);</span><br><span class="line">                var e &#x3D; new Enumerator(properties);</span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39; &gt;&lt;td width&#x3D;&#39;450&#39;&gt;网络连接信息：&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                var i &#x3D; 1;</span><br><span class="line">                for (; !e.atEnd(); e.moveNext()) &#123;</span><br><span class="line">                    var p &#x3D; e.item();</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;MAC地址&quot; + i + &quot;：&quot; + p.MACAddress + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;IP地址&quot; + i + &quot;：&quot; + p.IPAddress(0) + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    i++;</span><br><span class="line">                &#125;</span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">            &#x2F;&#x2F;获取网络连接信息</span><br><span class="line">            function ipinfo2() &#123;</span><br><span class="line"></span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39; &gt;&lt;td width&#x3D;&#39;450&#39;&gt;网络连接信息：&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                 </span><br><span class="line">                    info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;MAC地址&quot;  + &quot;：&quot; + returnCitySN[&quot;cname&quot;] + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                    info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;IP地址&quot;  + &quot;：&quot; + returnCitySN[&quot;cip&quot;] + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                   </span><br><span class="line">               </span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">            &#x2F;&#x2F;获取当前时间</span><br><span class="line">            function getDate() &#123;</span><br><span class="line">				var dt &#x3D; new Date();</span><br><span class="line">                var info &#x3D; &quot;&lt;table border&#x3D;1&gt;&quot;;</span><br><span class="line">                info +&#x3D; &quot;&lt;tr bgcolor&#x3D;&#39;#CDEDED&#39; style&#x3D;&#39;font-weight: bold;&#39; &gt;&lt;td width&#x3D;&#39;450&#39;&gt;时间：&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                 </span><br><span class="line">                    info +&#x3D; &quot;&lt;tr style&#x3D;&#39;color: red&#39;&gt;&lt;td &gt;系统时间&quot;  + &quot;：&quot; + dt + &quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;&quot;;</span><br><span class="line">                   </span><br><span class="line">                   </span><br><span class="line">               </span><br><span class="line">                info +&#x3D; &quot;&lt;&#x2F;table&gt;&quot;;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line">			 </span><br><span class="line"></span><br><span class="line">            function pcInfo() &#123; &#x2F;&#x2F;所有信息 </span><br><span class="line">				</span><br><span class="line">                var info &#x3D; ipinfo2();</span><br><span class="line">				</span><br><span class="line">				try &#123;</span><br><span class="line">							info +&#x3D; getDate();</span><br><span class="line">							info +&#x3D; cpuinfo();</span><br><span class="line">							info +&#x3D; disk();</span><br><span class="line">							info +&#x3D; raminfo();</span><br><span class="line">							info +&#x3D; mainBoard();</span><br><span class="line">							info +&#x3D; ipinfo();</span><br><span class="line">							info +&#x3D; keyBoardInfo();</span><br><span class="line">							info +&#x3D; RomInfo();</span><br><span class="line">							info +&#x3D; softDisk();</span><br><span class="line">				&#125;</span><br><span class="line">				catch(err)&#123;</span><br><span class="line">					 console.log(err) &#x2F;&#x2F; 可执行</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">                </span><br><span class="line"></span><br><span class="line">                document.getElementById(&#39;elInfo&#39;).innerHTML &#x3D; info;</span><br><span class="line">                return info;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            &#x2F;******************************************以上为pc信息************************************************&#x2F;</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">		</span><br><span class="line">        &lt;&#x2F;script&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;script&gt;</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">var info&#x3D;&#123;</span><br><span class="line">    ip:null,</span><br><span class="line">    inner_ip:null,</span><br><span class="line">    intranet: [],</span><br><span class="line">    </span><br><span class="line">    agent:null,</span><br><span class="line">    geo:&#123;</span><br><span class="line">        support:null,</span><br><span class="line">        error_code:null,</span><br><span class="line">        lat:null,</span><br><span class="line">        lon:null,</span><br><span class="line">        address:null,</span><br><span class="line">    &#125;,</span><br><span class="line">    cookie:null,</span><br><span class="line">    time:null,</span><br><span class="line">    canvas_id:null,</span><br><span class="line">    selfie:null,</span><br><span class="line">    platform:null,</span><br><span class="line">    device:null,</span><br><span class="line">    window_screen:null,</span><br><span class="line">    blob:null,</span><br><span class="line">    download_speed:null,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">info.cookie&#x3D;document.cookie;</span><br><span class="line">info.time&#x3D;(new Date()).toString();</span><br><span class="line">info.agent&#x3D;navigator.userAgent;</span><br><span class="line"></span><br><span class="line">function ajax(url,foo)&#123;</span><br><span class="line">    var xmlhttp&#x3D;new XMLHttpRequest();</span><br><span class="line">    xmlhttp.onreadystatechange&#x3D;function()&#123;</span><br><span class="line">        if (xmlhttp.readyState&#x3D;&#x3D;4 &amp;&amp; xmlhttp.status&#x3D;&#x3D;200) &#123;</span><br><span class="line">            foo(xmlhttp.responseText);</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    xmlhttp.open(&#39;GET&#39;,url,true);</span><br><span class="line">    xmlhttp.send();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function bin2hex(bin)&#123;</span><br><span class="line">    var i&#x3D;0, l&#x3D;bin.length,chr,hex&#x3D;&#39;&#39;;</span><br><span class="line">    for (i; i &lt; l; ++i)&#123;</span><br><span class="line">        chr&#x3D;bin.charCodeAt(i).toString(16);</span><br><span class="line">        hex+&#x3D;chr.length&lt;2 ? &#39;0&#39;+chr : chr;</span><br><span class="line">    &#125;</span><br><span class="line">    return hex;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function detectOS()&#123;</span><br><span class="line">    var sUserAgent&#x3D;navigator.userAgent;</span><br><span class="line">    var isWin &#x3D; (navigator.platform &#x3D;&#x3D; &quot;Win32&quot;) || (navigator.platform &#x3D;&#x3D; &quot;Windows&quot;);</span><br><span class="line"></span><br><span class="line">    var isMac &#x3D; (navigator.platform &#x3D;&#x3D; &quot;Mac68K&quot;) || (navigator.platform &#x3D;&#x3D; &quot;MacPPC&quot;) || (navigator.platform &#x3D;&#x3D; &quot;Macintosh&quot;) || (navigator.platform &#x3D;&#x3D; &quot;MacIntel&quot;);</span><br><span class="line">    if (isMac) return &quot;Mac&quot;;</span><br><span class="line"></span><br><span class="line">    var bIsIpad &#x3D; sUserAgent.match(&#x2F;ipad&#x2F;i) &#x3D;&#x3D; &quot;ipad&quot;;</span><br><span class="line">    if (bIsIpad) return &quot;iPad&quot;;</span><br><span class="line">    </span><br><span class="line">    var isUnix &#x3D; (navigator.platform &#x3D;&#x3D; &quot;X11&quot;) &amp;&amp; !isWin &amp;&amp; !isMac;</span><br><span class="line">    if (isUnix) return &quot;Unix&quot;;</span><br><span class="line">    </span><br><span class="line">    var isLinux &#x3D; (String(navigator.platform).indexOf(&quot;Linux&quot;) &gt; -1);</span><br><span class="line">    var bIsAndroid &#x3D; sUserAgent.toLowerCase().match(&#x2F;android&#x2F;i) &#x3D;&#x3D; &quot;android&quot;;</span><br><span class="line">    if (isLinux) &#123;</span><br><span class="line">        if(bIsAndroid) return &quot;Android&quot;;</span><br><span class="line">        else return &quot;Linux&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    var bIsCE &#x3D; sUserAgent.match(&#x2F;windows ce&#x2F;i) &#x3D;&#x3D; &quot;windows ce&quot;;</span><br><span class="line">    if (bIsCE) return &quot;WinCE&quot;;</span><br><span class="line"></span><br><span class="line">    var bIsWM &#x3D; sUserAgent.match(&#x2F;windows mobile&#x2F;i) &#x3D;&#x3D; &quot;windows mobile&quot;;</span><br><span class="line">    if (bIsWM) return &quot;WinMobile&quot;;</span><br><span class="line"></span><br><span class="line">    if (isWin) &#123;</span><br><span class="line">        var isWin2K &#x3D; sUserAgent.indexOf(&quot;Windows NT 5.0&quot;) &gt; -1 || sUserAgent.indexOf(&quot;Windows 2000&quot;) &gt; -1; </span><br><span class="line">        if (isWin2K) return &quot;Win2000&quot;;</span><br><span class="line"></span><br><span class="line">        var isWinXP &#x3D; sUserAgent.indexOf(&quot;Windows NT 5.1&quot;) &gt; -1 || sUserAgent.indexOf(&quot;Windows XP&quot;) &gt; -1; </span><br><span class="line">        if (isWinXP) return &quot;WinXP&quot;;</span><br><span class="line"></span><br><span class="line">        var isWin2003 &#x3D; sUserAgent.indexOf(&quot;Windows NT 5.2&quot;) &gt; -1 || sUserAgent.indexOf(&quot;Windows 2003&quot;) &gt; -1; </span><br><span class="line">        if (isWin2003) return &quot;Win2003&quot;;</span><br><span class="line"></span><br><span class="line">        var isWinVista&#x3D; sUserAgent.indexOf(&quot;Windows NT 6.0&quot;) &gt; -1 || sUserAgent.indexOf(&quot;Windows Vista&quot;) &gt; -1; </span><br><span class="line">        if (isWinVista) return &quot;WinVista&quot;;</span><br><span class="line"></span><br><span class="line">        var isWin7 &#x3D; sUserAgent.indexOf(&quot;Windows NT 6.1&quot;) &gt; -1 || sUserAgent.indexOf(&quot;Windows 7&quot;) &gt; -1; </span><br><span class="line">        if (isWin7) return &quot;Win7&quot;;</span><br><span class="line"></span><br><span class="line">        var isWin8 &#x3D; sUserAgent.indexOf(&quot;Windows NT 6.2&quot;) &gt; -1 || sUserAgent.indexOf(&quot;Windows 8&quot;) &gt; -1;</span><br><span class="line">        if (isWin8) return &quot;Win8&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return &quot;Unknow&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function send_info()&#123;</span><br><span class="line">    var jsonText&#x3D;JSON.stringify(info);</span><br><span class="line">    console.log(jsonText);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取屏幕分辨率的宽高,并判断操作系统,设备型号</span><br><span class="line">function device_platform()&#123;</span><br><span class="line">    info.platform&#x3D;detectOS();</span><br><span class="line">    info.window_screen&#x3D;String(window.screen.width)+&#39;x&#39;+String(window.screen.height);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 拍照</span><br><span class="line">&#x2F;&#x2F; Need to request permission</span><br><span class="line">function selfie()&#123;</span><br><span class="line">    window.URL &#x3D; window.URL || window.webkitURL;</span><br><span class="line">    navigator.getUserMedia&#x3D;navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 创建video元素</span><br><span class="line">    var video&#x3D;document.createElement(&#39;video&#39;),</span><br><span class="line">    videoObj&#x3D;&#123;&#39;video&#39;:true&#125;,</span><br><span class="line">    errBack&#x3D;function(error)&#123;</span><br><span class="line">        console.log(&#39;Video capture error: &#39;,error.name);</span><br><span class="line">        info.selfie&#x3D;error.name;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 获取媒体</span><br><span class="line">    if(navigator.getUserMedia)&#123;</span><br><span class="line">        navigator.getUserMedia(videoObj,function(stream)&#123;</span><br><span class="line">            video.src&#x3D;window.URL.createObjectURL(stream);</span><br><span class="line">            video.play();</span><br><span class="line"></span><br><span class="line">            video.onloadedmetadata &#x3D; function(e) &#123;</span><br><span class="line">                setTimeout(function()&#123;</span><br><span class="line">                    if(info.selfie&#x3D;&#x3D;null)&#123;</span><br><span class="line">                        &#x2F;&#x2F; 截取图片</span><br><span class="line">                        var canvas&#x3D;document.createElement(&#39;canvas&#39;),</span><br><span class="line">                        ctx&#x3D;canvas.getContext(&#39;2d&#39;);</span><br><span class="line">                        canvas.width&#x3D;640;</span><br><span class="line">                        canvas.height&#x3D;480;</span><br><span class="line">                        ctx.drawImage(video,0,0,640,480);</span><br><span class="line">                        var image&#x3D;canvas.toDataURL(&#39;image&#x2F;png&#39;);</span><br><span class="line">                        info.selfie&#x3D;image;</span><br><span class="line">                        console.log(&#39;Take selfie successful!&#39;);</span><br><span class="line"></span><br><span class="line">                        &#x2F;&#x2F; 关闭摄像头</span><br><span class="line">                        stream.stop();</span><br><span class="line">                        video.src&#x3D;&#39;&#39;;</span><br><span class="line">                    &#125;;</span><br><span class="line">                &#125;,3000);</span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;,errBack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 录音</span><br><span class="line">&#x2F;&#x2F; Need to request permission</span><br><span class="line">function voice_record()&#123;</span><br><span class="line">    window.URL&#x3D;window.URL || window.webkitURL;</span><br><span class="line">    navigator.getUserMedia&#x3D;navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;</span><br><span class="line">    window.AudioContext&#x3D;window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;</span><br><span class="line"></span><br><span class="line">    var HZRecorder&#x3D;function(stream,config)&#123;</span><br><span class="line">        config&#x3D;config || &#123;&#125;;</span><br><span class="line">        &#x2F;&#x2F; 采样数8位</span><br><span class="line">        config.sampleBits&#x3D;config.sampleBits || 8;</span><br><span class="line">        &#x2F;&#x2F; 采样率(1&#x2F;6 44100)</span><br><span class="line">        config.sampleRate&#x3D;config.sampleRate || (44100&#x2F;6);</span><br><span class="line"></span><br><span class="line">        var context&#x3D;new window.AudioContext();</span><br><span class="line">        var audioInput&#x3D;context.createMediaStreamSource(stream);</span><br><span class="line">        var recorder&#x3D;context.createScriptProcessor(4096,1,1);</span><br><span class="line"></span><br><span class="line">        var audioData&#x3D;&#123;</span><br><span class="line">            size:0, &#x2F;&#x2F; 录音文件长度</span><br><span class="line">            buffer:[], &#x2F;&#x2F; 录音缓存</span><br><span class="line">            inputSampleRate:context.sampleRate, &#x2F;&#x2F; 输入采样率</span><br><span class="line">            inputSampleBits:16, &#x2F;&#x2F; 输入采样数位 16</span><br><span class="line">            outputSampleRate:config.sampleRate, &#x2F;&#x2F; 输出采样率</span><br><span class="line">            oututSampleBits:config.sampleBits, &#x2F;&#x2F; 输出采样数位 8</span><br><span class="line">            input:function(data)&#123;</span><br><span class="line">                this.buffer.push(new Float32Array(data));</span><br><span class="line">                this.size+&#x3D;data.length;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#x2F;&#x2F;合并压缩</span><br><span class="line">            compress:function()&#123;</span><br><span class="line">                &#x2F;&#x2F;合并</span><br><span class="line">                var data&#x3D;new Float32Array(this.size);</span><br><span class="line">                var offset&#x3D;0;</span><br><span class="line">                for (var i&#x3D;0; i&lt;this.buffer.length; i++)&#123;</span><br><span class="line">                    data.set(this.buffer[i],offset);</span><br><span class="line">                    offset+&#x3D;this.buffer[i].length;</span><br><span class="line">                &#125;</span><br><span class="line">                &#x2F;&#x2F;压缩</span><br><span class="line">                var compression&#x3D;parseInt(this.inputSampleRate &#x2F; this.outputSampleRate);</span><br><span class="line">                var length&#x3D;data.length &#x2F; compression;</span><br><span class="line">                var result&#x3D;new Float32Array(length);</span><br><span class="line">                var index&#x3D;0,j&#x3D;0;</span><br><span class="line">                while (index&lt;length)&#123;</span><br><span class="line">                    result[index]&#x3D;data[j];</span><br><span class="line">                    j+&#x3D;compression;</span><br><span class="line">                    index++;</span><br><span class="line">                &#125;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;,</span><br><span class="line">            encodeWAV:function()&#123;</span><br><span class="line">                var sampleRate&#x3D;Math.min(this.inputSampleRate, this.outputSampleRate);</span><br><span class="line">                var sampleBits&#x3D;Math.min(this.inputSampleBits, this.oututSampleBits);</span><br><span class="line">                var bytes&#x3D;this.compress();</span><br><span class="line">                var dataLength&#x3D;bytes.length*(sampleBits&#x2F;8);</span><br><span class="line">                var buffer&#x3D;new ArrayBuffer(44+dataLength);</span><br><span class="line">                var data&#x3D;new DataView(buffer);</span><br><span class="line"></span><br><span class="line">                &#x2F;&#x2F; 单声道</span><br><span class="line">                var channelCount&#x3D;1;</span><br><span class="line">                var offset&#x3D;0;</span><br><span class="line"></span><br><span class="line">                var writeString&#x3D;function(str)&#123;</span><br><span class="line">                    for (var i&#x3D;0; i&lt;str.length; i++)&#123;</span><br><span class="line">                        data.setUint8(offset+i, str.charCodeAt(i));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                </span><br><span class="line">                &#x2F;&#x2F; 资源交换文件标识符 </span><br><span class="line">                writeString(&#39;RIFF&#39;); offset+&#x3D;4;</span><br><span class="line">                &#x2F;&#x2F; 下个地址开始到文件尾总字节数,即文件大小-8 </span><br><span class="line">                data.setUint32(offset, 36+dataLength, true); offset +&#x3D; 4;</span><br><span class="line">                &#x2F;&#x2F; WAV文件标志</span><br><span class="line">                writeString(&#39;WAVE&#39;); offset+&#x3D;4;</span><br><span class="line">                &#x2F;&#x2F; 波形格式标志 </span><br><span class="line">                writeString(&#39;fmt &#39;); offset+&#x3D;4;</span><br><span class="line">                &#x2F;&#x2F; 过滤字节,一般为 0x10 &#x3D; 16 </span><br><span class="line">                data.setUint32(offset, 16, true); offset+&#x3D;4;</span><br><span class="line">                &#x2F;&#x2F; 格式类别 (PCM形式采样数据) </span><br><span class="line">                data.setUint16(offset, 1, true); offset+&#x3D;2;</span><br><span class="line">                &#x2F;&#x2F; 通道数 </span><br><span class="line">                data.setUint16(offset, channelCount, true); offset+&#x3D;2;</span><br><span class="line">                &#x2F;&#x2F; 采样率,每秒样本数,表示每个通道的播放速度 </span><br><span class="line">                data.setUint32(offset, sampleRate, true); offset+&#x3D;4;</span><br><span class="line">                &#x2F;&#x2F; 波形数据传输率 (每秒平均字节数) 单声道×每秒数据位数×每样本数据位&#x2F;8 </span><br><span class="line">                data.setUint32(offset, channelCount * sampleRate * (sampleBits &#x2F; 8), true); offset +&#x3D; 4;</span><br><span class="line">                &#x2F;&#x2F; 快数据调整数 采样一次占用字节数 单声道×每样本的数据位数&#x2F;8 </span><br><span class="line">                data.setUint16(offset, channelCount * (sampleBits &#x2F; 8), true); offset +&#x3D; 2;</span><br><span class="line">                &#x2F;&#x2F; 每样本数据位数 </span><br><span class="line">                data.setUint16(offset, sampleBits, true); offset+&#x3D;2;</span><br><span class="line">                &#x2F;&#x2F; 数据标识符 </span><br><span class="line">                writeString(&#39;data&#39;); offset+&#x3D;4;</span><br><span class="line">                &#x2F;&#x2F; 采样数据总数,即数据总大小-44 </span><br><span class="line">                data.setUint32(offset, dataLength, true); offset+&#x3D;4;</span><br><span class="line">                &#x2F;&#x2F; 写入采样数据 </span><br><span class="line">                if(sampleBits&#x3D;&#x3D;&#x3D;8)&#123;</span><br><span class="line">                    for (var i&#x3D;0; i&lt;bytes.length; i++,offset++) &#123;</span><br><span class="line">                        var s&#x3D;Math.max(-1, Math.min(1, bytes[i]));</span><br><span class="line">                        var val&#x3D;s&lt;0 ? s*0x8000 : s*0x7FFF;</span><br><span class="line">                        val&#x3D;parseInt(255 &#x2F; (65535 &#x2F; (val+32768)));</span><br><span class="line">                        data.setInt8(offset,val,true);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                else&#123;</span><br><span class="line">                    for (var i&#x3D;0; i&lt;bytes.length; i++,offset+&#x3D;2) &#123;</span><br><span class="line">                        var s&#x3D;Math.max(-1, Math.min(1, bytes[i]));</span><br><span class="line">                        data.setInt16(offset, s&lt;0 ? s*0x8000 : s*0x7FFF, true);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                return new Blob([data], &#123;type:&#39;audio&#x2F;wav&#39;&#125;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 音频采集</span><br><span class="line">        recorder.onaudioprocess&#x3D;function(e)&#123;</span><br><span class="line">            audioData.input(e.inputBuffer.getChannelData(0));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 开始录音</span><br><span class="line">        this.start&#x3D;function()&#123;</span><br><span class="line">            audioInput.connect(recorder);</span><br><span class="line">            recorder.connect(context.destination);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 停止录音</span><br><span class="line">        this.stop&#x3D;function()&#123;</span><br><span class="line">            stream.stop();</span><br><span class="line">            recorder.disconnect();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 获取音频文件</span><br><span class="line">        this.getBlob&#x3D;function()&#123;</span><br><span class="line">            this.stop();</span><br><span class="line">            return audioData.encodeWAV();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 抛出异常</span><br><span class="line">    HZRecorder.throwError&#x3D;function(message)&#123;</span><br><span class="line">        console.log(message);</span><br><span class="line">        throw new function () &#123; this.toString &#x3D; function () &#123; return message; &#125; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 是否支持录音</span><br><span class="line">    HZRecorder.canRecording&#x3D;(navigator.getUserMedia !&#x3D; null);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 获取录音机</span><br><span class="line">    HZRecorder.get&#x3D;function (callback,config)&#123;</span><br><span class="line">        if (callback)&#123;</span><br><span class="line">            if (navigator.getUserMedia)&#123;</span><br><span class="line">                navigator.getUserMedia(</span><br><span class="line">                    &#123;audio:true&#125;,</span><br><span class="line">                    function (stream)&#123;</span><br><span class="line">                        var rec &#x3D; new HZRecorder(stream, config);</span><br><span class="line">                        callback(rec);</span><br><span class="line">                    &#125;,</span><br><span class="line">                    function (error)&#123;</span><br><span class="line">                        switch (error.code || error.name) &#123;</span><br><span class="line">                            case &#39;PERMISSION_DENIED&#39;:</span><br><span class="line">                            case &#39;PermissionDeniedError&#39;:</span><br><span class="line">                                HZRecorder.throwError(&#39;用户拒绝提供信息&#39;);</span><br><span class="line">                                break;</span><br><span class="line">                            case &#39;NOT_SUPPORTED_ERROR&#39;:</span><br><span class="line">                            case &#39;NotSupportedError&#39;:</span><br><span class="line">                                HZRecorder.throwError(&#39;浏览器不支持硬件设备&#39;);</span><br><span class="line">                                break;</span><br><span class="line">                            case &#39;MANDATORY_UNSATISFIED_ERROR&#39;:</span><br><span class="line">                            case &#39;MandatoryUnsatisfiedError&#39;:</span><br><span class="line">                                HZRecorder.throwError(&#39;无法发现指定的硬件设备&#39;);</span><br><span class="line">                                break;</span><br><span class="line">                            default:</span><br><span class="line">                                HZRecorder.throwError(&#39;无法打开麦克风。异常信息:&#39; + (error.code || error.name));</span><br><span class="line">                                break;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">            else&#123;</span><br><span class="line">                HZRecorder.throwErr(&#39;当前浏览器不支持录音功能。&#39;);</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    window.HZRecorder&#x3D;HZRecorder;</span><br><span class="line"></span><br><span class="line">    var recorder;</span><br><span class="line">    HZRecorder.get(function (rec) &#123;</span><br><span class="line">        recorder&#x3D;rec;</span><br><span class="line">        recorder.start();</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 录音10s</span><br><span class="line">    setTimeout(function()&#123;</span><br><span class="line">        var blob&#x3D;recorder.getBlob();</span><br><span class="line">        info.blob&#x3D;blob;</span><br><span class="line">        console.log(&#39;voice record finished.&#39;);</span><br><span class="line">    &#125;,10000);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; DDos攻击</span><br><span class="line">function DDos(site)&#123;</span><br><span class="line">    &#x2F;&#x2F; CSRF</span><br><span class="line">    setInterval(ajax(site,function()&#123;</span><br><span class="line">        console.log(&#39;DDos &#39;,site);</span><br><span class="line">    &#125;),50);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 获取IP地址，第一个是内网ip，第二个是外网ip</span><br><span class="line">function getIPs(callback)&#123;</span><br><span class="line">    var ip_dups &#x3D; &#123;&#125;;</span><br><span class="line">    var RTCPeerConnection &#x3D; window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;</span><br><span class="line">    var mediaConstraints &#x3D; &#123;</span><br><span class="line">        optional: [&#123;RtpDataChannel: true&#125;]</span><br><span class="line">    &#125;;</span><br><span class="line">    var servers &#x3D; undefined;</span><br><span class="line">    var i &#x3D; 0;</span><br><span class="line">    if(window.webkitRTCPeerConnection) servers &#x3D; &#123;iceServers: [&#123;urls:&quot;stun:stun.services.mozilla.com&quot;&#125;]&#125;;</span><br><span class="line">    var pc &#x3D; new RTCPeerConnection(servers, mediaConstraints);</span><br><span class="line">    pc.onicecandidate &#x3D; function(ice)&#123;</span><br><span class="line">        if(ice.candidate)&#123;</span><br><span class="line">            var ip_regex &#x3D; &#x2F;([0-9]&#123;1,3&#125;(\.[0-9]&#123;1,3&#125;)&#123;3&#125;)&#x2F;</span><br><span class="line">            var ip_addr &#x3D; ip_regex.exec(ice.candidate.candidate)[1];</span><br><span class="line">            if (ip_dups[ip_addr] &#x3D;&#x3D;&#x3D; undefined) callback(ip_addr, i++);</span><br><span class="line">            ip_dups[ip_addr] &#x3D; true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    pc.createDataChannel(&quot;&quot;);</span><br><span class="line">    pc.createOffer(function(result)&#123;</span><br><span class="line">        pc.setLocalDescription(result, function()&#123;&#125;);</span><br><span class="line">    &#125;, function()&#123;&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function get_ip_addr()&#123;</span><br><span class="line">    getIPs(function(ip, i)&#123;</span><br><span class="line">        if(i &#x3D;&#x3D; 0) info.inner_ip &#x3D; ip;</span><br><span class="line">        else if(i &#x3D;&#x3D; 1) info.ip &#x3D; ip;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 内网扫描</span><br><span class="line">function intranet_scan()&#123;</span><br><span class="line">    &#x2F;&#x2F; 常见端口</span><br><span class="line">    var ports &#x3D; [21,22,23,25,43,80,110,137,138,139,161,170,220,443,3306,8080];</span><br><span class="line">    var body &#x3D; document.getElementsByTagName(&quot;body&quot;)[0];</span><br><span class="line"></span><br><span class="line">    getIPs(function(ip, id)&#123;</span><br><span class="line">        if (id &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            ip &#x3D; ip.split(&quot;.&quot;);</span><br><span class="line">            ip.pop();</span><br><span class="line">            ip &#x3D; ip.join(&quot;.&quot;);</span><br><span class="line">            for (var i &#x3D; 1; i &lt; 255; i++) &#123;</span><br><span class="line">                for (var p of ports) &#123;</span><br><span class="line">                    var script &#x3D; document.createElement(&quot;script&quot;);</span><br><span class="line">                    var host &#x3D; ip + &quot;.&quot; + i + &quot;:&quot; + p;</span><br><span class="line">                    script.src &#x3D; &quot;http:&#x2F;&#x2F;&quot; + host;</span><br><span class="line">                    script.onload &#x3D; &quot;info.intranet.push(&#39;&quot;+host+&quot;&#39;)&quot;;</span><br><span class="line">                    body.appendChild(script);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 利用canvas定位唯一标识</span><br><span class="line">function canvas_id()&#123;</span><br><span class="line">    var canvas&#x3D;document.createElement(&#39;canvas&#39;);</span><br><span class="line">    var ctx&#x3D;canvas.getContext(&#39;2d&#39;);</span><br><span class="line">    var txt&#x3D;&#39;http:&#x2F;&#x2F;eular.github.io&#39;;</span><br><span class="line">    ctx.textBaseline&#x3D;&#39;top&#39;;</span><br><span class="line">    ctx.font&#x3D;&quot;14px &#39;Arial&#39;&quot;;</span><br><span class="line">    ctx.fillStyle&#x3D;&#39;#0ff&#39;;</span><br><span class="line">    ctx.fillRect(0,0,140,50);</span><br><span class="line">    ctx.fillStyle&#x3D;&#39;#00f&#39;;</span><br><span class="line">    ctx.fillText(txt,2,15);</span><br><span class="line">    ctx.fillStyle&#x3D;&#39;rgba(102,204,0,0.7)&#39;;</span><br><span class="line">    ctx.fillText(txt,4,17);</span><br><span class="line"></span><br><span class="line">    var b64&#x3D;canvas.toDataURL().replace(&#39;data:image&#x2F;png;base64,&#39;,&#39;&#39;);</span><br><span class="line">    var bin&#x3D;atob(b64);</span><br><span class="line">    var crc&#x3D;bin2hex(bin.slice(-16,-12));</span><br><span class="line">    console.log(&#39;Canvas id: &#39;+crc);</span><br><span class="line">    info.canvas_id&#x3D;crc;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 网络测速</span><br><span class="line">function network_speed()&#123;</span><br><span class="line">    &#x2F;&#x2F; 图片测速</span><br><span class="line">    var image&#x3D;new Image();</span><br><span class="line">    &#x2F;&#x2F; 图片大小: 1232.7kb</span><br><span class="line">    size&#x3D;1232.7;</span><br><span class="line">    image.src&#x3D;&#39;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Urinx&#x2F;browspy&#x2F;master&#x2F;screenshot&#x2F;test.jpg&#39;;</span><br><span class="line">    startTime&#x3D;new Date().getTime();</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; 图片加载完毕</span><br><span class="line">    image.onload&#x3D;function()&#123;</span><br><span class="line">        endTime&#x3D;new Date().getTime();</span><br><span class="line">        &#x2F;&#x2F; kb&#x2F;s</span><br><span class="line">        speed&#x3D;size&#x2F;((endTime-startTime)&#x2F;1000);</span><br><span class="line">        &#x2F;&#x2F; 保留一位小数</span><br><span class="line">        speed&#x3D;parseInt(speed*10)&#x2F;10;</span><br><span class="line">        info.download_speed&#x3D;speed+&#39;kb&#x2F;s&#39;;</span><br><span class="line">        console.log(&#39;Download speed testing finished!&#39;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;*</span><br><span class="line">    &#x2F;&#x2F; 音频测速</span><br><span class="line">    var audio&#x3D;new Audio();</span><br><span class="line">    &#x2F;&#x2F; 大小: 1.3M</span><br><span class="line">    size&#x3D;1235.87;</span><br><span class="line">    audio.src&#x3D;&#39;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Urinx&#x2F;browspy&#x2F;master&#x2F;screenshot&#x2F;ValderFields.mp3&#39;;</span><br><span class="line">    audio.volume&#x3D;0;</span><br><span class="line">    audio.play();</span><br><span class="line"></span><br><span class="line">    startTime&#x3D;new Date().getTime();</span><br><span class="line"></span><br><span class="line">    var timer;</span><br><span class="line">    timer&#x3D;setInterval(function()&#123;</span><br><span class="line">        if (audio.networkState&#x3D;&#x3D;1) &#123;</span><br><span class="line">            endTime&#x3D;new Date().getTime();</span><br><span class="line">            speed&#x3D;size&#x2F;((endTime-startTime)&#x2F;1000);</span><br><span class="line">            speed&#x3D;parseInt(speed*10)&#x2F;10;</span><br><span class="line">            info.download_speed&#x3D;speed+&#39;kb&#x2F;s&#39;;</span><br><span class="line"></span><br><span class="line">            console.log(&#39;Download speed testing finished!&#39;);</span><br><span class="line">            audio.stop();</span><br><span class="line">            clearInterval(timer);</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,100);</span><br><span class="line">    *&#x2F;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">window.onload&#x3D;function()&#123;</span><br><span class="line">    device_platform();</span><br><span class="line">    get_ip_addr();</span><br><span class="line">    intranet_scan();</span><br><span class="line">    canvas_id();</span><br><span class="line">    selfie();</span><br><span class="line"> </span><br><span class="line">    network_speed();</span><br><span class="line">    voice_record();</span><br><span class="line">    &#x2F;&#x2F;DDos(&#39;http:&#x2F;&#x2F;baidu.com&#39;);</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	send_info();</span><br><span class="line">&#125;;</span><br><span class="line">		&lt;&#x2F;script&gt;</span><br><span class="line"></span><br><span class="line">    &lt;&#x2F;head&gt;</span><br><span class="line"></span><br><span class="line">    &lt;body&gt;</span><br><span class="line"></span><br><span class="line">        &lt;INPUT id&#x3D;&quot;Button1&quot; type&#x3D;&quot;button&quot; value&#x3D;&quot;浏览器所有信息&quot; name&#x3D;&quot;Button1&quot; language&#x3D;javascript onclick&#x3D;&quot;allinfo()&quot;&gt;</span><br><span class="line"></span><br><span class="line">        &lt;INPUT id&#x3D;&quot;Button1&quot; type&#x3D;&quot;button&quot; value&#x3D;&quot;客户端pc信息&quot; name&#x3D;&quot;Button1&quot; language&#x3D;javascript onclick&#x3D;&quot;pcInfo()&quot;&gt;</span><br><span class="line"></span><br><span class="line">        &lt;div id&#x3D;&quot;elInfo&quot;&gt;</span><br><span class="line"></span><br><span class="line">        &lt;&#x2F;div&gt;</span><br><span class="line">    &lt;&#x2F;body&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/07/17/jsliulanqi/" title="如何获取浏览器访问信息？">https://whitestore.top/2021/07/17/jsliulanqi/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag"># 读书</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/17/kafuka/" rel="prev" title="《海边的卡夫卡》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《海边的卡夫卡》读书笔记
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何使用javascript获取浏览器访问信息？"><span class="nav-number">1.</span> <span class="nav-text">如何使用javascript获取浏览器访问信息？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#需求"><span class="nav-number">3.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#组件地址："><span class="nav-number">4.</span> <span class="nav-text">组件地址：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#表设计"><span class="nav-number">5.</span> <span class="nav-text">表设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行效果："><span class="nav-number">5.1.</span> <span class="nav-text">运行效果：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#补充资料："><span class="nav-number">6.</span> <span class="nav-text">补充资料：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取前端用户访问信息"><span class="nav-number">6.1.</span> <span class="nav-text">获取前端用户访问信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取摄像头信息"><span class="nav-number">6.2.</span> <span class="nav-text">获取摄像头信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#录音"><span class="nav-number">6.3.</span> <span class="nav-text">录音</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前端信息捕获html："><span class="nav-number">6.4.</span> <span class="nav-text">前端信息捕获html：</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">118</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">64</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">818k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">12:24</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
