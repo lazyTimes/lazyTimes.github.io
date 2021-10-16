@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="VM优化中老年代的FULL GC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解JVM - 实战老年代优化">
+<meta property="og:url" content="https://whitestore.top/2021/10/16/laoniandai/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="VM优化中老年代的FULL GC">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210715230317.png">
+<meta property="article:published_time" content="2021-10-16T12:37:19.000Z">
+<meta property="article:modified_time" content="2021-10-16T12:39:00.832Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="老年代">
+<meta property="article:tag" content="优化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210715230317.png">
+
+<link rel="canonical" href="https://whitestore.top/2021/10/16/laoniandai/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入理解JVM - 实战老年代优化 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/10/16/laoniandai/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解JVM - 实战老年代优化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-10-16 20:37:19 / 修改时间：20:39:00" itemprop="dateCreated datePublished" datetime="2021-10-16T20:37:19+08:00">2021-10-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM/" itemprop="url" rel="index"><span itemprop="name">深入理解JVM</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/10/16/laoniandai/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/16/laoniandai/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">VM优化中老年代的FULL GC</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入理解JVM-实战老年代优化"><a href="#深入理解JVM-实战老年代优化" class="headerlink" title="深入理解JVM - 实战老年代优化"></a>深入理解JVM - 实战老年代优化</h1><p>[TOC]</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    通过前面的文章可以了解到JVM优化中老年代的FULL GC对于系统以及垃圾收集器的行为有着十分大的影响，比如CMS并发标记或者回收撑不住的时候要暂停用户线程并且呼叫serrial收集器帮忙进行单线程的高效回收的动作，但是也伴随着”漫长”的stop world时间。</p>
+<p>​    综上所述，老年代的优化是JVM优化的一个核心知识点，所以这一节就来讲解如何优化老年代的回收，尽量让对象在新生代回收而不是在老年代进行回收。</p>
+<a id="more"></a>
+
+<h1 id="前文回顾"><a href="#前文回顾" class="headerlink" title="前文回顾"></a>前文回顾</h1><p>​    之前的文章我们对于JVM分代以及垃圾回收有了一个详细的了解，同时了解了jdk9之前主流的垃圾收集器ParNew收集器和CMS收集器，并且对于cms的细节进行了完整的讲述，这些内容都是十分基础但是又十分重要的知识点，这篇文章则根据前面的知识点，根据一个模拟的案例来讲解一下如何对于JVM老年代进行调优。 </p>
+<h1 id="案例实战"><a href="#案例实战" class="headerlink" title="案例实战"></a>案例实战</h1><p>​    案例实战会根据一个非常理想化的模拟场景，因为应用的性能实际上会有各种的影响，甚至代码的质量也会影响系统的运行性能，所以下面的模拟场景均为假想的情况，切勿过于认真的对待这个案例的各种参数。</p>
+<h2 id="一个电商系统的大致背景："><a href="#一个电商系统的大致背景：" class="headerlink" title="一个电商系统的大致背景："></a>一个电商系统的大致背景：</h2><p>​    如果一个电商网站每天的访问量是20次/人，如果要上亿次的请求需要每天500万次的请求，同时如果这500万人按照10%的下单的标准，则是每天50万人会进行下单的操作，而下单操作按照2/8原则在4小时之内付款完成，那么此时的占用大概是<strong>50万/4小时 == 500000 / 14400</strong>,大概每秒也就 <strong>34个订单</strong>左右，这种情况下发现系统的影响并不会很大，老年代发生回收大概为几个小时一次，完全可以接受。</p>
+<h2 id="高并发的场景"><a href="#高并发的场景" class="headerlink" title="高并发的场景"></a>高并发的场景</h2><p>​    但是如果在秒杀的场景，情况又不一样了，如果在一秒内来1000笔订单，该如何处理？我们假设如果是3台机器，则每台需要处理至少<strong>300条</strong>请求。</p>
+<h2 id="计算JVM消耗"><a href="#计算JVM消耗" class="headerlink" title="计算JVM消耗"></a>计算JVM消耗</h2><p>​    根据上文模拟场景，假设每秒300个请求按照每个对象1KB来看，每一台机器要处理大概300KB的内存，把一个订单系统的处理对象放大10倍，则是3000KB，如果在算上其他的操作比如订单处理，则需要30000KB = 30MB的占用。</p>
+<p>​    如果虚拟机栈每个占用1M，则几百个线程需要几百M的空间。如果是4核心8G的机器，则分4G给JVM，4G中分1G给虚拟机栈500M多M，方法区：256M，堆外内存给256M。同时开启内存担保机制（jdk6之后不需要制定参数）然后新生代和老年代各分配1.5G。</p>
+<p>​    按照上面的换算，我们发现如果每秒都来30M对象，那么1200M左右的EDEN区域（8：1：1的比例大概是1200给EDEN），大概会留下200M左右的内存会进入SURVIOR区域，但是如果SURVIOR区域放不下则会进入老年代，根据之前的参数分配150M的Survior区域肯定是无法存放的，根据内存分配担保的机制，这些对象会分配到老年代。</p>
+<p>​    按照这样的分配效率不到一分钟新生代就会塞满。大概8、9次minor gc就会导致full gc，也就是说 <strong>8、9分钟就会触发老年代回收</strong>，这个触发的概率就十分高了，这会严重导致系统卡顿并且出现用户线程的停顿现象。</p>
+<p>​    但是如果Survior空间足够，那么此时回收进入到Survior空间之后，在下一次minor gc基本也为垃圾对象被回收了。</p>
+<h1 id="垃圾回收的优化"><a href="#垃圾回收的优化" class="headerlink" title="垃圾回收的优化"></a>垃圾回收的优化</h1><pre><code>上面的案例优化也非常简单，在讲解最终的优化方案之前，我们按照下面的步骤进行分析：</code></pre><h2 id="检查Survior区域是否可以保证每次minor-gc都可以全部进入"><a href="#检查Survior区域是否可以保证每次minor-gc都可以全部进入" class="headerlink" title="检查Survior区域是否可以保证每次minor gc都可以全部进入"></a>检查Survior区域是否可以保证每次minor gc都可以全部进入</h2><p>​    首先我们需要确认新生代的内存在垃圾回收之后是否都可以进入到Survior区域，很明显，根据案例Survior区域的大小为150M左右，而每次Minor GC之后存活对象通常为200M左右，这时候明显是无法存放下的，所以我们需要。</p>
+<h2 id="多大的对象应该进入老年代"><a href="#多大的对象应该进入老年代" class="headerlink" title="多大的对象应该进入老年代"></a>多大的对象应该进入老年代</h2><p>​    之前说过一秒钟会产生30M对象，而Minor gc之后对象基本只剩下100M左右了，也就是说1分钟大概存活100M对象，那么平摊下来一秒大概产生1-2M的大对象。</p>
+<p>​    所以一般情况下设置个<strong>1M</strong>的阈值就差不多了</p>
+<h2 id="对象经过多少年龄进入老年代"><a href="#对象经过多少年龄进入老年代" class="headerlink" title="对象经过多少年龄进入老年代"></a>对象经过多少年龄进入老年代</h2><p>​    一般情况下默认的15就是一个不错的值。但是对于高并发的业务来说，大对象早点进入老年代反而是好事。因为survior存在一个控制值50%，累加对象大小超过Survior区域50%之后大于等于此年龄全部会进入老年代，所以有时候让新生代的对象提前进入老年代也是一种值得考虑的事情。</p>
+<p>​    比如我们可以将进入老年代年龄的对象设置为7或者8。</p>
+<h2 id="指定垃圾收集器"><a href="#指定垃圾收集器" class="headerlink" title="指定垃圾收集器"></a>指定垃圾收集器</h2><p>​    注意一定要在参数里面指定垃圾收集器，这是十分重要的内容。</p>
+<pre><code>比如：**-XX:+UseParNewGC**</code></pre><h2 id="最终优化参数结果"><a href="#最终优化参数结果" class="headerlink" title="最终优化参数结果"></a>最终优化参数结果</h2><p>​    经过上面的一系列分析，我们可以确定根本问题出在了对象提前进入了老年代导致Survior区域成为摆设并且老年代的对象不断扩展，最终老年代塞满而导致频繁full gc，所以案例最后的优化参数如下：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210715230317.png" alt=""></p>
+<h1 id="老年代的内存要如何优化呢？"><a href="#老年代的内存要如何优化呢？" class="headerlink" title="老年代的内存要如何优化呢？"></a>老年代的内存要如何优化呢？</h1><p>​    针对上面的案例，我们再分析几点内容：</p>
+<h2 id="老年代需要开启分配担保失败么？"><a href="#老年代需要开启分配担保失败么？" class="headerlink" title="老年代需要开启分配担保失败么？"></a>老年代需要开启分配担保失败么？</h2><p>​    我们看下如果没有开启分配担保失败会如何？首先如果没有开启，如果此时老年代的可用内存为400M，并且发现新生代总大小 &lt; 老年代可用内存大小，每次Minor Gc都将会伴随着Full Gc，所以jdk6也关闭了这个参数并且这个参数也是默认开启的，绝大多数的情况下这个参数不用去管，默认都是要开启的。</p>
+<p>​    如果<strong>老年代的总大小&lt;新生代的大小</strong>，那么如果没有开启分配担保每一次请求都是会发生Full Gc的。</p>
+<h2 id="如果使用CMS收集器，是否需要改动92-的参数"><a href="#如果使用CMS收集器，是否需要改动92-的参数" class="headerlink" title="如果使用CMS收集器，是否需要改动92%的参数"></a>如果使用CMS收集器，是否需要改动92%的参数</h2><p>​    从案例的角度来看，优化之后如果老年代到达900M说明此时订单系统已经运行很久了（几个小时），一般情况下秒杀早就结束了，此时进行Full GC也不会影响业务的处理和请求的处理。</p>
+<h2 id="进入老年代触发full-Gc对系统影响可能性"><a href="#进入老年代触发full-Gc对系统影响可能性" class="headerlink" title="进入老年代触发full Gc对系统影响可能性"></a>进入老年代触发full Gc对系统影响可能性</h2><p>​    如果某一次gc之后新生代存活对象大于200M，发现 Survior 区域放不下，此时老年代判断历次晋升平均大小，发现基本都是可以分配的，因为调整过后一般情况下只有几十M大小的对象进入，所以这样的概率还是比较小的，即使出现这种情况，此时系统也过去了很久了，高峰下单一般在前10分钟，如果前10分钟没有进行Fu’ll Gc 而1小时之后进行了，这样也是不影响订单系统的运行的，因为此时的压力很小了.</p>
+<h2 id="Concurrent-Mode-fail-这种情况的有无影响"><a href="#Concurrent-Mode-fail-这种情况的有无影响" class="headerlink" title="Concurrent Mode fail 这种情况的有无影响"></a>Concurrent Mode fail 这种情况的有无影响</h2><p>​    和前面说的分析一样，如果900M的老年代空间已经被占用满了，此时系统进程和垃圾回收线程同时进行，如果在并发整理的时候进入200M的对象，那么最坏的情况是触发失败导致stop world 并且serial 进行单线程的回收处理动作，但是需要考虑的是这种情况假设已经过去1个小时了，而此时的订单压力也小很多，Full Gc的影响也是可以承受的，在进行完这次Full GC之后，下一次可能就在几个小时之后的，这种情况虽然有可能发生，但是几率十分小。</p>
+<h2 id="内存碎片整理的概率有多大"><a href="#内存碎片整理的概率有多大" class="headerlink" title="内存碎片整理的概率有多大"></a>内存碎片整理的概率有多大</h2><p>​    还是和上面的情况一样，如果出现FULL GC也说明此时系统运行比较久了，一次FULL GC的间隔十分长的情况下每次FULL GC进行内存碎片整理的代价是可以接受的。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    下面根据这个案例总结一下如何思考优化的点</p>
+<ol>
+<li>首先业务的对象都是生命周期十分短暂的对象，新生代的压力比老年代要大，所以适当缩小老年代空间是十分划算的</li>
+<li>预测在高并发的场景下对象进入老年代的时机，如果对象经常“跨区”说明有一部分内容空间是浪费了，那就是Survior区域</li>
+<li>对象在各分区需要大致多少的内存空间，比如每个线程需要占用多少的内存空间</li>
+<li>对象的年龄判断是否需要改动，提前让对象进入老年代是好处还是坏处</li>
+<li>关注收集器对于对象垃圾回收的影响，同时在启动的时候要强制使用某一垃圾收集器，因为不同的JDK版本默认的垃圾收集器是不一样的。</li>
+</ol>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/10/16/laoniandai/" title="深入理解JVM - 实战老年代优化">https://whitestore.top/2021/10/16/laoniandai/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/16/cmsshouji/" rel="prev" title="深入理解JVM - CMS收集器">
+      <i class="fa fa-chevron-left"></i> 深入理解JVM - CMS收集器
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#深入理解JVM-实战老年代优化"><span class="nav-number">1.</span> <span class="nav-text">深入理解JVM - 实战老年代优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前文回顾"><span class="nav-number">3.</span> <span class="nav-text">前文回顾</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#案例实战"><span class="nav-number">4.</span> <span class="nav-text">案例实战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个电商系统的大致背景："><span class="nav-number">4.1.</span> <span class="nav-text">一个电商系统的大致背景：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高并发的场景"><span class="nav-number">4.2.</span> <span class="nav-text">高并发的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#计算JVM消耗"><span class="nav-number">4.3.</span> <span class="nav-text">计算JVM消耗</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#垃圾回收的优化"><span class="nav-number">5.</span> <span class="nav-text">垃圾回收的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#检查Survior区域是否可以保证每次minor-gc都可以全部进入"><span class="nav-number">5.1.</span> <span class="nav-text">检查Survior区域是否可以保证每次minor gc都可以全部进入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多大的对象应该进入老年代"><span class="nav-number">5.2.</span> <span class="nav-text">多大的对象应该进入老年代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象经过多少年龄进入老年代"><span class="nav-number">5.3.</span> <span class="nav-text">对象经过多少年龄进入老年代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指定垃圾收集器"><span class="nav-number">5.4.</span> <span class="nav-text">指定垃圾收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最终优化参数结果"><span class="nav-number">5.5.</span> <span class="nav-text">最终优化参数结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#老年代的内存要如何优化呢？"><span class="nav-number">6.</span> <span class="nav-text">老年代的内存要如何优化呢？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#老年代需要开启分配担保失败么？"><span class="nav-number">6.1.</span> <span class="nav-text">老年代需要开启分配担保失败么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如果使用CMS收集器，是否需要改动92-的参数"><span class="nav-number">6.2.</span> <span class="nav-text">如果使用CMS收集器，是否需要改动92%的参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进入老年代触发full-Gc对系统影响可能性"><span class="nav-number">6.3.</span> <span class="nav-text">进入老年代触发full Gc对系统影响可能性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Concurrent-Mode-fail-这种情况的有无影响"><span class="nav-number">6.4.</span> <span class="nav-text">Concurrent Mode fail 这种情况的有无影响</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存碎片整理的概率有多大"><span class="nav-number">6.5.</span> <span class="nav-text">内存碎片整理的概率有多大</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">840k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">12:43</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
