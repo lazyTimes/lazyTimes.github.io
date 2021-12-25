@@ -197,6 +197,462 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/12/25/g1tiaoyou/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/25/g1tiaoyou/" class="post-title-link" itemprop="url">深入理解JVM - G1调优简述</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-25 12:11:01 / 修改时间：12:12:22" itemprop="dateCreated datePublished" datetime="2021-12-25T12:11:01+08:00">2021-12-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM/" itemprop="url" rel="index"><span itemprop="name">深入理解JVM</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/25/g1tiaoyou/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/25/g1tiaoyou/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">g1调优的大致思路</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="深入理解JVM-G1调优简述"><a href="#深入理解JVM-G1调优简述" class="headerlink" title="深入理解JVM - G1调优简述"></a>深入理解JVM - G1调优简述</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    G1收集器是一个不太好调优的收集器，因为他不能像固定分代的收集器那样可以自己想划分多少就划分多少，更多的分配动作是由收集器动作，由于region是一块块的，同时自动增长也是由G1控制，好像确实不太好调优。</p>
+<p>​    这篇文章更多的是提供调优的一个大致方向，更多的内容需要后续介绍JVM的工具进行讲解。</p>
+<h1 id="案例实战"><a href="#案例实战" class="headerlink" title="案例实战"></a>案例实战</h1><p>​    这次使用一个在线的教育平台作为案例解释G1是如何进行优化的。</p>
+<p>​    在线教育平台的压力来自于哪里？首先孩子白天需要上学同时家长也需要上班，所以白天的访问量不会很大，同时主要的业务也不在在线教育平台处理。但是一旦到了晚上，机器的压力就上来了，同时孩子也会在线进行听课上课，这时候用户量会暴增，会有上万人同时在线听课。这时候可以发现在线教育平台的压力在于直播，而直播的流量高峰在于课堂的互动环节，为什么是互动环节呢，因为孩子不喜欢枯燥的课堂，为了带动课堂氛围，课堂中的游戏一定是活跃气氛的关键，也是系统压力的核心，这时系统需要记录各种数据，比如活动时长，得分，积分奖励等等，同时也会出现大量的对象分配，为了保证直播的流畅，系统要求十分低的延迟响应时间。</p>
+<p>​    所以最终的结论是：在线教育平台大概在直播的互动环节压力会倍增，系统要求十分低的延迟响应时间。</p>
+<p>​    经过了上面的情况分析，我们假设<strong>单台机器每秒大概有600个请求</strong>，假设每一个请求占用10KB，则是6000KB的大小占用也就是最终6M左右的内存占用。同时部署在一个4核心8G的系统上面。</p>
+<blockquote>
+<p>同样的，这种案例也只是模拟和假设，具体情况受到各种因素的限制，切勿过于深究细节。</p>
+</blockquote>
+<h1 id="如何分析系统"><a href="#如何分析系统" class="headerlink" title="如何分析系统"></a>如何分析系统</h1><h2 id="传统的分代概念"><a href="#传统的分代概念" class="headerlink" title="传统的分代概念"></a>传统的分代概念</h2><p>​    我们用传统分代的概念部署一下这个系统，根据每一秒的请求为6M的对象大小，同时根据系统4核心8的配置，那么给JVM的内存大概是4G，我们知道直播的互动环节产生的积分，奖励，计算等对象基本都是朝生夕死的小对象，所以我们不太需要给老年代过大的空间，所以出去方法区和虚拟机线程栈的内存，我们给大约会给新生代3G和老年代1G左右的内容。</p>
+<p>​    如果每秒产生6M的对象，那么一分钟就是300多M，按照默认的新生代配比8：1：1则Eden区域大概为2.4G的大小，survior区域为两个300M的大小空间。一分钟300M，那么基本上8分钟左右新生代就会满，此时假设有300M左右对象存活进入Survior区域，这时候Survior区域虽然可以装的下，但是由于超过了50%的配比，最终还是有约150M的对象进入老年代。</p>
+<p>​    这时候再推算，老年代每8分钟进入150M的对象，大约40分钟左右就会整个系统停顿一次，这个停顿时间还是乐观估计，因为系统不可能只运作这一块的内容，单单是推算直播互动这一块就会产生这样的效果，可想而知加上整个系统的其他模块，<strong>实际上5、6分钟可能会停顿一次！！！</strong>这样肯定是不行的，试想下你玩游戏隔几分钟就停一下，对于小孩子来说突然卡一下导致丢分最后成绩不佳孩子又哭又闹，家长这时候不用想肯定会大量的投诉，被骂也不远了……</p>
+<h2 id="使用G1收集器"><a href="#使用G1收集器" class="headerlink" title="使用G1收集器"></a>使用G1收集器</h2><p>​    我们接着使用G1的收集器进行替换，系统部署在一个4核心8G的系统上面，假设机器在JVM上分配4G给堆，新生代默认初始化比例为5%，最大占比为60%，JAVA线程堆栈为1M，则大约开启几百个线程需要200，300M的空间，而方法区占用256M够用。</p>
+<p>​    在上一节在文章中介绍过，可以把G1的工作机制想象成收盘子，但是放到系统上就很头疼了，<strong>G1什么时候回来收垃圾是我们无法预测的！！</strong>这里就需要通过一些辅助手段，同时这部分的监控操作需要工具和日志进行解读，所以将会放到后续的专门一篇文章进行解读。</p>
+<h3 id="如何计算Region的占用和大小："><a href="#如何计算Region的占用和大小：" class="headerlink" title="如何计算Region的占用和大小："></a>如何计算Region的占用和大小：</h3><p>​    按照4096M/2048 每个region是2M，如果按照新生代初始为5%，则根据参数5%新生代的大小为100个Region左右，4G的内存机器结果可以得出新生代初始200M左右的内存占用大小</p>
+<h3 id="至关重要的参数："><a href="#至关重要的参数：" class="headerlink" title="至关重要的参数："></a>至关重要的参数：</h3><p>​    <strong>-XX:MaxGCPauseMills</strong> 参数：默认值为200，代表了200MS，表示最大的停顿时间为200MS。</p>
+<p>​    如果使用G1收集器，这个参数直接影响了整个JVM系统的性能，如果这个数值过大，会导致垃圾收集的时间过长而导致前台卡顿，也容易导致新生代来不及触发垃圾回收就满了，或者导致老年代内存无法及时的回收。</p>
+<h3 id="多久会触发新生代回收操作"><a href="#多久会触发新生代回收操作" class="headerlink" title="多久会触发新生代回收操作"></a>多久会触发新生代回收操作</h3><p>​    根据之前的说明，<strong>新生代最大可以使用60%的空间</strong>，同时也说明了新生代使用复制算法，根据8:1:1的规则，大概到达新生代的80%左右就会触发垃圾的回收操作？这种做法显然不符合G1基于全堆以及混合回收的操作。所以不能用固定大小的回收思路思考g1的回收操作。</p>
+<p>​    正确做法：    G1会根据200MS的要求，定时去判定当前的新生代是否可以符合200MS的收集操作要求，大意就是当新生代的垃圾回收需要耗时200MS的时候，就会触发新生代的回收。</p>
+<p>​    这里也可以直接按照之前的理解餐厅的服务员定时过来收盘子的操作理解新生代多久进行一次回收操作。</p>
+<h3 id="如何优化："><a href="#如何优化：" class="headerlink" title="如何优化："></a>如何优化：</h3><p>​    上面的讨论几点之后，这就头疼了，这要这么优化？这时我们需要用上一些压测的工具以及GC日志和内存分析工具来考虑了，但是也不要让GC挺多停顿时间预设值太大了导致GC停顿时间太长，应该给个合理的值。</p>
+<h3 id="Mixed-gc如何优化？"><a href="#Mixed-gc如何优化？" class="headerlink" title="Mixed gc如何优化？"></a>Mixed gc如何优化？</h3><p>​    既然新生代的优化都已经很麻烦了，更不用说老年代回收了。而老年代的回收本身也没有了Old GC，取而代之的是Mixed GC，所以需要小心对待，我们从根本上还是需要防止让对象进入到老年代不断扩展导致mixed gc，这更加需要关注时间停顿模型这个参数。</p>
+<h2 id="最终分析"><a href="#最终分析" class="headerlink" title="最终分析"></a>最终分析</h2><p>​    新生代：</p>
+<ol>
+<li>由于是复制算法，所以需要从根本上处理的话依然需要控制新生代的存活对象进入survior的大小，同时控制在50%以内。尽量避免GC之后对象直接进入老年代。另外60%的新生代空间通常也不用怎么调整，除非业务对象频繁创建新生代会产生大量对象才需要考虑。</li>
+<li>新生代有一个参数是存活对象大于85%的时候不需要进行拷贝，这个值如果设置小一点可能会提高回收效率，但是有可能造成大量的短命对象进入老年代的风险。</li>
+</ol>
+<p>​    老年代：</p>
+<ol>
+<li>按照G1的最后一个步骤，垃圾回收和系统回交替8次，同时在回到5%的region的时候停止收集，这个参数其实可以适当调大一些：G1HeapWastePercent</li>
+<li>45%的老年代占用触发垃圾回收的机制，这个参数也不需要大改，因为JDK设置这个参数肯定是经过了很多测试和考量之后的结果。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>​    这一篇更多的是提供优化思路，JVM调优没有万金油的解决方案，特别是G1收集器这种算法细节十分复杂的收集器，调优需要更多的精力和时间测试调优效果。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>​    下一篇章会做一个整个系列到目前为止的小节，温故而知新，人的遗忘曲线更加需要我们反复的巩固知识和内容。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/12/25/g1garbage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/25/g1garbage/" class="post-title-link" itemprop="url">深入理解JVM - G1收集器</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-25 12:07:37 / 修改时间：12:10:44" itemprop="dateCreated datePublished" datetime="2021-12-25T12:07:37+08:00">2021-12-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM/" itemprop="url" rel="index"><span itemprop="name">深入理解JVM</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/25/g1garbage/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/25/g1garbage/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+            <div class="post-description">G1收集器也是JDK9服务端默认的垃圾收集器</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="深入理解JVM-G1收集器"><a href="#深入理解JVM-G1收集器" class="headerlink" title="深入理解JVM - G1收集器"></a>深入理解JVM - G1收集器</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    上一篇通过案例说明了老年代的常见优化和处理方式，这一节来看下目前最为热门的G1收集器，G1收集器也是JDK9服务端默认的垃圾收集器，虽然JDK9在现在看来还不是十分的普及，但是学习这个垃圾收集器是十分重要也是十分必要的。</p>
+<h1 id="前文回顾"><a href="#前文回顾" class="headerlink" title="前文回顾"></a>前文回顾</h1><p>​    上一节我们通过一个电商的模拟实战，了解了老年代常见的优化方式。同时在最后总结了老年代优化的一些常见的套路，下面直接用上一节的总结回忆整个内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- 首先业务的对象都是生命周期十分短暂的对象，新生代的压力比老年代要大，所以适当缩小老年代空间是十分划算的</span><br><span class="line">- 预测在高并发的场景下对象进入老年代的时机，如果对象经常“跨区”说明有一部分内容空间是浪费了，那就是Survior区域</span><br><span class="line">- 对象在各分区需要大致多少的内存空间，比如每个线程需要占用多少的内存空间</span><br><span class="line">- 对象的年龄判断是否需要改动，提前让对象进入老年代是好处还是坏处</span><br><span class="line">- 关注收集器对于对象垃圾回收的影响，同时在启动的时候要强制使用某一垃圾收集器，因为不同的JDK版本默认的垃圾收集器是不一样的。</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="CMS-ParNew收集器的痛点是什么？"><a href="#CMS-ParNew收集器的痛点是什么？" class="headerlink" title="CMS+ParNew收集器的痛点是什么？"></a>CMS+ParNew收集器的痛点是什么？</h1><p>​    在之前的文章我们提到过，传统的黄金组合的痛点<strong>Stop world</strong> （世界停顿）：在<strong>并发标记和并发整理</strong>阶段如果出现分配对象超过老年代代而导致Full Gc，会立刻停下手头的所有工作全力进行垃圾收集的动作，并且使用<strong>Serial old</strong>收集器处理，这对于用户来说会发现明显的卡顿，同时会误认为系统卡死，体验十分差。</p>
+<h1 id="G1收集器的介绍"><a href="#G1收集器的介绍" class="headerlink" title="G1收集器的介绍"></a>G1收集器的介绍</h1><h2 id="为什么会诞生G1？"><a href="#为什么会诞生G1？" class="headerlink" title="为什么会诞生G1？"></a>为什么会诞生G1？</h2><p>​    感兴趣可以看下关于G1论文的白皮书：<span class="exturl" data-url="aHR0cDovL2NpdGVzZWVyeC5pc3QucHN1LmVkdS92aWV3ZG9jL2Rvd25sb2FkP2RvaT0xMC4xLjEuNjMuNjM4NiZhbXA7cmVwPXJlcDEmYW1wO3R5cGU9cGRm44CC77yI55yL6K+E6K666K+05YW25a6e6K6y55qE5Y2B5YiG5oq96LGh5ZKM56y857uf77yM5bu66K6u5rex5YWl56CU56m2RzHnmoTlpKfoh7TnnIvnnIvvvIk=" title="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.63.6386&amp;rep=rep1&amp;type=pdf。（看评论说其实讲的十分抽象和笼统，建议深入研究G1的大致看看）">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.63.6386&amp;rep=rep1&amp;type=pdf。（看评论说其实讲的十分抽象和笼统，建议深入研究G1的大致看看）<i class="fa fa-external-link"></i></span></p>
+<p>​    为什么会诞生G1呢？最大原因是<strong>JVM目前不能让收集器的垃圾回收停顿在某个特定时间范围</strong>，但是也不需要像实时那样要求十分的严格。基于这样的考虑，早在06年就出现了G1的论文，但是最终实现花了好多年的时间！可以想象这个收集器内部注定是非常复杂的，当然我们没有必要去深入研究底层，只需要他的基础原理即可。</p>
+<h2 id="历史进程"><a href="#历史进程" class="headerlink" title="历史进程:"></a>历史进程:</h2><ol>
+<li>Jdk7 update4被商用</li>
+<li>jdk8 update40 <strong>并发类型卸载</strong>支持</li>
+<li>Jdk9成为服务端默认垃圾收集器</li>
+<li>Jdk10因为cms垃圾收集器插件功能耦合等缘故，重构了“统一垃圾回收接口”</li>
+</ol>
+<h2 id="G1收集器的特点"><a href="#G1收集器的特点" class="headerlink" title="G1收集器的特点"></a>G1收集器的特点</h2><ol>
+<li>设置一个<strong>垃圾的预期停顿时间</strong>。根据Region的大小和回收价值进行最有效率的回收。</li>
+<li>内存不再固定划分新生代和老年代，使用Region对于内存进行分块，实现了根据系统资源动态分代。</li>
+<li>Region可能属于新生代或者老年代，同时分配给新生代还是老年代是由G1自己控制的。</li>
+<li>选择最小回收时间以及最多回收对象的region进行垃圾的回收操作。</li>
+</ol>
+<p>补充《深入理解JVM虚拟机》介绍的特点：</p>
+<ul>
+<li>不再坚持固定大小以及固定数量的分区划分</li>
+<li>使用region划分区域，大小相等，不同区域扮演不同的角色</li>
+<li><strong>humongous区域</strong>：设计被用于大对象使用，根据最短停顿时间模型优先回收价值最高的region。超过一个region一半的大小都为大对象</li>
+<li>后台使用一个优先级列表优先回收收益最大的区域</li>
+</ul>
+<h2 id="G1的Region"><a href="#G1的Region" class="headerlink" title="G1的Region"></a>G1的Region</h2><p>​    G1取消了固定分代的概念，取而代之的是使用分区的概念，把内存切分成一个个小块，同时各个小块又分为新生代（eden、Survior区）、老年代、大对象（humongous区）等等。</p>
+<p>​    G1规定大于Region的一半的对象成为大对象，同时<strong>不参与分代</strong>。</p>
+<p>​    Region并不是固定为新生代或者老年代，通常情况为自由状态，只有在需要的时候会被划分为指定的分代并且存放特定对象。这里也许会有疑问，这样分配Region不会产生很多垃圾碎片么？答案当然是并不会，首先新生代使用复制算法，会把存活对象拷贝到一块region进行存放，同时存活对象大于一定的region占比不会进行复制（下文会提到），把整个region清理并且进行回收，而老年代则使用标记-整理算法，同样的道理也会直接把垃圾对象的region给清理掉，也是不会产生内存碎片的，最后，大对象是横跨多个region并由专门的region存放，一旦回收直接干掉大对象把对应的region清理即可。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721111916.png" alt="G1收集器"></p>
+<h3 id="到底有多少region，每个region的大小是多少？"><a href="#到底有多少region，每个region的大小是多少？" class="headerlink" title="到底有多少region，每个region的大小是多少？"></a>到底有多少region，每个region的大小是多少？</h3><p>​    计算方式: 堆大小 / 2048，<strong>G1收集器最多可以有2048个region，并且大小必须是2的倍数。</strong>也就是说4G内存给每一个region的大小是2M的大小。</p>
+<p>​    下面是G1常见的配置参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-XX:Heap Region Size：手动制定region的大小。单个region的大小指定，默认为2M,4g内存当中</span><br><span class="line">-XX:G1NewSizePercent： 手动指定新生代初始占比，默认是5%</span><br><span class="line">-XX:G1MaxNewSizePercent：新生代的最大占比默认是60%</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="常用参数："><a href="#常用参数：" class="headerlink" title="常用参数："></a>常用参数：</h2><ul>
+<li><p><code>-XX:G1MixedGCCountTarget</code>：表示一次垃圾回收之后，最后一次混合回收执行几次。这个参数意味着在垃圾回收的最后一个阶段回收和系统运行<strong>交替运行</strong>，并且默认回收8次之后结束这个操作。</p>
+</li>
+<li><p><code>-XX:G1HeapWastePercent</code>：默认为5%。在混合回收的时候如果一次混合回收的<strong>空闲region超过5%</strong>就立刻停止垃圾回收的操作，这个参数也是为了尽量减少停顿的时间设计的。</p>
+</li>
+<li><p><code>-XX:G1MixedGCLiveThreasholdPercent</code>：默认值为85%，表示存活对象要低于85%才进行回收的操作。因为如果一个region的存活对象大于85%，复制拷贝的代价是十分大的，并且这一类region大概率进入老年代</p>
+</li>
+<li><p><code>-XX:G1MaxNewSizePercent</code>：新生代最大占用堆内存空间，默认值为60%。这个参数意味着在初始5%的新生代情况下，系统运行最多可以从系统总空间分配60%给新生代使用，超过这个值就肯定会触发新生代回收。</p>
+</li>
+<li><p><code>-XX:NewRatio=n</code>：配置新生代与老年代的比例，默认是2：1</p>
+</li>
+</ul>
+<h2 id="如何理解G1的工作模式"><a href="#如何理解G1的工作模式" class="headerlink" title="如何理解G1的工作模式?"></a>如何理解G1的工作模式?</h2><p>​    为了更好理解G1的工作模式停顿时间模型，这里个人想了一个还算生动的例子解释下G1的工作模式：</p>
+<p>​    我们平常去服务比较周到的餐馆，服务员通常会看我们桌子上垃圾的量有多少或者吃剩的盘子有多少，当垃圾超过一定量之后，服务员就会过来收盘子或者收垃圾，然后方便后面上菜，同时也可以让洗盘子的服务员忙忙停停的工作。</p>
+<p>​    这之后就会考虑，如果每多出一个盘子就去收一个，你会不会很累，会不会等到盘子有一定量了再去收，比如桌子摆不下新的菜了，或者盘子叠了很多个。</p>
+<p>​    最后，如果每次收盘子的速度能赶上上菜的速度，那么基本的正常运转是没有大问题的。</p>
+<h2 id="G1适合什么样的系统？"><a href="#G1适合什么样的系统？" class="headerlink" title="G1适合什么样的系统？"></a>G1适合什么样的系统？</h2><p>​    G1适合的系统包括<strong>超大内存</strong>的系统，此时如果按照传统的分代，比如16G的内存新生代8G，老年代8G这种划分，虽然拉长垃圾停顿的时间，但是一旦新生代被占满，回收的效率是非常低的，因为对象和GC ROOT非常多，最终导致垃圾收集长时间卡顿。而G1不一样，他只需要按照算法判断根据停顿模型的值在新生代接近停顿模式时间的时候就马上开启回收，不用等新生代满了才回收。</p>
+<p>​    G1也适合<strong>需要低延迟</strong>的系统，因为低延迟对于系统的响应要求是非常高的，更加看重响应的时间，同时对于系统的资源要求也比较高，而分代的模型和理论在大内存机器会造成长时间的垃圾收集停顿，这对于实时响应的服务要求是非常高的。</p>
+<h2 id="G1对比Parnew-cms最大的进步在哪里？"><a href="#G1对比Parnew-cms最大的进步在哪里？" class="headerlink" title="G1对比Parnew+cms最大的进步在哪里？"></a>G1对比Parnew+cms最大的进步在哪里？</h2><p>​    G1最大的进步也是他的特点就是 <strong>时间停顿模型</strong>， 可以控制stop world的时间。同时可以让垃圾收集的时间控制在预期设置的范围之内。</p>
+<p>其他进步：    </p>
+<ul>
+<li>算法： G1基于标记-整理算法, 不会产生空间碎片，分配大对象时不会无法得到连续的空间而提前触发一次FULL GC。</li>
+<li>多线程：多线程算法比CMS更加优秀，同时更能发挥多核性能</li>
+</ul>
+<h2 id="G1没有缺点了？"><a href="#G1没有缺点了？" class="headerlink" title="G1没有缺点了？"></a>G1没有缺点了？</h2><p>​    没缺点是不可能的，肯定是有缺点，这个收集器最大的问题恰恰在于停顿模型，里面的算法细节十分的复杂，所以我们调试<strong>不能仅仅通过业务推算</strong>，而是要根据日志以及工具辅助来完成调优，G1的调优是非常麻烦的一件事。</p>
+<p>​    其次就是Region的设计了，region的设计本身要消耗大量的系统资源进行维护的，这意味着G1收集器本身至少需要占用10%-20%的内存来维持自己的正常工作，比如计算停顿模型，维持跨代引用和GC ROOT等信息，这中间蕴藏的细节十分复杂，这里的内容可以参考【其他资料-干货文章】这部分了解，所以G1收集器本身就需要较好的机器性能才建议使用。</p>
+<p>​    下面是根据《深入理解JVM虚拟机》书中总结G1的缺点：</p>
+<ol>
+<li>每个region要更大的内存空间处理记忆集的消耗问题，还需要tams消耗的部分内存实现快照的功能。</li>
+<li>cms使用写后屏障，而G1不仅使用写后屏障还用了写前屏障。额外使用队列进行异步并发标记的对象指针改动的问题（最终标记的时间开销）</li>
+<li>由于cms使用卡集的方式增量更新，只需要写屏障的卡表引用，但会导致用户线程暂停.</li>
+</ol>
+<h1 id="G1的垃圾回收步骤"><a href="#G1的垃圾回收步骤" class="headerlink" title="G1的垃圾回收步骤"></a>G1的垃圾回收步骤</h1><h2 id="初始标记："><a href="#初始标记：" class="headerlink" title="初始标记："></a>初始标记：</h2><p>​    和cms垃圾收集器类似，在初始的的情况需要stop the world的操作。<strong>仅仅标记GC ROOT 可以引用的对象</strong>，整个过程非常快。</p>
+<p>​    这里可以看到对空间的结构已经和传统固定的分代模型已经不一样了，堆内存被划分为小块的region，初始标记会根据栈中的局部变量引用或者传递引用等标记初始的GC ROOT对象，这个过程可以比较快的完成，因为仅仅是简单标记而已。</p>
+<p> <img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210720170246.png" alt=""></p>
+<h2 id="并发标记："><a href="#并发标记：" class="headerlink" title="并发标记："></a>并发标记：</h2><p>​    这个阶段也和cms比较类似，同样可以和用户线程一起<strong>并发运行</strong>，系统可以正常分配对象，而垃圾回收线程根据GC ROOT 进行对象的引用，标记存活对象。同时将对象的改动进行标记记录，这个阶段会比较耗费系统资源，但是和系统线程一起并发影响也不是很大。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721074304.png" alt=""> </p>
+<h2 id="最终标记："><a href="#最终标记：" class="headerlink" title="最终标记："></a>最终标记：</h2><p>​    最终标记阶段：这个阶段和CMS类似，也是需要stop world，此时系统进程需要暂停，停止对象的分配，同时垃圾收集器负责对于对象进行最后的标记和分类动作，决定哪些对象需要被垃圾回收。</p>
+<p> <img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721075659.png" alt=""></p>
+<h2 id="筛选回收："><a href="#筛选回收：" class="headerlink" title="筛选回收："></a>筛选回收：</h2><p>​    筛选回收阶段：需要重点记忆的一个阶段。这个阶段会计算老年代有多少个region存活，存活对象的占比，以及回收的效率计算。</p>
+<p>​    这个阶段也是需要stop world，会让垃圾收集线程马力全开，在指定的停顿时间范围内完成更多的垃圾回收动作。同时这个阶段会重复多次，并且在回收的时候和系统线程是交替运行的，也就是说回收的时候需要暂停。</p>
+<p>​    另外回收阶段不仅回收老年代，还回收新生代以及大对象，算是真正意义上的full GC。比如：老年代有1000个region，而通过计算发现需要回收的region为800个，那么就会回收800个REGION</p>
+<p> <img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721080009.png" alt=""></p>
+<p>​    这里再结合步骤说明一下上面的部分参数的作用，从上图可以看到，系统线程和垃圾回收是交替运行的，在最后一步默认会让系统和垃圾收集线程交互运行8次，假设停顿时间设置为200ms，那么就是每次在200ms内尽可能回收垃圾，回收完成立马开启系统线程，然后运行一段时间又进行回收，如此反复，如果在垃圾回收中4次就回收掉超过5%，那么意味着这一个阶段提前完成了，就会立马进入下一次的垃圾回收循环。</p>
+<p>对应回收参数：</p>
+<ul>
+<li><code>-XX:G1MixedGCCountTarget</code>：表示一次垃圾回收之后，最后一次混合回收执行几次。这个参数意味着在垃圾回收的最后一个阶段回收和系统运行交替运行，并且回收8次之后结束这个操作。</li>
+<li><code>-XX:G1HeapWastePercent</code>：默认为5%。在混合回收的时候如果一次混合回收的空闲region超过5%就立刻停止垃圾回收的操作，这个参数也是为了尽量减少停顿的时间设计的。</li>
+</ul>
+<h1 id="G1的FAQ"><a href="#G1的FAQ" class="headerlink" title="G1的FAQ"></a>G1的FAQ</h1><h2 id="G1在什么时候会触发Mixed-GC"><a href="#G1在什么时候会触发Mixed-GC" class="headerlink" title="G1在什么时候会触发Mixed GC"></a>G1在什么时候会触发Mixed GC</h2><p>​    参数：<code>-XX:InterfaceTestControllernitiatingHeapOccupancyPercent</code>，他的默认值是45%<strong>。</strong></p>
+<p>​    意思就是说如果老年代占用超过了45%<strong>，</strong>就会触发一个叫做混合回收的操作<strong>，</strong>混合回收意味着新生代和老年代一起回收，这时候毫无疑问整个系统线程都会停止。</p>
+<h2 id="回收失败了如何处理？"><a href="#回收失败了如何处理？" class="headerlink" title="回收失败了如何处理？"></a>回收失败了如何处理？</h2><p>​    回收失败了，就会停止线程，然后通过单线程的serrial方式对于所有region存活对象标记，整理，然后清理垃圾对象，整个过程是非常缓慢的。</p>
+<p>​    这个过程其实和CMS的<strong>Corrurnet mode fail</strong>类似，但是由于G1的内存模型完全另辟蹊径，所以他需要回收新生代，老年代和大对象，算法的细节要更为复杂，整理恢复的时间也比较长，也可以说G1的回收是真正意义上的Full GC。</p>
+<h2 id="G1还存在eden区域和survior区域么？"><a href="#G1还存在eden区域和survior区域么？" class="headerlink" title="G1还存在eden区域和survior区域么？"></a>G1还存在eden区域和survior区域么？</h2><p>​    答案是虽然不需要指定新生代和老年代的大小由G1控制，但是region本身在运行时还是会划分新生代或者老年代，只是不再是固定的了，所以新生代还是有对应的Eden和Survior区域。</p>
+<p>​     </p>
+<h2 id="G1的新生代是如何回收的？"><a href="#G1的新生代是如何回收的？" class="headerlink" title="G1的新生代是如何回收的？"></a>G1的新生代是如何回收的？</h2><p>​    还是采用<strong>复制算法</strong>，当新生代超过默认的60%的最大占比限制的时候，会触发<strong>Minor gc</strong>，然后进行<strong>stop world</strong>的操作。</p>
+<p>​    这里可能会想这不还是和之前没区别么？之前说过G1的特点是指定垃圾回收的最大停顿时间。G1会根据Region的大小和回收预测时间在我们指定的最大回收时间内尽可能的回收内存，回收之后的内存可以给新生代使用也可以给老年代使用。</p>
+<h2 id="G1的老年代是如何回收的？"><a href="#G1的老年代是如何回收的？" class="headerlink" title="G1的老年代是如何回收的？"></a>G1的老年代是如何回收的？</h2><p>​    这里需要注意，G1本身已经没有老年代回收这个概念了，取而代之的是<strong>Mixed Gc</strong>也就是混合回收，当老年代的region占比超过45%就会触发。</p>
+<h2 id="G1的回收和之前分代的垃圾收集器有什么区别？"><a href="#G1的回收和之前分代的垃圾收集器有什么区别？" class="headerlink" title="G1的回收和之前分代的垃圾收集器有什么区别？"></a>G1的回收和之前分代的垃圾收集器有什么区别？</h2><p>​    首先需要弄清一个概念，就是region虽然是分代存储的但是并不代表一直是分代的region，比如新生代如果有600个region，回收了200个region，这200个region等于是“自由”的，可以分给新生代也可以给老年代使用。</p>
+<p>​    G1的停顿时间模型会根据用户设置的比如<strong>200MS</strong>内进行回收操作，可以通过：<strong>-XX:MaxGCPauseMills</strong> 这个参数设置最大的停顿等待时间，g1会根据此参数追踪最有回收价值的region进行处理，但是这个参数其实是一个软目标，并不是说收集器完全保证这个时间段内完成回收，而是意味着在这个时间段内做<strong>最有价值的回收</strong>，就像前文提到的收盘子的概念一样，他会尽可能的处理让垃圾收集速度更上分配的速度。</p>
+<h2 id="对象什么时候会进入老年代"><a href="#对象什么时候会进入老年代" class="headerlink" title="对象什么时候会进入老年代?"></a>对象什么时候会进入老年代?</h2><ol>
+<li>对象在新生代躲过了很多次垃圾回收，达到一定的对象年龄，<strong>-XX:MaxTenuringThreashold</strong>这个参数可以设置年龄。</li>
+<li>根据Survior总体存活率超过50%的情况判断，当排序发现某一年龄对象大小超过survior区域的50%会触发。</li>
+</ol>
+<h2 id="大对象什么时候回收"><a href="#大对象什么时候回收" class="headerlink" title="大对象什么时候回收?"></a>大对象什么时候回收?</h2><p>​    大对象不属于新生代也不属于老年代，所以在新生代或者老年代回收的时候会顺带回收大对象的region内存。也就是说大对象的回收依靠Mixed回收。</p>
+<h1 id="其他资料："><a href="#其他资料：" class="headerlink" title="其他资料："></a>其他资料：</h1><h2 id="算法细节摘录"><a href="#算法细节摘录" class="headerlink" title="算法细节摘录"></a>算法细节摘录</h2><p>​    自己看书的一些笔记，不适合作为正文，所以放到最后（反正也没人看，哈哈）</p>
+<p>​    Region使用两个ams指针把region的一部分空间划分对象分配使用，所有新分配的对象存在此区间，同样如果回收赶不上内存分配，也要冻结用户线程，进行stop world。</p>
+<p>​    可预测模型依靠：-XX:MaxGcRauseMillion 期望值，G1会在期望值内做出最有效率的回收</p>
+<p>​    算法：</p>
+<p>​    G1使用<strong>衰减均值算法</strong>，垃圾回收计算region回收耗时和脏卡数据</p>
+<ol>
+<li>参照值：平均值，标准偏差，置信度信息</li>
+<li>默认200毫秒停顿时间，低于这个值很可能垃圾回收速度赶不上分配对象速度</li>
+</ol>
+<h2 id="干货文章："><a href="#干货文章：" class="headerlink" title="干货文章："></a>干货文章：</h2><p>​    <span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC81Mjg0MTc4Nw==" title="https://zhuanlan.zhihu.com/p/52841787">知乎：G1 收集器原理理解与分析<i class="fa fa-external-link"></i></span></p>
+<p>​    <span class="exturl" data-url="aHR0cHM6Ly9obGx2bS1ncm91cC5pdGV5ZS5jb20vZ3JvdXAvdG9waWMvNDQzODE=" title="https://hllvm-group.iteye.com/group/topic/44381">请教G1算法的原理<i class="fa fa-external-link"></i></span></p>
+<p>​    <span class="exturl" data-url="aHR0cHM6Ly90ZWNoLm1laXR1YW4uY29tLzIwMTYvMDkvMjMvZzEuaHRtbA==" title="https://tech.meituan.com/2016/09/23/g1.html">美团：Java Hotspot G1 GC的一些关键技术<i class="fa fa-external-link"></i></span></p>
+<h1 id="写在最后："><a href="#写在最后：" class="headerlink" title="写在最后："></a>写在最后：</h1><p>​    最后吐槽一句，JVM真的很难，光看《深入理解JVM虚拟机》这本书也只能大概了解目前主流收集器实现的大致原理，如果要深究需要长时间的积累，当然我们不需要学的那么痛苦，这篇文章讲到的内容基本能应付80、90%的场景了。</p>
+<p>​    下一篇文章根据一个案例讲一下G1的大致优化思路，注意只是大致思路，和之前的分代收集器不同，G1要真刀真枪的去跑工具，看日志，做数据分析才能调优好，因为能用上G1收集器的系统多数不会小，小系统用用分代并且并发访问量不大的也不需要怎么调优。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/12/25/zuoyouchengxiao/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/25/zuoyouchengxiao/" class="post-title-link" itemprop="url">《卓有成效的管理者》读书笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-25 12:03:01 / 修改时间：12:09:54" itemprop="dateCreated datePublished" datetime="2021-12-25T12:03:01+08:00">2021-12-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B9%A6%E7%B1%8D/" itemprop="url" rel="index"><span itemprop="name">书籍</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/25/zuoyouchengxiao/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/25/zuoyouchengxiao/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">实际看了一下发现还不错的一本书</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="《卓有成效的管理者》读书笔记"><a href="#《卓有成效的管理者》读书笔记" class="headerlink" title="《卓有成效的管理者》读书笔记"></a>《卓有成效的管理者》读书笔记</h1><p>[TOC]</p>
+<h1 id="资源地址"><a href="#资源地址" class="headerlink" title="资源地址"></a>资源地址</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1ofjDGOVNZkSJ7tJ2X1fOJA </span><br><span class="line">提取码：41dv </span><br><span class="line">--来自百度网盘超级会员V6的分享</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    知道这本书的名字是从网上的思维导图里面看到的，实际看了一下发现还不错的一本书，这篇笔记就来看一下这本书的读书笔记。</p>
+<p>​    </p>
+<h1 id="推荐语"><a href="#推荐语" class="headerlink" title="推荐语"></a>推荐语</h1><p>​    虽然你可能不是管理者，但是这本书依然对你有用，明白什么样的领导是好领导，跟对人和做对事永远是最重要的事情。</p>
+<h1 id="个人评价"><a href="#个人评价" class="headerlink" title="个人评价"></a>个人评价</h1><p>​    4星。可能很多人会觉得这本书可能跟自己压根没有关系，然而管理人员是一门很深的学问，如果你要当过组长或者带领过其他人，相信这本书给你的感受是完全不一样的。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/12/25/zuoyouchengxiao/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/10/16/laoniandai/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -947,328 +1403,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/07/17/yuanquan/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/17/yuanquan/" class="post-title-link" itemprop="url">《圆圈正义》读书笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-07-17 15:40:50 / 修改时间：15:44:12" itemprop="dateCreated datePublished" datetime="2021-07-17T15:40:50+08:00">2021-07-17</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/07/17/yuanquan/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/17/yuanquan/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>952</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-            <div class="post-description">可爱的罗老师</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《圆圈正义》读书笔记"><a href="#《圆圈正义》读书笔记" class="headerlink" title="《圆圈正义》读书笔记"></a>《圆圈正义》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    罗老师相信只要玩B站的基本都认识，同时罗老师是一个三观非常非常正的一个人。所以特地看了一下这本书介绍的内容，这本书也算是地铁读物的哪一种，读完可能很多东西都会忘掉。</p>
-<h1 id="推荐语"><a href="#推荐语" class="headerlink" title="推荐语"></a>推荐语</h1><p>​    罗老师是一个可爱的人，但是随笔虽然可以给人共鸣但是给个人的其他较少，可以让我们通过这本书认识罗老师确实是一个绝对正义的人，但是对于我们自身可能并不是有十分强烈的帮助。</p>
-<h1 id="推荐程度"><a href="#推荐程度" class="headerlink" title="推荐程度"></a>推荐程度</h1><p>​    3.5星（满分5星）。这本书因为随笔的原因，虽然内容比较深刻，可以明显看到一个人的价值观，但是作为读书学习来讲对于个人的帮助其实并没有想象中的那么大。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/17/yuanquan/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/07/17/napolun/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/17/napolun/" class="post-title-link" itemprop="url">《拿破仑大帝》读书笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-07-17 15:40:38 / 修改时间：15:43:16" itemprop="dateCreated datePublished" datetime="2021-07-17T15:40:38+08:00">2021-07-17</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/07/17/napolun/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/17/napolun/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-            <div class="post-description">拿破仑大帝</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《拿破仑大帝》读书笔记"><a href="#《拿破仑大帝》读书笔记" class="headerlink" title="《拿破仑大帝》读书笔记"></a>《拿破仑大帝》读书笔记</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210619162046.png?ynotemdtimestamp=1626477082791" alt="img"></p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>​    拿破仑可能更多的印象是滑铁卢之战，拿破仑终于被自己所打败，一代自强的人的辉煌和陨落看起来就在一瞬间，而这本书用“大帝”来冠以拿破仑，从个人的角度来看虽然有失偏颇但是可以理解，如果从战争角度看他给法国人民的伤害是无法想象的，40万大军埋葬在俄国的土地，俄国自焚莫斯科到至今依然在重建。但是从历史的角度来看，拿破仑无疑是欧洲打击封建和推动现代化的重要力量，最关键的是，一部伟大的文学作品《战争与和平》与拿破仑也有着千丝万缕的关系，可以看到一个人物对于一个封建社会以及时代巨变的影响。     如果想要了解拿破仑但是又无从下手，这本书算是切入口，可以大致了解拿破仑的生平。</p>
-<h2 id="资源地址："><a href="#资源地址：" class="headerlink" title="资源地址："></a>资源地址：</h2><blockquote>
-<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMVhlQnpKS1hpY1Zwb29OTlRWZmthWVE=" title="https://pan.baidu.com/s/1XeBzJKXicVpooNNTVfkaYQ">https://pan.baidu.com/s/1XeBzJKXicVpooNNTVfkaYQ<i class="fa fa-external-link"></i></span> 提取码：0lh2 复制这段内容后打开百度网盘手机App，操作更方便哦–来自百度网盘超级会员V6的分享</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/17/napolun/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/07/17/Pengran/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/17/Pengran/" class="post-title-link" itemprop="url">《怦然心动的整理法》读书笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-07-17 15:40:21 / 修改时间：15:42:16" itemprop="dateCreated datePublished" datetime="2021-07-17T15:40:21+08:00">2021-07-17</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/07/17/Pengran/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/17/Pengran/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-            <div class="post-description">方法论和整理法</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210621225304.png?ynotemdtimestamp=1626477082791" alt="img"></p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    看这本书是为了纠正自己喜欢东西乱丢的毛病，然而实际看下来发现这本书的核心内容比较少，更多的是作者对于”怦然心动”这一人生价值理念的阐述，看完之后其实也感觉到整理这个东西其实并不太需要看书，整理本身和自控力有更多的关系，这本书也是不建议购买实体书观看的，如果实在感兴趣可以看看下面发布的电子书链接。</p>
-<h1 id="电子书资源链接："><a href="#电子书资源链接：" class="headerlink" title="电子书资源链接："></a>电子书资源链接：</h1><blockquote>
-<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMTMxQXJzQnFZcUxubC1peGxTclFxT0E=" title="https://pan.baidu.com/s/131ArsBqYqLnl-ixlSrQqOA">https://pan.baidu.com/s/131ArsBqYqLnl-ixlSrQqOA<i class="fa fa-external-link"></i></span> 提取码：h9hf 复制这段内容后打开百度网盘手机App，操作更方便哦–来自百度网盘超级会员V6的分享</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/17/Pengran/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1338,7 +1472,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-count">126</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1351,7 +1485,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-count">64</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1417,13 +1551,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">840k</span>
+    <span title="站点总字数">853k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">12:43</span>
+    <span title="站点阅读时长">12:55</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>

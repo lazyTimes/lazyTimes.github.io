@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="G1收集器也是JDK9服务端默认的垃圾收集器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解JVM - G1收集器">
+<meta property="og:url" content="https://whitestore.top/2021/12/25/g1garbage/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="G1收集器也是JDK9服务端默认的垃圾收集器">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721111916.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210720170246.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721074304.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721075659.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721080009.png">
+<meta property="article:published_time" content="2021-12-25T04:07:37.000Z">
+<meta property="article:modified_time" content="2021-12-25T04:10:44.776Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="g1">
+<meta property="article:tag" content="收集器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721111916.png">
+
+<link rel="canonical" href="https://whitestore.top/2021/12/25/g1garbage/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入理解JVM - G1收集器 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/12/25/g1garbage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解JVM - G1收集器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-25 12:07:37 / 修改时间：12:10:44" itemprop="dateCreated datePublished" datetime="2021-12-25T12:07:37+08:00">2021-12-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM/" itemprop="url" rel="index"><span itemprop="name">深入理解JVM</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/25/g1garbage/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/25/g1garbage/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+            <div class="post-description">G1收集器也是JDK9服务端默认的垃圾收集器</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入理解JVM-G1收集器"><a href="#深入理解JVM-G1收集器" class="headerlink" title="深入理解JVM - G1收集器"></a>深入理解JVM - G1收集器</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    上一篇通过案例说明了老年代的常见优化和处理方式，这一节来看下目前最为热门的G1收集器，G1收集器也是JDK9服务端默认的垃圾收集器，虽然JDK9在现在看来还不是十分的普及，但是学习这个垃圾收集器是十分重要也是十分必要的。</p>
+<h1 id="前文回顾"><a href="#前文回顾" class="headerlink" title="前文回顾"></a>前文回顾</h1><p>​    上一节我们通过一个电商的模拟实战，了解了老年代常见的优化方式。同时在最后总结了老年代优化的一些常见的套路，下面直接用上一节的总结回忆整个内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- 首先业务的对象都是生命周期十分短暂的对象，新生代的压力比老年代要大，所以适当缩小老年代空间是十分划算的</span><br><span class="line">- 预测在高并发的场景下对象进入老年代的时机，如果对象经常“跨区”说明有一部分内容空间是浪费了，那就是Survior区域</span><br><span class="line">- 对象在各分区需要大致多少的内存空间，比如每个线程需要占用多少的内存空间</span><br><span class="line">- 对象的年龄判断是否需要改动，提前让对象进入老年代是好处还是坏处</span><br><span class="line">- 关注收集器对于对象垃圾回收的影响，同时在启动的时候要强制使用某一垃圾收集器，因为不同的JDK版本默认的垃圾收集器是不一样的。</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="CMS-ParNew收集器的痛点是什么？"><a href="#CMS-ParNew收集器的痛点是什么？" class="headerlink" title="CMS+ParNew收集器的痛点是什么？"></a>CMS+ParNew收集器的痛点是什么？</h1><p>​    在之前的文章我们提到过，传统的黄金组合的痛点<strong>Stop world</strong> （世界停顿）：在<strong>并发标记和并发整理</strong>阶段如果出现分配对象超过老年代代而导致Full Gc，会立刻停下手头的所有工作全力进行垃圾收集的动作，并且使用<strong>Serial old</strong>收集器处理，这对于用户来说会发现明显的卡顿，同时会误认为系统卡死，体验十分差。</p>
+<h1 id="G1收集器的介绍"><a href="#G1收集器的介绍" class="headerlink" title="G1收集器的介绍"></a>G1收集器的介绍</h1><h2 id="为什么会诞生G1？"><a href="#为什么会诞生G1？" class="headerlink" title="为什么会诞生G1？"></a>为什么会诞生G1？</h2><p>​    感兴趣可以看下关于G1论文的白皮书：<span class="exturl" data-url="aHR0cDovL2NpdGVzZWVyeC5pc3QucHN1LmVkdS92aWV3ZG9jL2Rvd25sb2FkP2RvaT0xMC4xLjEuNjMuNjM4NiZhbXA7cmVwPXJlcDEmYW1wO3R5cGU9cGRm44CC77yI55yL6K+E6K666K+05YW25a6e6K6y55qE5Y2B5YiG5oq96LGh5ZKM56y857uf77yM5bu66K6u5rex5YWl56CU56m2RzHnmoTlpKfoh7TnnIvnnIvvvIk=" title="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.63.6386&amp;rep=rep1&amp;type=pdf。（看评论说其实讲的十分抽象和笼统，建议深入研究G1的大致看看）">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.63.6386&amp;rep=rep1&amp;type=pdf。（看评论说其实讲的十分抽象和笼统，建议深入研究G1的大致看看）<i class="fa fa-external-link"></i></span></p>
+<p>​    为什么会诞生G1呢？最大原因是<strong>JVM目前不能让收集器的垃圾回收停顿在某个特定时间范围</strong>，但是也不需要像实时那样要求十分的严格。基于这样的考虑，早在06年就出现了G1的论文，但是最终实现花了好多年的时间！可以想象这个收集器内部注定是非常复杂的，当然我们没有必要去深入研究底层，只需要他的基础原理即可。</p>
+<h2 id="历史进程"><a href="#历史进程" class="headerlink" title="历史进程:"></a>历史进程:</h2><ol>
+<li>Jdk7 update4被商用</li>
+<li>jdk8 update40 <strong>并发类型卸载</strong>支持</li>
+<li>Jdk9成为服务端默认垃圾收集器</li>
+<li>Jdk10因为cms垃圾收集器插件功能耦合等缘故，重构了“统一垃圾回收接口”</li>
+</ol>
+<h2 id="G1收集器的特点"><a href="#G1收集器的特点" class="headerlink" title="G1收集器的特点"></a>G1收集器的特点</h2><ol>
+<li>设置一个<strong>垃圾的预期停顿时间</strong>。根据Region的大小和回收价值进行最有效率的回收。</li>
+<li>内存不再固定划分新生代和老年代，使用Region对于内存进行分块，实现了根据系统资源动态分代。</li>
+<li>Region可能属于新生代或者老年代，同时分配给新生代还是老年代是由G1自己控制的。</li>
+<li>选择最小回收时间以及最多回收对象的region进行垃圾的回收操作。</li>
+</ol>
+<p>补充《深入理解JVM虚拟机》介绍的特点：</p>
+<ul>
+<li>不再坚持固定大小以及固定数量的分区划分</li>
+<li>使用region划分区域，大小相等，不同区域扮演不同的角色</li>
+<li><strong>humongous区域</strong>：设计被用于大对象使用，根据最短停顿时间模型优先回收价值最高的region。超过一个region一半的大小都为大对象</li>
+<li>后台使用一个优先级列表优先回收收益最大的区域</li>
+</ul>
+<h2 id="G1的Region"><a href="#G1的Region" class="headerlink" title="G1的Region"></a>G1的Region</h2><p>​    G1取消了固定分代的概念，取而代之的是使用分区的概念，把内存切分成一个个小块，同时各个小块又分为新生代（eden、Survior区）、老年代、大对象（humongous区）等等。</p>
+<p>​    G1规定大于Region的一半的对象成为大对象，同时<strong>不参与分代</strong>。</p>
+<p>​    Region并不是固定为新生代或者老年代，通常情况为自由状态，只有在需要的时候会被划分为指定的分代并且存放特定对象。这里也许会有疑问，这样分配Region不会产生很多垃圾碎片么？答案当然是并不会，首先新生代使用复制算法，会把存活对象拷贝到一块region进行存放，同时存活对象大于一定的region占比不会进行复制（下文会提到），把整个region清理并且进行回收，而老年代则使用标记-整理算法，同样的道理也会直接把垃圾对象的region给清理掉，也是不会产生内存碎片的，最后，大对象是横跨多个region并由专门的region存放，一旦回收直接干掉大对象把对应的region清理即可。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721111916.png" alt="G1收集器"></p>
+<h3 id="到底有多少region，每个region的大小是多少？"><a href="#到底有多少region，每个region的大小是多少？" class="headerlink" title="到底有多少region，每个region的大小是多少？"></a>到底有多少region，每个region的大小是多少？</h3><p>​    计算方式: 堆大小 / 2048，<strong>G1收集器最多可以有2048个region，并且大小必须是2的倍数。</strong>也就是说4G内存给每一个region的大小是2M的大小。</p>
+<p>​    下面是G1常见的配置参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-XX:Heap Region Size：手动制定region的大小。单个region的大小指定，默认为2M,4g内存当中</span><br><span class="line">-XX:G1NewSizePercent： 手动指定新生代初始占比，默认是5%</span><br><span class="line">-XX:G1MaxNewSizePercent：新生代的最大占比默认是60%</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="常用参数："><a href="#常用参数：" class="headerlink" title="常用参数："></a>常用参数：</h2><ul>
+<li><p><code>-XX:G1MixedGCCountTarget</code>：表示一次垃圾回收之后，最后一次混合回收执行几次。这个参数意味着在垃圾回收的最后一个阶段回收和系统运行<strong>交替运行</strong>，并且默认回收8次之后结束这个操作。</p>
+</li>
+<li><p><code>-XX:G1HeapWastePercent</code>：默认为5%。在混合回收的时候如果一次混合回收的<strong>空闲region超过5%</strong>就立刻停止垃圾回收的操作，这个参数也是为了尽量减少停顿的时间设计的。</p>
+</li>
+<li><p><code>-XX:G1MixedGCLiveThreasholdPercent</code>：默认值为85%，表示存活对象要低于85%才进行回收的操作。因为如果一个region的存活对象大于85%，复制拷贝的代价是十分大的，并且这一类region大概率进入老年代</p>
+</li>
+<li><p><code>-XX:G1MaxNewSizePercent</code>：新生代最大占用堆内存空间，默认值为60%。这个参数意味着在初始5%的新生代情况下，系统运行最多可以从系统总空间分配60%给新生代使用，超过这个值就肯定会触发新生代回收。</p>
+</li>
+<li><p><code>-XX:NewRatio=n</code>：配置新生代与老年代的比例，默认是2：1</p>
+</li>
+</ul>
+<h2 id="如何理解G1的工作模式"><a href="#如何理解G1的工作模式" class="headerlink" title="如何理解G1的工作模式?"></a>如何理解G1的工作模式?</h2><p>​    为了更好理解G1的工作模式停顿时间模型，这里个人想了一个还算生动的例子解释下G1的工作模式：</p>
+<p>​    我们平常去服务比较周到的餐馆，服务员通常会看我们桌子上垃圾的量有多少或者吃剩的盘子有多少，当垃圾超过一定量之后，服务员就会过来收盘子或者收垃圾，然后方便后面上菜，同时也可以让洗盘子的服务员忙忙停停的工作。</p>
+<p>​    这之后就会考虑，如果每多出一个盘子就去收一个，你会不会很累，会不会等到盘子有一定量了再去收，比如桌子摆不下新的菜了，或者盘子叠了很多个。</p>
+<p>​    最后，如果每次收盘子的速度能赶上上菜的速度，那么基本的正常运转是没有大问题的。</p>
+<h2 id="G1适合什么样的系统？"><a href="#G1适合什么样的系统？" class="headerlink" title="G1适合什么样的系统？"></a>G1适合什么样的系统？</h2><p>​    G1适合的系统包括<strong>超大内存</strong>的系统，此时如果按照传统的分代，比如16G的内存新生代8G，老年代8G这种划分，虽然拉长垃圾停顿的时间，但是一旦新生代被占满，回收的效率是非常低的，因为对象和GC ROOT非常多，最终导致垃圾收集长时间卡顿。而G1不一样，他只需要按照算法判断根据停顿模型的值在新生代接近停顿模式时间的时候就马上开启回收，不用等新生代满了才回收。</p>
+<p>​    G1也适合<strong>需要低延迟</strong>的系统，因为低延迟对于系统的响应要求是非常高的，更加看重响应的时间，同时对于系统的资源要求也比较高，而分代的模型和理论在大内存机器会造成长时间的垃圾收集停顿，这对于实时响应的服务要求是非常高的。</p>
+<h2 id="G1对比Parnew-cms最大的进步在哪里？"><a href="#G1对比Parnew-cms最大的进步在哪里？" class="headerlink" title="G1对比Parnew+cms最大的进步在哪里？"></a>G1对比Parnew+cms最大的进步在哪里？</h2><p>​    G1最大的进步也是他的特点就是 <strong>时间停顿模型</strong>， 可以控制stop world的时间。同时可以让垃圾收集的时间控制在预期设置的范围之内。</p>
+<p>其他进步：    </p>
+<ul>
+<li>算法： G1基于标记-整理算法, 不会产生空间碎片，分配大对象时不会无法得到连续的空间而提前触发一次FULL GC。</li>
+<li>多线程：多线程算法比CMS更加优秀，同时更能发挥多核性能</li>
+</ul>
+<h2 id="G1没有缺点了？"><a href="#G1没有缺点了？" class="headerlink" title="G1没有缺点了？"></a>G1没有缺点了？</h2><p>​    没缺点是不可能的，肯定是有缺点，这个收集器最大的问题恰恰在于停顿模型，里面的算法细节十分的复杂，所以我们调试<strong>不能仅仅通过业务推算</strong>，而是要根据日志以及工具辅助来完成调优，G1的调优是非常麻烦的一件事。</p>
+<p>​    其次就是Region的设计了，region的设计本身要消耗大量的系统资源进行维护的，这意味着G1收集器本身至少需要占用10%-20%的内存来维持自己的正常工作，比如计算停顿模型，维持跨代引用和GC ROOT等信息，这中间蕴藏的细节十分复杂，这里的内容可以参考【其他资料-干货文章】这部分了解，所以G1收集器本身就需要较好的机器性能才建议使用。</p>
+<p>​    下面是根据《深入理解JVM虚拟机》书中总结G1的缺点：</p>
+<ol>
+<li>每个region要更大的内存空间处理记忆集的消耗问题，还需要tams消耗的部分内存实现快照的功能。</li>
+<li>cms使用写后屏障，而G1不仅使用写后屏障还用了写前屏障。额外使用队列进行异步并发标记的对象指针改动的问题（最终标记的时间开销）</li>
+<li>由于cms使用卡集的方式增量更新，只需要写屏障的卡表引用，但会导致用户线程暂停.</li>
+</ol>
+<h1 id="G1的垃圾回收步骤"><a href="#G1的垃圾回收步骤" class="headerlink" title="G1的垃圾回收步骤"></a>G1的垃圾回收步骤</h1><h2 id="初始标记："><a href="#初始标记：" class="headerlink" title="初始标记："></a>初始标记：</h2><p>​    和cms垃圾收集器类似，在初始的的情况需要stop the world的操作。<strong>仅仅标记GC ROOT 可以引用的对象</strong>，整个过程非常快。</p>
+<p>​    这里可以看到对空间的结构已经和传统固定的分代模型已经不一样了，堆内存被划分为小块的region，初始标记会根据栈中的局部变量引用或者传递引用等标记初始的GC ROOT对象，这个过程可以比较快的完成，因为仅仅是简单标记而已。</p>
+<p> <img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210720170246.png" alt=""></p>
+<h2 id="并发标记："><a href="#并发标记：" class="headerlink" title="并发标记："></a>并发标记：</h2><p>​    这个阶段也和cms比较类似，同样可以和用户线程一起<strong>并发运行</strong>，系统可以正常分配对象，而垃圾回收线程根据GC ROOT 进行对象的引用，标记存活对象。同时将对象的改动进行标记记录，这个阶段会比较耗费系统资源，但是和系统线程一起并发影响也不是很大。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721074304.png" alt=""> </p>
+<h2 id="最终标记："><a href="#最终标记：" class="headerlink" title="最终标记："></a>最终标记：</h2><p>​    最终标记阶段：这个阶段和CMS类似，也是需要stop world，此时系统进程需要暂停，停止对象的分配，同时垃圾收集器负责对于对象进行最后的标记和分类动作，决定哪些对象需要被垃圾回收。</p>
+<p> <img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721075659.png" alt=""></p>
+<h2 id="筛选回收："><a href="#筛选回收：" class="headerlink" title="筛选回收："></a>筛选回收：</h2><p>​    筛选回收阶段：需要重点记忆的一个阶段。这个阶段会计算老年代有多少个region存活，存活对象的占比，以及回收的效率计算。</p>
+<p>​    这个阶段也是需要stop world，会让垃圾收集线程马力全开，在指定的停顿时间范围内完成更多的垃圾回收动作。同时这个阶段会重复多次，并且在回收的时候和系统线程是交替运行的，也就是说回收的时候需要暂停。</p>
+<p>​    另外回收阶段不仅回收老年代，还回收新生代以及大对象，算是真正意义上的full GC。比如：老年代有1000个region，而通过计算发现需要回收的region为800个，那么就会回收800个REGION</p>
+<p> <img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210721080009.png" alt=""></p>
+<p>​    这里再结合步骤说明一下上面的部分参数的作用，从上图可以看到，系统线程和垃圾回收是交替运行的，在最后一步默认会让系统和垃圾收集线程交互运行8次，假设停顿时间设置为200ms，那么就是每次在200ms内尽可能回收垃圾，回收完成立马开启系统线程，然后运行一段时间又进行回收，如此反复，如果在垃圾回收中4次就回收掉超过5%，那么意味着这一个阶段提前完成了，就会立马进入下一次的垃圾回收循环。</p>
+<p>对应回收参数：</p>
+<ul>
+<li><code>-XX:G1MixedGCCountTarget</code>：表示一次垃圾回收之后，最后一次混合回收执行几次。这个参数意味着在垃圾回收的最后一个阶段回收和系统运行交替运行，并且回收8次之后结束这个操作。</li>
+<li><code>-XX:G1HeapWastePercent</code>：默认为5%。在混合回收的时候如果一次混合回收的空闲region超过5%就立刻停止垃圾回收的操作，这个参数也是为了尽量减少停顿的时间设计的。</li>
+</ul>
+<h1 id="G1的FAQ"><a href="#G1的FAQ" class="headerlink" title="G1的FAQ"></a>G1的FAQ</h1><h2 id="G1在什么时候会触发Mixed-GC"><a href="#G1在什么时候会触发Mixed-GC" class="headerlink" title="G1在什么时候会触发Mixed GC"></a>G1在什么时候会触发Mixed GC</h2><p>​    参数：<code>-XX:InterfaceTestControllernitiatingHeapOccupancyPercent</code>，他的默认值是45%<strong>。</strong></p>
+<p>​    意思就是说如果老年代占用超过了45%<strong>，</strong>就会触发一个叫做混合回收的操作<strong>，</strong>混合回收意味着新生代和老年代一起回收，这时候毫无疑问整个系统线程都会停止。</p>
+<h2 id="回收失败了如何处理？"><a href="#回收失败了如何处理？" class="headerlink" title="回收失败了如何处理？"></a>回收失败了如何处理？</h2><p>​    回收失败了，就会停止线程，然后通过单线程的serrial方式对于所有region存活对象标记，整理，然后清理垃圾对象，整个过程是非常缓慢的。</p>
+<p>​    这个过程其实和CMS的<strong>Corrurnet mode fail</strong>类似，但是由于G1的内存模型完全另辟蹊径，所以他需要回收新生代，老年代和大对象，算法的细节要更为复杂，整理恢复的时间也比较长，也可以说G1的回收是真正意义上的Full GC。</p>
+<h2 id="G1还存在eden区域和survior区域么？"><a href="#G1还存在eden区域和survior区域么？" class="headerlink" title="G1还存在eden区域和survior区域么？"></a>G1还存在eden区域和survior区域么？</h2><p>​    答案是虽然不需要指定新生代和老年代的大小由G1控制，但是region本身在运行时还是会划分新生代或者老年代，只是不再是固定的了，所以新生代还是有对应的Eden和Survior区域。</p>
+<p>​     </p>
+<h2 id="G1的新生代是如何回收的？"><a href="#G1的新生代是如何回收的？" class="headerlink" title="G1的新生代是如何回收的？"></a>G1的新生代是如何回收的？</h2><p>​    还是采用<strong>复制算法</strong>，当新生代超过默认的60%的最大占比限制的时候，会触发<strong>Minor gc</strong>，然后进行<strong>stop world</strong>的操作。</p>
+<p>​    这里可能会想这不还是和之前没区别么？之前说过G1的特点是指定垃圾回收的最大停顿时间。G1会根据Region的大小和回收预测时间在我们指定的最大回收时间内尽可能的回收内存，回收之后的内存可以给新生代使用也可以给老年代使用。</p>
+<h2 id="G1的老年代是如何回收的？"><a href="#G1的老年代是如何回收的？" class="headerlink" title="G1的老年代是如何回收的？"></a>G1的老年代是如何回收的？</h2><p>​    这里需要注意，G1本身已经没有老年代回收这个概念了，取而代之的是<strong>Mixed Gc</strong>也就是混合回收，当老年代的region占比超过45%就会触发。</p>
+<h2 id="G1的回收和之前分代的垃圾收集器有什么区别？"><a href="#G1的回收和之前分代的垃圾收集器有什么区别？" class="headerlink" title="G1的回收和之前分代的垃圾收集器有什么区别？"></a>G1的回收和之前分代的垃圾收集器有什么区别？</h2><p>​    首先需要弄清一个概念，就是region虽然是分代存储的但是并不代表一直是分代的region，比如新生代如果有600个region，回收了200个region，这200个region等于是“自由”的，可以分给新生代也可以给老年代使用。</p>
+<p>​    G1的停顿时间模型会根据用户设置的比如<strong>200MS</strong>内进行回收操作，可以通过：<strong>-XX:MaxGCPauseMills</strong> 这个参数设置最大的停顿等待时间，g1会根据此参数追踪最有回收价值的region进行处理，但是这个参数其实是一个软目标，并不是说收集器完全保证这个时间段内完成回收，而是意味着在这个时间段内做<strong>最有价值的回收</strong>，就像前文提到的收盘子的概念一样，他会尽可能的处理让垃圾收集速度更上分配的速度。</p>
+<h2 id="对象什么时候会进入老年代"><a href="#对象什么时候会进入老年代" class="headerlink" title="对象什么时候会进入老年代?"></a>对象什么时候会进入老年代?</h2><ol>
+<li>对象在新生代躲过了很多次垃圾回收，达到一定的对象年龄，<strong>-XX:MaxTenuringThreashold</strong>这个参数可以设置年龄。</li>
+<li>根据Survior总体存活率超过50%的情况判断，当排序发现某一年龄对象大小超过survior区域的50%会触发。</li>
+</ol>
+<h2 id="大对象什么时候回收"><a href="#大对象什么时候回收" class="headerlink" title="大对象什么时候回收?"></a>大对象什么时候回收?</h2><p>​    大对象不属于新生代也不属于老年代，所以在新生代或者老年代回收的时候会顺带回收大对象的region内存。也就是说大对象的回收依靠Mixed回收。</p>
+<h1 id="其他资料："><a href="#其他资料：" class="headerlink" title="其他资料："></a>其他资料：</h1><h2 id="算法细节摘录"><a href="#算法细节摘录" class="headerlink" title="算法细节摘录"></a>算法细节摘录</h2><p>​    自己看书的一些笔记，不适合作为正文，所以放到最后（反正也没人看，哈哈）</p>
+<p>​    Region使用两个ams指针把region的一部分空间划分对象分配使用，所有新分配的对象存在此区间，同样如果回收赶不上内存分配，也要冻结用户线程，进行stop world。</p>
+<p>​    可预测模型依靠：-XX:MaxGcRauseMillion 期望值，G1会在期望值内做出最有效率的回收</p>
+<p>​    算法：</p>
+<p>​    G1使用<strong>衰减均值算法</strong>，垃圾回收计算region回收耗时和脏卡数据</p>
+<ol>
+<li>参照值：平均值，标准偏差，置信度信息</li>
+<li>默认200毫秒停顿时间，低于这个值很可能垃圾回收速度赶不上分配对象速度</li>
+</ol>
+<h2 id="干货文章："><a href="#干货文章：" class="headerlink" title="干货文章："></a>干货文章：</h2><p>​    <span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC81Mjg0MTc4Nw==" title="https://zhuanlan.zhihu.com/p/52841787">知乎：G1 收集器原理理解与分析<i class="fa fa-external-link"></i></span></p>
+<p>​    <span class="exturl" data-url="aHR0cHM6Ly9obGx2bS1ncm91cC5pdGV5ZS5jb20vZ3JvdXAvdG9waWMvNDQzODE=" title="https://hllvm-group.iteye.com/group/topic/44381">请教G1算法的原理<i class="fa fa-external-link"></i></span></p>
+<p>​    <span class="exturl" data-url="aHR0cHM6Ly90ZWNoLm1laXR1YW4uY29tLzIwMTYvMDkvMjMvZzEuaHRtbA==" title="https://tech.meituan.com/2016/09/23/g1.html">美团：Java Hotspot G1 GC的一些关键技术<i class="fa fa-external-link"></i></span></p>
+<h1 id="写在最后："><a href="#写在最后：" class="headerlink" title="写在最后："></a>写在最后：</h1><p>​    最后吐槽一句，JVM真的很难，光看《深入理解JVM虚拟机》这本书也只能大概了解目前主流收集器实现的大致原理，如果要深究需要长时间的积累，当然我们不需要学的那么痛苦，这篇文章讲到的内容基本能应付80、90%的场景了。</p>
+<p>​    下一篇文章根据一个案例讲一下G1的大致优化思路，注意只是大致思路，和之前的分代收集器不同，G1要真刀真枪的去跑工具，看日志，做数据分析才能调优好，因为能用上G1收集器的系统多数不会小，小系统用用分代并且并发访问量不大的也不需要怎么调优。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2021/12/25/g1garbage/" title="深入理解JVM - G1收集器">https://whitestore.top/2021/12/25/g1garbage/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/25/zuoyouchengxiao/" rel="prev" title="《卓有成效的管理者》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《卓有成效的管理者》读书笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/25/g1tiaoyou/" rel="next" title="深入理解JVM - G1调优简述">
+      深入理解JVM - G1调优简述 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#深入理解JVM-G1收集器"><span class="nav-number">1.</span> <span class="nav-text">深入理解JVM - G1收集器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前文回顾"><span class="nav-number">3.</span> <span class="nav-text">前文回顾</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMS-ParNew收集器的痛点是什么？"><span class="nav-number">4.</span> <span class="nav-text">CMS+ParNew收集器的痛点是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#G1收集器的介绍"><span class="nav-number">5.</span> <span class="nav-text">G1收集器的介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么会诞生G1？"><span class="nav-number">5.1.</span> <span class="nav-text">为什么会诞生G1？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#历史进程"><span class="nav-number">5.2.</span> <span class="nav-text">历史进程:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1收集器的特点"><span class="nav-number">5.3.</span> <span class="nav-text">G1收集器的特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1的Region"><span class="nav-number">5.4.</span> <span class="nav-text">G1的Region</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#到底有多少region，每个region的大小是多少？"><span class="nav-number">5.4.1.</span> <span class="nav-text">到底有多少region，每个region的大小是多少？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用参数："><span class="nav-number">5.5.</span> <span class="nav-text">常用参数：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何理解G1的工作模式"><span class="nav-number">5.6.</span> <span class="nav-text">如何理解G1的工作模式?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1适合什么样的系统？"><span class="nav-number">5.7.</span> <span class="nav-text">G1适合什么样的系统？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1对比Parnew-cms最大的进步在哪里？"><span class="nav-number">5.8.</span> <span class="nav-text">G1对比Parnew+cms最大的进步在哪里？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1没有缺点了？"><span class="nav-number">5.9.</span> <span class="nav-text">G1没有缺点了？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#G1的垃圾回收步骤"><span class="nav-number">6.</span> <span class="nav-text">G1的垃圾回收步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始标记："><span class="nav-number">6.1.</span> <span class="nav-text">初始标记：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发标记："><span class="nav-number">6.2.</span> <span class="nav-text">并发标记：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最终标记："><span class="nav-number">6.3.</span> <span class="nav-text">最终标记：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#筛选回收："><span class="nav-number">6.4.</span> <span class="nav-text">筛选回收：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#G1的FAQ"><span class="nav-number">7.</span> <span class="nav-text">G1的FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#G1在什么时候会触发Mixed-GC"><span class="nav-number">7.1.</span> <span class="nav-text">G1在什么时候会触发Mixed GC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回收失败了如何处理？"><span class="nav-number">7.2.</span> <span class="nav-text">回收失败了如何处理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1还存在eden区域和survior区域么？"><span class="nav-number">7.3.</span> <span class="nav-text">G1还存在eden区域和survior区域么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1的新生代是如何回收的？"><span class="nav-number">7.4.</span> <span class="nav-text">G1的新生代是如何回收的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1的老年代是如何回收的？"><span class="nav-number">7.5.</span> <span class="nav-text">G1的老年代是如何回收的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1的回收和之前分代的垃圾收集器有什么区别？"><span class="nav-number">7.6.</span> <span class="nav-text">G1的回收和之前分代的垃圾收集器有什么区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象什么时候会进入老年代"><span class="nav-number">7.7.</span> <span class="nav-text">对象什么时候会进入老年代?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大对象什么时候回收"><span class="nav-number">7.8.</span> <span class="nav-text">大对象什么时候回收?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他资料："><span class="nav-number">8.</span> <span class="nav-text">其他资料：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#算法细节摘录"><span class="nav-number">8.1.</span> <span class="nav-text">算法细节摘录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#干货文章："><span class="nav-number">8.2.</span> <span class="nav-text">干货文章：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后："><span class="nav-number">9.</span> <span class="nav-text">写在最后：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">64</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">853k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">12:55</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
