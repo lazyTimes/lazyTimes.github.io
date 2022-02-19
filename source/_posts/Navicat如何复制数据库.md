@@ -4,9 +4,9 @@ subtitle: Navicat如何复制数据库一次实战笔记
 url_suffix: navicatcopy
 author: lazytime
 tags:
-  - 实用
-categories:
   - 数据库
+categories:
+  - 数据库-其他
 keywords: navicat,数据库
 description: Navicat如何复制数据库一次实战笔记
 copyright: true

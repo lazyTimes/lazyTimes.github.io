@@ -4,9 +4,9 @@ subtitle: elasticsearch Linux安装教程
 author: lazytime
 url_suffix: note24
 tags:
-  - linux
+  - elastic
 categories:
-  - elasticsearch
+  - 中间件-elastic
 keywords: elasticsearch,Linux安装教程
 description: 安装教程
 copyright: true

@@ -4,9 +4,9 @@ subtitle: 买了一台surface，写一下使用心得
 author: lazytime
 url_suffix: note30
 tags:
-  - surface
+  - 其他
 categories:
-  - 日常
+  - 其他
 keywords: surface
 description: 这不是生产力，但是比较符合我的需求
 copyright: true

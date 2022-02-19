@@ -6,7 +6,7 @@ author: lazytime
 tags:
   - postgresql
 categories:
-  - 数据库
+  - 数据库-其他
 keywords: postgresql踩坑
 description: 关于日期格式化的一个坑
 copyright: true

@@ -4,9 +4,9 @@ subtitle: 记一次CORS踩坑记录
 author: lazytime
 url_suffix: note3
 tags:
-  - cors
+  - java
 categories:
-  - 工作
+  - java-java基础
 keywords: 记一次CORS踩坑记录）
 description: 记一次CORS踩坑记录
 copyright: true

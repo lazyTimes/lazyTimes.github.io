@@ -4,9 +4,9 @@ subtitle: RocketMq消息队列中间件安装(linux)
 author: lazytime
 url_suffix: note23
 tags:
-  - RocketMq
+  - 其他
 categories:
-  - 消息中间件
+  - 中间件-消息队列
 keywords: RocketMq消息队列中间件安装(linux)
 description: 消息中间件
 copyright: true

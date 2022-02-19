@@ -4,9 +4,9 @@ subtitle: 实战jmeter 压力测试
 author: lazytime
 url_suffix: note20
 tags:
-  - jmeter
+  - java
 categories:
-  - 压力测试
+  - java-java基础
 keywords: jmeter 压力测试
 description: 学习如何使用jmeter压力测试
 copyright: true

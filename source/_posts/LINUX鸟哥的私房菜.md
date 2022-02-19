@@ -4,16 +4,16 @@ subtitle: 鸟哥的私房菜笔记
 author: lazytime
 url_suffix: unix1
 tags:
-  - Linux
+  - 服务端-Linux
 categories:
-  - 书籍
+  - 读书笔记
 keywords: 鸟哥的私房菜笔记
 description: 鸟哥的私房菜笔记
 copyright: true
 date: 2020-07-26 16:56:58
 ---
 
-# LINUX鸟哥的私房菜笔记：
+# 《LINUX鸟哥的私房菜》笔记：
 
 ## 第一章：计算机概论
 

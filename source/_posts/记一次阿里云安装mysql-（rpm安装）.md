@@ -6,7 +6,7 @@ author: lazytime
 tags:
   - mysql
 categories:
-  - 数据库
+  - 数据库-其他
 keywords: mysql
 description: 使用rpm进行mysql安装
 copyright: true

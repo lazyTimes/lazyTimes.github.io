@@ -4,9 +4,9 @@ subtitle: 这个人很懒，不想写副标题
 author: lazytime
 url_suffix: mavennexus
 tags:
-  - Maven
+  - java
 categories:
-  - JAVA
+  - java-java基础
 keywords: Maven,java
 description: 使用maven搭建私服
 copyright: true

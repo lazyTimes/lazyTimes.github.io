@@ -6,7 +6,7 @@ author: lazytime
 tags:
   - redis
 categories:
-  - redis专栏
+  - nosql-redis
 keywords: redis
 description: redis发布订阅的一些应用以及一些命令的学习
 copyright: true

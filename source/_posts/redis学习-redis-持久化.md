@@ -6,7 +6,7 @@ author: lazytime
 tags:
   - redis
 categories:
-  - redis专栏
+  - nosql-redis
 keywords: redis,持久化
 description: 关于redis持久化的一些学习了解，以及一些拓展知识的了解
 copyright: true

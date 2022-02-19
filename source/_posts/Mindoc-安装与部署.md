@@ -4,9 +4,9 @@ subtitle: 如何简单的使用mindoc
 author: lazytime
 url_suffix: note26
 tags:
-  - 文档
+  - 其他
 categories:
-  - 日常
+  - 其他
 keywords: Mindoc
 description: 使用mindoc的一次实践
 copyright: true

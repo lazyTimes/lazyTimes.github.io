@@ -4,11 +4,11 @@ subtitle: NodeJS教程
 author: lazytime
 url_suffix: note12
 tags:
-  - NodeJS
+  - 前端
 categories:
-  - NodeJS
-keywords: 请输入关键字（英文逗号分隔多个关键字）
-description: 请输入描述信息
+  - 前端-nodejs
+keywords: nodejs安装教程（linux）
+description: nodejs笔记记录
 copyright: true
 date: 2020-07-26 22:37:22
 ---

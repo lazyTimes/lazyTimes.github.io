@@ -4,9 +4,9 @@ subtitle: 内容分为openFeign大致的使用和源码的个人解读
 url_suffix: openfeigncloud
 author: lazytime
 tags:
-  - springcloud
+  - java
 categories:
-  - springcloud
+  - java-java基础
 keywords: openfeign
 description: 源码阅读
 copyright: true

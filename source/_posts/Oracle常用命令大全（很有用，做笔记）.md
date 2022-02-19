@@ -6,7 +6,7 @@ url_suffix: note22
 tags:
   - oracle
 categories:
-  - 数据库
+  - 数据库-其他
 keywords: oracle
 description: Oracle常用命令大全（很有用，做笔记）
 copyright: true

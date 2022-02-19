@@ -4,9 +4,9 @@ subtitle: Elasticsearch 踩坑 - 6.2.4 版本
 author: lazytime
 url_suffix: note9
 tags:
-  - Elasticsearch
+  - elastic
 categories:
-  - Elasticsearch
+  - 中间件-elastic
 keywords: Elasticsearch
 description: Elasticsearch 踩坑 - 6.2.4 版本
 copyright: true

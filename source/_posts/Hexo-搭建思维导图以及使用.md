@@ -6,7 +6,7 @@ url_suffix: hexo-study1
 tags:
   - Hexo
 categories:
-  - 博客
+  - 其他
 keywords: Hexo，搭建思维导图以及使用
 description: 搭建思维导图以及使用
 copyright: true

@@ -4,9 +4,9 @@ subtitle: Spring Boot 打包成的可执行 jar ，为什么不能被其他项�
 url_suffix: springbootpac
 author: lazytime
 tags:
-  - Springboot
+  - java
 categories:
-  - Springboot
+  - java-java基础
 keywords: Springboot打包
 description: Springboot打包
 copyright: true

@@ -4,9 +4,9 @@ subtitle: 对于neo4j的apoc插件进行二次扩展
 url_suffix: note
 author: lazytime
 tags:
-  - neo4j
+  - 其他
 categories:
-  - 图数据库
+  - 数据库-图数据库
 keywords: neo4j,apoc
 description: 使用apoc继承neo4j，同事根据此来进行下一步的处理操作
 copyright: true

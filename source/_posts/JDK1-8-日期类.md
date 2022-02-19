@@ -4,9 +4,9 @@ subtitle: JDK1.8 日期类
 author: lazytime
 url_suffix: note7
 tags:
-  - JDK1.8
+  - java
 categories:
-  - JAVA
+  - java-java基础
 keywords: JDK1.8 日期类
 description: JDK1.8 日期类
 copyright: true

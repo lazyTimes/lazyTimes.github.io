@@ -4,9 +4,9 @@ subtitle: 学习neo4j的使用和基本语法
 url_suffix: neo4j1
 author: lazytime
 tags:
-  - neo4j
+  - 其他
 categories:
-  - 图数据库
+  - 数据库-图数据库
 keywords: neo4j,图数据库
 description: 学习neo4j的使用和基本语法
 copyright: true
@@ -335,5 +335,4 @@ neo4j 在window平台有一个desktop 版本，实现了多实例创建图数据
 3. 下一篇文章将对neo4j 进行扩展
 
 内容篇幅较长，感谢观看！希望能对读者有所帮助，如果对于博客有任何建议或者意见，欢迎讨论，如果文章内容有误，可以直接私信或者在评论区留言，我会及时答复并且修复
-
 

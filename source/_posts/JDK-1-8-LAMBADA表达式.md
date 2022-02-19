@@ -4,9 +4,9 @@ subtitle: jdk1.8中对于lambada表达式
 author: lazytime
 url_suffix: note27
 tags:
-  - LAMBAD
+  - java
 categories:
-  - JDK1.8
+  - java-java基础
 keywords: lambada
 description: 使用lambada表达式处理
 copyright: true

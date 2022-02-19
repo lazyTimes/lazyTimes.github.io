@@ -6,7 +6,7 @@ author: lazytime
 tags:
   - redis
 categories:
-  - redis
+  - nosql-redis
 keywords: reids,redis复制
 description: redis复制以及集群部署的方式
 copyright: true
@@ -544,7 +544,7 @@ Cluster模式实现了Redis的分布式存储，即每台节点存储不同的�
 4. 当其它主节点ping一个主节点A时，如果半数以上的主节点与A通信超时，那么认为主节点A宕机了。如果主节点A和它的从节点都宕机了，那么**该集群就无法再提供服务了**
 
 
-   
+
 
 ### 配置集群（重点）：
 

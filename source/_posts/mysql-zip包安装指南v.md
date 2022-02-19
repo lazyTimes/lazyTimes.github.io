@@ -4,9 +4,9 @@ subtitle: zip包安装指南
 author: lazytime
 url_suffix: note12
 tags:
-  - mysql
+  - 数据库
 categories:
-  - Linux
+  - 数据库-mysql
 keywords: mysql
 description: mysqlzip包的安装方式
 copyright: true

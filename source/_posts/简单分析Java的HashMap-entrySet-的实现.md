@@ -4,9 +4,9 @@ subtitle: 简单分析Java的HashMap.entrySet()的实现,底层实现的原理
 author: lazytime
 url_suffix: note19
 tags:
-  - Map
+  - java
 categories:
-  - 集合
+  - java-java基础
 keywords: hashmap
 description: hashmap的entrySet是如何实现的
 copyright: true

@@ -4,9 +4,9 @@ subtitle: 参考了网上的资料，导出word内容
 url_suffix: word-export
 author: lazytime
 tags:
-  - word
+  - java
 categories:
-  - 笔记
+  - java-java基础
 keywords: java导出,word导出
 description: 如何使用java代码导出word
 copyright: true

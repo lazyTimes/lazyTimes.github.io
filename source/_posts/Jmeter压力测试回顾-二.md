@@ -4,9 +4,9 @@ subtitle: jmeter压力测试回顾
 url_suffix: jmeter-test1
 author: lazytime
 tags:
-  - jmeter
+  - java
 categories:
-  - 压力测试
+  - java-java基础
 keywords: jmeter压力测试回顾
 description: jmeter压力测试回顾
 copyright: true

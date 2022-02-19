@@ -4,9 +4,9 @@ subtitle: maven多模块如何在idea中创建，以及maven常见的依赖问�
 url_suffix: mavenmodules
 author: lazytime
 tags:
-  - maven
+  - java
 categories:
-  - maven
+  - java-java基础
 keywords: maven,多模块
 description: maven多模块如何在idea中创建，以及maven常见的依赖问题介绍和处理方法
 copyright: true

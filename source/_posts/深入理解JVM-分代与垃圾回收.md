@@ -6,7 +6,7 @@ author: lazytime
 tags:
   - JVM
 categories:
-  - 深入理解JVM
+  - java-jvm
 keywords: 垃圾回收,算法
 description: 这一期讲述垃圾回收的算法
 copyright: true

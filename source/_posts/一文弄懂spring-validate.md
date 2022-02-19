@@ -4,9 +4,9 @@ subtitle: 对象校验是一个十分恼火的问题，但是好在有脚手架�
 url_suffix: springvalidate
 author: lazytime
 tags:
-  - spring
-categories:
   - java
+categories:
+  - java-java基础
 keywords: springvalidate,spring
 description: 对象校验是一个十分恼火的问题，但是好在有脚手架可以给我们开箱即用
 copyright: true

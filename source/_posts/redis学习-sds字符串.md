@@ -6,7 +6,7 @@ author: lazytime
 tags:
   - redis
 categories:
-  - redis
+  - nosql-redis
 keywords: sds和c,sds字符串
 description: redis的sds字符串实现
 copyright: true

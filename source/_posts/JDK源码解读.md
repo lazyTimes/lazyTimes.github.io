@@ -1,10 +1,18 @@
 ---
 layout: 深入理解jvm虚拟机
+subtitle: jdk源代码解读
+author: lazytime
 title: JDK源码解读
-url_suffix: jdkym
+url_suffix: jdkymjd
 date: 2020-07-26 12:27:28
 tags:
+  - java
+categories:
+  - java-java基础
+copyright: true
 ---
+
+
 
 # 深入理解JVM虚拟机 - JDK源码解读
 

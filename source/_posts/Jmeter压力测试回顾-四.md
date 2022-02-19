@@ -4,9 +4,9 @@ subtitle: Jmeter压力测试回顾最后部分
 url_suffix: jmeter-test4
 author: lazytime
 tags:
-  - jmeter
+  - java
 categories:
-  - 压力测试
+  - java-java基础
 keywords: Jmeter压力测试回顾最后部分
 description: Jmeter压力测试回顾最后部分
 copyright: true
@@ -108,11 +108,11 @@ date: 2021-01-18 23:35:19
 
 
 ​	
-	2）APDEX(Application performance Index)
-		apdex:应用程序性能指标,范围在0~1之间，1表示达到所有用户均满意
-		T(Toleration threshold)：可接受阀值
-		F(Frustration threshold)：失败阀值
-	
+​	2）APDEX(Application performance Index)
+​		apdex:应用程序性能指标,范围在0~1之间，1表示达到所有用户均满意
+​		T(Toleration threshold)：可接受阀值
+​		F(Frustration threshold)：失败阀值
+​	
 	3）Requests Summary
 		OK:成功率
 		KO:失败率

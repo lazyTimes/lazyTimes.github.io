@@ -4,9 +4,9 @@ subtitle: 如何在Linux上安装docker
 author: lazytime
 url_suffix: note21
 tags:
-  - docker
-categories:
   - linux
+categories:
+  - 服务端-linux
 keywords: docker,linux
 description: linux安装docker
 copyright: true

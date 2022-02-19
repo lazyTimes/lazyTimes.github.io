@@ -4,9 +4,9 @@ subtitle: jar包的访问一定要知道内容访问机制
 author: lazytime
 url_suffix: jar
 tags:
-  - jar
+  - java
 categories:
-  - 技巧
+  - java-java基础
 keywords: 关于内嵌一些通用页面和功能的做法
 description: 内嵌页面的做法
 copyright: true

@@ -4,9 +4,9 @@ subtitle: 一个数据库的使用经验技巧
 url_suffix: updateselect
 author: lazytime
 tags:
-  - 实用
-categories:
   - 数据库
+categories:
+  - 数据库-其他
 keywords: updateselect
 description: 一个数据库的使用经验技巧
 copyright: true

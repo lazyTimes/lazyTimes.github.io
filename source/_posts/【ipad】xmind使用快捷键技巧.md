@@ -4,9 +4,9 @@ subtitle: xmind使用快捷键技巧
 url_suffix: xmindipad
 author: lazytime
 tags:
-  - ipad
+  - 其他
 categories:
-  - ipad
+  - 其他
 keywords: xmind
 description: ipad技巧
 copyright: true

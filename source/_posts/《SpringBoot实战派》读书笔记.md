@@ -4,7 +4,7 @@ subtitle: springboot是实战派的读书笔记
 url_suffix: springbootbook1
 author: lazytime
 tags:
-  - 读书笔记
+  - 书籍
 categories:
   - 读书笔记
 keywords: springboot,读书笔记

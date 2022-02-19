@@ -4,9 +4,9 @@ subtitle: Markdown 如何给文字加上高亮效果？
 author: lazytime
 url_suffix: note8
 tags:
-  - 实用
+  - 其他
 categories:
-  - 笔记
+  - 其他
 keywords: Markdown
 description: Markdown 如何给文字加上高亮效果？
 copyright: true

@@ -4,9 +4,9 @@ subtitle: 《Spring 实战》解读
 author: lazytime
 url_suffix: note2
 tags:
-  - Spring
+  - java
 categories:
-  - Spring
+  - 读书笔记
 keywords: 《Spring 实战》解读
 description: 《Spring 实战》解读
 copyright: true

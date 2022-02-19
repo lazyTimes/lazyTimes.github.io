@@ -4,9 +4,9 @@ subtitle: 常用代办任务工具
 author: lazytime
 url_suffix: window-study
 tags:
-  - TODOs
+  - 其他
 categories:
-  - 待办任务
+  - 其他
 keywords: 常用代办任务工具
 description: 常用代办任务工具
 copyright: true

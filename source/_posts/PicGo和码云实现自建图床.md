@@ -4,9 +4,9 @@ subtitle: picgo搭建图床
 author: lazytime
 url_suffix: picgo
 tags:
-  - PicGo
+  - 其他
 categories:
-  - 博客
+  - 其他
 keywords: PicGo和码云实现自建图床
 description: 自建图床
 copyright: true

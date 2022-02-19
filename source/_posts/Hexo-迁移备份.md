@@ -6,7 +6,7 @@ url_suffix: hexoback
 tags:
   - Hexo
 categories:
-  - 博客
+  - 其他
 keywords: Hexo备份
 description: 创建Git分支将Hexo博客迁移到其它电脑
 copyright: true
