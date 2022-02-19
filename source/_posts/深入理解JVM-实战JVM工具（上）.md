@@ -7,7 +7,7 @@ tags:
   - java
   - jvm
 categories:
-  - java-jam
+  - java-jvm
 keywords: 请输入关键字（英文逗号分隔多个关键字）
 description: 请输入描述信息
 copyright: true

@@ -4,7 +4,8 @@ subtitle: 这一期讲述垃圾回收的算法。我们根据分代的理念讲�
 url_suffix: lajihuishou
 author: lazytime
 tags:
-  - JVM
+  - jvm
+  - java
 categories:
   - java-jvm
 keywords: 垃圾回收,算法
