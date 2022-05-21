@@ -4,7 +4,7 @@ subtitle: 坦克大战的源代码学习使用
 url_suffix: javatank
 author: lazytime
 tags:
-  - 开眼项目
+  - 个人项目
 categories:
   - java-java基础
 keywords: 坦克大战的源代码学习使用,java
