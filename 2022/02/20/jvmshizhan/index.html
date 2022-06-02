@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这一篇文章还是讲实战，但是内容并不是很多，下一篇会出一个阶段总结对于之前的内容进行回顾">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解JVM - 案例实战">
+<meta property="og:url" content="https://whitestore.top/2022/02/20/jvmshizhan/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="这一篇文章还是讲实战，但是内容并不是很多，下一篇会出一个阶段总结对于之前的内容进行回顾">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210803065025.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210802221403.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210802223303.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210802224652.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210802224953.png">
+<meta property="article:published_time" content="2022-02-19T16:18:19.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.930Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="案例实战">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210803065025.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/02/20/jvmshizhan/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入理解JVM - 案例实战 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/jvmshizhan/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解JVM - 案例实战
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-20 00:18:19" itemprop="dateCreated datePublished" datetime="2022-02-20T00:18:19+08:00">2022-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/02/20/jvmshizhan/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/jvmshizhan/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">这一篇文章还是讲实战，但是内容并不是很多，下一篇会出一个阶段总结对于之前的内容进行回顾</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入理解JVM-案例实战"><a href="#深入理解JVM-案例实战" class="headerlink" title="深入理解JVM - 案例实战"></a>深入理解JVM - 案例实战</h1><p>[TOC]</p>
+<h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>​    这一篇文章还是讲实战，但是内容并不是很多，下一篇会出一个阶段总结对于之前的内容进行回顾。</p>
+<h1 id="前文回顾"><a href="#前文回顾" class="headerlink" title="前文回顾"></a>前文回顾</h1><p>​    上一节深入扩展了JVM工具jstat是如何使用了，但是从实际场景可以看出，更多情况是代码的问题，或者因为好奇害死猫乱设置参数导致线上各种报错或者频繁的卡死，这里还是再次强调一句不要使用<code>System.gc()</code>这个臭名昭著的方法，最好是JVM禁止此方法的运行。</p>
+<h1 id="本文概述"><a href="#本文概述" class="headerlink" title="本文概述"></a>本文概述</h1><ol>
+<li>排查Full Gc的套路是什么，这里用一个电商案例来进行说明。</li>
+<li>spilt()方法是如何造成内存泄露的？如何通过可视化图形分析出问题。以及如何从源代码层面发现根本问题</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="思维导图："><a href="#思维导图：" class="headerlink" title="思维导图："></a>思维导图：</h1><p>幕布：<span class="exturl" data-url="aHR0cHM6Ly93d3cubXVidWNtLmNvbS9kb2MvSWdyRVhidzZ2Qg==" title="https://www.mubucm.com/doc/IgrEXbw6vB">https://www.mubucm.com/doc/IgrEXbw6vB<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210803065025.png" alt=""></p>
+<h1 id="电商案例-排查Full-GC套路"><a href="#电商案例-排查Full-GC套路" class="headerlink" title="电商案例-排查Full GC套路"></a>电商案例-排查Full GC套路</h1><h2 id="主要业务："><a href="#主要业务：" class="headerlink" title="主要业务："></a>主要业务：</h2><p>​    在日常场景进行发邮箱，短信以及APP 的推送消息一些特别活动。</p>
+<p>​    这种业务的特点是短时间之内会有大量的用户进入APP进行参与，这时候系统的压力会突然增加。</p>
+<h2 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h2><p>​    在业务流量高峰的时候，CPU的使用率十分十分高，并且直接导致系统卡死，无法进行任何请求的处理，在系统重启之后会好一段时间，但是后面又会马上卡死。</p>
+<h2 id="初步排查："><a href="#初步排查：" class="headerlink" title="初步排查："></a>初步排查：</h2><ul>
+<li>首先我们需要排查是否为 <strong>线程创建过多</strong>：线程过多并且并发执行差，所以CPU的上下文切换十分频繁，压力很大</li>
+<li>频繁的FULL GC导致系统卡顿</li>
+</ul>
+<p>​    通过这种思路排查，结果果然发现FULL GC的频率十分高，居然<strong>一分钟一次FULL GC</strong>，频率实在是太高了。</p>
+<h3 id="初步排查FULL-GC的套路有哪些：-重点"><a href="#初步排查FULL-GC的套路有哪些：-重点" class="headerlink" title="初步排查FULL GC的套路有哪些：(重点)"></a>初步排查FULL GC的套路有哪些：(重点)</h3><ol>
+<li><strong>内存分配不合理，对象频繁进入老年代，引发频繁FULL GC</strong></li>
+<li><strong>内存泄露问题，内存驻留大量的老年代对象，一有对象就会触发FULL GC，比如之前提到的全表查询引发海量对象</strong></li>
+<li><strong>永久代的类太多，触发 FULL GC</strong>。</li>
+</ol>
+<h2 id="继续排查："><a href="#继续排查：" class="headerlink" title="继续排查："></a>继续排查：</h2><p>​    继续排查发现使用<strong>jstat</strong>发现并不存在内存不合理的情况，并且对象也是正常进入老年代，同时永久代的内存居然也是正常的。</p>
+<p>​    这时候又会考虑一个问题，一分钟一次FULL GC，证明老年代空间是不够的，虽然新生代进入老年代是正常的，但是如果老年代 <strong>本身对象就非常多</strong>，会不会也会出现问题呢？按照这个思路继续排查，果然发现老年代GC之后 <strong>居然还有那么多对象存活</strong>。</p>
+<p>​    真相大白，原因就是老年代被大量对象占满了，很容易触发FULL GC，我们可以使用<strong>Jmap</strong>的工具排查这里面的内容，当然，也可以使用<strong>mat</strong>(memory anaylyze tool)进行排查，但是本文不涉及工具的使用介绍，大致介绍一下mat的处理流程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">MAT的排查进程：</span><br><span class="line"></span><br><span class="line">jmap -dump:format&#x3D;b,file&#x3D;文件名[服务进程ID]</span><br><span class="line"></span><br><span class="line">1. 首先内存快照，可以看到当前内存情况</span><br><span class="line">2. 其次发现内存泄露</span><br><span class="line">3. 创建的对象占比量过大</span><br><span class="line">4. 发现原因是jvm缓存没有及时进行清理，导致内存越来越大</span><br><span class="line">5. 排查结果是本地内存没有进行限制，同时没有定期淘汰算法</span><br><span class="line">6. 解决办法使用一些EHCACASH的缓存即可</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方式："><a href="#解决方式：" class="headerlink" title="解决方式："></a>解决方式：</h2><ol>
+<li>使用JSTAT和JMAP找到让对象大量创建的原因</li>
+<li>使用MAT 软件进行分析<ol>
+<li>jmap -dump:format=b,file=文件名[服务进程ID]</li>
+<li>使用jhat等可视化图形工具进行分析。</li>
+</ol>
+</li>
+<li>解决代码层面短时间大量创建对象的问题。</li>
+</ol>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>​    其实按照排查思路进行一步步排查，要找到问题其实并不是很难。</p>
+<h1 id="String-split是如何造成内存泄露的"><a href="#String-split是如何造成内存泄露的" class="headerlink" title="String.split是如何造成内存泄露的"></a>String.split是如何造成内存泄露的</h1><h2 id="主要业务：-1"><a href="#主要业务：-1" class="headerlink" title="主要业务："></a>主要业务：</h2><p>​    业务就直接跳过，这里重点关注问题分析和解决流程。</p>
+<h2 id="问题分析："><a href="#问题分析：" class="headerlink" title="问题分析："></a>问题分析：</h2><ol>
+<li>发现也是CPU突然爆高，但是可以看到新生代和老年代居然同时有10G的内存大小</li>
+<li>发现每两分钟就会有一次FULL GC同时伴随着系统的资源高度占用</li>
+<li>不是简单的改一下JVM参数就可以解决的事情，排查发现代码出了问题。</li>
+</ol>
+<p>​    不用说，标题已经暴露了一切，但是究竟是如何分析出来的？这里也不兜圈子，直接给一张图，：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210802221403.png" alt=""></p>
+<h3 id="Problem-Suspect-1"><a href="#Problem-Suspect-1" class="headerlink" title="Problem Suspect 1"></a>Problem Suspect 1</h3><p>​    从这里看到<code>java.lang.Thread</code>的主线程main 线程，局部变量居然占用了<strong>24.97%</strong>的内存的对象。这里告诉你问题出现在<code>java.lang.Object[]</code>数组，这个数组占用大量的内存。</p>
+<p>​    在1的下面有一行蓝色的 <strong>Details</strong>，进入之后可以看到下面的内容：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210802223303.png" alt=""></p>
+<blockquote>
+<p>在<code>Problem Supspect 3</code>里面也可以看到这里面占用了大量的<code>String</code>对象。</p>
+</blockquote>
+<p>​    从这里可以看到在main线程里面，有一个arrayList集合占用了几乎所有的内存，这个List显然也是Object[]的数组，并且在内容里面存在Demo1$Data的对象实例。</p>
+<p>​    从这个分析我们知道了如何分析出内存占用的问题，其实大胆猜测加上实用工具测试可以基本都可以验证出问题。</p>
+<h3 id="trance链路追踪："><a href="#trance链路追踪：" class="headerlink" title="trance链路追踪："></a>trance链路追踪：</h3><p>​    知道了占用是因为Object[]数组的问题，接着来看下链路追踪的情况：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210802224652.png" alt=""></p>
+<p>​    如上图所示，我们点击<strong>statictrace</strong>进入到具体的代码界面：</p>
+<p>​    答案在最下面的图：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210802224953.png" alt=""></p>
+<p>​    我们可以明显的看到是String的问题，通过代码搜索发现有一个<code>String.split</code>可能是产生问题的原因。</p>
+<h2 id="为什么String-split-会造成内存泄露"><a href="#为什么String-split-会造成内存泄露" class="headerlink" title="为什么String.split()会造成内存泄露"></a>为什么String.split()会造成内存泄露</h2><p>​    这里就涉及一个JDK源代码的问题了：</p>
+<p>​    在JDK6的版本，一个字符串的底层是基于下面的形式进行存储的，比如”yes yes yes yes”使用空格切分是如下的形式：</p>
+<p>​    <code>[&quot;yes&quot;,&quot;yes&quot;,&quot;yes&quot;,&quot;yes&quot;]</code></p>
+<p>​    但是到了Jdk7，他给每个切分出来的字符串都创建了一个新的数组，意思就是说每次切分都切分出一个新的数组，这里可能没法理解，所以我们给出代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (xxxxx)<span class="comment">// 一大堆判断，不用管，总之大部分情况你都会进这个If判断</span></span><br><span class="line">&#123;    </span><br><span class="line">    <span class="keyword">return</span> list.subList(<span class="number">0</span>, resultSize).toArray(result);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> Pattern.compile(regex).split(<span class="keyword">this</span>, limit);</span><br></pre></td></tr></table></figure>
+
+<p>​    这个<code>sublist</code>毫无疑问就是罪魁祸首了，导致JDK版本升级了之后内存占用爆高也是这个代码，这个代码干了啥呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;E&gt; <span class="title">subList</span><span class="params">(<span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex)</span> </span>&#123;</span><br><span class="line">    subListRangeCheck(fromIndex, toIndex, size);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> SubList(<span class="keyword">this</span>, <span class="number">0</span>, fromIndex, toIndex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    这个也是典型的面试题，可用看到返回了当前List的视图，同时这个视图会随着数组的改变而改变，关于这个对象细节百度一大堆，这里不讨论，这里需要关注的是这个<code>new</code>。</p>
+<p>​    到这里相信读者也清楚为什么<code>split()</code>方法会导致大量的<code>Object[]</code>数组被构建出来，<code>SubList</code>底层依然是一个数组！</p>
+<h2 id="解决方式：-1"><a href="#解决方式：-1" class="headerlink" title="解决方式："></a>解决方式：</h2><p>​    说白了还是代码的质量问题，不用想可以知道需要从代码层面修复问题，解决fot循环里面的<code>split()</code>方法。</p>
+<p>​    所以字符串的操作尤其需要谨慎，因为字符串天生的不可变的特性，使用频率非常高的同时也很容易出现问题。</p>
+<h1 id="总结：-1"><a href="#总结：-1" class="headerlink" title="总结："></a>总结：</h1><p>​    这篇文章内容不多，主要为下面两个点：</p>
+<ol>
+<li>通过可视化工具以及代码排查，可以从分析图表里面看到根本的代码问题点</li>
+<li>关于FULL GC的常见排查讨论</li>
+</ol>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>​    感谢各位的观看，下一篇文章为阶段总结。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/02/20/jvmshizhan/" title="深入理解JVM - 案例实战">https://whitestore.top/2022/02/20/jvmshizhan/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+              <a href="/tags/jvm/" rel="tag"># jvm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/20/book-all/" rel="prev" title="【读书笔记汇总】2021年7月份读书笔记汇总">
+      <i class="fa fa-chevron-left"></i> 【读书笔记汇总】2021年7月份读书笔记汇总
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/20/yichu/" rel="next" title="深入理解JVM - 分区是如何溢出的？">
+      深入理解JVM - 分区是如何溢出的？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#深入理解JVM-案例实战"><span class="nav-number">1.</span> <span class="nav-text">深入理解JVM - 案例实战</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言："><span class="nav-number">2.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前文回顾"><span class="nav-number">3.</span> <span class="nav-text">前文回顾</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本文概述"><span class="nav-number">4.</span> <span class="nav-text">本文概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思维导图："><span class="nav-number">5.</span> <span class="nav-text">思维导图：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#电商案例-排查Full-GC套路"><span class="nav-number">6.</span> <span class="nav-text">电商案例-排查Full GC套路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主要业务："><span class="nav-number">6.1.</span> <span class="nav-text">主要业务：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题："><span class="nav-number">6.2.</span> <span class="nav-text">问题：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初步排查："><span class="nav-number">6.3.</span> <span class="nav-text">初步排查：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初步排查FULL-GC的套路有哪些：-重点"><span class="nav-number">6.3.1.</span> <span class="nav-text">初步排查FULL GC的套路有哪些：(重点)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继续排查："><span class="nav-number">6.4.</span> <span class="nav-text">继续排查：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方式："><span class="nav-number">6.5.</span> <span class="nav-text">解决方式：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结："><span class="nav-number">6.6.</span> <span class="nav-text">总结：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#String-split是如何造成内存泄露的"><span class="nav-number">7.</span> <span class="nav-text">String.split是如何造成内存泄露的</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主要业务：-1"><span class="nav-number">7.1.</span> <span class="nav-text">主要业务：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题分析："><span class="nav-number">7.2.</span> <span class="nav-text">问题分析：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Problem-Suspect-1"><span class="nav-number">7.2.1.</span> <span class="nav-text">Problem Suspect 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#trance链路追踪："><span class="nav-number">7.2.2.</span> <span class="nav-text">trance链路追踪：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么String-split-会造成内存泄露"><span class="nav-number">7.3.</span> <span class="nav-text">为什么String.split()会造成内存泄露</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方式：-1"><span class="nav-number">7.4.</span> <span class="nav-text">解决方式：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结：-1"><span class="nav-number">8.</span> <span class="nav-text">总结：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">9.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="bigtable数据结构解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="谷歌三件套 - Bigtable">
+<meta property="og:url" content="https://whitestore.top/2022/05/21/google-bigtable/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="bigtable数据结构解析">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205201448701.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205201416964.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205211600915.png">
+<meta property="article:published_time" content="2022-05-21T11:16:54.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.954Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="谷歌三件套">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205201448701.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/05/21/google-bigtable/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>谷歌三件套 - Bigtable | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/google-bigtable/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          谷歌三件套 - Bigtable
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 19:16:54" itemprop="dateCreated datePublished" datetime="2022-05-21T19:16:54+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%B0%B7%E6%AD%8C%E4%B8%89%E4%BB%B6%E5%A5%97/" itemprop="url" rel="index"><span itemprop="name">谷歌三件套</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/google-bigtable/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/google-bigtable/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">bigtable数据结构解析</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="谷歌三件套-Bigtable"><a href="#谷歌三件套-Bigtable" class="headerlink" title="谷歌三件套 - Bigtable"></a>谷歌三件套 - Bigtable</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>如标题所言，这一篇文章简单介绍BigTable，其实个人更建议看LevelDB这款开源数据库，因为这数据库也是Bigtable的作者 <strong>JeffreyDean</strong> 设计的，很多内容不能说像简直就是一模一样。</p>
+<p>值得注意的是，看Bigtable的内容<strong>千万不要带着关系型数据库的思维</strong>，建议看之前看看《数据密集型应用系统设计》的第三章，里面提到了LSM-Tree以及大数据系统设计思想，或者看看个人之前写的文章 [[《数据密集型型系统设计》LSM-Tree VS BTree]]</p>
+<h1 id="三件套论文资料"><a href="#三件套论文资料" class="headerlink" title="三件套论文资料"></a>三件套论文资料</h1><p>Bigtable 原始在线论文： <strong><span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvYmlndGFibGUtb3NkaTA2LnBkZg==" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/bigtable-osdi06.pdf">Bigtable: A Distributed Storage System for Structured Data<i class="fa fa-external-link"></i></span></strong></p>
+<p>MapReduct 原始在线论文：<span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvbWFwcmVkdWNlLW9zZGkwNC5wZGY=" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/mapreduce-osdi04.pdf">MapReduce: Simplified Data Processing on Large Clusters<i class="fa fa-external-link"></i></span></p>
+<p>GFS 原始在线论文：<span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvZ2ZzLXNvc3AyMDAzLnBkZg==" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/gfs-sosp2003.pdf">The Google File System<i class="fa fa-external-link"></i></span></p>
+<p>如果看不懂英文或者想要线下阅读，个人从某全是广告的技术网站买了一份中文翻译以及原始英文论文PDF，合并到一起免费分享给大家（虽然掏钱买也没几个钱）：</p>
+<p>链接: <span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMTVaMjRhcTYydTI1WV9MckhTYU5DQ3c=" title="https://pan.baidu.com/s/15Z24aq62u25Y_LrHSaNCCw">Google-GFS,Bigtable,Mapreduce三大论文英文原版+中文翻译<i class="fa fa-external-link"></i></span> 提取码: 82ok </p>
+<blockquote>
+<p>（如果链接失效可以关注公众号“懒时小窝” 回复“谷歌三件套”或者“谷歌”获取这些内容）</p>
+</blockquote>
+<a id="more"></a>
+
+
+<h1 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h1><p>下面Bigtable介绍内容可以跳过，论文巴拉巴拉吹了一大堆，其实关键也就是关注这几个点：</p>
+<ul>
+<li>大数据、分布式存储、异地多活容灾（侧面反应）。</li>
+<li>GFS和BigTable的关系。</li>
+<li>Chubby。</li>
+<li>LSM-Tree 数据结构。</li>
+<li>SSTable（LSM-Tree）。</li>
+</ul>
+<p>Bigtable 是一个<strong>分布式存储系统</strong>，用于管理旨在扩展到非常大的结构化数据<br>大小：数千种商品的 PB 级数据服务器。 Google 的许多项目都将数据存储在 Bigtable 中，包括网络索引、谷歌地球和谷歌财经。 这些应用提出了非常不同的要求</p>
+<p>在 Bigtable 上，无论是在数据大小方面（从 URL 到网页到卫星图像）和延迟要求<br>（从后端批量处理到实时数据服务）。尽管有这些不同的需求，Bigtable 还是成功地为所有用户提供了灵活、高性能的解决方案这些 Google 产品。 在本文中，我们描述了 Bigtable 提供的简单数据模型，它为客户提供对数据布局和格式的动态控制，我们描述了 Bigtable 的设计和实现。</p>
+<p>Bigtable看起来像一个数据库，采用了很多数据库的实现策略。但是Bigtable并不支持完整的关系型数据模型；而是为客户端提供了一种简单的数据模型，客户端可以动态地控制数据的布局和格式，并且利用底层数据存储的局部性特征。Bigtable将数据统统看成无意义的字节串，客户端需要将结构化和非结构化数据串行化再存入Bigtable。</p>
+<p>前面提到相当多的google应用使用了BigTable，比如Google Earth和Google Analytics，这里建议有条件高级上网的同学推荐看一下<strong>Google Earth</strong> 找找你家位置，你会发现在这个世界上你没有啥秘密可言（地理位置上），也能最直观的明白现代导弹为什么可以精准无误的打击，挺恐怖的事情。</p>
+<p>题外话就扯到这，由于网上有很多介绍的文章，这里也同样结合原始论文和理解摘录自己感兴趣的部分，因为个人是看完一整个LevelDB的源代码之后再回来看的，很多东西都省略了，没看过的更多内容可以参考下面这篇文章：<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L09wZW5OYWl2ZS9hcnRpY2xlL2RldGFpbHMvNzUzMjU4OQ==" title="https://blog.csdn.net/OpenNaive/article/details/7532589">BigTable解读<i class="fa fa-external-link"></i></span></p>
+<p>我们不需要关注谷歌吹逼自己的高性能，高负载介绍，毕竟都会这么对外宣传，我们只要了解Bigtable干了啥和怎么实现即可。</p>
+<h1 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h1><p>首先介绍最为重要的数据组织结构也就是数据模型，论文第二节开头对于SSTable做了定义：</p>
+<p> A Bigtable is a sparse（稀疏）, distributed（分布式）, persistent（持久化） multidimensional（多维度） sorted map（排序哈希表）。</p>
+<p>简单的数据模型意味着灵活和很强的扩展性，SSTable 使用 <code>row</code>、<code>column</code> 和 <code>timestamp</code> 三个字段作为这个哈希的键，值是字节数组，其实也就是字符串。</p>
+<p>一条数据最小单位可以抽象理解为这样的存储形式：</p>
+<p><code>(row:string, column:string, time:int64) → string</code></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205201448701.png" alt=""></p>
+<p>再次强调这里的数据格式<strong>不能按照关系型数据库理解</strong>，原因是他本质上是<strong>Key/Value</strong>的存储格式，这三个值不能按照单纯行或者列存储格式理解，而是使用<strong>混合存储</strong>+多维数据的存储方式，所以这三个值抽象理解为<strong>行键（row）、列键（column）、时间戳（timestamp）</strong>，最终由这三个参数构成三维参数。</p>
+<p><strong>行键（row）</strong></p>
+<p>行键是原子操作，行数据可以是任意的字符串，最大可以扩展到64个KB，当然多数情况为10 - 100个字节，每一个读和写操作都是一个独立原子性的。</p>
+<p>行的范围是可以动态划分的，行的数据切分称为切片，通过切片用户只需要和更加少量的数据通信，通过分片也可以更好的获取更加准确和可控的数据范围。</p>
+<p>切片在行键中被称为 tablet，切片支持负载均衡，随着表的扩展片也会自动进行分裂，最终一个分片控制在100 MB - 200MB 当中。</p>
+<p><strong>列键（column）</strong></p>
+<p>列的存储格式涉及到一个被称之为 <strong>列族</strong> 的概念，通过列族的方式把相似的值组合到一起，一个列族里的列一般存储相同类型的数据，所以通常情况下列族的数据变动比较小，但是列族是可以随意添加和删除的，并且通过谷歌特定的格式进行命名，列族</p>
+<p>这里补充列族的概念，指的是<strong>把一行中的所有列和行主键保存到一起</strong>，并且不使用列压缩的形式存储。其实这种用行转列基本就可以实现，所以列族严格意义上依然是行存储的变体，和真正的列存储还是存在差异的。</p>
+<p>由于列族的存在，使得SSTable实现一个key的多维度映射，所以多维的概念就是在列族上出现的，同时可以把列族看做是二级索引。</p>
+<p><strong>时间戳</strong></p>
+<p>时间戳负责标记每一个行列索引的版本号，每个单元格可以包含多个版本，版本通过时间戳管理，BigTable的时间戳是64位整数，通常情况为微秒级别的单位，可以使用客户端进行指定单位。</p>
+<p>时间戳显然就是三级别索引了，读取的时候通过最新的时间戳可以认为是数据的最新版本。另外在查询时如果 只给出行列，那么返回的是<strong>最新版本的数据</strong>；如果给出了行列时间戳，那么返回的是时间<strong>小于或等于时间戳的数据</strong>。</p>
+<blockquote>
+<p>这也是现在大数据框架的存储格式特点，比如目前前景不错的<strong>Tidb</strong>，支持OLTP也支持OLAP。</p>
+</blockquote>
+<h1 id="支撑组件"><a href="#支撑组件" class="headerlink" title="支撑组件"></a>支撑组件</h1><p>BigTable除开SSTable之外，还存在其他的支持组件：</p>
+<ul>
+<li>用GFS来存储日志和数据文件.</li>
+<li>按SSTable文件格式存储数据.</li>
+<li>用Chubby管理元数据.</li>
+</ul>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205201416964.png" alt=""></p>
+<p><strong>GFS（Google File System）</strong></p>
+<p>从上面的内容可以看到，GFS先于memtable操作，显然充当了整个系统的日志部分，这一部分牵扯到谷歌三件套的另一个系统设计GFS，不是本文讨论的重点，这里只需要知道它干了所有和Log和数据存储位置有关的事情即可。</p>
+<p>既然是日志和数据的存储，那么GFS自然也知道数据的具体位置，因为属于SSTable的前置组件，所以 SSTable 的具体位置需要GFS提前记录。</p>
+<p>另外memtable相当于SSTable的缓存，当memtable成长到一定规模会被冻结，Bigtable随之创建一个新的memtable，并且将冻结的memtable转换为SSTable格式写入GFS，这个操作称为<code>minor compaction</code>。</p>
+<blockquote>
+<p>在 LevelDB中体现的是Level0的SSTable 压缩合并。</p>
+</blockquote>
+<p><strong>Chubby</strong></p>
+<p>Bigtable 依赖于一个高可用和持久的分布式锁服务称为 <strong>Chubby</strong>，它由五个活动副本组成，其中一个是选举为主节点的Master，节点正常的时候可以进行互相通信，Chubby 使用Paxos算法保持一致。</p>
+<p>Chubby提供了命名空间，内部通过小文件和目录组成，目录或者文件可以配置单独的锁，使得读和写操作都是原子性的，Chubby 客户端提供一致性的文件缓存，每一个Chubby 都必须和另一个 Chubby 保持会话，如果客户端会话过期会丢失全部的锁。</p>
+<p><strong>SSTable</strong></p>
+<p>终于要进入重点部分了，可惜的是原始论文并没有详细的介绍SSTable的内部数据结构，仅仅在论文第六个小节中介绍了SSTable的作用。</p>
+<p>首先看看BigTable和GFS 是什么关系呢？在论文中我们可以看到一个类似树的结构，其中根节点为主服务器，主服务器负责接受请求，通过管理分片服务器将请求分片到不同的片服务器中，所以从外层看最终干活的是<strong>片服务器</strong>。</p>
+<p>然而片服务器实际上本身也只是负责管理自己分片的SSTable，它也通过特殊索引知道数据在那个SSTable分片中，然后从GFS中读取SSTable文件的数据，而GFS则可能要从多个Chuncker server里面搜索数据。</p>
+<p>而图中的metatable原数据表可以看作是和SSTable绑定的类似<strong>索引</strong>的关系，元数据表的数据是<strong>不能被外界访问</strong>的，外界访问的是元数据对应的SSTable分片。</p>
+<h1 id="Bigtable集群"><a href="#Bigtable集群" class="headerlink" title="Bigtable集群"></a>Bigtable集群</h1><p>BigTable集群通过三个层级配套组件完成工作。</p>
+<p>第一层是<strong>主服务器（master server</strong>）也就是我们上面提到的Chubby，本身也通过集群的方式保证root tablet正常访问，也可以直接看作我们广为使用的中间件节点集群。</p>
+<p>第二层是<strong>分片服务器</strong>，也称 tablet，其中root tablet是元数据表（METADATA table）的第一个分片，</p>
+<p>第三层是<strong>元数据</strong>的部分，和 root tablet 组成元数据映射表，元数据包含很多的用户数据分片。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205211600915.png" alt=""></p>
+<p>关于三个层级内部的组成这里不用过多猜测到底长啥样，还是那句话去看LevelDB吧。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这篇文章简单介绍了一下BigTable 中一些核心部分，有很大部分内容都被忽略了，对于大数据方向的同学来说这三篇论文基本是必看的资料，因为说白了这三驾马车放到现在基本也可以通用，提到的很多理念对现在的中间件有很深的影响。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>关于<strong>Bigtable</strong>部分就介绍到这里了，虽然论文还要很多理论的部分，但是个人看下来之后基本在LevelDB都有体现，所以想要了解使用的直接看LevelDB源代码理解起来更快。</p>
+<h1 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h1><p><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTY1MjAwMw==" title="https://segmentfault.com/a/1190000041652003">[《数据密集型型系统设计》LSM-Tree VS BTree]<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTcyMDIwNQ==" title="https://segmentfault.com/a/1190000041720205">[LSM-Tree - LevelDb了解和实现]<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTg2NDU3OQ==" title="https://segmentfault.com/a/1190000041864579">[LSM-Tree - LevelDb 源码解析]<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTg2OTU4Ng==" title="https://segmentfault.com/a/1190000041869586">[LSM-Tree - LevelDb Skiplist跳表]<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTg3MzQwMA==" title="https://segmentfault.com/a/1190000041873400">[LSM-Tree - LevelDb 布隆过滤器]<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/05/21/google-bigtable/" title="谷歌三件套 - Bigtable">https://whitestore.top/2022/05/21/google-bigtable/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LevelDB/" rel="tag"># LevelDB</a>
+              <a href="/tags/%E8%B0%B7%E6%AD%8C/" rel="tag"># 谷歌</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/21/szygw/" rel="prev" title="《生之欲》观影感悟">
+      <i class="fa fa-chevron-left"></i> 《生之欲》观影感悟
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/02/bywholive/" rel="next" title="《银河铁道之夜》读书笔记-为了谁而活？">
+      《银河铁道之夜》读书笔记-为了谁而活？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#谷歌三件套-Bigtable"><span class="nav-number">1.</span> <span class="nav-text">谷歌三件套 - Bigtable</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三件套论文资料"><span class="nav-number">3.</span> <span class="nav-text">三件套论文资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简单介绍"><span class="nav-number">4.</span> <span class="nav-text">简单介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据模型"><span class="nav-number">5.</span> <span class="nav-text">数据模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#支撑组件"><span class="nav-number">6.</span> <span class="nav-text">支撑组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bigtable集群"><span class="nav-number">7.</span> <span class="nav-text">Bigtable集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">9.</span> <span class="nav-text">写在最后</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐阅读"><span class="nav-number">10.</span> <span class="nav-text">推荐阅读</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

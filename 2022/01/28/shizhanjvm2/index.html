@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="请输入描述信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解JVM - 实战JVM工具（下）">
+<meta property="og:url" content="https://whitestore.top/2022/01/28/shizhanjvm2/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="请输入描述信息">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210731144850.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210731151311.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210731151311.png">
+<meta property="article:published_time" content="2022-01-28T15:38:02.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.924Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="请输入关键字（英文逗号分隔多个关键字）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210731144850.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/01/28/shizhanjvm2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入理解JVM - 实战JVM工具（下） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/01/28/shizhanjvm2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解JVM - 实战JVM工具（下）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-28 23:38:02" itemprop="dateCreated datePublished" datetime="2022-01-28T23:38:02+08:00">2022-01-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/01/28/shizhanjvm2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/28/shizhanjvm2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+            <div class="post-description">请输入描述信息</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入理解JVM-实战JVM工具（下）"><a href="#深入理解JVM-实战JVM工具（下）" class="headerlink" title="深入理解JVM - 实战JVM工具（下）"></a>深入理解JVM - 实战JVM工具（下）</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    接着上篇继续讲述，上一篇模拟了两个还算比较熟悉的场景，分析了之前老年代优化是如何处理的，以及使用jstat分析工具如何分析出JVM的问题，这一节会继续扩展，将会列举更多的案例来分析线上的JVM问题。</p>
+<h1 id="前文回顾"><a href="#前文回顾" class="headerlink" title="前文回顾"></a>前文回顾</h1><p>​    上一节通过一个APP的JVM内存分析解释了一些比较特殊的参数如何影响JVM，以及分析了之前老年代优化的文章中关于jstat如何进行分析和优化。</p>
+<h1 id="概述："><a href="#概述：" class="headerlink" title="概述："></a>概述：</h1><ol>
+<li>介绍三个JVM调优的案例，一步一步分析问题和解决办法。</li>
+<li>总结分析思路和解决流程，自我思考和反思。</li>
+<li>总结和个人感想。</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="案例实战"><a href="#案例实战" class="headerlink" title="案例实战"></a>案例实战</h1><h2 id="案例1：方法区不断崩溃如何排查？"><a href="#案例1：方法区不断崩溃如何排查？" class="headerlink" title="案例1：方法区不断崩溃如何排查？"></a>案例1：方法区不断崩溃如何排查？</h2><h3 id="业务场景："><a href="#业务场景：" class="headerlink" title="业务场景："></a>业务场景：</h3><p>​    之前的案例基本都是和堆扯上关系，这个案例比较特殊是由 <strong>JVM参数设置错误</strong>引起的频繁的卡顿问题，简单来说就是设置了参数之后就出现访问系统卡顿并且线上不断的进行<strong>FULL GC</strong>的报警，这里先不说明改了哪一个参数，而是先来分析一下：</p>
+<ul>
+<li>发现系统在十分钟内进行了3次FULL GC，这个频繁十分高</li>
+<li>通过线上的JSTAT排查发现出现了报错<code>Methoddata GC Threashold</code> 等字样</li>
+</ul>
+<p>​    根据第二点我们初步断定是JVM的方法区溢出了，<strong>为什么JVM的方法区溢出会触发FULL GC？</strong>事实上确实如此，因为通常情况下FULL GC也会带动方法区的回收。这一块的资料网上可以搜到一大堆，这里不再具体的介绍。</p>
+<h3 id="问题分析："><a href="#问题分析：" class="headerlink" title="问题分析："></a>问题分析：</h3><h4 id="加入验证参数分析："><a href="#加入验证参数分析：" class="headerlink" title="加入验证参数分析："></a>加入验证参数分析：</h4><p>​    既然是方法区的问题，为了进一步的排查这个方法区溢出的问题，这里需要加入下面的两个参数：</p>
+<ul>
+<li><code>-XX:TraceClassLoading</code></li>
+<li><code>-XX:TraceClassUnloading</code></li>
+</ul>
+<p>​    这两个参数的作用是追踪<strong>类加载</strong>和<strong>类卸载</strong>的情况，在加上这两个参数之后继续分析，之后发现在日志的文件当中发现了下面的内容：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210731144850.png" alt=""></p>
+<p>​    明显可以看到JVM不断的加载了一个叫做<code>GeneratedSerializationCOnstructorAccessor</code>的类，就是这个类不断的加载导致了<code>metaspace</code>区域占满，这也导致了<strong>metaspace的对象太多触发FULL GC</strong>，所以罪魁祸首就是这个奇怪的类<code>GeneratedSerializationCOnstructorAccessor</code>。</p>
+<h4 id="为什么会出现奇怪的类？"><a href="#为什么会出现奇怪的类？" class="headerlink" title="为什么会出现奇怪的类？"></a>为什么会出现奇怪的类？</h4><p>​    这里使用google搜索看看这个类是什么，查询结果发现这是JDK内置类，通过查阅资料我们可以知道这是由<strong>反射</strong>生成的类。</p>
+<p>​    反射的知识点也不再补充，可以理解为一种通过JVM的类加载器结合JVM的工具包生成建立对象的一种方式，也是许多框架的灵魂ss。</p>
+<p>​    其实通过资料查阅我们还可以发现 <strong>反射需要JVM动态的生产一些上面所说的奇怪的类到MetaSpace区域</strong>，比如要生成动态类<code>ProxyClass@Proxy123123</code>等等类似这种对象（反射生产的类标识比较特殊），JDK都需要上面的辅助对象进行操作。</p>
+<p>​    这里我们还需要在了解一个概念，就是<strong>反射生成的类都是使用的软引用！</strong>至于这个软引用在这里产生了什么影响，这里也先卖个关子，到下文结合把系统搞崩溃的参数一起进行分析。</p>
+<blockquote>
+<p><strong>什么是软引用？</strong>在内存空间不足的时候被强制回收，不管是否存在局部变量引用。</p>
+</blockquote>
+<p>​    接着分析关于软引用的存活时间，jvm使用了下面的公式来计算这个软引用的生命周期：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210731151311.png" alt=""></p>
+<p>​    这个公式的含义：<strong>表示一个软引用有多久没有被访问过了，<code>freespace</code>代表了当前的JVM中的空闲内存，<code>softref</code>代表每一个MB的空间内存空间可以允许<code>SoftReference</code> 存活多久。</strong></p>
+<p>​    估算值：假设现在空间有3000M的对象，<code>softrefLRUpolicyMSPerMB</code>的值为1000毫秒，意味着这些对象会存活 3000秒 也就是50分钟左右。</p>
+<p>​    以上就是奇怪的类出现的原因，是因为反射惹的祸。</p>
+<h3 id="排查结果："><a href="#排查结果：" class="headerlink" title="排查结果："></a>排查结果：</h3><h4 id="到底设置了什么参数？"><a href="#到底设置了什么参数？" class="headerlink" title="到底设置了什么参数？"></a>到底设置了什么参数？</h4><p>​    这里讲一下到底设置了参数，让反射不断生成对象把方法区占满了，这里设置的参数如下：</p>
+<p>​    <code>-XX:SoftRefLRUPolicyMSPerMB=0</code>这个参数。结果JVM就翻车了。</p>
+<p>​    </p>
+<h4 id="为什么出现奇怪的对象越来越多？"><a href="#为什么出现奇怪的对象越来越多？" class="headerlink" title="为什么出现奇怪的对象越来越多？"></a>为什么出现奇怪的对象越来越多？</h4><p>​    我们再看一下上面的公式：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210731151311.png" alt=""></p>
+<p>​    <strong>假设我们不小心把这个值设置为0有什么后果呢？</strong></p>
+<p>​    当然是会导致上面clock公式的计算结果为0的，结果就是JVM发现每次反射分配的对象马上就会被回收掉，然后接着又会通过代理生成代理对象，简单来说这个参数<strong>导致每次soft软引用的对象一旦分配就会马上被回收</strong>.</p>
+<p>​    再次强调一下<strong>反射机制导致动态代理类不断的被新增，但是这部分对象又被马上回收掉，导致方法区的垃圾对象越来越多</strong>这就是为什么奇怪的对象越来越多的原因。</p>
+<h4 id="为什么会想着设置这个参数？"><a href="#为什么会想着设置这个参数？" class="headerlink" title="为什么会想着设置这个参数？"></a>为什么会想着设置这个参数？</h4><p>​    设置这个参数的原因也很天真：为了让反射生成的代理对象可以尽快被垃圾回收，如果设置为为0，当方法区的内存占用可以小一些，并且也可以及时回收，然后结果就是<strong>好心办坏事</strong>。</p>
+<h3 id="解决办法："><a href="#解决办法：" class="headerlink" title="解决办法："></a>解决办法：</h3><p>​    这里解决办法很简单，就是设置一个大于0的值并且最好是1000、2000、5000这一类数字，就是不能设置的过小或者设置为0，否则会导致方法区不断的占用结果方法去溢出最终又导致<strong>FULL GC</strong>。</p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>​    这个案例可能看上面的说明很简单就解决了，然而实际上真正碰到类似问题，肯定会出现各种摸不着头脑的情况，希望这篇案例可以让读者设置JVM参数的时候都要验证一下这个参数的影响以及一定要确认他的参数和实际效果是一致的！</p>
+<p>​    这个问题也完全是人的问题，加入没有好奇去想当然的设置一个奇怪的参数，也不至于造成各种奇怪的问题。</p>
+<p>​    最后，只有多学习实际案例，平时多看看别人是如何排查问题的，这对自己的提升也有很大帮助。</p>
+<h2 id="案例2：每天数十次GC的线上系统怎么处理？"><a href="#案例2：每天数十次GC的线上系统怎么处理？" class="headerlink" title="案例2：每天数十次GC的线上系统怎么处理？"></a>案例2：每天数十次GC的线上系统怎么处理？</h2><h3 id="业务场景：-1"><a href="#业务场景：-1" class="headerlink" title="业务场景："></a>业务场景：</h3><p>​    这个案例和上一个一样是一个实际的案例，话不多说，直接得出当时没优化过的系统的JVM性能表现大致如下：</p>
+<ul>
+<li>机器配置：2核4G</li>
+<li>JVM堆内存大小：2G</li>
+<li>系统运行时间：6天</li>
+<li>系统运行6天内发生的Full GC次数和耗时：250次，70多秒</li>
+<li>系统运行6天内发生的Young GC次数和耗时：2.6万次，1400秒</li>
+</ul>
+<p>​    在使用的时候会发现问题如下：</p>
+<ul>
+<li>每天会发生40多次Full GC，平均每小时2次，每次<code>Full GC</code>在300毫秒左右</li>
+<li>每天会发生4000多次YGC，每分钟3次，每次YGC在50秒左右。</li>
+</ul>
+<p>​    介绍到这里也可以发现这个系统的性能相当之差，每2小时就会Full GC。这是必须要进行优化的。</p>
+<h4 id="优化前JVM参数："><a href="#优化前JVM参数：" class="headerlink" title="优化前JVM参数："></a>优化前JVM参数：</h4><p>​    下面是系统优化之前设置的参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xms1536M -Xmx1536M -Xmn512M -Xss256K -XX:SurvivorRatio&#x3D;5 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction&#x3D;68 -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC</span><br></pre></td></tr></table></figure>
+
+<p> 我们先不观察其他内容，单从参数本身看下可能会让GC频繁的点：</p>
+<ol>
+<li>可以看到小机器给JVM的堆内存没有多少空间，线程和方法去要分出去一点，JVM的资源十分吃紧。</li>
+<li>新生代明显太小了，而且ratio设置为5，导致最后EDEN区只有可怜的300M左右的空间</li>
+<li>68%的CMS老年代回收阈值似乎有点小，完全可以改为92%才执行回收，老年代的空间比较大</li>
+<li><code>-XX:+CMSParallelRemarkEnabled</code>和<code>-XX:+UseCMSInitiatingOccupancyOnly</code>这两个参数的作用请自行百度。</li>
+</ol>
+<h3 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h3><ol>
+<li>在后续的排查发现每隔十几分钟就会出现大量的 <strong>大对象</strong>直接进入老年代，大对象的产生原因是由于开发人员使用的“<strong>全表查询</strong>”导致了几十万的数据被查出来，这里可以使用jmap的工具进行排查发现生成一个很大的ArrayList，并且内部都是同一个对象。</li>
+<li>虽然新生代回收之后对象很少的对象进入老年代，几十M，但是可以发现动态规则的判断之后，survior还是有几十M的对象进入到了老年代的空间。</li>
+<li>新生代的空间很容易饱满，老年代预留空间较大。</li>
+<li>CMS的阈值设置为68，则达到老年代的68就开始回收，有点过于保守</li>
+</ol>
+<h3 id="解决办法：-1"><a href="#解决办法：-1" class="headerlink" title="解决办法："></a>解决办法：</h3><ol>
+<li>如果有条件还是需要加机器，因为机器的性能确实受限。（2G我开IDEA都够呛）</li>
+<li>新生代明显太小了，所以扩大到1G的空间很有必要，同时还是按照<strong>5:1:1</strong>的分配方案，给survior区域足够的空间和大小。</li>
+<li>CMS的回收阈值设置到92%。不需要太过保守。</li>
+<li>方法区指定一个<strong>256M</strong>的大小，如果不设置任何参数<strong>默认的方法区大小只有64M左右的空间</strong>。</li>
+</ol>
+<h4 id="优化之后的参数："><a href="#优化之后的参数：" class="headerlink" title="优化之后的参数："></a>优化之后的参数：</h4><p>​    下面是系统优化之后的参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xms1536M -Xmx1536M -Xmn1024M -Xss256K -XX:SurvivorRatio&#x3D;5 -XX:PermSize&#x3D;256M -XX:MaxPermSize&#x3D;256M  -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction&#x3D;92 -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里再次强调一下上文提到说需要百度的参数：</p>
+<p><strong>-XX:+UseCMSInitiatingOccupancyOnly</strong> <strong>-XX:+CMSParallelRemarkEnabled</strong> 这两个参数，这些参数有什么用？</p>
+<p>第一个参数：表示每次都在CMS达到设置目标的情况下进行垃圾回收，不会因为JVM动态的判断导致提前进行FULL GC</p>
+<p>（这个参数有必要说明一下，因为之前的文章提到过JDK6之后CMS的默认92% 的配比，其实这个配比在实际运行的时候 <strong>会根据CMS老年代的回收情况提前或者延迟回收</strong>，只能说JVM细节实在是有点多，只要记住开启这个参数之后，<strong>CMS会固定真的到达到92%这个比例才进行Full GC垃圾回收的动作</strong>）</p>
+<p>第二个参数：表示进行 <strong>并发标记</strong> 的步骤之前，先进行一次YGC，其实理论上来说通常都应该进行一次，但是实际上如果不配置JVM会根据实际情况决定是否进行YGC，原因也比较复杂，有兴趣可以把参数复制之后百度补一下课。</p>
+</blockquote>
+<h2 id="案例3：严重的FULL-GC导致卡死？"><a href="#案例3：严重的FULL-GC导致卡死？" class="headerlink" title="案例3：严重的FULL GC导致卡死？"></a>案例3：严重的FULL GC导致卡死？</h2><p>​    最后介绍一个简单的案例，真的十分简单，3分钟就可以看完：</p>
+<h3 id="业务场景：-2"><a href="#业务场景：-2" class="headerlink" title="业务场景："></a>业务场景：</h3><ol>
+<li><strong>一秒一次FULL GC，每次都需要几百毫秒</strong></li>
+<li>平时流量访问不大的时候新生代对象增长不快，老年代占用不到10%，方法区也就20%使用。但是一旦到了高峰时期就是频繁的FULL GC</li>
+</ol>
+<h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>​    在频繁<strong>FULL GC</strong>的时间点进行GC日志分析，同时使用JMAP分析发现在高峰时期出现大批次操作的对象，这个对象基于一个报表的批量处理的操作，会产生大量的对象并且马上出发回收，结果发现JVM内存放不下导致频繁的FULL GC。</p>
+<p>​    这就很奇怪了我们都知道即使是在平时情况下即使很大数据的批量处理多数情况下并没有离谱到一秒一次FULL GC，那么出现这个问题毫无疑问就是代码的问题了。</p>
+<p>​    经过排查发现，居然有开发人员手动调用垃圾回收也就是<code>System.gc()</code>。这是一个臭名昭著的方法，具体的解释可以看看<strong>《Effective Java》</strong>中的<strong>第八条</strong>：<strong>避免使用终结方法和清除方法</strong>.</p>
+<h3 id="解决办法：-2"><a href="#解决办法：-2" class="headerlink" title="解决办法："></a>解决办法：</h3><p>​    为了防止<code>System.gc()</code> 生效，这里使用下面的参数禁止掉：</p>
+<p>​    <code>-XX:+DisableExplictGC</code></p>
+<h3 id="总结：-1"><a href="#总结：-1" class="headerlink" title="总结："></a>总结：</h3><p>​    不要写<code>System.gc()</code>，最好是完全不要知道有这个方法。去探究原因其实也是比较浪费时间的事情。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>​    JVM的工具实战的上下两篇文章到这里就结束了，后续的文章依然会是实战的部分，从这几个案例可以看到更多的情况下并不是JVM的问题，而是人的问题。</p>
+<p>​    所以 <strong>写出优质好理解的代码是本分，写出性能好的代码是水平的体现</strong>。先写出好代码才能避免线上出现各种莫名其妙的问题难以排查，而掌握线上的排查和思考手段，可以让个人的能力得到有效的锻炼，所以多多实验和尝试是这篇文章的意义</p>
+<h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><h2 id="GeneratedSerializationConstructorAccessor-的资料"><a href="#GeneratedSerializationConstructorAccessor-的资料" class="headerlink" title="GeneratedSerializationConstructorAccessor 的资料"></a><code>GeneratedSerializationConstructorAccessor</code> 的资料</h2><p>资料1：<span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMTY3MDg4OTQvaG93LXRoZS1zdW4tcmVmbGVjdC1nZW5lcmF0ZWRzZXJpYWxpemF0aW9uY29uc3RydWN0b3JhY2Nlc3Nvci1jbGFzcy1nZW5lcmF0ZWQ=" title="https://stackoverflow.com/questions/16708894/how-the-sun-reflect-generatedserializationconstructoraccessor-class-generated">How the sun.reflect.GeneratedSerializationConstructorAccessor class generated<i class="fa fa-external-link"></i></span> 具备特殊上网姿势的建议阅读</p>
+<blockquote>
+<p>答案来自 <span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMTY3MDg4OTQvaG93LXRoZS1zdW4tcmVmbGVjdC1nZW5lcmF0ZWRzZXJpYWxpemF0aW9uY29uc3RydWN0b3JhY2Nlc3Nvci1jbGFzcy1nZW5lcmF0ZWQ=" title="https://stackoverflow.com/questions/16708894/how-the-sun-reflect-generatedserializationconstructoraccessor-class-generated">https://stackoverflow.com/questions/16708894/how-the-sun-reflect-generatedserializationconstructoraccessor-class-generated<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<pre><code>下面摘自答案的机翻：</code></pre><p> <strong>第一个回答：</strong></p>
+<p>​    这是因为（可能是您在应用程序中使用反射）堆空间不足，GC 试图通过卸载未使用的对象来释放一些内存，这就是为什么您会看到 <code>Unloading class</code></p>
+<p>​    <code>sun.reflect.GeneratedSerializationConstructorAccessor</code></p>
+<p><strong>第二个回答</strong></p>
+<p>​    方法访问器和构造器访问器要么是本机的，要么是生成的。这意味着我们对方法使用 <code>NativeMethodAccessorImpl</code> 或 <code>GeneratedMethodAccessor</code>，对构造函数使用 <code>NativeConstructorAccessorImpl</code> 和 <code>GeneratedConstructorAccessor</code>。访问器可以是原生的或生成的，并由两个系统属性控制和决定：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sun.reflect.noInflation = <span class="keyword">false</span>（默认值为 <span class="keyword">false</span>）</span><br><span class="line">sun.reflect.inflationThreshold = <span class="number">15</span>（默认值为 <span class="number">15</span>）</span><br></pre></td></tr></table></figure>
+
+<p>​    当 <code>sun.reflect.noInflation</code> 设置为 <strong>true</strong> 时，将始终生成所使用的访问器，系统属性 <code>sun.reflect.inflationThreshold</code> 没有任何意义。当 <code>sun.reflect.noInflation</code> 为 <strong>false</strong> 并且 <code>sun.reflect.inflationThreshold</code> 设置为 <strong>15</strong> 时（如果未指定，这是默认行为）那么这意味着对于构造函数（或方法）的前 15 次访问，<strong>本机生成器将被使用</strong>，此后将提供一个生成的访问器（来自 ReflectionFactory）以供使用。</p>
+<p>​    Native 访问器使用本地调用来访问信息，而生成的访问器都是字节码，因此速度非常快。另一方面，生成的访问器需要时间来实例化和加载（基本上是膨胀，因此控制它的系统属性的名称包括“膨胀”一词）。</p>
+<p>​    更多细节可以在原始博客中找到…..</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/01/28/shizhanjvm2/" title="深入理解JVM - 实战JVM工具（下）">https://whitestore.top/2022/01/28/shizhanjvm2/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+              <a href="/tags/jvm/" rel="tag"># jvm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/28/gupiaozuoshou/" rel="prev" title="《股票作手回忆录》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《股票作手回忆录》读书笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/28/jdkyouhua/" rel="next" title="JDK常用优化手段摘录">
+      JDK常用优化手段摘录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#深入理解JVM-实战JVM工具（下）"><span class="nav-number">1.</span> <span class="nav-text">深入理解JVM - 实战JVM工具（下）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前文回顾"><span class="nav-number">3.</span> <span class="nav-text">前文回顾</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概述："><span class="nav-number">4.</span> <span class="nav-text">概述：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#案例实战"><span class="nav-number">5.</span> <span class="nav-text">案例实战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#案例1：方法区不断崩溃如何排查？"><span class="nav-number">5.1.</span> <span class="nav-text">案例1：方法区不断崩溃如何排查？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#业务场景："><span class="nav-number">5.1.1.</span> <span class="nav-text">业务场景：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题分析："><span class="nav-number">5.1.2.</span> <span class="nav-text">问题分析：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#加入验证参数分析："><span class="nav-number">5.1.2.1.</span> <span class="nav-text">加入验证参数分析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么会出现奇怪的类？"><span class="nav-number">5.1.2.2.</span> <span class="nav-text">为什么会出现奇怪的类？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#排查结果："><span class="nav-number">5.1.3.</span> <span class="nav-text">排查结果：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#到底设置了什么参数？"><span class="nav-number">5.1.3.1.</span> <span class="nav-text">到底设置了什么参数？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么出现奇怪的对象越来越多？"><span class="nav-number">5.1.3.2.</span> <span class="nav-text">为什么出现奇怪的对象越来越多？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么会想着设置这个参数？"><span class="nav-number">5.1.3.3.</span> <span class="nav-text">为什么会想着设置这个参数？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决办法："><span class="nav-number">5.1.4.</span> <span class="nav-text">解决办法：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结："><span class="nav-number">5.1.5.</span> <span class="nav-text">总结：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#案例2：每天数十次GC的线上系统怎么处理？"><span class="nav-number">5.2.</span> <span class="nav-text">案例2：每天数十次GC的线上系统怎么处理？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#业务场景：-1"><span class="nav-number">5.2.1.</span> <span class="nav-text">业务场景：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#优化前JVM参数："><span class="nav-number">5.2.1.1.</span> <span class="nav-text">优化前JVM参数：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题分析"><span class="nav-number">5.2.2.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决办法：-1"><span class="nav-number">5.2.3.</span> <span class="nav-text">解决办法：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#优化之后的参数："><span class="nav-number">5.2.3.1.</span> <span class="nav-text">优化之后的参数：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#案例3：严重的FULL-GC导致卡死？"><span class="nav-number">5.3.</span> <span class="nav-text">案例3：严重的FULL GC导致卡死？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#业务场景：-2"><span class="nav-number">5.3.1.</span> <span class="nav-text">业务场景：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析："><span class="nav-number">5.3.2.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决办法：-2"><span class="nav-number">5.3.3.</span> <span class="nav-text">解决办法：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结：-1"><span class="nav-number">5.3.4.</span> <span class="nav-text">总结：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">6.</span> <span class="nav-text">写在最后</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料："><span class="nav-number">7.</span> <span class="nav-text">参考资料：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GeneratedSerializationConstructorAccessor-的资料"><span class="nav-number">7.1.</span> <span class="nav-text">GeneratedSerializationConstructorAccessor 的资料</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

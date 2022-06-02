@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Mysql索引和查询优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="三高Mysql - Mysql索引和查询优化（偏实战部分）">
+<meta property="og:url" content="https://whitestore.top/2022/04/06/suoyinshizhan/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Mysql索引和查询优化">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204061302118.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204061302376.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204061302205.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203211327993.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204061303013.png">
+<meta property="article:published_time" content="2022-04-06T06:08:47.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.828Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="mysql优化部分">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204061302118.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/04/06/suoyinshizhan/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>三高Mysql - Mysql索引和查询优化（偏实战部分） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/04/06/suoyinshizhan/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          三高Mysql - Mysql索引和查询优化（偏实战部分）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-06 14:08:47" itemprop="dateCreated datePublished" datetime="2022-04-06T14:08:47+08:00">2022-04-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93-mysql/" itemprop="url" rel="index"><span itemprop="name">数据库-mysql</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/04/06/suoyinshizhan/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/06/suoyinshizhan/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>18k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>16 分钟</span>
+            </span>
+            <div class="post-description">Mysql索引和查询优化</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="三高Mysql-Mysql索引和查询优化（偏实战部分）"><a href="#三高Mysql-Mysql索引和查询优化（偏实战部分）" class="headerlink" title="三高Mysql - Mysql索引和查询优化（偏实战部分）"></a>三高Mysql - Mysql索引和查询优化（偏实战部分）</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>​    实战部分挑选一些比较常见的情况，事先强调个人使用的是<strong>mysql 8.0.26</strong>，所以不同版本如果出现不同测试结果也不要惊讶，新版本会对于过去一些不会优化的查询进行优化。</p>
+<p>​    实战部分承接上一篇文章：<span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTY2MTQwMw==" title="https://segmentfault.com/a/1190000041661403">三高 Mysql - Mysql 索引和查询优化（偏理论部分）<i class="fa fa-external-link"></i></span></p>
+<a id="more"></a>
+
+<h1 id="前置准备"><a href="#前置准备" class="headerlink" title="前置准备"></a>前置准备</h1><p>​    这里还是要再啰嗦一遍，所有的数据库和表均来自官方的<strong>sakila-db</strong>，作为学习和熟悉mysql数据库操作非常好。</p>
+<h2 id="sakila-db"><a href="#sakila-db" class="headerlink" title="sakila-db"></a>sakila-db</h2><p>​    sakila-db是什么？国外很火的一个概念，指的是国外电影租赁市场外国人使用租赁的方式进行电影的观看，过去十分受外国人的喜欢，这里拿出来介绍是因为后续的内容都用到了这个案例，所以我们需要提前把相关的环境准备好，从如下地址进行下载：</p>
+<p>​    下载地址：<span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9pbmRleC1vdGhlci5odG1s" title="https://dev.mysql.com/doc/index-other.html">https://dev.mysql.com/doc/index-other.html<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204061302118.png" alt=""></p>
+<h2 id="work-bench"><a href="#work-bench" class="headerlink" title="work-bench"></a>work-bench</h2><p>​    work-bench是官方开发的数据库关系图的可视化工具，使用官方案例的具体关系图展示效果如下，通过这些图可以看到Sakila-db之间的大致关系：</p>
+<blockquote>
+<p>work-bench 是免费软件，下载地址如下：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2Rvd25sb2Fkcy93b3JrYmVuY2gv" title="https://dev.mysql.com/downloads/workbench/">https://dev.mysql.com/downloads/workbench/<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204061302376.png" alt=""></p>
+<p>​    </p>
+<p>​    安装<code>workbench</code>和下载<code>sakila-db</code>的过程这里不做记录，在运行的时候需要注意先建立一个数据库运行<code>Sheme</code>文件，然后执行data的sql文件，最终借助navicat中查看数据和表结构关系：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204061302205.png" alt=""></p>
+<p>​    </p>
+<h1 id="正文部分"><a href="#正文部分" class="headerlink" title="正文部分"></a>正文部分</h1><h2 id="where查询太慢怎么办？"><a href="#where查询太慢怎么办？" class="headerlink" title="where查询太慢怎么办？"></a>where查询太慢怎么办？</h2><p>​    遇到where查询太慢，我们第一步是需要分析数据类型的组成以及数据表的设置是否合理，其次我们可以使用<code>explain</code>对于查询语句进行分析，使用方式十分简单在需要优化的查询语句前面添加<code>explain</code>语句，对于所有的查询来说，覆盖索引的查找方式是最优解，因为覆盖索引不需要回表查数据。</p>
+<p>​    覆盖索引：覆盖索引是查询方式，他不是一个索引，指的是在查询返回结果的时候和使用的索引是同一个，这时候可以发现他压根不需要回表，直接查辅助索引树就可以得到数据，所以覆盖索引的查询效率比较高。</p>
+<blockquote>
+<p>如何使用sql语句查看某一个表的建表语句：</p>
+<p>回答：使用<code>show create table 表名称</code>即可。 </p>
+</blockquote>
+<p>​    </p>
+<p>​    那么什么情况下会使用覆盖索引：</p>
+<ol>
+<li>查询字段为辅助索引的字段或者聚簇索引的字段。</li>
+<li>符合<strong>最左匹配原则</strong>，如果不是最左匹配则不能走索引。</li>
+</ol>
+<p>​    我们使用上面提到的<code>sakila-db</code>进行实验，这里可以使用<code>inventory</code>表作为实验，但是这个表需要进行一些调整，下面请看具体的sql：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`inventory_test`</span> (</span><br><span class="line">  <span class="string">`inventory_id`</span> mediumint <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`film_id`</span> <span class="built_in">smallint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`store_id`</span> <span class="built_in">tinyint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`last_update`</span> <span class="built_in">timestamp</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`inventory_id`</span>),</span><br><span class="line">  <span class="comment">-- KEY `idx_fk_film_id` (`film_id`),</span></span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_store_id_film_id`</span> (<span class="string">`store_id`</span>,<span class="string">`film_id`</span>)</span><br><span class="line">  <span class="comment">-- CONSTRAINT `fk_inventory_film` FOREIGN KEY (`film_id`) REFERENCES `film` (`film_id`) ON DELETE RESTRICT ON UPDATE CASCADE,</span></span><br><span class="line">  <span class="comment">-- CONSTRAINT `fk_inventory_store` FOREIGN KEY (`store_id`) REFERENCES `store` (`store_id`) ON DELETE RESTRICT ON UPDATE CASCADE</span></span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> AUTO_INCREMENT=<span class="number">4582</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8mb4 <span class="keyword">COLLATE</span>=utf8mb4_0900_ai_ci;</span><br></pre></td></tr></table></figure>
+
+
+<p>​    我们将原始的sql建表语句只保留一个辅助索引，比如在上面的语句中删除了<code>idx_fk_film_id</code>索引，下面删除这个索引之后的实验效果：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> inventory_test <span class="keyword">where</span> film_id = <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 案例1. 不符合最左原则不走索引 </span></span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    ALL          1  100.00  Using where</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> inventory_test <span class="keyword">where</span> store_id = <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 案例2: 使用了辅助索引（联合索引）：</span></span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    ref  idx_store_id_film_id  idx_store_id_film_id  1  const  1  100.00  </span></span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> inventory_id,film_id,store_id <span class="keyword">from</span> inventory_test <span class="keyword">where</span> store_id = <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 案例3:  正常使用索引 </span></span><br><span class="line"><span class="comment">-- 1 SIMPLE  inventory_test    ref  idx_store_id_film_id  idx_store_id_film_id  1  const  1  100.00  Using index</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> film_id,store_id <span class="keyword">from</span> inventory_test <span class="keyword">where</span> store_id = <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 案例4:  覆盖索引 </span></span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    ref  idx_store_id_film_id  idx_store_id_film_id  1  const  1  100.00  Using index</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> film_id,store_id <span class="keyword">from</span> inventory_test <span class="keyword">where</span> film_id = <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 案例5: 正常使用索引，但是type存在区别 </span></span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    index  idx_store_id_film_id  idx_store_id_film_id  3    1  100.00  Using where; Using index</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> inventory_id,film_id,store_id <span class="keyword">from</span> inventory_test <span class="keyword">where</span> film_id = <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 案例6: 使用索引返回结果，但是type存在区别 </span></span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    index  idx_store_id_film_id  idx_store_id_film_id  3    1  100.00  Using where; Using index</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> inventory_id,film_id,store_id <span class="keyword">from</span> inventory_test <span class="keyword">where</span> store_id = <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 案例7: 覆盖索引 </span></span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    ref  idx_store_id_film_id  idx_store_id_film_id  1  const  1  100.00  Using index</span></span><br></pre></td></tr></table></figure>
+
+<p>​    案例1和案例2是较为典型的<strong>索引最左匹配原则</strong>的错误使用反面教材，也是很多新手建立索引但是可能用错的陷阱之一，最左匹配原则指的是where条件需要从建立索引的最左列开始进行搜索，可以看到这里的星号和建表的时候字段的顺序是一样的，也就是<code>inventory_id</code>，<code>film_id,store_id</code>，<code>last_update</code>，所以是虽然是<code>select *</code>但是是正常走索引的。</p>
+<p>（实际干活时候千万不要这么做，这里是为了演示偷懒而已）</p>
+<blockquote>
+<p>不用星号我使用<strong>乱序</strong>的列查询会怎么样，其实这时候如果你把查询列的数据换一下会…..没啥影响，<strong>随意调换查询列顺序依然可以走索引</strong>。</p>
+</blockquote>
+<p>​    接下来是案例3 - 案例7的几个查询，这几个查询意图解释的是针对覆盖索引使用的细节问题，在上面的测试案例语句当中可以看到案例4由于查询的结果和where条件都是使用了索引的，所以最终mysql使用了完整的覆盖索引，同时符合联合索引的最左匹配原则，所以查询的效率达到了<code>ref</code>级别（这个级别暂时简单理解就是非常快就行）。</p>
+<p>​    接着案例5又把where条件换了一下，可以看到虽然还是走了索引，但是效率一下子就低了下来，因为他不符合最左匹配原则，另外这个案例5的查询级别可以理解为它需要把整个辅助索引也就是联合索引的树扫完再去进行where筛选，效率自然就不如直接检索排序索引值快了，但是index这个级别还是比ALL这个龟速快不少。</p>
+<p>​    理解了上面的这一层意思，再来理解案例6和7就很简单了，可以看到只多了一个主键列查询。</p>
+<p>​    这里读者可能会觉得你这上面不是说返回结果全是索引列才会覆盖么，怎么加入了主键列还是奏效呢？主键不是在聚簇索引上嘛不是需要回表么？其实这两个问题很好回答，因为辅助索引当中key存储的确实是索引列的值，但是他的索引值放的是主键ID，当mysql在搜索索引列的时候发现这里多了一个列，但是又发现这个列是主键，所以最后发现可以直接通过联合索引直接返回结果不需要回表，所以这样覆盖索引的条件同样是成立的。</p>
+<p>​    如果读者不清楚查询<code>explain</code>结果列代表的含义，可以参考下面的内容对比：</p>
+<ul>
+<li>id: 首先，一个select就会出现一个id, 通常在复杂的查询里面会包含多张表的查询，比如join, in等等</li>
+<li>select_type：这个表示的是查询的类型</li>
+<li>table：表名称</li>
+<li>partitions：这个表示表空间，分区的概念</li>
+<li><strong>type</strong> : 比如查询的优化等级,  const, index, all，分别代表了聚簇索引，二级索引(辅助索引)，全表扫描的查询搜索方式</li>
+<li>Possiblekeys：和type一样确定访问方式，确定有哪些索引可以选择，</li>
+<li>key：确定有哪些可以提供选择，同时提供索引的对应长度</li>
+<li>key_len： 表示的是索引的长度</li>
+<li>ref： 等值匹配的时候出现的一些匹配的相关信息</li>
+<li>Rows： 预估通过所索引或者别的方式读取多少条数据</li>
+<li>filtered：经过搜索条件过滤之后的剩余数据百分比。</li>
+<li>extra：额外的信息不重要，主要用于用户判定查询走了什么索引。</li>
+</ul>
+<p>总结</p>
+<p>通过上面的案例我们可以从下面的角度思考来如何提升索引查询速度：</p>
+<ul>
+<li>使用<strong>覆盖索引</strong>查询方式提高效率，再次强调覆盖索引不是索引是优化索引查询一种方式。</li>
+<li>如果数据不只使用索引列那么就构不成覆盖索引。</li>
+<li>可以优化sql语句或者优化联合索引的方式提高覆盖索引的命中率。</li>
+</ul>
+<h2 id="如何确认选择用什么索引？"><a href="#如何确认选择用什么索引？" class="headerlink" title="如何确认选择用什么索引？"></a>如何确认选择用什么索引？</h2><p>​    这里涉及一个索引基数（cardinality）的问题，索引基数是什么，其实就是利用算法和概率学统计的方式确定最优化的索引方案，这个值可以通过<code>show index from 表名</code>的方式进行获取，比如下面的200和121就是<strong>索引基数（cardinality）</strong>。</p>
+<blockquote>
+<p>因为索引基数的存在如果索引不符合我们到使用预期可以尝试强制使用某索引。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; show index from actor;</span><br><span class="line">actor  <span class="number">0</span>  PRIMARY  <span class="number">1</span>  actor_id  A  <span class="number">200</span>        BTREE      YES  </span><br><span class="line">actor  <span class="number">1</span>  idx_actor_last_name  <span class="number">1</span>  last_name  A  <span class="number">121</span>        BTREE      YES</span><br></pre></td></tr></table></figure>
+
+<p>​    索引基数的定义官方文档的介绍：</p>
+<p>​    下面一坨东西简单来说就是mysql会根据基数的数值根据一定的算法选择使用索引，但是有时候如果查询不能符合预期要求就需要强制使用索引了。</p>
+<blockquote>
+<p>表列中不同值的数量。当查询引用具有关联索引的列时，每列的基数会影响最有效的访问方法。<br />例如，对于具有唯一约束的列，不同值的数量等于表中的行数。如果一个表有一百万行，但特定列只有 10 个不同的值，<br />则每个值（平均）出现 100,000 次。 SELECT c1 FROM t1 WHERE c1 = 50 等查询因此可能会返回 1 行或大量行，<br />并且数据库服务器可能会根据 c1 的基数以不同方式处理查询。<br /><br />如果列中的值分布非常不均匀，则基数可能不是确定最佳查询计划的好方法。例如，SELECT c1 FROM t1 WHERE c1 = x;<br />当 x=50 时可能返回 1 行，当 x=30 时可能返回一百万行。在这种情况下，您可能需要使用索引提示来传递有关哪种<br />查找方法对特定查询更有效的建议。<br /><br />基数也可以应用于多个列中存在的不同值的数量，例如在复合索引中。<br />参考：<strong>列、复合索引、索引、索引提示、持久统计、随机潜水、选择性、唯一约束</strong>。</p>
+</blockquote>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">原文：</span><br><span class="line">The number of different values in a table column. When queries refer to columns that have an </span><br><span class="line">associated index, the cardinality of each column influences which access method is most </span><br><span class="line">efficient. For example, for a column with a unique constraint, the number of different </span><br><span class="line">values is equal to the number of rows in the table. If a table has a million rows but </span><br><span class="line">only 10 different values for a particular column, each value occurs (on average) 100,000 times.</span><br><span class="line"> A query such as SELECT c1 FROM t1 WHERE c1 = 50; thus might return 1 row or a huge number of </span><br><span class="line"> rows, and the database server might process the query differently depending on the cardinality </span><br><span class="line"> of c1.</span><br><span class="line"></span><br><span class="line">If the values in a column have a very uneven distribution, the cardinality might not be </span><br><span class="line">a good way to determine the best query plan. For example, SELECT c1 FROM t1 WHERE c1 = x;</span><br><span class="line"> might return 1 row when x=50 and a million rows when x=30. In such a case, you might need </span><br><span class="line"> to use index hints to pass along advice about which lookup method is more efficient for a </span><br><span class="line"> particular query.</span><br><span class="line"></span><br><span class="line">Cardinality can also apply to the number of distinct values present in multiple columns, </span><br><span class="line">as in a composite index.</span><br><span class="line"></span><br><span class="line">See Also column, composite index, index, index hint, persistent statistics, random dive,</span><br><span class="line"> selectivity, unique constraint.</span><br></pre></td></tr></table></figure>
+
+
+<p>​    </p>
+<p>​    如何让sql强制使用索引</p>
+<p>​    可以使用from表之后接条件语句：<code>force index(索引)</code> 的方式进行处理，使用强制索引的情况比较少，除非优化器真的选择了不符合预期的优化规则并且严重影响查询性能，使用强制索引的案例如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> actor <span class="keyword">force</span> <span class="keyword">index</span>(idx_actor_last_name);</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="count-慢的原因是什么？"><a href="#count-慢的原因是什么？" class="headerlink" title="count()慢的原因是什么？"></a>count()慢的原因是什么？</h2><p>count函数不用多介绍，作用是查询结果的行数，但是需要注意优化器在处理过程中会<strong>比对并且排除掉结果为null的值</strong>的数据，这意味着在行数很大的时候如果使用不正确count会因为比对数据操作进而降低查询效率。</p>
+<p>所以这里我们只要记住一个特定的规则，那就是只要是涉及行数的查询，那就使用<code>select(*)</code>，原因仅仅是mysql官方针对这个做了专门的优化，也不需要去纠结为什么官方要给<code>select(*)</code>做优化，只能说<strong>约定大于配置</strong>，下面是常见的查询性能之间的对比：</p>
+<ul>
+<li>count(非索引字段)：理论上是最慢的，因为对于每一行结果都要判断是否为null。</li>
+<li>count(索引字段)：虽然走了索引，但是依然需要对每一行结果判断是否为null。</li>
+<li>count(1)：虽然不涉及字段了，但是这种方式依然需要对1进行判断是否为null。</li>
+<li><strong>count(*)：Mysql官方进行优化，查询效率最快，只需要记住这种方式即可</strong>。</li>
+</ul>
+<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>索引下推实现版本为Mysql5.6以上。</p>
+<p>作用：本质上是为了减少辅助索引（或者说二级索引）<strong>回表次数</strong>的一种优化手段。</p>
+<p>案例：请看下面的建表语句，这里比较关键的是建立了<code>store_id</code>和<code>film_id</code>的联合索引 。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203211327993.png" alt=""></p>
+<p>​    以下面的SQL语句为例，如果是5.6之前的版本虽然他是覆盖索引的查询方式但却是<strong>不能使用索引</strong>的，数据进过索引查找之后虽然store_id是顺序排序的但是film_id是乱序的，在索引检索的时候由于没有办法顺序扫描（如果不清楚索引组织结构可以多看几遍B+树索引构造） 它需要一行行使用主键回表进行查询，查询实际需要使用每一行的<code>inentory_id</code>回表4次去匹配film_id是否为3。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> inventory_3 <span class="keyword">where</span> store_id <span class="keyword">in</span> (<span class="number">1</span>,<span class="number">2</span>) <span class="keyword">and</span> film_id = <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204061303013.png" alt=""></p>
+<p>​    按照人的思维看起来是很不合理的，因为我们可以发现按照正常的逻辑有一种搜索的方法是通过“跳跃“索引的方式进行扫描，当扫描到索引列如果不符合条件，则直接跳跃索引到下一个索引列，有点类似我们小时候”跳房子“方式来寻找自己需要的沙袋（索引数据）。</p>
+<p>​    <strong>那么索引下推是如何处理上面这种情况的呢</strong>？虽然film_id是没有办法顺序扫描的也不符合索引的排列规则，但是发现可以根据遍历film_id汇总索引之后再回表查呀！比如根据查询条件搜索遍历找到film=3之后再根据二级索引列对应的主键去查主索引，这时候只需要一次回表就可以查到数据，此时原本应该根据每个二级索引的主键值进行回表变为遍历索引并找到索引值之后再回表，最终达到减少回表次数的效果，这也是前面为什么说索引下推是为了减少了回表的次数的答案。</p>
+<p>​    索引下推的开启和关闭可以参考如下命令：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 索引下推变量值：</span></span><br><span class="line">mysql&gt; select @@optimizer_switch\G;</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">@@optimizer_switch: index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,engine_condition_pushdown=on,index_condition_pushdown=on,mrr=on,mrr_cost_based=on,block_nested_loop=on,batched_key_access=off,materialization=on,semijoin=on,loosescan=on,firstmatch=on,duplicateweedout=on,subquery_materialization_cost_based=on,use_index_extensions=on,condition_fanout_filter=on,derived_merge=on</span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 关闭索引下推</span></span><br><span class="line"><span class="keyword">set</span> optimizer_switch=<span class="string">'index_condition_pushdown=off'</span>;</span><br><span class="line"><span class="comment">-- 开启索引下推</span></span><br><span class="line"><span class="keyword">set</span> optimizer_switch=<span class="string">'index_condition_pushdown=on'</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="松散索引和紧凑索引"><a href="#松散索引和紧凑索引" class="headerlink" title="松散索引和紧凑索引"></a><strong>松散索引和紧凑索引</strong></h2><p>​    关于松散索引和紧凑索引可以看下面两个文档对比参考阅读：</p>
+<p>​    <span class="exturl" data-url="aHR0cHM6Ly93d3cuZG9jczRkZXYuY29tL2RvY3MvemgvbXlzcWwvNS43L3JlZmVyZW5jZS9ncm91cC1ieS1vcHRpbWl6YXRpb24uaHRtbA==" title="https://www.docs4dev.com/docs/zh/mysql/5.7/reference/group-by-optimization.html">MySql 中文文档 - 8.2.1.15 GROUP BY 最佳化 | Docs4dev<i class="fa fa-external-link"></i></span></p>
+<p>​    <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2dyb3VwLWJ5LW9wdGltaXphdGlvbi5odG1s" title="https://dev.mysql.com/doc/refman/8.0/en/group-by-optimization.html">MySQL :: MySQL 8.0 Reference Manual :: 8.2.1.17 GROUP BY Optimization<i class="fa fa-external-link"></i></span></p>
+<p>​    松散索引和紧凑索引的概念不是特别好理解，松散索引和紧凑索引实际上就是当MySQL 利用索引扫描来实现<code>GROUP BY</code>的时候，<strong>并不需要扫描所有满足条件的索引键即可完成操作得出结果</strong>，仅仅处理的情况细节不同。</p>
+<p>​    过去Mysql对于<code>group by</code>操作是构建临时表并且在临时表上操作，在使用索引的情况下，分组查询是可以走索引的：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> last_name <span class="keyword">from</span> actor  <span class="keyword">GROUP</span> <span class="keyword">BY</span> last_name</span><br><span class="line"><span class="comment">-- 1	SIMPLE	actor		index	idx_actor_last_name	idx_actor_last_name	182		200	100.00	Using index</span></span><br></pre></td></tr></table></figure>
+
+<p>​    由于<code>group by</code> 操作和<code>order by</code>操作不走索引的时候可能会产生临时表，同时<code>group by</code> 操作拥有和<code>order by</code> 类似的排序操作，有时候我们分组查询不止一个字段，所以可能会出现多列索引情况，所以此时mysql对于多列联合索引分组查询进一步优化，提供了松散索引和紧凑索引多概念，</p>
+<p>​    松散索引在官方有下面的定义：</p>
+<ol>
+<li>当彻底使用索引扫描实现<code>group by</code>操作的时候，只需要使用部分的索引列就可以完成操作</li>
+<li>虽然Btree的二级索引内部是排序并且要求索引是顺序访问的，但是对于group by最大的优化是扫描这种顺序索引的时候<strong>where条件没必要完全贴合所有索引key</strong>，</li>
+</ol>
+<p>​    上面定义有两个个关键词：<strong>彻底</strong>和<strong>不完全</strong>，where条件没必要完全贴合索引键。为了更好理解我们这里使用了官方给的例子，假设在 table<code>t1(c1,c2,c3,c4)</code>上有一个索引<code>idx(c1,c2,c3)</code>。松散索引扫描访问方法可用于以下查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 可以不使用所有索引字段，可以走联合索引</span></span><br><span class="line"><span class="keyword">SELECT</span> c1, c2 <span class="keyword">FROM</span> t1 <span class="keyword">GROUP</span> <span class="keyword">BY</span> c1, c2;</span><br><span class="line"><span class="comment">-- 去重操作内部也会进行隐式的分组行为</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> c1, c2 <span class="keyword">FROM</span> t1;</span><br><span class="line"><span class="comment">-- 分组的极值查询可以使用松散索引，因为c2和c1依然有序</span></span><br><span class="line"><span class="keyword">SELECT</span> c1, <span class="keyword">MIN</span>(c2) <span class="keyword">FROM</span> t1 <span class="keyword">GROUP</span> <span class="keyword">BY</span> c1;</span><br><span class="line"><span class="comment">-- 分组前的where 条件</span></span><br><span class="line"><span class="keyword">SELECT</span> c1, c2 <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 &lt; const <span class="keyword">GROUP</span> <span class="keyword">BY</span> c1, c2;</span><br><span class="line"><span class="comment">-- 对于c3的极值操作依然和c1,c2构成索引</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">MAX</span>(c3), <span class="keyword">MIN</span>(c3), c1, c2 <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 &gt; const <span class="keyword">GROUP</span> <span class="keyword">BY</span> c1, c2;</span><br><span class="line"><span class="comment">-- 支持范围查询的同时走松散索引</span></span><br><span class="line"><span class="keyword">SELECT</span> c2 <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 &lt; const <span class="keyword">GROUP</span> <span class="keyword">BY</span> c1, c2;</span><br><span class="line"><span class="comment">-- 最后一列等值查询依然可以视为松散索引</span></span><br><span class="line"><span class="keyword">SELECT</span> c1, c2 <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c3 = const <span class="keyword">GROUP</span> <span class="keyword">BY</span> c1, c2;	</span><br><span class="line"><span class="comment">-- 松散索引可以作用于下面的查询</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> c1), <span class="keyword">SUM</span>(<span class="keyword">DISTINCT</span> c1) <span class="keyword">FROM</span> t1;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> c1, c2), <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> c2, c1) <span class="keyword">FROM</span> t1;</span><br></pre></td></tr></table></figure>
+
+<p>​    松散索引需要满足下面的条件：</p>
+<ul>
+<li>分组查询是单表查询</li>
+<li><code>group by</code>的条件必须同一个索引顺序索引的连续位置。</li>
+<li><code>group by</code>的同时只能使用max或者min两个聚合函数（但是在5.5之后，新增了更多函数支持）。</li>
+<li>如果应用<code>group by</code>以外字段条件必须用<strong>常量形式</strong>存在。</li>
+<li>必须使用完整的索引值，也就意味着like这样的前缀索引是不适用的。</li>
+</ul>
+<p>​    如果想要判定查询是否使用松散索引可以根据<code>explain</code>的<code>extra</code>内容是否为<code>Using index for group-by</code>确认。</p>
+<p>​    下面我们用更实际SQL来介绍，假设在 table<code>t1(c1,c2,c3,c4)</code>上有一个索引<code>idx(c1,c2,c3)</code>。松散索引扫描访问方法可用于以下查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 自我实验：松散索引</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> film_id, store_id), <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> store_id, film_id) <span class="keyword">FROM</span> inventory_test;</span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    range  idx_store_id_film_id  idx_store_id_film_id  3    4  100.00  Using index for group-by (scanning)</span></span><br><span class="line"><span class="comment">-- 自我实验：松散索引</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> store_id), <span class="keyword">SUM</span>(<span class="keyword">DISTINCT</span> store_id) <span class="keyword">FROM</span> inventory_test;</span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    range  idx_store_id_film_id  idx_store_id_film_id  1    4  100.00  Using index for group-by (scanning)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 但是如果查询的不是同一个索引，不满足最左原则是不走松散索引的，而是走更快的索引扫描：</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> store_id), <span class="keyword">SUM</span>(<span class="keyword">DISTINCT</span> store_id) <span class="keyword">FROM</span> inventory_test;</span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> film_id), <span class="keyword">SUM</span>(<span class="keyword">DISTINCT</span> film_id) <span class="keyword">FROM</span> inventory_test;</span><br><span class="line"><span class="comment">-- 1	SIMPLE	inventory_test		range	idx_store_id_film_id	idx_store_id_film_id	1		4	100.00	Using index for group-by (scanning)</span></span><br><span class="line"><span class="comment">-- 1	SIMPLE	inventory_test		index	idx_store_id_film_id	idx_store_id_film_id	3		3	100.00	Using index</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>紧凑索引</strong></p>
+<p>​    和松散索引区别的是紧凑索引使用前提是必须是<strong>全索引扫描</strong>或者<strong>范围索引扫描</strong>，当松散索引没有生效时使得<code>group by</code> 依然有可能避免创建临时表，紧凑索引需要读取所有满足条件的索引键才会工作，然后根据读取的数据完成<code>group by</code> 操作。</p>
+<p>​    为了使紧凑索引查询这种方法奏效在查询中的所有列都要有<strong>恒定的相等条件</strong>，比如必须<code>GROUP BY</code>键之前或之间的部分键。</p>
+<p>​    在紧凑索引扫描方式下，先对索引执行<strong>范围扫描（range scan）</strong>，再对结果元组进行分组。为了更好的理解，可以看一下相关的案例：</p>
+<p>​    在<code>GROUP BY</code>中存在一个缺口，但是它被条件<code>c2=&#39;a&#39;</code>所覆盖。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> c1, c2, c3 <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 = <span class="string">'a'</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> c1, c3;</span><br></pre></td></tr></table></figure>
+
+
+<p>​    <code>GROUP BY</code>没有以键的第一部分开始，但是有一个条件为这部分提供了一个常数。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> c1, c2, c3 <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 = <span class="string">'a'</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> c2, c3;</span><br></pre></td></tr></table></figure>
+
+
+<p>​    我们按照官方给的案例实验一下，首先是表结构，我们在下面表中建立联合索引：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`inventory_test`</span> (</span><br><span class="line">  <span class="string">`inventory_id`</span> mediumint <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`film_id`</span> <span class="built_in">smallint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`store_id`</span> <span class="built_in">tinyint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`last_update`</span> <span class="built_in">timestamp</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`inventory_id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_store_id_film_id`</span> (<span class="string">`store_id`</span>,<span class="string">`film_id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> AUTO_INCREMENT=<span class="number">4582</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8mb4 <span class="keyword">COLLATE</span>=utf8mb4_0900_ai_ci;</span><br></pre></td></tr></table></figure>
+
+<p>​    下面是个人使用紧凑索引的案例，当where条件是常量值并且是针对索引的常量值的时候，<code>group by</code>就可以走索引，但是如果where条件是非索引字段依然需要全表扫描，注意这里group的字段并不是按照联合索引的最左前缀处理的依然可以走索引，这就是mysql对于分组操作的一系列优化了。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 紧凑索引</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">select</span> <span class="keyword">count</span>(*),<span class="keyword">max</span>(film_id),<span class="keyword">sum</span>(film_id), <span class="keyword">avg</span>(film_id) <span class="keyword">from</span> inventory_test <span class="keyword">where</span> store_id = <span class="number">1</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> film_id;</span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    ref  idx_store_id_film_id  idx_store_id_film_id  1  const  1  100.00  Using index</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">select</span> <span class="keyword">count</span>(*),<span class="keyword">max</span>(film_id),<span class="keyword">sum</span>(film_id), <span class="keyword">avg</span>(film_id) <span class="keyword">from</span> inventory_test <span class="keyword">where</span> last_update &gt; <span class="string">'2022-02-02 23:20:45'</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> film_id;</span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    ALL  idx_store_id_film_id        3  33.33  Using where; Using temporary</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">select</span> <span class="keyword">count</span>(*),<span class="keyword">max</span>(film_id),<span class="keyword">sum</span>(film_id), <span class="keyword">avg</span>(film_id) <span class="keyword">from</span> inventory_test <span class="keyword">where</span> last_update = <span class="string">'2022-02-02 23:20:45'</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> film_id;</span><br><span class="line"><span class="comment">-- 1  SIMPLE  inventory_test    ALL  idx_store_id_film_id        3  33.33  Using where; Using temporary</span></span><br></pre></td></tr></table></figure>
+
+<p>​    建议读者多读一读官方文档加深这两个概念理解。</p>
+<h2 id="order-by如何优化？"><a href="#order-by如何优化？" class="headerlink" title="order by如何优化？"></a>order by如何优化？</h2><p>什么是中间结果集？</p>
+<p>​    对于常规的sort语句，由于需要对于搜索的结果按照某一字段进行大小排序，而为了让这个操作顺利完成，mysql会把这个操作放到硬盘或者内存完成。</p>
+<p>排序的基本步骤和原理 </p>
+<p>​    对于涉及排序的语句，它的大致工作原理如下：</p>
+<ol>
+<li>选取查询字段，根据<code>where</code>进行条件查询。</li>
+<li>查询结果集生成<code>sort_buffer</code>，如果内存不够，需要在硬盘建立中间表进行排序。</li>
+<li>将中间表根据<code>Order</code> 字段进行排序。</li>
+<li>回表生成完整结果集，组装返回结果。</li>
+</ol>
+<p>中间结果集特点</p>
+<p>​    如果中间表比较小则放到内存中，判定什么时候会存在于内存中Mysql提供了<code>sort_buffer_size</code>的参数，它负责控制中间结果集的大小，如果优化内存需要调整降低这个参数值，但是如果想要优化查询的时间，则需要调大这个参数。</p>
+<p>回表生成完整结果集</p>
+<p>​    回表生成完整结果集这个操作其实也不是总是执行的，会根据会话参数<code>max_length_for_sort_data</code>进行判断，如果当前查询小于这个数值，会生成一个<strong>全字段中间表</strong>结果可以直接从全字段中间表获取，但是如果大于这个数值那么就只会生成<strong>排序字段+主键中间表</strong>（类似二级索引），所以这时候显然查找一遍是无法找到的，需要回表才能完成操作。</p>
+<blockquote>
+<p>需要注意<strong>排序字段+主键中间表</strong>看起来像是二级索引但是实际上和二级索引完全没有关系，只是一个简单列表需要反复去主表获取数据。</p>
+</blockquote>
+<p>​    总结：全字段中间表&gt;<code>max_length_for_sort_data</code>&gt;排序字段+主键中间表，数值并不是越大越好越大越影响查询效率。</p>
+<p>排序查询优化点</p>
+<p>​    根本问题在于排序的结果是中间结果集，虽然结果集可以在内存中处理，但是他有最为本质的问题那就是<strong>中间表不存在索引</strong>并且导致索引失效，所以为了让中间表可以走索引我们可以使用<strong>索引覆盖</strong>的方式。</p>
+<blockquote>
+<p>优化手段：索引覆盖，也是最高效的处理方式。索引覆盖可以跳过生成生成中间结果集，直接输出查询结果。</p>
+</blockquote>
+<ol>
+<li>order by的字段为索引（或者联合索引的最左边）。</li>
+<li>其他字段（条件、输出）均在上述索引中。</li>
+<li>索引覆盖可以跳过中间结果集，直接输出查询结果。 </li>
+</ol>
+<blockquote>
+<p>什么是索引覆盖？</p>
+<p>覆盖索引：覆盖索引是<strong>查询方式</strong>而不是一个索引，指的是一个sql语句中包括查询条件和返回结果均符合索引使用条件，当然在Mysql5.6之后增加索引下推，满足下推条件的也可以走覆盖索引。</p>
+</blockquote>
+<p>​    比如下面的语句并不会生成中间结果集并且可以有效利用索引：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> film_id, title <span class="keyword">from</span> film <span class="keyword">order</span> <span class="keyword">by</span> title;</span><br><span class="line"><span class="comment">-- 1	SIMPLE	film		index		idx_title	514		1000	100.00	Using index</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>总结：提升排序查询速度</p>
+<ol>
+<li>给<code>order by</code>字段增加索引，或者<code>where</code>字段使用索引，让查询可以走覆盖索引的方式。</li>
+<li>调整<code>sort_buffer_size</code>大小，或者调整<code>max_length_for_sort_data</code>的大小，让排序尽量在内存完成。</li>
+</ol>
+<h2 id="函数操作索引失效的问题"><a href="#函数操作索引失效的问题" class="headerlink" title="函数操作索引失效的问题"></a>函数操作索引失效的问题</h2><p>通过下面的案例可以得知，如果我们对于索引的字段进行了类似函数的操作那么mysql会放弃使用索引，另外一种情况是日期函数比如month()函数也会使得索引失效。</p>
+<blockquote>
+<p>小贴士：很多人以为函数操作是那些sum()，count()函数，实际上对于字段的<strong>加减乘除</strong>操作都可以认为是函数操作，因为底层需要调用计算机的寄存器完成相关指令操作。另外这里需要和签名的索引下推和松散紧凑索引做区分，松散和紧凑索引针对分组操作索引优化，索引下推到了5.6才被正式引入。大多数旧版本的mysql系统是没法享受使用函数操作同时还能走索引的。</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- sql1：对于索引字段进行函数操作</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span></span><br><span class="line">  title </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  film   </span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">  title + <span class="string">'22'</span> = <span class="string">'ACADEMY DINOSAUR'</span> </span><br><span class="line">  <span class="keyword">AND</span> <span class="keyword">length</span> + <span class="number">11</span> = <span class="number">86</span>;</span><br><span class="line">  <span class="comment">-- 1  SIMPLE  film    ALL          1000  100.00  Using where</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">-- sql2：如果对于其他字段使用函数操作，但是索引字段不进行 函数操作依然可以走索引</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span></span><br><span class="line">  title </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  film </span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">  title  = <span class="string">'ACADEMY DINOSAUR'</span> </span><br><span class="line">  <span class="keyword">AND</span> <span class="keyword">length</span> + <span class="number">11</span> = <span class="number">86</span>;</span><br><span class="line">  <span class="comment">-- 1  SIMPLE  film    ref  idx_title  idx_title  514  const  1  100.00  Using where</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>时间函数如何优化：</p>
+<p>​    我们要如何优化时间函数呢？有一种比较笨的方式是使用 <strong>between and 替代，</strong>比如要搜索5月份，就使用5月的第一天到5月的最后一天，具体的优化案例如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> last_update <span class="keyword">from</span> payment <span class="keyword">where</span> <span class="keyword">month</span>(last_update) =<span class="number">2</span>;</span><br><span class="line"><span class="comment">-- last_update需要手动创建索引</span></span><br><span class="line"><span class="comment">-- 1  SIMPLE  payment    ALL          16086  100.00  Using where</span></span><br></pre></td></tr></table></figure>
+
+
+<p>​    如果需要优化上面的结果，我们可以使用其他的方式替换写法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">explain select * from payment where last_update between <span class="string">'2006-02-01'</span> and <span class="string">'2006-02-28'</span>;</span><br><span class="line">-- <span class="number">1</span>  SIMPLE  payment    ALL  idx_payment_lastupdate        <span class="number">16086</span>  <span class="number">50.00</span>  Using where</span><br></pre></td></tr></table></figure>
+
+
+<p>​    这里很奇怪，咋和上面说的不一样呢？其实是因为<code>last_update</code>这个字段使用的数据类型是<strong>t</strong>imestamp，而timestamp在进行搜索的时候由于优化器的判断会放弃使用索引！所以解决办法也比较简单：<strong>使用force inde</strong>x 让SQL 强制使用索引。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span>  * <span class="keyword">from</span> payment <span class="keyword">force</span> <span class="keyword">index</span>(idx_payment_lastupdate) <span class="keyword">where</span> last_update <span class="keyword">between</span> <span class="string">'2006-02-01'</span> <span class="keyword">and</span> <span class="string">'2006-02-28'</span> ;</span><br><span class="line"><span class="comment">-- 1  SIMPLE  payment    range  idx_payment_lastupdate  idx_payment_lastupdate  5    8043  100.00  Using index condition</span></span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>这里经过实验发现如果字段是datetime，就可以直接用Between and索引，对于时间戳类型并没有实验，仅从现有的表设计来看结果如下：</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 优化后</span></span><br><span class="line"><span class="comment">-- 1  SIMPLE  rental    range  rental_date  rental_date  5    182  100.00  Using index condition</span></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> rental <span class="keyword">where</span> rental_date <span class="keyword">between</span> <span class="string">'2006-02-01'</span> <span class="keyword">and</span> <span class="string">'2006-02-28'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 1  SIMPLE  rental    ALL          16008  100.00  Using where</span></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> rental <span class="keyword">where</span>  <span class="keyword">month</span>(rental_date) =<span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>字符和数字比较：</p>
+<p>​    字符和数字比较也是会出现函数转化的同样会导致索引失效，所以在等式匹配的时候需要确保被比较的类型左右两边一致，另外如果无法修改查询可以使用cast函数进行补救，比如像下面这样处理。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> city <span class="keyword">where</span> <span class="keyword">cast</span>(city_id <span class="keyword">as</span> SIGNED <span class="built_in">int</span>) = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>隐式字符编码转化：</p>
+<p>​    如果两个表字段的编码不一样，也会出现索引失效的问题，因为底层需要对于编码进行转化，解决方式也比较简单，在比较的时候， 同时<strong>尽量</strong>比较字符串保证编码一致。那么假设两张表比较的时候，那个表的字段需要转化呢，比如A表的utf8和B表utf8mb4，A表中字段需要和B表字段进行比较的时候，需要将<strong>A表的字段转为和 B表的字段一致</strong>。</p>
+<blockquote>
+<p>这个就偷懒不实验了，绝大多数情况下表的字符集编码格式只要跟随表级别基本不会出现不一致的问题……</p>
+</blockquote>
+<h2 id="order-by-rand-原理"><a href="#order-by-rand-原理" class="headerlink" title="order by rand()原理"></a>order by rand()原理</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> tilte, desciption <span class="keyword">from</span> film <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">rand</span>() <span class="keyword">limit</span> <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- EXPLAIN select title, description from film order by rand() limit 1;</span></span><br><span class="line"><span class="comment">-- 1  SIMPLE  film    ALL          1000  100.00  Using temporary; Using filesort</span></span><br></pre></td></tr></table></figure>
+
+
+<p>​    <code>rand()</code>函数是十分耗费数据库性能的函数，在日常使用过程中我们可能遇到需要临时获取一条数据的情况，这时候就有可能会使用<code>rand()</code>函数，下面是<code>rand()</code>函数的执行原理：</p>
+<ul>
+<li>创建一个临时表，临时表字段为<code>rand、title、description</code>。</li>
+<li>从临时表中获取一行，调用rand()，把结果和数据放入临时表，以此类推。</li>
+<li>针对临时表，把rand字段+行位置（主键）放入到<code>sort_buffer</code>。</li>
+</ul>
+<p>​    可以看到这里最大的问题是出现了<strong>两次中间结果集</strong>。</p>
+<p>​    针对此问题可以使用下面的临时方案进行处理，这个临时方案可以看作是把rand()内部的工作拆开来进行处理，也是在不改动业务的情况下一种比较“笨”的解决方式：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">max</span>(film_id),<span class="keyword">min</span>(film_id) <span class="keyword">into</span> @M,@N <span class="keyword">from</span> film;</span><br><span class="line"><span class="keyword">set</span> @x=<span class="keyword">FLOOR</span>((@M-@N+<span class="number">1</span>) * <span class="keyword">rand</span>() + @N);</span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">select</span> title,description <span class="keyword">from</span> film <span class="keyword">where</span> film_id &gt;= @X <span class="keyword">limit</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+
+<p>​    其他处理方式是使用业务和逻辑代码替代sql的内部处理，比如使用下面的方式进行处理：</p>
+<ol>
+<li>查询数据表总数 total。</li>
+<li>total范围内，随机选取一个数字r。</li>
+<li>执行下列的SQL：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> title,description <span class="keyword">from</span> film <span class="keyword">limit</span> r,<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+
+<p>​    小结：</p>
+<ol>
+<li><p><code>order by rand() limit</code> 这个查询的效率极其低下，因为他需要生成两次中间表才能获取结果，谨慎使用此函数。</p>
+</li>
+<li><p>解决方案有两种：</p>
+<ul>
+<li><p>临时解决方案：在主键的最大值和最小值中选取一个。</p>
+</li>
+<li><p>好理解的方式处理：业务代码加limit处理</p>
+</li>
+</ul>
+<p>优点：在不改变业务的情况下直接通过调整SQL                                                                                                                       </p>
+<p>缺点：模板代码比较难以记忆，并且并不是万能的，因为可能不给你相关权限</p>
+</li>
+<li><p>建议使用业务逻辑代码处理不使用rand()函数。</p>
+</li>
+</ol>
+<h2 id="分页查询慢怎么办？"><a href="#分页查询慢怎么办？" class="headerlink" title="分页查询慢怎么办？"></a>分页查询慢怎么办？</h2><p>​    再次注意这里实验的时候使用的数据库版本为<strong>8.0.26</strong>。</p>
+<p>​    我们首先来看一下《高性能Mysql 第三版》 241-242页怎么说的，作者使用的也是sakila表，推荐的方式是使用<strong>延迟关联</strong>的方法，比如把下面的sql进行优化：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 优化前</span></span><br><span class="line"><span class="keyword">select</span> film_id,description <span class="keyword">from</span> film <span class="keyword">order</span> <span class="keyword">by</span> title <span class="keyword">limit</span> <span class="number">50</span>,<span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 优化后</span></span><br><span class="line"><span class="keyword">select</span> film_id,description <span class="keyword">from</span> film <span class="keyword">inner</span> <span class="keyword">join</span> (<span class="keyword">select</span> film_id <span class="keyword">from</span> film <span class="keyword">order</span> <span class="keyword">by</span> title <span class="keyword">limit</span> <span class="number">50</span>, <span class="number">5</span>) <span class="keyword">as</span> lim <span class="keyword">using</span>(film_id)</span><br></pre></td></tr></table></figure>
+
+
+<p>​    第二种方式是当id符合某种排序规则并且业务刚好符合的时候可以使用<code>between ...and</code>替代</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> film <span class="keyword">where</span> film_id <span class="keyword">between</span> <span class="number">46</span> <span class="keyword">and</span> <span class="number">50</span> <span class="keyword">order</span> <span class="keyword">position</span>;</span><br></pre></td></tr></table></figure>
+
+
+<p>​    最后还有一种方式是利用排序的特性将数据排序之后获取前面的行即可：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> film <span class="keyword">where</span> film_id <span class="keyword">order</span> <span class="keyword">position</span> <span class="keyword">desc</span> <span class="keyword">limit</span> <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+
+<p>​    以上是关于《高性能Mysql 第三版》 部分的介绍。下面来看下我们是否还有其他的办法？</p>
+<p>​    深分页问题不管是面试还是日常开发中经常会遇到的问题，这和limit的语法特性有关，可以看下面的内容：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> film <span class="keyword">limit</span> x,y;</span><br></pre></td></tr></table></figure>
+
+
+<p>​    limit的语句的执行顺序如下：</p>
+<ol>
+<li>先按照列查找出所有的语句，如果有where语句则根据where查找出数据</li>
+<li>查找数据并且加入结果集直到查找到（x+y）条数据为止。</li>
+<li>丢弃掉前面的x条，保留y条。</li>
+<li>返回剩下的y条数据。</li>
+</ol>
+<p>​    针对limit我们有下面的优化和处理方案：</p>
+<p>​    1. <strong>简单优化</strong>：</p>
+<p>​    如果主键是int自增并且主键是逻辑符合业务自增的，那么我们可以使用下面的语句进行优化：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> film <span class="keyword">where</span> <span class="keyword">id</span> &gt;= <span class="number">10000</span> <span class="keyword">limit</span> y;</span><br></pre></td></tr></table></figure>
+
+<p>​    </p>
+<p>​    2. <strong>子查询优化</strong>：</p>
+<p>​    自查询的优化方式是减少回表次数的一种方式，我们可以使用自查询的方式，由于不同业务之间存在不同的处理方式，这里给一个大致的处理模板：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> film <span class="keyword">where</span> <span class="keyword">ID</span> <span class="keyword">in</span> (<span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> film <span class="keyword">where</span> title = <span class="string">'BANG KWAI'</span>) <span class="keyword">limit</span> <span class="number">10000</span>,<span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+
+<p>​    这样处理过后有两个优点：</p>
+<ul>
+<li>查询转为搜索索引列，并且不需要磁盘IO。</li>
+<li>虽然使用的是子查询，但是因为搜索的是索引列，所以效率还是比较高的。</li>
+</ul>
+<p>​    3. <strong>延迟关联</strong></p>
+<p>​    和《高性能Mysql》的方式一样，其实就是子查询方式的一种优化版本，优化的思路也是把过滤数据变为走索引之后在进行排除，由于上文已经介绍过这里就不再赘述了。</p>
+<p>总结：</p>
+<p>​    对于深分页的问题我们一般有下面的优化思路：</p>
+<ul>
+<li>如果主键符合自增或者符合业务排序，可以直接通过<code>id&gt;xxx</code> 然后limit搜索数据。</li>
+<li>如果通过排序可以正确搜索相关数据，则可以直接排序之后取条数即可。</li>
+<li>延迟关联，延迟关联有两种方式，第一种是使用in的子查询，第二种是使用inner join，本质都是通过索引列的方式避免大数据的查找，同时转变为查索引的方式。</li>
+<li>如果可以确认范围，使用between and 替代。</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    本节内容针对了一些实战过程中可能经常遇到的一些问题处理进行阐述，其中稍微有些难度的部分在索引下推和紧凑索引部分，这些特性</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>​    <span class="exturl" data-url="aHR0cHM6Ly93d3cuZG9jczRkZXYuY29tL2RvY3MvemgvbXlzcWwvNS43L3JlZmVyZW5jZS9ncm91cC1ieS1vcHRpbWl6YXRpb24uaHRtbA==" title="https://www.docs4dev.com/docs/zh/mysql/5.7/reference/group-by-optimization.html">MySql 中文文档 - 8.2.1.15 GROUP BY 最佳化 | Docs4dev<i class="fa fa-external-link"></i></span></p>
+<p>​    [MySQL :: MySQL 8.0 Reference Manual :: 8.2.1.17 GROUP BY Optimization](</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/04/06/suoyinshizhan/" title="三高Mysql - Mysql索引和查询优化（偏实战部分）">https://whitestore.top/2022/04/06/suoyinshizhan/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/06/suoyinlilun/" rel="prev" title="三高Mysql - Mysql索引和查询优化（偏理论部分）">
+      <i class="fa fa-chevron-left"></i> 三高Mysql - Mysql索引和查询优化（偏理论部分）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/05/leveldblj/" rel="next" title="LSM-Tree - LevelDb了解和实现">
+      LSM-Tree - LevelDb了解和实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#三高Mysql-Mysql索引和查询优化（偏实战部分）"><span class="nav-number">1.</span> <span class="nav-text">三高Mysql - Mysql索引和查询优化（偏实战部分）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前置准备"><span class="nav-number">3.</span> <span class="nav-text">前置准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sakila-db"><span class="nav-number">3.1.</span> <span class="nav-text">sakila-db</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#work-bench"><span class="nav-number">3.2.</span> <span class="nav-text">work-bench</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#正文部分"><span class="nav-number">4.</span> <span class="nav-text">正文部分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#where查询太慢怎么办？"><span class="nav-number">4.1.</span> <span class="nav-text">where查询太慢怎么办？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何确认选择用什么索引？"><span class="nav-number">4.2.</span> <span class="nav-text">如何确认选择用什么索引？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#count-慢的原因是什么？"><span class="nav-number">4.3.</span> <span class="nav-text">count()慢的原因是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引下推"><span class="nav-number">4.4.</span> <span class="nav-text">索引下推</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#松散索引和紧凑索引"><span class="nav-number">4.5.</span> <span class="nav-text">松散索引和紧凑索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#order-by如何优化？"><span class="nav-number">4.6.</span> <span class="nav-text">order by如何优化？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数操作索引失效的问题"><span class="nav-number">4.7.</span> <span class="nav-text">函数操作索引失效的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#order-by-rand-原理"><span class="nav-number">4.8.</span> <span class="nav-text">order by rand()原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分页查询慢怎么办？"><span class="nav-number">4.9.</span> <span class="nav-text">分页查询慢怎么办？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="JAVA8可以说是JAVA划时代的一个版本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA8实战 - Optional工具类">
+<meta property="og:url" content="https://whitestore.top/2022/02/20/optional/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="JAVA8可以说是JAVA划时代的一个版本">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210807203312.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210807214651.png">
+<meta property="article:published_time" content="2022-02-20T12:26:21.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.609Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="optional">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210807203312.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/02/20/optional/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JAVA8实战 - Optional工具类 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/optional/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JAVA8实战 - Optional工具类
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-20 20:26:21" itemprop="dateCreated datePublished" datetime="2022-02-20T20:26:21+08:00">2022-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/02/20/optional/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/optional/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+            <div class="post-description">JAVA8可以说是JAVA划时代的一个版本</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="JAVA8实战-Optional工具类"><a href="#JAVA8实战-Optional工具类" class="headerlink" title="JAVA8实战 - Optional工具类"></a>JAVA8实战 - Optional工具类</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210807203312.png" alt=""></p>
+<p>[toc]</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    没错，这又是一个新的专栏，JAVA8可以说是JAVA划时代的一个版本，几乎是让JAVA焕发了第三春（第二春在JDK5），当然里面的新特性也是十分重要的，虽然Java现在都已经到了10几的版本，但是国内多数使用的版本还是JAVA8，所以这个系列将会围绕Java8的新特性和相关工具做一些总结。希望对大家日常学习和工作中有所帮助。</p>
+<h1 id="概述："><a href="#概述：" class="headerlink" title="概述："></a>概述：</h1><ol>
+<li>日常工作学习我们大致是如何规避空指针的。</li>
+<li>关于Optional的系统介绍，常见的使用和处理方法</li>
+<li>Optional的使用场景以及一些小型案例代码</li>
+<li>来看看《Effective Java》这个作者如何看待Optional这个工具类&gt;</li>
+</ol>
+<h1 id="思维导图："><a href="#思维导图：" class="headerlink" title="思维导图："></a>思维导图：</h1><p>地址：<span class="exturl" data-url="aHR0cHM6Ly93d3cubXVidWNtLmNvbS9kb2MvMnFTNDBFTDFnX0I=" title="https://www.mubucm.com/doc/2qS40EL1g_B">https://www.mubucm.com/doc/2qS40EL1g_B<i class="fa fa-external-link"></i></span><br><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210807214651.png" alt=""></p>
+<a id="more"></a>
+
+<h1 id="空指针规避"><a href="#空指针规避" class="headerlink" title="空指针规避"></a>空指针规避</h1><p>​    在讲述<code>Optional</code>之前，我们来看下通常情况下我们是如何防止空指针的。</p>
+<h2 id="字符串equals"><a href="#字符串equals" class="headerlink" title="字符串equals"></a>字符串<code>equals</code></h2><p>​    字符串的操作是最常见的操作，使用字符串的equals方法很有可能抛出空指针异常，比如像下面的代码，如果a变量为Null，则毫无疑问会抛出空指针异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a.equals(<span class="string">"aaa"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​    建议：使用<code>Objects.equals()</code>或者使用其他工具类方法替代，或者确保<code>obj.equals(target)</code>的obj对象不会为null，比如<code>&quot;test&quot;.equals(target)</code>。</p>
+<p>​    比如我们使用下面的方法保证<strong>equals</strong>的时候一致：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Tank <span class="title">createTank</span><span class="params">(String check)</span></span>&#123;</span><br><span class="line">    Tank tank = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span>(Objects.equals(check, <span class="string">"my"</span>))&#123;</span><br><span class="line">        tank = <span class="keyword">new</span> MyTank();</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(Objects.equals(check, <span class="string">"mouse"</span>))&#123;</span><br><span class="line">        tank = <span class="keyword">new</span> MouseTank();</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (Objects.equals(check, <span class="string">"big"</span>))&#123;</span><br><span class="line">        tank = <span class="keyword">new</span> BigTank();</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"unsupport"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> tank;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    </p>
+<h2 id="变量-操作"><a href="#变量-操作" class="headerlink" title="变量 == 操作"></a>变量 <code>==</code> 操作</h2><p>​    变量的<code>==</code>操作也是用的十分多，通常情况下和null搭配的比较多，我们通常需要注意下面这些事项：</p>
+<ol>
+<li>确保比较类型一致，比如最经典的<strong>Integer</strong>和<strong>int</strong>比较在超过127的时候为false的问题。</li>
+<li>使用框架工具类的equals() 进行替代</li>
+<li>使用<code>Objects.equals()</code>方法替代</li>
+</ol>
+<p>​    特别强调一下<strong>Integer</strong>的 <code>==</code>操作的一些陷阱，特别注意最后一个打印是False，具体的原因有网上很多资料，这里就不啰嗦了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">       Integer a = <span class="number">1</span>;</span><br><span class="line">       Integer b = <span class="number">256</span>;</span><br><span class="line">       System.out.println(a == <span class="keyword">null</span>);</span><br><span class="line">       System.out.println(a == b);</span><br><span class="line">       System.out.println(a == <span class="number">1</span>);</span><br><span class="line">       System.out.println(b == <span class="number">256</span>);</span><br><span class="line">       System.out.println(b == <span class="number">257</span>);</span><br><span class="line"></span><br><span class="line">&#125;<span class="comment">/*运行结果:</span></span><br><span class="line"><span class="comment">   false</span></span><br><span class="line"><span class="comment">   false</span></span><br><span class="line"><span class="comment">   true</span></span><br><span class="line"><span class="comment">   true</span></span><br><span class="line"><span class="comment">   false</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">   */</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="集合元素为null"><a href="#集合元素为null" class="headerlink" title="集合元素为null"></a>集合元素为null</h2><p>​    如果在一个List或者Set中存在Null元素，那么遍历的时候也很容易出现空指针的问题，通常情况下我们可以使用<code>Stream.filter</code>进行过滤，比如像下面这样，这里使用了<strong>StringUtils::isNotBlank</strong>来判断是否为空字符串并过滤掉所有的空字符串和Null元素:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    List&lt;String&gt; list = Arrays.asList(<span class="string">"1"</span>, <span class="keyword">null</span>, <span class="string">"2"</span>, <span class="string">""</span>, <span class="string">"3"</span>);</span><br><span class="line">    System.out.println(list.size());</span><br><span class="line">    List&lt;String&gt; collect = list.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());</span><br><span class="line">    System.out.println(collect.size());</span><br><span class="line"></span><br><span class="line">&#125;<span class="comment">/*运行结果</span></span><br><span class="line"><span class="comment">    5</span></span><br><span class="line"><span class="comment">    3</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    */</span></span><br></pre></td></tr></table></figure>
+
+<p>最终的建议如下：</p>
+<ul>
+<li>元素null多数情况不常见，但是null的集合对象比较常见</li>
+<li>可以编写工具类方法对于集合的内容进行null排除，或者使用lambada表达式处理</li>
+</ul>
+<h2 id="map的元素值为null"><a href="#map的元素值为null" class="headerlink" title="map的元素值为null"></a>map的元素值为null</h2><p>​    map也是容易出现null的，比如下面这种情况，一旦get()的返回结果为null，就会出现空指针的异常情况：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">map.get(<span class="string">"user"</span>).getName()</span><br></pre></td></tr></table></figure>
+
+<p>建议：</p>
+<ol>
+<li>使用MapUtils获取元素</li>
+<li>每次获取之前需要判断是否为空</li>
+</ol>
+<p>​    第一条建议使用<code>MapUtils</code>，代码都比较简单，唯一需要注意的是使用的时候小心<strong>自动装箱</strong>的性能和效率问题：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Map&lt;String, Object&gt; keyVal = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    keyVal.put(<span class="string">"name"</span>,<span class="string">"value"</span>);</span><br><span class="line">    keyVal.put(<span class="string">"yes"</span>, <span class="keyword">new</span> Object());</span><br><span class="line">    keyVal.put(<span class="string">"intval1"</span>, <span class="number">1</span>);</span><br><span class="line">    Object val1 = MapUtils.getObject(<span class="keyword">null</span>, <span class="string">"yes"</span>);</span><br><span class="line">    Object val2 = MapUtils.getObject(keyVal, <span class="string">"yes"</span>);</span><br><span class="line">    String str1 = MapUtils.getString(keyVal, <span class="string">"name"</span>);</span><br><span class="line">    <span class="keyword">int</span> int1 = MapUtils.getInteger(keyVal, <span class="string">"intval1"</span>);</span><br><span class="line">    System.out.println(val1);</span><br><span class="line">    System.out.println(val2);</span><br><span class="line">    System.out.println(str1);</span><br><span class="line">    System.out.println(int1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="类型强转为null"><a href="#类型强转为null" class="headerlink" title="类型强转为null"></a>类型强转为null</h2><p>​    还有一种比较常见的情况就是json转换为null，如果传入<strong>空字符串</strong>，会导致转化的结果是一个Null值，所以在转化的地方要么对于字符串做判断是否为空的操作，或者对于转换后的对象进行判空，比如下面的代码就需要对于JSON进行处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test3</span><span class="params">()</span></span>&#123;</span><br><span class="line">    String str = <span class="string">"&#123;\"name\":\"123\"&#125;"</span>;</span><br><span class="line">    String str2 = <span class="string">"&#123;\"email\":\"123\"&#125;"</span>;</span><br><span class="line">    String str3 = <span class="string">""</span>;</span><br><span class="line">    User map = JSON.parseObject(str, User<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">    User email = JSON.parseObject(str2, User<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">    User user2 = JSONObject.parseObject(str3, User<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">    System.out.println(Objects.isNull(map));</span><br><span class="line">    System.out.println(Objects.isNull(email));</span><br><span class="line">    System.out.println(Objects.isNull(user2));</span><br><span class="line">&#125;<span class="comment">/*</span></span><br><span class="line"><span class="comment">true</span></span><br><span class="line"><span class="comment">true</span></span><br><span class="line"><span class="comment">false</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>​    看了这么多案例，可以发现日常生活中规避空指针是一件非常烦的事情，特别是存在多层嵌套的对象，基本会出现多层的If/else判断，这样会造成代码复杂度增加并且让代码变得十分臃肿，接下来我们就来看下JAVA8是如何使用<code>Optional</code>工具来简化这些操作的。</p>
+<h1 id="什么是Optional？"><a href="#什么是Optional？" class="headerlink" title="什么是Optional？"></a>什么是Optional？</h1><h2 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h2><p>​    Java8之后新增的一个工具类，在包<code>java.util.Optional&lt;T&gt;</code>，他的作用类似于一个包装器，负责把我们需要操作的对象包装到一个黑盒中，我们可以通过黑盒安全的操作对象的内容。</p>
+<h2 id="案例对象："><a href="#案例对象：" class="headerlink" title="案例对象："></a>案例对象：</h2><p>​    这里简单构建了两个案例对象进行处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Car car;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Car <span class="title">getCar</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> car;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Tip: 兼容序列化</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Optional&lt;String&gt; <span class="title">getPersonCarName</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Optional.ofNullable(car.getCarName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String carName;</span><br><span class="line">    <span class="keyword">private</span> String color;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getCarName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> carName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCarName</span><span class="params">(String carName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.carName = carName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getColor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> color;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setColor</span><span class="params">(String color)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.color = color;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Option的三种初始化方式："><a href="#Option的三种初始化方式：" class="headerlink" title="Option的三种初始化方式："></a>Option的三种初始化方式：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * optional 工具类的初始化方法</span></span><br><span class="line"><span class="comment">     * 1. 介绍三种构造方式</span></span><br><span class="line"><span class="comment">     * 2. 主要区别是初始化传入参数是否允许为null</span></span><br><span class="line"><span class="comment">     * Optional.of 不允许为空</span></span><br><span class="line"><span class="comment">     * Optional.ofNullable 允许为空</span></span><br><span class="line"><span class="comment">     * Optional.empty 构建空Optional对象</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testInit</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 这种构造方式不能为null，否则会空指针异常</span></span><br><span class="line">    Optional&lt;Object&gt; notNull = Optional.of(<span class="keyword">new</span> Object());</span><br><span class="line">    <span class="comment">// 允许为空</span></span><br><span class="line">    Optional&lt;Object&gt; nullAble = Optional.ofNullable(<span class="keyword">null</span>);</span><br><span class="line">    <span class="comment">// 这种方式是返回一个空Optional，等效Optional.ofNullable(null)</span></span><br><span class="line">    Optional&lt;Object&gt; empty = Optional.empty();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><strong>Optional.of()</strong>：表示创建一个不允许是空值的Optional，如果传入为Null会抛出异常</li>
+<li><strong>Optional.ofNullable()</strong>：表示传入的内容允许是空，但是实际上和<code>Optional.empty()</code>效果一致。</li>
+<li><strong>Optional.empty()</strong>：创建一个空的Optional。</li>
+</ol>
+<h2 id="map-对象的内容提取和转化："><a href="#map-对象的内容提取和转化：" class="headerlink" title="map - 对象的内容提取和转化："></a>map - 对象的内容提取和转化：</h2><p>​    在进入具体介绍之前先看看汇总的测试代码以及相关说明，也方便节省各位的时间：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * optional 如何准确的获取对应的值</span></span><br><span class="line"><span class="comment">    * 1. Optional.map 使用map收集某一个对象的值,</span></span><br><span class="line"><span class="comment">    * 2. Optional.flatMap 根据 Optional 的结果获取参数</span></span><br><span class="line"><span class="comment">    * 插曲：map 和 flatMap 的区别</span></span><br><span class="line"><span class="comment">    * 3. Optional.filter 筛选出符合结果的参数</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGetOptionalVal</span><span class="params">()</span></span>&#123;</span><br><span class="line">       User user = <span class="keyword">new</span> User();</span><br><span class="line">       Optional&lt;User&gt; notNull = Optional.ofNullable(user);</span><br><span class="line">       Integer age = notNull.map(User::getAge).orElse(<span class="number">22</span>);</span><br><span class="line">       String name = notNull.map(User::getName).orElse(<span class="string">"myname"</span>);</span><br><span class="line">       System.out.println(age);</span><br><span class="line">       <span class="comment">// Optional.map 收集某一个对象的值</span></span><br><span class="line">       System.out.println(<span class="string">"Optional.map 收集某一个对象的值："</span>+ age);</span><br><span class="line">       System.out.println(<span class="string">"Optional.map 收集某一个对象的值："</span>+ name);</span><br><span class="line"></span><br><span class="line">       <span class="comment">// Optional.flagMap 获取多层Optional迭代对象：</span></span><br><span class="line">       Optional&lt;String&gt; s = notNull.flatMap(User::getPersonCarName);</span><br><span class="line">       Boolean aBoolean = s.map(String::trim).map(StringUtils::isNotBlank).get();</span><br><span class="line">       System.out.println(aBoolean);</span><br><span class="line">       </span><br><span class="line">       <span class="comment">// Optional.map 收集某一个对象的值</span></span><br><span class="line">       User u1 =<span class="keyword">new</span> User();</span><br><span class="line">       u1.setName(<span class="string">"小王"</span>);</span><br><span class="line">       u1.setAge(<span class="number">11</span>);</span><br><span class="line">       User u2 =<span class="keyword">new</span> User();</span><br><span class="line">       List&lt;User&gt; userLists = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">       userLists.add(u1);</span><br><span class="line">       userLists.add(u2);</span><br><span class="line">       Optional&lt;List&lt;User&gt;&gt; notNull2 = Optional.of(userLists);</span><br><span class="line">       <span class="comment">// 针对对象集合，使用flagMap获取关联数据</span></span><br><span class="line">       Optional&lt;User&gt; user1 = notNull2.flatMap(item -&gt; Optional.ofNullable(item.get(<span class="number">0</span>)));</span><br><span class="line">       user1.ifPresent(u-&gt; System.out.println(<span class="string">"针对对象集合，使用flagMap获取关联数据 =&gt; "</span>+u.getName()));</span><br><span class="line"></span><br><span class="line">       <span class="comment">// flatMap 的使用场景</span></span><br><span class="line">       List&lt;String&gt; stringList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">       stringList.add(<span class="string">"name1"</span>);</span><br><span class="line">       stringList.add(<span class="string">"testone"</span>);</span><br><span class="line">       stringList.add(<span class="string">"other"</span>);</span><br><span class="line">       <span class="comment">// 使用flatMap处理Optional的返回结果</span></span><br><span class="line">       Optional&lt;String&gt; stringOptional = Optional.of(u1).flatMap(u -&gt; Optional.ofNullable(u1.getName()));</span><br><span class="line">       System.out.println(<span class="string">"flatMap"</span> + stringOptional);</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 对比：map和flatMap的区别</span></span><br><span class="line">       <span class="comment">// map 方法签名 Function&lt;? super T, ? extends U&gt; mapper</span></span><br><span class="line">       Optional&lt;String&gt; map = notNull.map(User::getName);</span><br><span class="line">       <span class="comment">// flatmap 的方法签名： Function&lt;? super T, Optional&lt;U&gt;&gt; mapper</span></span><br><span class="line">       Optional&lt;String&gt; stringOptional1 = notNull.flatMap(u -&gt; Optional.ofNullable(u.getName()));</span><br><span class="line">       <span class="comment">// 虽然从结果来看两者的结果没有什么区别</span></span><br><span class="line">       <span class="comment">// map =&gt; Optional.empty</span></span><br><span class="line">       <span class="comment">//  flatMap =&gt; Optional.empty</span></span><br><span class="line">       <span class="comment">// 但是可以明显的看到</span></span><br><span class="line">       <span class="comment">// flatMap Function的返回值为 Optional 类型 Optional&lt;String&gt;</span></span><br><span class="line">       <span class="comment">// map 的 Function返回值为 具体返回类型 String + Optional 的自动封装 Option&lt;String&gt;</span></span><br><span class="line">       System.out.println(<span class="string">"map =&gt; "</span> + map);</span><br><span class="line">       System.out.println(<span class="string">"flatMap =&gt; "</span> + stringOptional1);</span><br><span class="line"></span><br><span class="line">       <span class="comment">// filter 方法使用</span></span><br><span class="line">       Optional&lt;String&gt; optional = Optional.of(<span class="string">"testNAME"</span>);</span><br><span class="line">       String result = optional.filter(str -&gt; str.contains(<span class="string">"test"</span>)).orElse(<span class="string">"not found"</span>);</span><br><span class="line">       System.out.println(result);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    上面提到map获取值的方式<code>map.get(&quot;user&quot;).getName()</code>这种方式很容易导致空指针异常。对于Optional，我们可以使用<code>map()</code>操作来进行规避，这里可以把Optional想象为一个特殊的集合数据，如果包含一个值，map就会帮我们把流里面的数据进行转化，如果没有值就什么都不做，当然如果我们没有值，可以像案例一样使用<code>orElse()</code>在没有值的时候返回这个值作为默认参数，最终的代码效果如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Integer age = notNull.map(User::getAge).orElse(<span class="number">22</span>);</span><br><span class="line">String name = notNull.map(User::getName).orElse(<span class="string">"myname"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​    但是，我们也可以看到map也是存在局限性的，对于单个对象操作十分方便，但是一旦遇到多层<strong>Optional</strong>嵌套。比如Optional处理Optional的处理结果，就需要使用<strong>Optional.flatMap()</strong>的操作。</p>
+<blockquote>
+<p>对比：map和flatMap的区别？<br>    从代码里可以看到，map主要针对的是单一对象结果进行处理，比如我们将对象传给方法引用<code>String::trim</code>进行<code>trim()</code>的操作，这里不需要去思考底层的操作逻辑，只需要知道当遇到Optional需要处理多层的Optional嵌套的时候，就需要使用<code>Optional.flagMap</code>。</p>
+<p>​    如果还是很难以理解的话，也可以想象为一个套娃一样套着多层黑盒的操作，我们可以使用flatMap安全的取出属于最底层对象的属性，如果还是不好理解，可以想象为安全的做下面代码的操作：</p>
+<p><code>map.get(&quot;user&quot;).get(&quot;car&quot;).getCarName()</code></p>
+</blockquote>
+<h2 id="插曲：Optional的序列化问题"><a href="#插曲：Optional的序列化问题" class="headerlink" title="插曲：Optional的序列化问题"></a>插曲：Optional的序列化问题</h2><p>​    书中讨论了Optional的序列化问题，书中特别强调：<strong>如果你应用的某些字段需要序列化，使用Optional操作有可能发生失效</strong>，这里给了一个建议如果一定需要序列化的方式处理的话，可以按照下面的方法处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Optional&lt;String&gt; <span class="title">getPersonCarName</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Optional.ofNullable(car.getCarName());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="解引用Optional对象方法"><a href="#解引用Optional对象方法" class="headerlink" title="解引用Optional对象方法"></a>解引用Optional对象方法</h2><p>​    下面整合了关于Optional大部分常见操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * optional 校验对象属性等是否存在</span></span><br><span class="line"><span class="comment">     * 1. Optional.isPresent 校验对象是否存在，存在返回true</span></span><br><span class="line"><span class="comment">     * 2. Optional.orElse 如果为空返回默认值，不为空不做处理</span></span><br><span class="line"><span class="comment">     * 3. Optional.get 对象必须存在</span></span><br><span class="line"><span class="comment">     * 4. Optional.orElseGet 通过方法提供值</span></span><br><span class="line"><span class="comment">     * 5. Optional.orElseThrow 如果获取为null，抛出指定异常</span></span><br><span class="line"><span class="comment">     * 6. Optional.isPresent 使用ifPresent()来进行对象操作，存在则操作，否则不操作</span></span><br><span class="line"><span class="comment">     * 7. Optional.filter 操作，可以过滤出符合条件的内容</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testOptionalValExists</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 对象属性是否存在</span></span><br><span class="line">    Optional&lt;Object&gt; notNull = Optional.of(<span class="keyword">new</span> Integer(<span class="number">4</span>));</span><br><span class="line">    <span class="keyword">boolean</span> present = notNull.isPresent();</span><br><span class="line">    System.out.println(<span class="string">"notNull 值是否不为空 "</span> + present);</span><br><span class="line">    Optional&lt;Object&gt; nullAble = Optional.ofNullable(<span class="string">"sss"</span>);</span><br><span class="line">    System.out.println(<span class="string">"nullAble 是否不为空 "</span>+ nullAble.isPresent());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Optional.orElse - 如果值存在，返回它，否则返回默认值</span></span><br><span class="line">    Optional&lt;Object&gt; integerNull = Optional.ofNullable(<span class="keyword">null</span>);</span><br><span class="line">    Object o = integerNull.orElse(<span class="string">"22"</span>);</span><br><span class="line">    System.out.println(<span class="string">"o 否则返回默认值 "</span> + o);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Optional.get - 获取值，值需要存在</span></span><br><span class="line">    Optional&lt;Object&gt; integerNull2 = Optional.ofNullable(<span class="keyword">null</span>);</span><br><span class="line">    <span class="comment">// 抛出异常 java.util.NoSuchElementException: No value present</span></span><br><span class="line">    <span class="comment">// 来源：throw new NoSuchElementException("No value present");</span></span><br><span class="line">    <span class="comment">// Object o1 = integerNull2.get();</span></span><br><span class="line">    Optional&lt;Object&gt; integerNull3 = Optional.ofNullable(<span class="number">12321</span>);</span><br><span class="line">    System.out.println(<span class="string">"Optional.get 必须存在"</span>+ integerNull3.get());</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通过方法提供值</span></span><br><span class="line">    Optional&lt;Object&gt; integerNull4 = Optional.ofNullable(<span class="number">12321</span>);</span><br><span class="line">    Object o1 = integerNull4.orElseGet(() -&gt; String.valueOf(<span class="number">22</span>));</span><br><span class="line">    System.out.println(<span class="string">"Optional.orElseGet 通过方法提供值"</span> + o1);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果获取为null，抛出指定异常</span></span><br><span class="line">    Optional&lt;Object&gt; integerNull5 = Optional.ofNullable(<span class="keyword">null</span>);</span><br><span class="line">    <span class="comment">// java.lang.RuntimeException: 当前运行代码有误 如果需要抛出异常，请放开下面的代码</span></span><br><span class="line">    <span class="comment">//        Object orElseThrow = integerNull5.orElseThrow(() -&gt; new RuntimeException("当前运行代码有误"));</span></span><br><span class="line">    <span class="comment">//        System.out.println("Optional.orElseThrow 自定义异常" + orElseThrow);</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Optional.isPresent 使用ifPresent()来进行对象操作，存在则操作，否则不操作</span></span><br><span class="line">    integerNull5.ifPresent((item) -&gt; &#123;</span><br><span class="line">        System.err.println(<span class="string">"Optional.isPresent 如果存在对象，执行如下操作"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// filter 方法使用</span></span><br><span class="line">    Optional&lt;String&gt; optional = Optional.of(<span class="string">"testNAME"</span>);</span><br><span class="line">    String result = optional.filter(str -&gt; str.contains(<span class="string">"test"</span>)).orElse(<span class="string">"not found"</span>);</span><br><span class="line">    System.out.println(<span class="string">"Optional.filter 过滤出符合条件的对象: "</span> + result);</span><br><span class="line"></span><br><span class="line">&#125;<span class="comment">/*运行结果：</span></span><br><span class="line"><span class="comment">        notNull 值是否不为空 true</span></span><br><span class="line"><span class="comment">        nullAble 是否不为空 true</span></span><br><span class="line"><span class="comment">        o 否则返回默认值 22</span></span><br><span class="line"><span class="comment">        Optional.get 必须存在12321</span></span><br><span class="line"><span class="comment">        Optional.orElseGet 通过方法提供值12321</span></span><br><span class="line"><span class="comment">        Optional.orElseThrow 自定义异常 当前运行代码有误</span></span><br><span class="line"><span class="comment">        java.lang.RuntimeException: 当前运行代码有误</span></span><br><span class="line"><span class="comment">        Optional.isPresent 如果存在对象，执行如下操作</span></span><br><span class="line"><span class="comment">        Optional.filter 过滤出符合条件的对象: testNAME</span></span><br><span class="line"><span class="comment">    */</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Optional的使用场景"><a href="#Optional的使用场景" class="headerlink" title="Optional的使用场景"></a>Optional的使用场景</h1><p>​    <s>从个人角度来说其实使用不是很方便</s>，下面说下Optional的工具使用场景：</p>
+<h2 id="1-封装可能为Null的值"><a href="#1-封装可能为Null的值" class="headerlink" title="1. 封装可能为Null的值"></a>1. 封装可能为Null的值</h2><p>​    还是和所说的Map类似，当我们使用下面的操作获取值的时候，就很容易引发null：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User user = (User)map.get(<span class="string">"user"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​    于是，Optional的用处就派上了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;Object&gt; value = Optional.ofNullable(map.get(<span class="string">"user"</span>));</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-异常和optional的对比"><a href="#2-异常和optional的对比" class="headerlink" title="2. 异常和optional的对比"></a>2. 异常和optional的对比</h2><p>​    通常情况下我们会使用捕获异常的方式进行异常的处理，下面是一个常见的字符串转Int的方法，一般情况下我们都会用<code>try/catch</code>防止空指针或者转化异常，除非我们可以保证数据的准确性：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">String str = <span class="string">"s"</span>;</span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    Integer.parseInt(str);</span><br><span class="line">&#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">    <span class="comment">// ....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    使用<strong>Optional</strong>之后可以进行如下的改造，我们将得到一个安全的Optional进行操作，而不是一个可能存在隐式的<strong>NullPointException</strong>问题代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Optional&lt;Integer&gt; <span class="title">str2Int</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Optional.of(Integer.parseInt(str));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">        <span class="keyword">return</span> Optional.empty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-建议将Optional封装到一个工具类当中："><a href="#3-建议将Optional封装到一个工具类当中：" class="headerlink" title="3. 建议将Optional封装到一个工具类当中："></a>3. 建议将Optional封装到一个工具类当中：</h2><p>​    比如封装成下面这种的简单方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Optional&lt;Integer&gt; <span class="title">str2Int</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Optional.of(Integer.parseInt(str));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">        <span class="keyword">return</span> Optional.empty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    </p>
+<h2 id="4-实战：读取Properties值"><a href="#4-实战：读取Properties值" class="headerlink" title="4. 实战：读取Properties值"></a>4. 实战：读取Properties值</h2><p>​    这里直接把书里的案例拿来用了，这个方法主要作用是读取一个配置文件的<code>int</code>值，当读取不到内容的时候，自动给默认值0。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Optional&lt;Integer&gt; <span class="title">str2Int</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Optional.of(Integer.parseInt(str));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">        <span class="keyword">return</span> Optional.empty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(Properties properties, String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Optional.ofNullable(properties.getProperty(name))</span><br><span class="line">        .flatMap(OptionalTest::str2Int)</span><br><span class="line">        .filter(i -&gt; i &gt; <span class="number">0</span>)</span><br><span class="line">        .orElse(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-其他测试："><a href="#5-其他测试：" class="headerlink" title="5. 其他测试："></a>5. 其他测试：</h2><p>​    下面是个人学习的时候一些简单案例尝试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 实际使用场景</span></span><br><span class="line"><span class="comment">     * 1. 我们要将一个对象的名称全部统一为大写，防止空指针. 但是实际使用来看还是遇到了不少的问题</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">actualUse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        User user = <span class="keyword">new</span> User();</span><br><span class="line">        <span class="comment">// java.lang.NullPointerException 如果编程习惯不好，这种工具类其实并不能解决问题</span></span><br><span class="line"><span class="comment">//        Optional.ofNullable(user).ifPresent(u-&gt;&#123;</span></span><br><span class="line"><span class="comment">//            String toLowerCase = u.getName().toLowerCase();</span></span><br><span class="line"><span class="comment">//            u.setName(toLowerCase);</span></span><br><span class="line"><span class="comment">//        &#125;);</span></span><br><span class="line">        <span class="comment">// 正确的使用方式应该是如下的形式：</span></span><br><span class="line">        <span class="comment">// 下面的语句放开注释运行打印结果为： SSS</span></span><br><span class="line"><span class="comment">//        user.setName("sss");</span></span><br><span class="line">        <span class="comment">// 如果为null会抛出 java.lang.RuntimeException</span></span><br><span class="line"><span class="comment">//        String s = Optional.ofNullable(user).map(User::getName).map(String::toUpperCase).orElseThrow(RuntimeException::new);</span></span><br><span class="line"><span class="comment">//        System.out.println(s);</span></span><br><span class="line">        <span class="comment">// 我们也可以用另一种方式</span></span><br><span class="line">        String s2 = Optional.ofNullable(user).map(User::getName).map(String::toUpperCase).orElse(<span class="string">"默认值"</span>);</span><br><span class="line">        System.out.println(s2);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 我们要对一个前端传入的值进行split或者substring的时候</span></span><br><span class="line">        <span class="comment">// 案例数据除开分隔符有差异之外无任何差异</span></span><br><span class="line">        String tags1 = <span class="string">"标签1,标签2,标签3,标签4"</span>;</span><br><span class="line">        String tags2 = <span class="string">"标签1，标签2，标签3，标签4"</span>;</span><br><span class="line">        String[] strings1 = Optional.of(tags1).map(tg -&gt; tags1.split(<span class="string">","</span>)).get();</span><br><span class="line">        System.out.println(strings1[<span class="number">0</span>]);</span><br><span class="line">        String[] strings2 = Optional.of(tags2).map(tg -&gt; tags2.split(<span class="string">","</span>)).get();</span><br><span class="line">        String[] strings3 = Optional.ofNullable(tags2).map(StringUtils::isNotBlank).map(tg -&gt; tags2.split(<span class="string">","</span>)).orElse(<span class="keyword">new</span> String[]&#123;<span class="string">"ss"</span>&#125;);</span><br><span class="line">        System.out.println(strings2[<span class="number">0</span>]);</span><br><span class="line">        System.out.println(Arrays.toString(strings3));</span><br><span class="line">        <span class="comment">// 运行结果，如果此时有值，基本无问题</span></span><br><span class="line">        <span class="comment">// 标签1</span></span><br><span class="line">        <span class="comment">// 标签1，标签2，标签3，标签4</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果上面的案例当中，传入的为null会如何?</span></span><br><span class="line">        <span class="comment">// 所以我们需要修改上面的格式，确保不管tag的值是否存在，都可以只关心我们具体需要操作的数据</span></span><br><span class="line">        <span class="comment">// 如果为null，则没有任何结果处理。我们可以使用map进行各种操作</span></span><br><span class="line"><span class="comment">//        String tags3 = "null,222";</span></span><br><span class="line">        String tags3 = <span class="string">"a,b|C|d"</span>;</span><br><span class="line">        Optional.ofNullable(tags3).map(tg -&gt; tags3.split(<span class="string">","</span>)).map(tg -&gt; &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; tg.length; i++) &#123;</span><br><span class="line">                tg[i] = tg[i].toUpperCase();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> tg;</span><br><span class="line">        &#125;).ifPresent(item -&gt; &#123;</span><br><span class="line">            <span class="keyword">for</span> (String s : item) &#123;</span><br><span class="line">                System.out.println(s);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// JSON解析的数据失败或者传入的格式不对导致的NULL</span></span><br><span class="line">        System.out.print(<span class="string">"\nJSON解析的数据失败或者传入的格式不对导致的NULL"</span>);</span><br><span class="line">        Object parse = JSON.parseObject(<span class="string">"&#123;name:\"13\"&#125;"</span>, User<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        System.out.println(parse);</span><br><span class="line">        Optional.ofNullable(<span class="string">"&#123;age:\"1\"&#125;"</span>)</span><br><span class="line">                .map(obj -&gt; JSON.parseObject(obj, User<span class="class">.<span class="keyword">class</span>))</span></span><br><span class="line">                .ifPresent(System.out::println);</span><br><span class="line">    &#125;<span class="comment">/*运行结果</span></span><br><span class="line"><span class="comment">    默认值</span></span><br><span class="line"><span class="comment">    标签1</span></span><br><span class="line"><span class="comment">    标签1，标签2，标签3，标签4</span></span><br><span class="line"><span class="comment">    A</span></span><br><span class="line"><span class="comment">    B|C|D</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    JSON解析的数据失败或者传入的格式不对导致的NULLcom.xxx.interview.jdk8.OptionalTest$User@548b7f67</span></span><br><span class="line"><span class="comment">    com.xxx.interview.jdk8.OptionalTest$User@1810399e</span></span><br><span class="line"><span class="comment">    */</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="《Effective-java》第55条建议"><a href="#《Effective-java》第55条建议" class="headerlink" title="《Effective java》第55条建议"></a>《Effective java》第55条建议</h1><blockquote>
+<p>​    感兴趣的可以直接跳转下面这些链接（在线阅读网站貌似点不进去，所以只有在线PDF网址了…）</p>
+<p><span class="exturl" data-url="aHR0cDovL2l0bXlob21lLmNvbS9lZmZlY3RpdmUtamF2YS9lZmZlY3RpdmUtamF2YS5wZGY=" title="http://itmyhome.com/effective-java/effective-java.pdf">itmyhome.com<i class="fa fa-external-link"></i></span></p>
+<p>​    以防万一这里再补一个百度链接（如果公众号无法点击，请阅读原文获取）</p>
+<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMWtROEVIVG43TjZrRXJIMEVVQklEVWc=" title="https://pan.baidu.com/s/1kQ8EHTn7N6kErH0EUBIDUg">https://pan.baidu.com/s/1kQ8EHTn7N6kErH0EUBIDUg<i class="fa fa-external-link"></i></span><br>提取码：vkv3 </p>
+</blockquote>
+<p>​    既然提到了Optional的用法，这里也一并谈谈关于《Effective java》是如何看待这一个工具类的，这一条的标题是：<strong>谨慎返回Optional</strong>。</p>
+<p>​    从个人的角度来看，Optional的本质作用是：<strong>提供了结果的可扩展性以及提供给调用方更多的可操作性</strong>，比如调用方可以使用此来按照以前的判断null方式处理<code>if(obj.isPresent())</code>，或者使用新式的Lambda操作，比如像下面这样，如果存在值则进行打印的操作，否则什么事情都不会发生：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Optional.ofNullable(<span class="string">"&#123;age:\"1\"&#125;"</span>)</span><br><span class="line">                .map(obj -&gt; JSON.parseObject(obj, User<span class="class">.<span class="keyword">class</span>))</span></span><br><span class="line">                .ifPresent(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>​    还有一点需要注意的是<code>get()</code>这个方法，如果不能确保值确实存在，建议谨慎或者避开这个方法，因为一旦为null此方法会抛出一个空指针异常。</p>
+<p>​    另外，在之前讲述的方法：<code>orElseThrow</code>这个方法传入的是一个<strong>异常工厂</strong>而不是真正的异常。</p>
+<p>​    后面主要提到的是一些Java9的操作，由于本文只涉及Java8的版本，所以更高版本的内容可以从《Effective Java》这本书里面看到。</p>
+<p>​    下面是作者关于optional的一些个人建议以及编程禁忌：</p>
+<h2 id="几点警告"><a href="#几点警告" class="headerlink" title="几点警告"></a>几点警告</h2><h3 id="1-永远不要使用Optional返回Null"><a href="#1-永远不要使用Optional返回Null" class="headerlink" title="1. 永远不要使用Optional返回Null"></a>1. 永远不要使用Optional返回Null</h3><p>​    首先，该书作者也是提到了Optional在日常的编码工作当中如何使用它来规避一些可能存在的null对象操作，同时提出一个重要的禁忌：<strong>永远不要用Optional的返回值返回null</strong>，比如我们将上面练习当中的代码改为下面的方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Optional&lt;Integer&gt; <span class="title">str2Int</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Optional.of(Integer.parseInt(str));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">        <span class="comment">// 千万不要这么做</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-不要使用包装基本类型的Optional"><a href="#2-不要使用包装基本类型的Optional" class="headerlink" title="2. 不要使用包装基本类型的Optional"></a>2. 不要使用包装基本类型的Optional</h3><p>​    设计Optional的设计师在考虑的时候，为基础类型也设置了专属的Optional类，然而作者认为这三个类的设计<strong>很垃圾</strong>，并且建议<strong>永远不要返回基本包装类型</strong>，这里验证了一下，发现少了确实少了不少方法，比如：<code>ofNullable</code>这个方法，这会直接导致你在编写代码的时候增加不必要的判断，并且无法互相兼容，我想这也是作者不推荐的原因之一吧。</p>
+<ul>
+<li>OptionalDouble</li>
+<li>OptionalInt</li>
+<li>OptionalLong</li>
+</ul>
+<h3 id="3-不要把optional作为映射或者键值"><a href="#3-不要把optional作为映射或者键值" class="headerlink" title="3. 不要把optional作为映射或者键值"></a>3. 不要把optional作为映射或者键值</h3><p>​    这也很好理解，比如像下面这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;Optional&lt;String&gt;, Optional&lt;Object&gt;&gt; map = <span class="comment">// .....</span></span><br></pre></td></tr></table></figure>
+
+<p>​    这并不会让你少些代码，反而会增加代码的理解难度和程序的复杂度，所以不建议把Optional用作任何的键值对或者集合的元素当中。</p>
+<h2 id="什么时候应该使用？"><a href="#什么时候应该使用？" class="headerlink" title="什么时候应该使用？"></a>什么时候应该使用？</h2><pre><code>一句话：**如果无法返回结果并且返回结果的客户端必须处理的时候，就应该声明Optional\&lt;T\&gt;。**</code></pre><h2 id="哪些情况不适用？"><a href="#哪些情况不适用？" class="headerlink" title="哪些情况不适用？"></a>哪些情况不适用？</h2><p>​    其实上面的警告也提到了一部分内容：</p>
+<ol>
+<li><strong>非常注重性能的场合</strong>：因为Optional的封装以及类似“流”的操作需要额外的内存开销，所以不适合一些十分注重性能的情况。</li>
+<li><strong>需要使用键值对或者集合元素的场合</strong>：原因在上文说了，这里不再赘述。</li>
+<li><strong>包装基本类型的Optional</strong>：设计缺陷，对比源代码就知道了。</li>
+</ol>
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><p>​    总之<strong>Optional</strong>这个工具还是具备一定的实用价值的，这里非常喜欢《Effective Java》作者对于这个工具类的一些建议，可以说是一针见血，果然大神的眼光和经验是非常独到的。</p>
+<h1 id="写到最后"><a href="#写到最后" class="headerlink" title="写到最后"></a>写到最后</h1><p>​    写稿不易，求赞，求收藏。</p>
+<p>​    最后推荐一下个人的微信公众号：<strong>“懒时小窝</strong>”。有什么问题可以通过公众号私信和我交流，当然评论的问题看到的也会第一时间解答。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/02/20/optional/" title="JAVA8实战 - Optional工具类">https://whitestore.top/2022/02/20/optional/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/20/jvmyichu/" rel="prev" title="深入理解JVM - 分区溢出实战">
+      <i class="fa fa-chevron-left"></i> 深入理解JVM - 分区溢出实战
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/20/changtui/" rel="next" title="《长腿叔叔》读书笔记">
+      《长腿叔叔》读书笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA8实战-Optional工具类"><span class="nav-number">1.</span> <span class="nav-text">JAVA8实战 - Optional工具类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概述："><span class="nav-number">3.</span> <span class="nav-text">概述：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思维导图："><span class="nav-number">4.</span> <span class="nav-text">思维导图：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#空指针规避"><span class="nav-number">5.</span> <span class="nav-text">空指针规避</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串equals"><span class="nav-number">5.1.</span> <span class="nav-text">字符串equals</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#变量-操作"><span class="nav-number">5.2.</span> <span class="nav-text">变量 &#x3D;&#x3D; 操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集合元素为null"><span class="nav-number">5.3.</span> <span class="nav-text">集合元素为null</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map的元素值为null"><span class="nav-number">5.4.</span> <span class="nav-text">map的元素值为null</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类型强转为null"><span class="nav-number">5.5.</span> <span class="nav-text">类型强转为null</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是Optional？"><span class="nav-number">6.</span> <span class="nav-text">什么是Optional？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单介绍"><span class="nav-number">6.1.</span> <span class="nav-text">简单介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#案例对象："><span class="nav-number">6.2.</span> <span class="nav-text">案例对象：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Option的三种初始化方式："><span class="nav-number">6.3.</span> <span class="nav-text">Option的三种初始化方式：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map-对象的内容提取和转化："><span class="nav-number">6.4.</span> <span class="nav-text">map - 对象的内容提取和转化：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插曲：Optional的序列化问题"><span class="nav-number">6.5.</span> <span class="nav-text">插曲：Optional的序列化问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解引用Optional对象方法"><span class="nav-number">6.6.</span> <span class="nav-text">解引用Optional对象方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Optional的使用场景"><span class="nav-number">7.</span> <span class="nav-text">Optional的使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-封装可能为Null的值"><span class="nav-number">7.1.</span> <span class="nav-text">1. 封装可能为Null的值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-异常和optional的对比"><span class="nav-number">7.2.</span> <span class="nav-text">2. 异常和optional的对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-建议将Optional封装到一个工具类当中："><span class="nav-number">7.3.</span> <span class="nav-text">3. 建议将Optional封装到一个工具类当中：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-实战：读取Properties值"><span class="nav-number">7.4.</span> <span class="nav-text">4. 实战：读取Properties值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-其他测试："><span class="nav-number">7.5.</span> <span class="nav-text">5. 其他测试：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#《Effective-java》第55条建议"><span class="nav-number">8.</span> <span class="nav-text">《Effective java》第55条建议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#几点警告"><span class="nav-number">8.1.</span> <span class="nav-text">几点警告</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-永远不要使用Optional返回Null"><span class="nav-number">8.1.1.</span> <span class="nav-text">1. 永远不要使用Optional返回Null</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-不要使用包装基本类型的Optional"><span class="nav-number">8.1.2.</span> <span class="nav-text">2. 不要使用包装基本类型的Optional</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-不要把optional作为映射或者键值"><span class="nav-number">8.1.3.</span> <span class="nav-text">3. 不要把optional作为映射或者键值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么时候应该使用？"><span class="nav-number">8.2.</span> <span class="nav-text">什么时候应该使用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哪些情况不适用？"><span class="nav-number">8.3.</span> <span class="nav-text">哪些情况不适用？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结："><span class="nav-number">9.</span> <span class="nav-text">总结：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写到最后"><span class="nav-number">10.</span> <span class="nav-text">写到最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

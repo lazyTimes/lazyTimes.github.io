@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="源码解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LSM-Tree - LevelDb 源码解析">
+<meta property="og:url" content="https://whitestore.top/2022/05/21/leveldb-source/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="源码解析">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171601989.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204181000328.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204172014056.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171749969.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171802290.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171802000.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171916505.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204172111973.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204172242656.png">
+<meta property="article:published_time" content="2022-05-21T11:13:33.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.640Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="源码解析，levelDB">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171601989.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/05/21/leveldb-source/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LSM-Tree - LevelDb 源码解析 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/leveldb-source/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LSM-Tree - LevelDb 源码解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 19:13:33" itemprop="dateCreated datePublished" datetime="2022-05-21T19:13:33+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93-LevelDB/" itemprop="url" rel="index"><span itemprop="name">数据库-LevelDB</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/leveldb-source/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/leveldb-source/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>24k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>22 分钟</span>
+            </span>
+            <div class="post-description">源码解析</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="LSM-Tree-LevelDb-源码解析"><a href="#LSM-Tree-LevelDb-源码解析" class="headerlink" title="LSM-Tree - LevelDb 源码解析"></a>LSM-Tree - LevelDb 源码解析</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>在上一篇文章[[LSM-Tree - LevelDb了解和实现]]中介绍了LevelDb相关的数据结构和核心组件，LevelDB的核心读写部分，以及为什么在这个数据库中写入的速度要比读取的速度快上好几倍。 </p>
+<p>LevelDB的源代码还是比较好懂的，好懂到我只学过学JAVA只有定点基础C语言入门知识的人也能看懂，另一方面作者在关键的地方都给了注释，甚至告诉你为什么要这么设计<s>（写的很好很棒让人落泪为什么自己没这样的同事）</s>。</p>
+<p>如果还是看不懂，作者也写了很多数据结构介绍的md文档（在doc目录中）告诉你核心组件的作用。</p>
+<p>总之，不要惧怕这个数据库，无论是作为优秀代码和设计模式还是各种主流数据结构算法应用都非常值得学习和参考。</p>
+<blockquote>
+<p>Tip：这一节代码内容非常多，所以不建议在手机或者移动设备阅读，更适合在PC上观看。</p>
+</blockquote>
+<a id="more"></a>
+
+
+<h2 id="源码运行"><a href="#源码运行" class="headerlink" title="源码运行"></a>源码运行</h2><p>LevelDB的编译是比较简单的，可以从官网直接克隆代码。</p>
+<p>地址：<span class="exturl" data-url="aHR0cHM6Ly9saW5rLnpoaWh1LmNvbS8/dGFyZ2V0PWh0dHBzJTNBLy9naXRodWIuY29tL2dvb2dsZS9sZXZlbGRi" title="https://link.zhihu.com/?target=https%3A//github.com/google/leveldb">https://github.com/google/leveldb<i class="fa fa-external-link"></i></span></p>
+<p>具体操作步骤如下(也可以参考仓库中的<code>README</code>)：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone --recurse-submodules https://github.com/google/leveldb.git</span><br><span class="line">mkdir -p build &amp;&amp; cd build</span><br><span class="line">cmake -DCMAKE_BUILD_TYPE=Release .. &amp;&amp; cmake --build .</span><br></pre></td></tr></table></figure>
+
+<p>完成整个编译动作之后，我们可以新增一个动态库，一个静态库和test目录，接着就可以编写单元测试了，同时官方的源代码中有很多的单元测试可以提供自己编写的测试程序进行调试使用，当然这里跳过这些内容，直接从源码开始。</p>
+<h2 id="底层存储存储结构"><a href="#底层存储存储结构" class="headerlink" title="底层存储存储结构"></a>底层存储存储结构</h2><p>关联：[[SSTable]]</p>
+<p>在LevelDB中<strong>SSTable</strong>是整个数据库最重要的结构，所有的SSTable文件本身的内容是<strong>不可修改</strong>的，虽然通常数据在内存中操作，但是数据不可能无限存储，当数据到达一定量之后就需要持久化到磁盘中，而压缩合并的处理就十分考验系统性能了，为此LevelDb使用分层的结构进行存储，下面我们从外部的使用结构开始来了解内部的设计。</p>
+<p>整个外部的黑盒就是数据库本身了，以事务性数据库为例，通常的操作无非就是ACID四种，但是放到LSM-Tree的数据结构有点不一样，因为更新和删除其实都会通过“新增”与“合并”的方式完成新数据对旧数据的覆盖。</p>
+<p>扯远了，我们从简单的概念开始，首先是整个DB的源代码，DB源代码可以通过以下路径访问：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2dvb2dsZS9sZXZlbGRiL2Jsb2IvbWFpbi9pbmNsdWRlL2xldmVsZGIvZGIuaA==" title="https://github.com/google/leveldb/blob/main/include/leveldb/db.h">https://github.com/google/leveldb/blob/main/include/leveldb/db.h<i class="fa fa-external-link"></i></span></p>
+<p>首先我们需要了解DB存储结构，可以看到存储引擎的对外提供的接口十分简单：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LEVELDB_EXPORT</span> <span class="title">DB</span> &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 设置数据库的key-value结构，如果没有返回OK则视为操作失败，</span></span><br><span class="line">	<span class="comment">// 备注：考虑默认打开sync=true操作，`Put` 方法在内部最终会调用 `Write` 方法，只是在上层为调用者提供了两个不同的选择。</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> Status <span class="title">Put</span><span class="params">(<span class="keyword">const</span> WriteOptions&amp; options, <span class="keyword">const</span> Slice&amp; key,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">const</span> Slice&amp; value)</span> </span>= <span class="number">0</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 成功返回OK，如果异常则不返回OK，如果什么都返回，说明被删除的Key不存在，</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> Status <span class="title">Delete</span><span class="params">(<span class="keyword">const</span> WriteOptions&amp; options, <span class="keyword">const</span> Slice&amp; key)</span> </span>= <span class="number">0</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 写入操作</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> Status <span class="title">Write</span><span class="params">(<span class="keyword">const</span> WriteOptions&amp; options, WriteBatch* updates)</span> </span>= <span class="number">0</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 根据key获取数据</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> Status <span class="title">Get</span><span class="params">(<span class="keyword">const</span> ReadOptions&amp; options, <span class="keyword">const</span> Slice&amp; key,</span></span></span><br><span class="line"><span class="function"><span class="params">	</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="built_in">std</span>::<span class="built_in">string</span>* value)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Get</code> 和 <code>Put</code> 是 LevelDB 为上层提供的用于读写的接口，注意这个接口的<code>Update</code>和<code>Delele</code>操作 实际上是通过<code>Put</code>完成的，实现方式是内部做了类型判断，十分有意思，这里可以先留意一下。</p>
+<h2 id="write部分"><a href="#write部分" class="headerlink" title="write部分"></a>write部分</h2><p>下面先从写入操作开始，看看数据是如何进入到LevelDb，以及内部是如何管理的。</p>
+<p>Write的内部逻辑算是比较复杂的，所以这里画了下基本流程图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171601989.png" alt=""></p>
+<p>我们从DB的<code>Write()</code>接口方法切入，简化代码之后大致的流程如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//  为写入构建足够的空间，此时可以不需要加锁。</span></span><br><span class="line">Status status = MakeRoomForWrite(updates == <span class="literal">nullptr</span>);</span><br><span class="line"><span class="comment">//  通过 `AddRecord` 方法向日志中追加一条写操作的记录；</span></span><br><span class="line">status = log_-&gt;AddRecord(WriteBatchInternal::Contents(write_batch));</span><br><span class="line"><span class="comment">//  如果日志记录成功，则将数据进行写入</span></span><br><span class="line"><span class="keyword">if</span> (status.ok()) &#123;</span><br><span class="line">	status = WriteBatchInternal::InsertInto(write_batch, mem_);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>整个执行流程如下：</p>
+<ul>
+<li>首先调用 <code>MakeRoomForWrite</code> 方法为即将进行的写入提供足够的空间。<ul>
+<li>如果当前空间不足需要冻结当前的<code>memtable</code>，此时发生<code>Minor Compaction</code>并创建一个新的 <code>MemTable</code> 对象。</li>
+<li>如果满足触发<code>Major Compaction</code>需要对数据进行压缩并且对于SSTable进行合并。</li>
+</ul>
+</li>
+<li>通过<code>AddRecord</code>方法向日志中追加一条写操作记录。</li>
+<li>最终调用<strong>memtable</strong>往内存结构中添加<strong>key/value</strong>，完成最终写入操作。</li>
+</ul>
+<p>将写入操作的源代码逻辑简化之后最终如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function">Status <span class="title">DBImpl::Write</span><span class="params">(<span class="keyword">const</span> WriteOptions&amp; options, WriteBatch* my_batch)</span> </span>&#123;</span><br><span class="line">  <span class="function">Writer <span class="title">w</span><span class="params">(&amp;mutex_)</span></span>;</span><br><span class="line">  w.batch = my_batch;</span><br><span class="line"></span><br><span class="line">  MakeRoomForWrite(my_batch == <span class="literal">NULL</span>);</span><br><span class="line">	</span><br><span class="line">  <span class="keyword">uint64_t</span> last_sequence = versions_-&gt;LastSequence();</span><br><span class="line">  Writer* last_writer = &amp;w;</span><br><span class="line">  WriteBatch* updates = BuildBatchGroup(&amp;last_writer);</span><br><span class="line">  WriteBatchInternal::SetSequence(updates, last_sequence + <span class="number">1</span>);</span><br><span class="line">	<span class="comment">// 记录最终的操作记录点</span></span><br><span class="line">  last_sequence += WriteBatchInternal::Count(updates);</span><br><span class="line">	<span class="comment">// 日志编写</span></span><br><span class="line">  log_-&gt;AddRecord(WriteBatchInternal::Contents(updates));</span><br><span class="line">	<span class="comment">// 将数据写入memtable</span></span><br><span class="line">  WriteBatchInternal::InsertInto(updates, mem_);</span><br><span class="line"></span><br><span class="line">  versions_-&gt;SetLastSequence(last_sequence);</span><br><span class="line">  <span class="keyword">return</span> Status::OK();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面代码有较多的方法封装，这里我们一个个来看。</p>
+<p><code>MaybeScheduleCompaction()</code>压缩合并（如果觉得这里突兀可以请参阅上文的流程图）在源码中系统会定时检查是否可以进行压缩合并，if/else用于多线程并发写入的时候进行合并写入的操作，当发现有不同线程在操作就会等待结果或者等到拿到锁之后接管合并写入的操作。</p>
+<blockquote>
+<p>如果对于下面的代码有疑问可以阅读[[LSM-Tree - LevelDb了解和实现]]中关于“合并写入”的部分，为了节省时间，可以在网页中直接输入关键字“<strong>合并写入</strong>”快速定位，这里假设读者已经了解基本的工作流程，就不再赘述了。</p>
+</blockquote>
+<p>#LevelDb合并写入操作</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DBImpl::MaybeScheduleCompaction</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">mutex_.AssertHeld();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (background_compaction_scheduled_) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Already scheduled</span></span><br><span class="line">	<span class="comment">// 正在压缩</span></span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (shutting_down_.load(<span class="built_in">std</span>::memory_order_acquire)) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DB is being deleted; no more background compactions</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// DB正在被删除；不再有后台压缩</span></span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!bg_error_.ok()) &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Already got an error; no more changes</span></span><br><span class="line">	<span class="comment">// 已经发生异常，不能做更多改动。</span></span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (imm_ == <span class="literal">nullptr</span> &amp;&amp; manual_compaction_ == <span class="literal">nullptr</span> &amp;&amp;</span><br><span class="line"></span><br><span class="line">	!versions_-&gt;NeedsCompaction()) &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 不需要合并则不工作</span></span><br><span class="line"></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="comment">// 设置当前正常进行压缩合并</span></span><br><span class="line"></span><br><span class="line">	background_compaction_scheduled_ = <span class="literal">true</span>;</span><br><span class="line">	<span class="comment">// 开始压缩合并</span></span><br><span class="line"></span><br><span class="line">	env_-&gt;Schedule(&amp;DBImpl::BGWork, <span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>不可变memtable</strong>：</p>
+<p>在write的函数内部有这样一串代码，此时会暂停解锁等待写入，这个写入又是干嘛的？</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Status status = MakeRoomForWrite(updates == <span class="literal">nullptr</span>);</span><br></pre></td></tr></table></figure>
+
+<p>进入方法内部会发现通过一个<code>while</code>循环判断当前的 <code>memtable</code>状态，一旦发现memtable写入已经写满整个<code>mem</code>，则需要停止写入并且将当前的<code>memtable</code>转为<strong>imutiablememtable</strong>，并且创建新的<code>mem</code>切换写入，此时还会同时根据一些条件判断是否可以进行压缩 <code>mem</code>。</p>
+<p>这里额外解释源码中<strong>GUARDED_BY</strong>含义：</p>
+<p>GUARDED_BY是数据成员的属性，该属性声明数据成员受给定功能保护。对数据的读操作需要<strong>共享</strong>访问，而写操作则需要<strong>互斥</strong>访问。</p>
+<p>该 GUARDED_BY属性声明线程必须先锁定<strong>listener_list_mutex</strong>才能对其进行读写listener_list，从而确保增量和减量操作是原子的。</p>
+<p><strong>总结：其实就是一个典型的互斥共享锁，至于实现不是本文的重点。</strong></p>
+<p>mem可以看作是当前的系统备忘录或者说临时的记账板，和大多数的日志或者关系型数据库类似，都是先写入日志在进行后续的所有“事务”操作，也就是<strong>日志优先于记录操作</strong> 原则，根据日志写入操作加锁来完成并发操作的正常运行。</p>
+<p><code>MakeRoomForWrite</code> 方法中比较关键的部分都加了注释，很多操作作者都有介绍意图，代码逻辑都比较简单，多看几遍基本了解大致思路即可。（C++语法看不懂不必过多纠结，明白他要做什么就行，主要是我也看不懂，哈哈）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!bg_error_.ok()) &#123;</span><br><span class="line">	</span><br><span class="line">		<span class="comment">// Yield previous error</span></span><br><span class="line">		</span><br><span class="line">		s = bg_error_;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (allow_delay &amp;&amp; versions_-&gt;NumLevelFiles(<span class="number">0</span>) &gt;=</span><br><span class="line">	</span><br><span class="line">	config::kL0_SlowdownWritesTrigger) &#123;</span><br><span class="line">		<span class="comment">// 我们正接近于达到对L0文件数量的硬性限制。L0文件的数量。当我们遇到硬性限制时，与其将单个写操作延迟数而是在我们达到硬限制时，开始将每个mem单独写1ms以减少延迟变化。另外。这个延迟将一些CPU移交给压缩线程，因为 如果它与写入者共享同一个核心的话。</span></span><br><span class="line">		</span><br><span class="line">		mutex_.Unlock();</span><br><span class="line">		</span><br><span class="line">		env_-&gt;SleepForMicroseconds(<span class="number">1000</span>);</span><br><span class="line">		<span class="comment">// 不要将一个单一的写入延迟超过一次</span></span><br><span class="line">		allow_delay = <span class="literal">false</span>; </span><br><span class="line">		mutex_.Lock();</span><br><span class="line">	</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!force &amp;&amp;</span><br><span class="line">	</span><br><span class="line">	(mem_-&gt;ApproximateMemoryUsage() &lt;= options_.write_buffer_size)) &#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 在当前的mem中还有空间</span></span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (imm_ != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 我们已经填满了当前的memtable，但之前的的mem还在写入，所以需要等待</span></span><br><span class="line">		</span><br><span class="line">		background_work_finished_signal_.Wait();</span><br><span class="line">	</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (versions_-&gt;NumLevelFiles(<span class="number">0</span>) &gt;= </span><br><span class="line">				config::kL0_StopWritesTrigger) &#123;</span><br><span class="line">	</span><br><span class="line">		</span><br><span class="line">		background_work_finished_signal_.Wait();</span><br><span class="line">	</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	</span><br><span class="line">		<span class="comment">// A试图切换到一个新的memtable并触发对旧memtable的压缩</span></span><br><span class="line">		assert(versions_-&gt;PrevLogNumber() == <span class="number">0</span>);</span><br><span class="line">		<span class="comment">// 新建文件号</span></span><br><span class="line">		<span class="keyword">uint64_t</span> new_log_number = versions_-&gt;NewFileNumber(); <span class="comment">//return next_file_number_++;</span></span><br><span class="line">		</span><br><span class="line">		WritableFile* lfile = <span class="literal">nullptr</span>;</span><br><span class="line">		<span class="comment">// 新建可写入文件, 内部通过一个map构建一个文件：文件状态的简易文件系统</span></span><br><span class="line">		<span class="comment">// typedef std::map&lt;std::string, FileState*&gt; FileSystem;</span></span><br><span class="line">		s = env_-&gt;NewWritableFile(LogFileName(dbname_, new_log_number), &amp;lfile);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (!s.ok()) &#123;</span><br><span class="line">			<span class="comment">// 避免死循环重复新增文件号</span></span><br><span class="line">			versions_-&gt;ReuseFileNumber(new_log_number);</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		</span><br><span class="line">		&#125;</span><br><span class="line">	</span><br><span class="line">		<span class="keyword">delete</span> log_;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">delete</span> logfile_;</span><br><span class="line">		</span><br><span class="line">		logfile_ = lfile;</span><br><span class="line">		</span><br><span class="line">		logfile_number_ = new_log_number;</span><br><span class="line">		<span class="comment">// 写入日志</span></span><br><span class="line">		log_ = <span class="keyword">new</span> <span class="built_in">log</span>::Writer(lfile);</span><br><span class="line">		<span class="comment">// **重点：imm_ 就是immutable 他将引用指向当前已经写满的mem，其实和mem对象没什么区别，就是加了一个互斥共享锁而已（写互斥，读共享）**</span></span><br><span class="line">		imm_ = mem_;</span><br><span class="line">		</span><br><span class="line">		has_imm_.store(<span class="literal">true</span>, <span class="built_in">std</span>::memory_order_release);</span><br><span class="line">		<span class="comment">// 新建新的memtable</span></span><br><span class="line">		mem_ = <span class="keyword">new</span> MemTable(internal_comparator_);</span><br><span class="line">		<span class="comment">// 引用至新块</span></span><br><span class="line">		mem_-&gt;Ref();</span><br><span class="line">		</span><br><span class="line">		force = <span class="literal">false</span>; <span class="comment">// Do not force another compaction if have room</span></span><br><span class="line">		<span class="comment">// 尝试对于已满mem压缩合并 ，此处承接上文</span></span><br><span class="line">		MaybeScheduleCompaction();</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面用一个简单的示意图了解上面的大致流程：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204181000328.png" alt=""></p>
+<p>注意这对于[[SSTable]]的原始理论的实现结构显然是有一定出入，当然这是很正常的理论和实践的差别。</p>
+<p>在通常情况下<code>memtable</code>可以通过短暂的延迟读写请求等待压缩完成，但是一旦发现mem占用的内存过大，此时就需要给<strong>当前的mem加锁变为_imu状态</strong>，然后创建一个新的 MemTable 实例并且把<strong>新进来的请求转到新的mem中</strong>，这样就可以继续接受外界的写操作，不再需要等待 <code>Minor Compaction</code> 的结束了。</p>
+<blockquote>
+<p>再次注意此处会通过函数 <strong>MaybeScheduleCompaction</strong> 是否进行压缩合并的操作判断。</p>
+</blockquote>
+<p>这种无等待的设计思路来自于：[[Dynamic-sized NonBlocking Hash table]]，可以自己下下论文来看看，当然也可以等我后面的文章。</p>
+<h2 id="log部分"><a href="#log部分" class="headerlink" title="log部分"></a>log部分</h2><p>写入的大致操作流程了解之后，下面来看看LevelDb的日志管理也就是<code>AddRecord()</code>函数的操作：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204172014056.png" alt=""></p>
+<p>注意日志的核心部分并不在<code>AddRecord()</code>内部，因为内部只有一些简单的字符串拼接操作，这里将核心放到了<code>RecordType</code>的部分，可以看到这里通过当前日志字符长度判断不同的类型，<code>RecordType</code>标识当前记录在块里面的位置：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//....</span></span><br><span class="line"><span class="keyword">enum</span> RecordType &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Zero is reserved for preallocated files</span></span><br><span class="line">	</span><br><span class="line">	kZeroType = <span class="number">0</span>,</span><br><span class="line">	</span><br><span class="line">	  </span><br><span class="line">	</span><br><span class="line">	kFullType = <span class="number">1</span>,</span><br><span class="line">	</span><br><span class="line">	  </span><br><span class="line">	</span><br><span class="line">	<span class="comment">// For fragments</span></span><br><span class="line">	</span><br><span class="line">	kFirstType = <span class="number">2</span>,</span><br><span class="line">	</span><br><span class="line">	kMiddleType = <span class="number">3</span>,</span><br><span class="line">	</span><br><span class="line">	kLastType = <span class="number">4</span></span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//....</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">RecordType type;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">bool</span> <span class="built_in">end</span> = (left == fragment_length);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">begin</span> &amp;&amp; <span class="built_in">end</span>) &#123;</span><br><span class="line"></span><br><span class="line">	type = kFullType;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">begin</span>) &#123;</span><br><span class="line"></span><br><span class="line">	type = kFirstType;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">end</span>) &#123;</span><br><span class="line"></span><br><span class="line">	type = kLastType;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">	type = kMiddleType;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>First：是用户记录第一个片段的类型，<br>Last：是用户记录的最后一个片段的类型。<br>   Middle：是一个用户记录的所有内部片段的类型。</p>
+</blockquote>
+<p>如果看不懂源代码，可以根据作者的md文档介绍也可以大致了解日志文件结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">record :=</span><br><span class="line">     checksum: uint32     <span class="comment">// crc32c of type and data[] ; little-endian</span></span><br><span class="line">     length: uint16       <span class="comment">// little-endian</span></span><br><span class="line">     type: uint8          <span class="comment">// One of FULL, FIRST, MIDDLE, LAST</span></span><br><span class="line">     data: uint8[length]</span><br></pre></td></tr></table></figure>
+
+<p>我们可以根据描述简单画一个图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171749969.png" alt=""></p>
+<p>从<code>RecordType</code>内部的定义可以看到日志固定为<strong>32KB</strong>大小，在日志文件中将分为多部分，但是一个日志只包含在一个单一的文件块。</p>
+<p>RecordType 存储的内容如下：</p>
+<ul>
+<li>前面4个字节用于CRC校验</li>
+<li>接着两个字节是块数据长度</li>
+<li>接着是一个字节的类型标识（标识当前日志记录在块中位置）</li>
+<li>最后是数据payload部分</li>
+</ul>
+<p><strong>32kb</strong>大小选择是考虑到日志记录行的磁盘对齐和日志读写，针对日志写的速度也非常快，写入的日志先写入内存的文件表，然后通过<code>fdatasync(...)</code>方法将缓冲区<code>fflush</code>到磁盘中并且持久化，最后通过日志完成故障恢复的操作。</p>
+<p>需要注意如果日志记录较大可能存在于多个block块中。</p>
+<p>一个记录永远不会在一个块的最后六个字节内开始，理由是一个记录前面需要一些其他部分占用空间（也就是记录行的校验和数据长度标识信息等）。</p>
+<p>为了防止单个日志块被拆分到多个文件以及压缩考虑，这种“浪费”是可以被接受。</p>
+<p>如果读者非要清楚最后几个字节存储的是什么，想满足自己的好奇心，可以看下面的代码：</p>
+<p><code>dest_-&gt;Append(Slice(&quot;\x00\x00\x00\x00\x00\x00&quot;, leftover));</code></p>
+<p><strong>日志写流程图</strong>：</p>
+<p>日志写的流程比较简单，主要分歧点是当前块剩余空间是否够写入一个header，并且最后6个字节将会填充空格进行补齐。</p>
+<p>在日志写入的过程中通过一个<code>while(ture)</code>不断判断<code>buffer</code>大小，如果大小超过<strong>32KB</strong>-最后6个字节，则需要停止写入并且把开始写入到现在位置为一个数据块。</p>
+<p>下面是日志写流程图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171802290.png" alt="日志写流程图"></p>
+<p>下面是日志读流程图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171802000.png" alt="日志读流程图"></p>
+<p>既然日志大小为32kb，那么日志的读写单位也应该是32kb，接着便是扫描数据块，在扫描chunk的时候如果发现CRC校验不通过则返回错误信息，如果数据破损则丢弃当前chunk。</p>
+<p>翻了一下代码，简单来说就是读取通过<code>while(true)</code>循环<code>read</code>，直到读取到类型为<code>Last</code>的<code>chunk</code>，日志记录读取完成。</p>
+<p><code>memtable</code>比较有意思的特点是无论插入还是删除都是通过“新增”的方式实现的（你没有看错），内部通过<code>Mainfest</code>维护状态，同时根据版本号和序列号维护一条记录是新增还是删除并且保证读取到的内容是最新值，具体介绍同样在上一节[[LSM-Tree - LevelDb了解和实现]]中。</p>
+<p>注意<strong>写入日志之后记录是不能查询</strong>的（因为中间有可能存在断电故障导致真实记录没有写入），日志仅作为故障恢复，只有<strong>数据写入到mem之后才被访问到</strong>。</p>
+<p>关于mem新增和删除的代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MemTableInserter</span> :</span> <span class="keyword">public</span> WriteBatch::Handler &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	</span><br><span class="line">	SequenceNumber sequence_;</span><br><span class="line">	</span><br><span class="line">	MemTable* mem_;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Put</span><span class="params">(<span class="keyword">const</span> Slice&amp; key, <span class="keyword">const</span> Slice&amp; value)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">		mem_-&gt;Add(sequence_, kTypeValue, key, value);</span><br><span class="line">		</span><br><span class="line">		sequence_++;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Delete</span><span class="params">(<span class="keyword">const</span> Slice&amp; key)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">		mem_-&gt;Add(sequence_, kTypeDeletion, key, Slice());</span><br><span class="line">		</span><br><span class="line">		sequence_++;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">&#125; <span class="comment">// namespace</span></span><br></pre></td></tr></table></figure>
+
+<p>在<code>Add()</code>函数的内部通过一个[[LSM-Tree - LevelDb Skiplist跳表]]完成数据的插入，在数据的node中包含了记录键值，为了保证读取的数据永远是最新的，记录需要在<code>skiplist</code>内部进行排序，节点排序使用的是比较常见的比较器<code>Compare</code>，如果用户想要自定义排序（例如处理不同的字符编码等）可以编写自己的比较器实现。</p>
+<p>对于一条记录的结构我们也可以从 <code>Add()</code> 函数中看到作者的注释：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Format of an entry is concatenation of:</span></span><br><span class="line">  <span class="comment">//  key_size     : varint32 of internal_key.size()</span></span><br><span class="line">  <span class="comment">//  key bytes    : char[internal_key.size()]</span></span><br><span class="line">  <span class="comment">//  tag          : uint64((sequence &lt;&lt; 8) | type)</span></span><br><span class="line">  <span class="comment">//  value_size   : varint32 of value.size()</span></span><br><span class="line">  <span class="comment">//  value bytes  : char[value.size()]</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[[VarInt32编码]]：在这里虽然是变长整型类型但是实际使用4个字节表示。<br><code>uint64((sequence &lt;&lt; 8) | type</code>：位运算之后实际为7个字节的sequence长度<br>注意在tag和value_size中间有一个ValueType标记来标记记录是新增还是删除。</p>
+</blockquote>
+<p>VarInt32 (vary int 32)，即：长度可变的 32 为整型类型。一般来说，int 类型的长度固定为 32 字节。但 VarInt32 类型的数据长度是不固定的，VarInt32 中每个字节的最高位有特殊的含义。如果最高位为 1 代表下一个字节也是该数字的一部分。</p>
+<p>因此，表示一个整型数字最少用 1 个字节，最多用 5 个字节表示。如果某个系统中大部分数字需要 &gt;= 4 字节才能表示，那其实并不适合用 VarInt32 来编码。</p>
+<p>根据<code>get()</code>代码内部通过<code>valueType</code>进行区分，<code>valueType</code>占用一个字节的空间进行判断新增还是删除记录，默认比较器判断新增或者删除记录逻辑如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (comparator_.comparator.user_comparator()-&gt;Compare(</span><br><span class="line"></span><br><span class="line">	Slice(key_ptr, key_length - <span class="number">8</span>), key.user_key()) == <span class="number">0</span>) &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// Correct user key</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">uint64_t</span> tag = DecodeFixed64(key_ptr + key_length - <span class="number">8</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">switch</span> (<span class="keyword">static_cast</span>&lt;ValueType&gt;(tag &amp; <span class="number">0xff</span>)) &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">case</span> kTypeValue: &#123;</span><br><span class="line">	</span><br><span class="line">		Slice v = GetLengthPrefixedSlice(key_ptr + key_length);</span><br><span class="line">		</span><br><span class="line">		value-&gt;assign(v.data(), v.size());</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">case</span> kTypeDeletion:</span><br><span class="line">	</span><br><span class="line">		*s = Status::NotFound(Slice());</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据代码定义和上面的描述画出下面的结构图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204171916505.png" alt=""></p>
+<p><strong>Compare键排序</strong></p>
+<p>LevelDb的memtable通过跳表维护了键，内部默认情况下通过<code>InternalKeyComparator</code>对于键进行比较，下面是比较内部逻辑：</p>
+<p>比较器通过 <code>user_key</code> 和 <code>sequence_number</code> 进行排序，同时按照user_key进行升序排序，<strong>序列号通过插入的时间递增</strong>，以此来保证无论是增加还是删除都是获取到最新的信息。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> 一个用于内部键的比较器，它使用一个指定的比较器用于用户键部分比较，并通过递减序列号来打破平衡。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">InternalKeyComparator::Compare</span><span class="params">(<span class="keyword">const</span> Slice&amp; akey, <span class="keyword">const</span> Slice&amp; bkey)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Order by:</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 增加用户密钥（根据用户提供的比较器）。</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 递减序列号</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 递减类型（尽管序列号应该足以消除歧义）。</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">int</span> r = user_comparator_-&gt;Compare(ExtractUserKey(akey), ExtractUserKey(bkey));</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (r == <span class="number">0</span>) &#123;</span><br><span class="line">	</span><br><span class="line">		<span class="keyword">const</span> <span class="keyword">uint64_t</span> anum = DecodeFixed64(akey.data() + akey.size() - <span class="number">8</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">const</span> <span class="keyword">uint64_t</span> bnum = DecodeFixed64(bkey.data() + bkey.size() - <span class="number">8</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (anum &gt; bnum) &#123;</span><br><span class="line">		</span><br><span class="line">			r = <span class="number">-1</span>;</span><br><span class="line">		</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (anum &lt; bnum) &#123;</span><br><span class="line">		</span><br><span class="line">			r = +<span class="number">1</span>;</span><br><span class="line">		</span><br><span class="line">		&#125;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> r;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要注意被比较key<strong>可能包含完全不同的内容</strong>，这里读者肯定会有疑问对于key获取值进行提取信息是否会有影响，然而从get的逻辑来看它可以通过键长度，和序列号等信息进行获取Key，并且获取是<strong>header的头部信息</strong>，所以key是任何类型都是没有影响的。</p>
+<p><strong>记录查询</strong></p>
+<p>现在我们再回过头来看一下<code>memtable</code>是如何读取的，从<code>memtable</code>和<code>imumemble</code>的关系可以看出有点类似<strong>缓存</strong>，当<code>memtable</code>写满之后转为<code>imumem</code>并且等待同步至磁盘。</p>
+<p>key读取和查找的顺序如下：</p>
+<ul>
+<li>在memtable中获取指定Key，如果数据符合条件则结束查找。</li>
+<li>在Imumemtable中查找指定Key，如果数据符合条件则结束查找。</li>
+<li>按低层至高层的顺序在level i层的sstable文件中查找指定的key，若搜索到符合条件的数据项就会结束查找，否则返回Not Found错误，表示数据库中不存在指定的数据。</li>
+</ul>
+<p>记录按照层级关系进行搜索，首先是从当前内存中正在写入<code>memtable</code>搜索，接着是<code>imumemtable</code>，再接着是存在于磁盘不同层级的<code>SSTable</code>，SSTable通过<code>*.ldb</code>的形式进行标记，可以快速找到。</p>
+<p>最终我们可以把LevelDb的查询看作下面的形式：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204172111973.png" alt=""></p>
+<p><strong>小结</strong>：</p>
+<p>这一部分我们了解了LevelDB源代码部分等基础结构DB，介绍了LevelDB的基础对外接口，LevelDB和map的接口看起来十分类似，这一部分重点讲述了读写操作等源代码，以及内部合并压缩的一些细节。</p>
+<p>另外记录查询等动作和之前介绍LevelDB等读写流程大致类似，当然代码简化了很多的内容，读者可以根据自己感兴趣的内容研究。</p>
+<h2 id="SSTable操作"><a href="#SSTable操作" class="headerlink" title="SSTable操作"></a>SSTable操作</h2><p>前面我们提到了记录的增删改查底层查询，和日志的读写细节，下面则针对谷歌发明的特殊数据结构<code>SSTable</code>进行介绍。</p>
+<p><strong>SSTable如何工作？</strong></p>
+<p><code>SSTable</code>在初始的论文中可以总结出下面的特点：</p>
+<ul>
+<li>写入的时候不写入磁盘而是先写入内存表的数据结构。</li>
+<li>当数据结构内存占用超过一定的阈值就可以直接写入到磁盘文件由于已经是排好序的状态，所以可以直接对旧结构覆盖，写入效率比较高。并且写入和数据结构改动可以同时进行。</li>
+<li>读写顺序按照 内存 - 磁盘 - 上一次写入文件 - 未找到。</li>
+<li>后台定时线程定时合并和压缩排序分段，将废弃值给覆盖或者丢弃。</li>
+</ul>
+<p>[[SSTable]] 最早出现在谷歌2006年的论文当中，LevelDB的SSTable设计也有部分特性体现这个数据结构，当然并不是完全一致的，LevelDB利用SSTable在磁盘中维护多层级的数据节点。</p>
+<p>可以认为了解SSTable结构就相当于了解了LevelDb的核心数据结构设计。</p>
+<p><strong>多层级SSTable</strong></p>
+<p>我们重点看看多层级的SSTable部分，levelDB在磁盘中扫描SSTable的时候LevelDB并不会跳过层级，这里肯定会有疑问每个层级都扫一遍的效率问题，针对这个问题作者在db中设计了下面的数据结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">FileMetaData</span> &#123;</span></span><br><span class="line"></span><br><span class="line">	FileMetaData() : refs(<span class="number">0</span>), allowed_seeks(<span class="number">1</span> &lt;&lt; <span class="number">30</span>), file_size(<span class="number">0</span>) &#123;&#125;</span><br><span class="line">	<span class="keyword">int</span> refs;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">int</span> allowed_seeks; <span class="comment">// 允许压缩搜索</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">uint64_t</span> number;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">uint64_t</span> file_size; <span class="comment">// 文件大小</span></span><br><span class="line">	</span><br><span class="line">	InternalKey smallest; <span class="comment">// 表提供的最小内部密钥</span></span><br><span class="line">	</span><br><span class="line">	InternalKey largest; <span class="comment">// 表提供最大内部密钥</span></span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>在上面的结构体声明中定义了压缩SSTable文件的全部信息，包括最大值和最小值，运行查找次数，文件引用次数和文件号，SSTable会按照固定的形式存储到同一个目录下面，所以可以通过文件号进行快速搜索。</p>
+<p>查找和记录key顺序类似，都是按照<strong>从小到大</strong>的顺序进行读取的，以Level0为例，里面通常包含<strong>4个固定的SSTable</strong>，并且内部通常存在key交叉，所以会按照从SSTable1-4的顺序进行读取，而更高层次的层级则通过查找上面结构体的最大值和最小值的信息（smallest和largest）。</p>
+<p>具体的文件搜索细节可以通过<code>TableCache::FindTable</code>查找 ，由于篇幅有限这里就不贴代码了，简要逻辑是配合缓存和<code>RandomAccessFile</code>对于文件进行读写，然后把读到的文件信息写入到内存中方便下次获取。</p>
+<blockquote>
+<p>如果了解Mysql Btree设计会发现文件搜索有些类似页目录的查找。不同的是Btree页目录通过页目录等稀疏搜索。</p>
+</blockquote>
+<p><strong>SSTable合并</strong></p>
+<p>我们再来看看SSTable是如何合并的，之前提到过SSTable通过<strong>MaybeScheduleCompaction</strong>尝试合并，需要注意这个合并压缩和Bigtable的形式类似，都是根据不同的条件判断是否进行合并，一旦可以合并便执行<code>BackgroundCompaction</code>操作。</p>
+<p>合并分为两种情况，一种是<strong>Minor Compaction</strong>，另一种是将<strong>Memtable</strong>数据写满转为不可变对象（实际就是加锁），执行<code>CompactMemtable</code>进行压缩。</p>
+<p>合并操作简化版源代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DBImpl::CompactMemTable</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	VersionEdit edit;</span><br><span class="line">	Version* base = versions_-&gt;current();</span><br><span class="line">	WriteLevel0Table(imm_, &amp;edit, base);</span><br><span class="line">	versions_-&gt;LogAndApply(&amp;edit, &amp;mutex_);</span><br><span class="line">	RemoveObsoleteFiles();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>CompactMemTable方法会先构建当前的修改版本号，然后调用<code>WriteLevel0Table()</code>方法尝试把当前的Imumtable写入到Level0的层级。<br>如果发现Level0的层级SSTable过多，则进一步进行<strong>Major Compaction</strong>，同时根据<code>BackgroudCompcation()</code>选择合适的压缩层级和压缩方式。</p>
+<p>下面是<code>writeLevel0</code>的简化代码：</p>
+<p>简化代码的最后几行代码会获取文件信息的最大值和最小值以此判断是否在当前SSTable搜索还是跳转到下一个。</p>
+<p>数据如果是写入Level0我们可以看作是<strong>Major Compaction</strong>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">DBImpl::WriteLevel0Table</span><span class="params">(MemTable* mem, VersionEdit* edit,</span></span></span><br><span class="line"><span class="function"><span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">Version* base)</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// SSTable文件信息</span></span><br><span class="line">	FileMetaData meta;</span><br><span class="line">	</span><br><span class="line">	meta.number = versions_-&gt;NewFileNumber();</span><br><span class="line">	</span><br><span class="line">	pending_outputs_.insert(meta.number);</span><br><span class="line"></span><br><span class="line">	Iterator* iter = mem-&gt;NewIterator();</span><br><span class="line">	<span class="comment">// 构建SSTable文件</span></span><br><span class="line">	BuildTable(dbname_, env_, options_, table_cache_, iter, &amp;meta);</span><br><span class="line"></span><br><span class="line">	pending_outputs_.erase(meta.number);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 注意，如果 file_size 为零，则该文件已被删除，并且不应被添加到清单中。</span></span><br><span class="line">	<span class="comment">// 获取文件信息的最大值和最小值</span></span><br><span class="line">	<span class="keyword">const</span> Slice min_user_key = meta.smallest.user_key();</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">const</span> Slice max_user_key = meta.largest.user_key();</span><br><span class="line">	<span class="comment">// level层级扫描</span></span><br><span class="line">	base-&gt;PickLevelForMemTableOutput(min_user_key, max_user_key);</span><br><span class="line">	<span class="comment">// 写入文件</span></span><br><span class="line">	edit-&gt;AddFile(level, meta.number, meta.file_size, meta.smallest,</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> Status::ok();</span><br></pre></td></tr></table></figure>
+
+<p>结合上下两段源码可以发现文件管理最终是通过<code>VersionEdit</code>来完成的，如果写入成功了则返回当前的SSTable的<code>FileMetaData</code>，在<code>VersionEdit</code>内部通过<code>logAndApply</code>的方式记录文件内部的变化，也就是前文介绍的日志管理功能了，完成之后通过<code>RemoveObsoleteFiles()</code>方法进行数据的清理操作。</p>
+<p>如果<code>Level0</code>写满了此时就需要进行<strong>Major Compaction</strong>，这个压缩会比前面的要复杂一些因为涉及低层级到高层级的压缩。</p>
+<p>这里需要再回看<code>BackgroundCompaction</code>的代码，具体代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DBImpl::BackgroundCompaction</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">	<span class="comment">// 如果存在不可变imumem,进行压缩合并</span></span><br><span class="line">	CompactMemTable();</span><br><span class="line">  </span><br><span class="line">	versions_-&gt;PickCompaction();</span><br><span class="line"></span><br><span class="line">	VersionSet::LevelSummaryStorage tmp;</span><br><span class="line"></span><br><span class="line">	CompactionState* compact = <span class="keyword">new</span> CompactionState(c);</span><br><span class="line">	</span><br><span class="line">	DoCompactionWork(compact);</span><br><span class="line"></span><br><span class="line">	CleanupCompaction(compact);</span><br><span class="line"></span><br><span class="line">	c-&gt;ReleaseInputs();</span><br><span class="line"></span><br><span class="line">	RemoveObsoleteFiles();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先根据<code>VersionSet</code> 查找需要压缩的信息，并且打包加入到 <strong>Compaction</strong> 对象，这个对象根据查询次数和大小限制来选择需要压缩的<strong>两个层级</strong>，因为level0中包含很多重叠键，则会在更高层级找到有重叠的键的SSTable，再通过<code>FileMetaData</code>找到需要压缩的文件，另外查询频繁的SSTable将会“升级”到更高层级进行压缩存储，并且更新文件信息方便下一次查找。</p>
+<p><strong>合并的触发条件</strong></p>
+<p>每个 SSTable 在创建之后的 <code>allowed_seeks</code> 都为 100 次，当 <code>allowed_seeks &lt; 0</code> 时就会触发该文件的与更高层级和合并，因为频繁查询的数据通常会降低系统性能。</p>
+<p>这样的设计理由是<strong>在高层级搜索键说明在上一层肯定是相同的键查找</strong>，同时也是为了减少每次都覆盖扫描多层级扫描寻找数据。最终这种设计方式核心是以更新<strong>FileMetaData</strong> 来减少下一次查询的性能开销。</p>
+<p>另外这种处理可以简单理解为我们在操作系统中进行深层次文件夹搜索的时候，如果频繁查询某个深层次的数据很麻烦，解决此问题的第一种方式是建立一个“快捷方式”的文件夹，另一种是直接做标签直接指向这个目录，其实两者都是差不多的，所以压缩设计也是同理。</p>
+<p>LevelDB 中的 <code>DoCompactionWork</code> 方法会对所有传入的 SSTable 中的键值使用<strong>归并排序</strong>进行合并，最后会在更高层级中生成一个新的 SSTable。</p>
+<blockquote>
+<p>归并排序主要是对于key进行归并，使得迭代的时候key就是有序的可以直接合并到指定的高高层级。关键代码存在于下面的代码<br><code>Iterator* input = versions_-&gt;MakeInputIterator(compact-&gt;compaction);</code></p>
+</blockquote>
+<p><strong>归并排序</strong></p>
+<p><strong>DoCompactionWork</strong> 归并排序 的源代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">DBImpl::DoCompactionWork</span><span class="params">(CompactionState* compact)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int64_t</span> imm_micros = <span class="number">0</span>; <span class="comment">// Micros spent doing imm_ compactions</span></span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (snapshots_.empty()) &#123;</span><br><span class="line">		<span class="comment">// 快照为空，找到直接采用记录信息的最后序列号</span></span><br><span class="line">	</span><br><span class="line">		compact-&gt;smallest_snapshot = versions_-&gt;LastSequence();</span><br><span class="line">	</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// 快照存在，则抛弃之前所有的序列</span></span><br><span class="line">		compact-&gt;smallest_snapshot = snapshots_.oldest()-&gt;sequence_number();</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	  </span><br><span class="line">	<span class="comment">// 对于待压缩数据进行，内部生成一个MergingIterator，当构建迭代器之后键内部就是有序的状态了，也就是前面说的归并排序的部分</span></span><br><span class="line">	Iterator* input = versions_-&gt;MakeInputIterator(compact-&gt;compaction);</span><br><span class="line"></span><br><span class="line">	input-&gt;SeekToFirst();</span><br><span class="line">	</span><br><span class="line">	Status status;</span><br><span class="line">	</span><br><span class="line">	ParsedInternalKey ikey;</span><br><span class="line">	</span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">string</span> current_user_key;</span><br><span class="line">	<span class="comment">//当前记录user key</span></span><br><span class="line">	<span class="keyword">bool</span> has_current_user_key = <span class="literal">false</span>;</span><br><span class="line">	</span><br><span class="line">	SequenceNumber last_sequence_for_key = kMaxSequenceNumber;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">while</span> (input-&gt;Valid() &amp;&amp; !shutting_down_.load(<span class="built_in">std</span>::memory_order_acquire)) &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 优先考虑imumemtable的压缩工作</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (has_imm_.load(<span class="built_in">std</span>::memory_order_relaxed)) &#123;</span><br><span class="line">	</span><br><span class="line">		<span class="keyword">const</span> <span class="keyword">uint64_t</span> imm_start = env_-&gt;NowMicros();</span><br><span class="line">		</span><br><span class="line">		imm_micros += (env_-&gt;NowMicros() - imm_start);</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	Slice key = input-&gt;key();</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (compact-&gt;compaction-&gt;ShouldStopBefore(key) &amp;&amp;</span><br><span class="line">		</span><br><span class="line">		compact-&gt;builder != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">		</span><br><span class="line">		status = FinishCompactionOutputFile(compact, input);</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	  </span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 处理键/值，添加到状态等。</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">bool</span> drop = <span class="literal">false</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (!ParseInternalKey(key, &amp;ikey)) &#123;</span><br><span class="line">	</span><br><span class="line">		<span class="comment">// 删除和隐藏呗删除key</span></span><br><span class="line">		</span><br><span class="line">		current_user_key.clear();</span><br><span class="line">		</span><br><span class="line">		has_current_user_key = <span class="literal">false</span>;</span><br><span class="line">		<span class="comment">// 更新序列号</span></span><br><span class="line">		last_sequence_for_key = kMaxSequenceNumber;</span><br><span class="line">	</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	</span><br><span class="line">		<span class="keyword">if</span> (!has_current_user_key ||</span><br><span class="line">		</span><br><span class="line">			user_comparator()-&gt;Compare(ikey.user_key, Slice(current_user_key)) !=</span><br><span class="line">		</span><br><span class="line">		<span class="number">0</span>) &#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 用户key第一次出现</span></span><br><span class="line">		</span><br><span class="line">		current_user_key.assign(ikey.user_key.data(), ikey.user_key.size());</span><br><span class="line">		</span><br><span class="line">		has_current_user_key = <span class="literal">true</span>;</span><br><span class="line">		</span><br><span class="line">		last_sequence_for_key = kMaxSequenceNumber;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">		</span><br><span class="line">	  </span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (last_sequence_for_key &lt;= compact-&gt;smallest_snapshot) &#123;</span><br><span class="line">	</span><br><span class="line">		<span class="comment">// 压缩以后旧key边界的被新的覆盖</span></span><br><span class="line">		</span><br><span class="line">		drop = <span class="literal">true</span>; <span class="comment">// (A)</span></span><br><span class="line">	</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (ikey.type == kTypeDeletion &amp;&amp;</span><br><span class="line">	</span><br><span class="line">		ikey.sequence &lt;= compact-&gt;smallest_snapshot &amp;&amp;</span><br><span class="line">	</span><br><span class="line">		compact-&gt;compaction-&gt;IsBaseLevelForKey(ikey.user_key)) &#123;</span><br><span class="line">	</span><br><span class="line">		<span class="comment">// 对于这个用户密钥：</span></span><br><span class="line">	</span><br><span class="line">		<span class="comment">// (1) 高层没有数据</span></span><br><span class="line">		</span><br><span class="line">		<span class="comment">// (2) 较低层的数据会有较大的序列号</span></span><br><span class="line">		</span><br><span class="line">		<span class="comment">// (3) 层中的数据在此处被压缩并具有</span></span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 较小的序列号将在下一个被丢弃</span></span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 这个循环的几次迭代（根据上面的规则（A））。</span></span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 因此，此删除标记已过时，可以删除。</span></span><br><span class="line">	</span><br><span class="line">		drop = <span class="literal">true</span>;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	  </span><br><span class="line">	</span><br><span class="line">	last_sequence_for_key = ikey.sequence;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>归并排序并且处理完键值信息完成跨层级压缩，之后便是是一些收尾工作，收尾工作需要对于压缩之后的信息统计。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">CompactionStats stats;</span><br><span class="line"></span><br><span class="line">stats.micros = env_-&gt;NowMicros() - start_micros - imm_micros;</span><br><span class="line"><span class="comment">//选择两个层级的SSTable</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> which = <span class="number">0</span>; which &lt; <span class="number">2</span>; which++) &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; compact-&gt;compaction-&gt;num_input_files(which); i++) &#123;</span><br><span class="line">	</span><br><span class="line">		stats.bytes_read += compact-&gt;compaction-&gt;input(which, i)-&gt;file_size;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; compact-&gt;outputs.size(); i++) &#123;</span><br><span class="line"></span><br><span class="line">	stats.bytes_written += compact-&gt;outputs[i].file_size;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 压缩到更高的层级</span></span><br><span class="line">stats_[compact-&gt;compaction-&gt;level() + <span class="number">1</span>].Add(stats);</span><br><span class="line"><span class="comment">// 注册压缩结果</span></span><br><span class="line">InstallCompactionResults(compact);</span><br><span class="line"><span class="comment">// 压缩信息存储</span></span><br><span class="line">VersionSet::LevelSummaryStorage tmp;</span><br><span class="line">Log(options_.info_log, <span class="string">"compacted to: %s"</span>, versions_-&gt;LevelSummary(&amp;tmp));</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> status;</span><br></pre></td></tr></table></figure>
+
+<p>最后层级压缩的默认层级为<strong>7个层级</strong>，在源代码中有如下定义：</p>
+<p><code>static const int kNumLevels = 7;</code></p>
+<p><strong>小结</strong></p>
+<p>这里我们小结一下合并压缩的两个操作：<code>Minor Compaction</code>和<code>Major Compaction</code>：</p>
+<p><code>Minor Compaction</code>：这个GC主要是Level0层级的一些压缩操作，由于Level0层级被较为频繁使用，类似一级缓存，键值不会强制要求进行排序，所以重叠的键会比较多，整个压缩的过程比较好理解，关键部分是skiplist（跳表）中构建一个新的SSTable并且插入到指定层级。</p>
+<p>注：<code>Minor Compaction</code>进行的时候会暂停<code>Major Compaction</code>操作。</p>
+<p><strong>Minor Compaction</strong>：这个比Minor Compaction复杂不少，不仅包含跨层级压缩，还包括键范围确定和迭代器归并排序和最终的统计信息操作，其中最最关键的部分是归并排序压缩列表，之后将旧文件和新文件合并生产新的<code>VersionSet</code>信息，另外这里除开全局的压缩进度和管理操作之外。</p>
+<p>另外Minor Compaction完成之后还会再尝试一次Minor Compaction，因为Minor Compaction可能带来更多的重复键，所以再进行一次压缩可以进一步提高查找效率。</p>
+<p><strong>Major Compaction</strong>：这个操作需要暂停整个LevelDB的读写，因为此时需要对于整个LevelDb的多层级进行跨层级合并，跨层级压缩要复杂很多，具体的细节会在后面介绍。</p>
+<blockquote>
+<p>这里可以认为是作者在测试的过程发现一种情况并且做的优化。</p>
+</blockquote>
+<p><strong>存储状态 - VersionSet</strong></p>
+<p>从这个对象名称来看直接理解为“版本集合”，在内部通过一个Version的结构体对于键值信息进行“版本控制”，毫无疑问这是由于多线程压缩所带来的特性，所以最终是一个双向链表+历史版本的形式串联，但是永远只有一个版本是当前版本。<br>VersionSet最为频繁也是比较关键的一个操作函数<code>LogAndApply</code>，下面是简化之后的<code>VersionSet::LogAndApply</code>代码：</p>
+<blockquote>
+<p>这里可以对照关系型数据库Mysql的Mvcc中的undo log类比进行理解</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Status <span class="title">VersionSet::LogAndApply</span><span class="params">(VersionEdit* edit, port::Mutex* mu)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 更新版本链表信息</span></span><br><span class="line">	<span class="keyword">if</span> (!edit-&gt;has_prev_log_number_) &#123;</span><br><span class="line">	</span><br><span class="line">		edit-&gt;SetPrevLogNumber(prev_log_number_);</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	edit-&gt;SetNextFile(next_file_number_);</span><br><span class="line">	</span><br><span class="line">	edit-&gt;SetLastSequence(last_sequence_);</span><br><span class="line"></span><br><span class="line">	Version* v = <span class="keyword">new</span> Version(<span class="keyword">this</span>);</span><br><span class="line">	<span class="comment">// 构建当前的版本version，委托给建造器进行构建</span></span><br><span class="line">	<span class="function">Builder <span class="title">builder</span><span class="params">(<span class="keyword">this</span>, current_)</span></span>;</span><br><span class="line">	</span><br><span class="line">	builder.Apply(edit);</span><br><span class="line">	</span><br><span class="line">	builder.SaveTo(v);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 关键方法：内部通过打分机制确定文件所在的层级，值得注意的是level0的层级确定在源代码中有较多描述</span></span><br><span class="line">	Finalize(v);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如有必要，通过创建包含当前版本快照的临时文件来初始化新的描述符日志文件。</span></span><br><span class="line"></span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">string</span> new_manifest_file;</span><br><span class="line">	<span class="comment">//  没有理由在这里解锁*mu，因为我们只在第一次调用LogAndApply时（打开数据库时）碰到这个路径。</span></span><br><span class="line">	new_manifest_file = DescriptorFileName(dbname_, manifest_file_number_);</span><br><span class="line">	<span class="comment">// 写入mainfest文件</span></span><br><span class="line">	env_-&gt;NewWritableFile(new_manifest_file, &amp;descriptor_file_);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写入版本信息快照</span></span><br><span class="line">	WriteSnapshot(descriptor_log_);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 把记录写到 MANIFEST中</span></span><br><span class="line"></span><br><span class="line">	descriptor_log_-&gt;AddRecord(record);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//如果创建了新的文件，则将当前版本指向这个文件</span></span><br><span class="line"></span><br><span class="line">	SetCurrentFile(env_, dbname_, manifest_file_number_);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 注册新版本</span></span><br><span class="line">	</span><br><span class="line">	AppendVersion(v);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> Status::OK();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关键部分注释已给出，这里的<strong>Mainfest</strong>细节在之前没有提到过，在作者提供的<code>impl.md</code>是这样介绍mainfest的：</p>
+<blockquote>
+<p>MANIFEST 文件列出了组成每个级别的排序表集、相应的键范围和其他重要的元数据。 每当重新打开数据库时，都会创建一个新的 MANIFEST 文件（文件名中嵌入了一个新编号）。 MANIFEST 文件被格式化为日志，并且对服务状态所做的更改（随着文件的添加或删除）被附加到此日志中。</p>
+</blockquote>
+<p>从个人的角度来看，这个文件有点类似BigTable中的元数据<code>Meta</code>。</p>
+<p><strong>SSTable文件格式</strong></p>
+<p>理解这部分不需要急着看源代码，在仓库中的<code>table_format.md</code>的文件中同样有相关描述，这里就直接照搬官方文档翻译了：</p>
+<blockquote>
+<p>leveldb 文件格式<br><beginning_of_file><br>[数据块 1]<br>[数据块 2]<br>…<br>[数据块N]<br>[元块 1]<br>…<br>[元块K]<br>[元索引块]<br>[索引块]<br>[页脚]（固定大小；从 file_size - sizeof(Footer) 开始）<br><end_of_file></p>
+</blockquote>
+<p>我们可以根据描述画一个对应的结构图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204172242656.png" alt=""></p>
+<p>上面的结构图从上至下的介绍如下：</p>
+<ul>
+<li>数据块：按照LSM-Tree的数据存储规范，按照key/value的顺序形式进行排序，数据块根据<code>block.builder.cc</code>的内部逻辑进行格式化，并且可以选择是否压缩存储。</li>
+<li>元数据块：元数据块和数据块类似也使用<code>block.builder.cc</code>进行格式化，同时可选是否压缩，元数据块后续扩展更多的类型（主要用作数据类型记录）</li>
+<li>“元索引”块：为每个其他元数据块索引，键为元块的名称，值为指向该元块的 BlockHandle。</li>
+<li>“索引块”：包含数据块的索引，键是对应<strong>字符串&gt;=数据块的最后一个键</strong>，并且在连续的数据块的第一个键之前，值是 数据块的 BlockHandle。</li>
+<li>文件的最后是一个固定长度的页脚，其中包含元索引和索引块的 BlockHandle 以及一个<strong>幻数</strong>。</li>
+</ul>
+<blockquote>
+<p>幻数又被称为魔数，比如JAVA的字节码第一个字节8位是<code>CAFEBABE</code>，数值和字节大小没什么意义，更多是作者的兴趣。</p>
+</blockquote>
+<p>注意Footer页脚固定48个字节的大小，我们能在其中拿到 <strong>元索引块</strong> 和 <strong>索引块</strong>的位置，然后通过这两个索引寻找其他值对应的位置。</p>
+<p>更详细的内容可以继续参考<code>table_format.md</code>介绍，这里就不再赘述了。</p>
+<p><strong>TableBuilder</strong>：</p>
+<p>SSTable接口定义于一个<code>TableBuilder</code>构建器当中，<strong>TableBuilder</strong> 提供了用于构建 Table 的接口，关于此接口的定义如下：</p>
+<p>TableBuilder提供了用于建立表的接口  (一个从键到值的不可变和排序的映射)。</p>
+<p>多个线程可以在一个TableBuilder上调用const方法而不需要外部同步。但如果任何一个线程可能调用一个非常量方法，所有访问同一个TableBuilder的线程必须使用外部同步。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TableBuilder 提供了用于构建 Table 的接口</span></span><br><span class="line"><span class="comment">//（从键到值的不可变且排序的映射）。</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// 多个线程可以在 TableBuilder 上调用 const 方法，而无需</span></span><br><span class="line"><span class="comment">// 外部同步，但如果任何线程可能调用</span></span><br><span class="line"><span class="comment">// 非常量方法，所有访问同一个 TableBuilder 的线程都必须使用</span></span><br><span class="line"><span class="comment">// 外部同步。</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LEVELDB_EXPORT</span> <span class="title">TableBuilder</span> &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">	TableBuilder(<span class="keyword">const</span> Options&amp; options, WritableFile* file);</span><br><span class="line">	</span><br><span class="line">	TableBuilder(<span class="keyword">const</span> TableBuilder&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">	</span><br><span class="line">	TableBuilder&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> TableBuilder&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	改变该构建器所使用的选项。注意：只有部分的</span></span><br><span class="line"><span class="comment">	选项字段可以在构建后改变。如果一个字段是</span></span><br><span class="line"><span class="comment">	不允许动态变化，并且其在结构中的值</span></span><br><span class="line"><span class="comment">	中的值与传递给本方法的结构中的值不同。</span></span><br><span class="line"><span class="comment">	结构中的值不同，该方法将返回一个错误</span></span><br><span class="line"><span class="comment">	而不改变任何字段。</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	<span class="function">Status <span class="title">ChangeOptions</span><span class="params">(<span class="keyword">const</span> Options&amp; options)</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Add</span><span class="params">(<span class="keyword">const</span> Slice&amp; key, <span class="keyword">const</span> Slice&amp; value)</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Flush</span><span class="params">()</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function">Status <span class="title">status</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function">Status <span class="title">Finish</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	表示应该放弃这个建设者的内容。停止</span></span><br><span class="line"><span class="comment">	在此函数返回后停止使用传递给构造函数的文件。</span></span><br><span class="line"><span class="comment">	如果调用者不打算调用Finish()，它必须在销毁此构建器之前调用Abandon()</span></span><br><span class="line"><span class="comment">	之前调用Abandon()。</span></span><br><span class="line"><span class="comment">	需要。Finish()、Abandon()未被调用。</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Abandon</span><span class="params">()</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">uint64_t</span> <span class="title">NumEntries</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">uint64_t</span> <span class="title">FileSize</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span>:</span><br><span class="line">	</span><br><span class="line">		<span class="function"><span class="keyword">bool</span> <span class="title">ok</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> status().ok(); &#125;</span><br><span class="line">		</span><br><span class="line">		<span class="function"><span class="keyword">void</span> <span class="title">WriteBlock</span><span class="params">(BlockBuilder* block, BlockHandle* handle)</span></span>;</span><br><span class="line">		</span><br><span class="line">		<span class="function"><span class="keyword">void</span> <span class="title">WriteRawBlock</span><span class="params">(<span class="keyword">const</span> Slice&amp; data, CompressionType, BlockHandle* handle)</span></span>;</span><br><span class="line">		</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">Rep</span>;</span></span><br><span class="line">		</span><br><span class="line">		Rep* rep_;</span><br><span class="line">	</span><br><span class="line">	&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>小结</strong>：</p>
+<p>SSTable 相关的设计在整个LevelDB中有着重要的地位和作用，我们介绍了SSTable的多层级合并和压缩的细节，以及两种不同的压缩形式，第一种是针对Level0的简单压缩，简单压缩只需要把存在于内存中的SSTable也就是将Imumemtable压缩到磁盘中存储，特别注意的是这个动作在第一次完成之后通常还会再执行一次，目的是为了防止合并之后产生的。</p>
+<p>另一种是针对频繁Key查询进行的多层级压缩，多层级压缩要比简单压缩复杂许多，但是多层级压缩是提高整个LevelDB写入性能和查询性能到关键。</p>
+<p>最后，从LevelDB中也可以看到很多经典数据结构和算法的实现，比键管理利用了跳表+归并排序的方式提高管理效率，排序的内容不仅利于查询，在存储的时候也有利于数据的顺序扫描。</p>
+<h2 id="Skiplist跳表"><a href="#Skiplist跳表" class="headerlink" title="Skiplist跳表"></a>Skiplist跳表</h2><p>跳表不仅在LevelDb中使用，还在许多其他的中间件中存在实现，这一部分内容将会放到下一篇文章单独介绍。</p>
+<p>压缩文件使用了归并排序的方式进行键合并，而内部的数据库除了归并排序之外还使用了比较关键的[[LSM-Tree - LevelDb Skiplist跳表]]来进行有序键值管理，在了解LevelDB跳表的细节之前，需要先了解跳表这个数据结构的基本概念。</p>
+<p>[[LevelDb跳表实现]]</p>
+<h2 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h2><p>Bloom Filter是一种空间效率很高的随机数据结构，它利用位数组很简洁地表示一个集合，并能判断一个元素是否属于这个集合。Bloom Filter的这种高效是有一定代价的：在判断一个元素是否属于某个集合时，有可能会把不属于这个集合的元素误认为属于这个集合（false positive）。因此，Bloom Filter不适合那些“零错误”的应用场合。而在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误换取了存储空间的极大节省。</p>
+<p>leveldb中利用布隆过滤器判断指定的key值是否存在于sstable中，若过滤器表示不存在，则该key一定不存在，由此加快了查找的效率。</p>
+<p>布隆过滤器在不同的开源组件中用的也比较多，所以这里同样放到了一篇单独文章讲解。</p>
+<p>[[LSM-Tree - LevelDb布隆过滤器]]</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>LevelDB的设计还是很有意思的，关键是大部分的代码都有解释和介绍。</p>
+<p>源代码内容很多，但是仔细分析的话不难分析，感谢看到最后。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9sZXZlbGRiLWhhbmRib29rLnJlYWR0aGVkb2NzLmlvL3poL2xhdGVzdC9pbmRleC5odG1s" title="https://leveldb-handbook.readthedocs.io/zh/latest/index.html">leveldb-handbook<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kcmF2ZW5lc3MubWUvYmlndGFibGUtbGV2ZWxkYi8=" title="https://draveness.me/bigtable-leveldb/">bigtable-leveldb<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC85ZDgyOTY1NjI4MDY=" title="https://www.jianshu.com/p/9d8296562806">Skip List–跳表（全网最详细的跳表文章没有之一） - 简书 (jianshu.com)<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ppYW9tZW5nL2FydGljbGUvZGV0YWlscy8xNDk1NTAw" title="https://blog.csdn.net/jiaomeng/article/details/1495500"># Bloom Filter概念和原理<i class="fa fa-external-link"></i></span></li>
+</ul>
+<h1 id="相关阅读"><a href="#相关阅读" class="headerlink" title="相关阅读"></a>相关阅读</h1><ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTcyMDIwNQ==" title="https://segmentfault.com/a/1190000041720205">LSM-Tree - LevelDb了解和实现<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTY1MjAwMw==" title="https://segmentfault.com/a/1190000041652003">《数据密集型型系统设计》LSM-Tree VS BTree<i class="fa fa-external-link"></i></span></li>
+</ul>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/05/21/leveldb-source/" title="LSM-Tree - LevelDb 源码解析">https://whitestore.top/2022/05/21/leveldb-source/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/21/leveled-bloom/" rel="prev" title="LSM-Tree - LevelDb 布隆过滤器">
+      <i class="fa fa-chevron-left"></i> LSM-Tree - LevelDb 布隆过滤器
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/21/szygw/" rel="next" title="《生之欲》观影感悟">
+      《生之欲》观影感悟 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LSM-Tree-LevelDb-源码解析"><span class="nav-number">1.</span> <span class="nav-text">LSM-Tree - LevelDb 源码解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#源码运行"><span class="nav-number">2.1.</span> <span class="nav-text">源码运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#底层存储存储结构"><span class="nav-number">2.2.</span> <span class="nav-text">底层存储存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#write部分"><span class="nav-number">2.3.</span> <span class="nav-text">write部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#log部分"><span class="nav-number">2.4.</span> <span class="nav-text">log部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSTable操作"><span class="nav-number">2.5.</span> <span class="nav-text">SSTable操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Skiplist跳表"><span class="nav-number">2.6.</span> <span class="nav-text">Skiplist跳表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#布隆过滤器"><span class="nav-number">2.7.</span> <span class="nav-text">布隆过滤器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">3.</span> <span class="nav-text">写在最后</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关阅读"><span class="nav-number">5.</span> <span class="nav-text">相关阅读</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

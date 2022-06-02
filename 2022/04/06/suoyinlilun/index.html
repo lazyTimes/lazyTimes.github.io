@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Mysql索引和查询优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="三高Mysql - Mysql索引和查询优化（偏理论部分）">
+<meta property="og:url" content="https://whitestore.top/2022/04/06/suoyinlilun/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Mysql索引和查询优化">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203201510470.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203201508589.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203201521740.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203212336431.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204051714387.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204051721828.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204051830883.png">
+<meta property="article:published_time" content="2022-04-06T06:05:30.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.829Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="三高mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203201510470.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/04/06/suoyinlilun/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>三高Mysql - Mysql索引和查询优化（偏理论部分） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/04/06/suoyinlilun/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          三高Mysql - Mysql索引和查询优化（偏理论部分）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-06 14:05:30" itemprop="dateCreated datePublished" datetime="2022-04-06T14:05:30+08:00">2022-04-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93-mysql/" itemprop="url" rel="index"><span itemprop="name">数据库-mysql</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/04/06/suoyinlilun/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/06/suoyinlilun/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+            <div class="post-description">Mysql索引和查询优化</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="三高Mysql-Mysql索引和查询优化（偏理论部分）"><a href="#三高Mysql-Mysql索引和查询优化（偏理论部分）" class="headerlink" title="三高Mysql - Mysql索引和查询优化（偏理论部分）"></a>三高Mysql - Mysql索引和查询优化（偏理论部分）</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>​    内容为慕课网的”高并发 高性能 高可用 MySQL 实战”视频的学习笔记内容和个人整理扩展之后的笔记，本节内容讲述的索引优化的内容，另外本部分内容涉及很多优化的内容，所以学习的时候建议翻开《高性能Mysql》第六章进行回顾和了解，对于Mysql数据的开发同学来说大致了解内部工作机制是有必要的。</p>
+<p>​    由于文章内容过长，所以这里拆分为两部分，上下部分的内容均使用<strong>sakila-db</strong>，也就是mysql的官方案例。第一部分讲述优化的理论和Mysql过去的优化器设计的缺陷，同时会介绍更高的版本中如何修复完善这些问题的（但是从个人看来新版本那些优化根本算不上优化，甚至有的优化还是照抄的Mysql原作者的实现的，发展了这么多年才这么一点成绩还是要归功于Oracle这种极致商业化公司的功劳）。</p>
+<blockquote>
+<p>如果内容比较难，可以跟随《Mysql是怎么样运行》个人读书笔记专栏补补课，个人也在学习和同步更新中。</p>
+<p>地址如下：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vY29sdW1uLzcwMjQzNjM0NzY2NjM3MzAyMDfjgII=" title="https://juejin.cn/column/7024363476663730207。">https://juejin.cn/column/7024363476663730207。<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="【知识点】"><a href="#【知识点】" class="headerlink" title="【知识点】"></a>【知识点】</h1><ul>
+<li>Mysql索引内容的介绍</li>
+<li>索引的使用策略和使用规则</li>
+<li>查询优化排查，简单了解Mysql各个组件的职责</li>
+</ul>
+<h1 id="前置准备"><a href="#前置准备" class="headerlink" title="前置准备"></a>前置准备</h1><h2 id="sakila-db"><a href="#sakila-db" class="headerlink" title="sakila-db"></a>sakila-db</h2><p>​    sakila-db是什么？国外很火的一个概念，指的是国外的电影租赁市场使用租赁的方式进行电影的观看十分受外国的喜欢。这里介绍是因为后续的内容都用到了这个案例。所以我们需要提前把相关的环境准备好，从如下地址进行下载：</p>
+<p>​    下载地址：<span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9pbmRleC1vdGhlci5odG1s" title="https://dev.mysql.com/doc/index-other.html">https://dev.mysql.com/doc/index-other.html<i class="fa fa-external-link"></i></span></p>
+<blockquote>
+<p>《高性能Mysql》的SQL 案例也是使用官方的example</p>
+</blockquote>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203201510470.png" alt=""></p>
+<h2 id="work-bench"><a href="#work-bench" class="headerlink" title="work-bench"></a>work-bench</h2><p>​    work-bench是官方开发的数据库关系图的可视化工具，使用官方案例的具体关系图展示效果如下，通过这些图可以看到Sakila-db之间的大致关系：</p>
+<blockquote>
+<p>work-bench也是开源免费软件，下载地址如下：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2Rvd25sb2Fkcy93b3JrYmVuY2gv" title="https://dev.mysql.com/downloads/workbench/">https://dev.mysql.com/downloads/workbench/<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203201508589.png" alt="sakila-db示意图"></p>
+<p>​    安装workbench和下载sakila-db的方式这里不做记录，在运行的时候需要注意先建立一个数据库运行sheme文件，然后执行data的sql文件，最终在navicat中查看数据：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203201521740.png" alt="数据库关系图"></p>
+<h1 id="正文部分"><a href="#正文部分" class="headerlink" title="正文部分"></a>正文部分</h1><h2 id="索引类型"><a href="#索引类型" class="headerlink" title="索引类型"></a>索引类型</h2><p>​    首先是索引的特点以及作用：</p>
+<ol>
+<li><p>索引的目的是为了提升数据的效率。</p>
+</li>
+<li><p>对于ORM框架来说索引的使用至关重要，但是ORM的优化往往难以顾及所有业务情况，后续被逐渐废弃。</p>
+</li>
+<li><p>不同的索引类型适用于不同的场景。</p>
+</li>
+<li><p>索引关键在于减少数据需要扫描的量，同时避免服务器内部对内容排序和临时表（因为临时表会索引失效），随机IO转顺序IO等特点</p>
+</li>
+</ol>
+<p>​    </p>
+<p>​    下面介绍Mysql相关的索引类型：</p>
+<ul>
+<li>哈希索引：哈希索引适合全值匹配和精确查找，查询的速度非常快 在MySQL中只有memory存储引擎显式支持此索引，memory还支持非唯一哈希索引的，是哈希索引设计里面比较特殊的。</li>
+<li>空间索引：空间索引是myisam表支持，主要用作地理数据存储，这里包含一个叫做GIS的玩意，但是GIS在Postgre中使用比MySQL要出色很多，所以mysql中空间索引是无关紧要的东西。</li>
+<li>全文索引：全文索引也是myisam独有支持的一种索引类型。适合使用的场景为全值匹配的场景和关键字查询，对于大文本的关键字匹配可以有效处理。</li>
+<li>聚簇索引：聚簇索引是innodb存储引擎的默认存储引擎。</li>
+<li>前缀压缩索引：注意这个索引针对的是myisam存储引擎，目的是为了让索引放入内存中排序，，前缀压缩的方法是首先保存索引块的第一个值，然后在保存第二个值，存储第二个值类似（长度,索引值）的形式存放前缀索引。</li>
+</ul>
+<p>其他索引类型注意事项：</p>
+<p>​    Archive 在5.1之后才支持单列自增索引。</p>
+<p>​    MyISAM 支持压缩之后的前缀索引，使得数据结构占用更小。</p>
+<p><strong>哈希索引</strong></p>
+<p>​    在Mysql中唯一显式实现哈希索引的存储引擎为Memory，Memory是存在非唯一哈希索引，同时BTree也支持“自适应哈希索引的方式“兼容哈希索引。</p>
+<p>下面是哈希索引特点：</p>
+<ul>
+<li>键存储的是索引哈希值，注意不是索引值本身，而值存储的是指向行的指针</li>
+<li>注意此哈希索引无法避免行扫描，但是在内存中指针非常快通常可以忽略不计</li>
+<li>注意只有哈希值按照顺序排序，但是行指针不是按照顺序排序</li>
+<li>哈希不支持：部分索引覆盖，只支持全索引覆盖，因为使用全部的索引列计算哈希值</li>
+<li>哈希索引支持等值匹配操作不支持范围查询，比如等于，in子查询，不全等。</li>
+<li>如果出现哈希冲突，哈希索引将退化为链表顺序查询，同时维护索引的开销也会变大</li>
+</ul>
+<p><strong>聚簇索引</strong></p>
+<p>​    聚簇表示数据行的值紧凑存储在一起。而innodb聚簇的值就是主键的值，所以通常使用都是主键上的索引，针对主键索引的选择十分重要。由于本部分着重索引优化，聚簇索引这里就不再讲述了。</p>
+<p>​    MyISam和Innodb的主键索引区别是MyISam的索引很简单，因为数据行只包含行号，所以索引<strong>直接存储列值和行号</strong>，数据单独存放另一处，类似于一个唯一非空索引，索引和数据不在一处，MyISam的索引设计比InnoDB简单很多，这和MyIsam不需要支持事务也有直接关系，而innodb将索引和行数据放入一个数据结构，将列进行紧凑的存储。</p>
+<p>​    </p>
+<p>聚簇索引有下面优点</p>
+<ul>
+<li>紧凑存储数据行，所以可以只扫描少量磁盘就可以获取到数据</li>
+<li>数据访问的速度非常快，索引和数据放在同一颗BTree中，比非聚簇索引查询快很多</li>
+<li>覆盖索引可以直接<strong>减少回表</strong></li>
+</ul>
+<p>当然索引也有下面的缺点：</p>
+<ul>
+<li>对于非IO密集型应用，聚簇索引的优化无意义。</li>
+<li>插入速度依赖于插入顺序，但是如果不是自增插入则需要optimize table重新组织表。</li>
+<li>更新代价非常高，因为BTree要保证顺序排序需要挪动数据页位置和指针。</li>
+<li>主键数据插入过满数据页存在页分裂问题，行溢出会导致存储压力加大。</li>
+<li>聚簇索引导致全表扫描变慢，页分裂导致数据问题等。</li>
+<li>二级索引需要回表查询聚簇索引才能查询数据。</li>
+<li>二级索引由于需要存储主键开销会更大，至少在InnoDb中维护一个二级索引的开销是挺大的。</li>
+</ul>
+<p>压缩索引</p>
+<p>​    压缩索引的特点是使用更少的空间存放尽可能多的内容，但是这样的处理方式仅仅适用于IO密集型的系统，压缩前缀存储形式最大的缺陷是无法使用二分法进行查找，同时如果使用的倒序索引的方式比如order by desc 的方式可能会因为压缩索引的问题存在卡顿的情况。</p>
+<p>Bree索引的特点</p>
+<ul>
+<li><p>叶子结点存在逻辑页和索引页两种，通常非最底层叶子结点都是索引页，最底层索引页由链表串联。</p>
+</li>
+<li><p>Btree索引会根据<strong>建表顺序</strong>对于索引值进行排序，索引建表时候建议将经常查询的字段往前挪。</p>
+</li>
+<li><p>Btree索引适合的查询类型：<strong>前缀查询，范围查询，键值查询（哈希索引）</strong>。</p>
+</li>
+</ul>
+<p>自适应哈希索引</p>
+<p>​    当innodb发现某些索引列和值使用频繁的时候，BTree会在此基础上自动创建哈希索引辅助优化，但是这个行为是不受外部控制的，完全是内部的优化行为，如果不需要可以考虑关闭。</p>
+<p>Btree查询类型</p>
+<p>​    针对Innodb的Btree索引，有下面几种常见的查询方式：</p>
+<ul>
+<li>全值匹配：等值匹配的方式，全值匹配适合哈希索引进行查询</li>
+<li>最左匹配原则：二级索引的查询条件放在where最左边</li>
+<li>前缀匹配：只使用索引的第一列，并且like ‘xxx%’</li>
+<li>范围匹配：范围匹配索引列到另一列之间的值</li>
+<li>范围查询和精确匹配结合，一个全值匹配，一个范围匹配</li>
+<li>覆盖索引查询：覆盖索引也是一种查询方式，</li>
+</ul>
+<h2 id="索引策略"><a href="#索引策略" class="headerlink" title="索引策略"></a>索引策略</h2><p>​    下面是关于建立索引的一些常见策略：</p>
+<ol>
+<li>第一件事情需要考虑的是预测那些数据为热点数据或者热点列，按照《高性能Mysql》介绍，对于热点列来说有时候要违背最大选择性的原则，通过建立时常搜索的索引作为最左前缀的默认的设置。同时优化查询需要考虑所有的列，如果一个查询的优化会破坏另一个查询，那么就需要优化索引的结构。</li>
+<li>第二件事情是考虑where的条件组合，通过组合多种where条件，需要考虑的是尽可能让查询重用索引而不是大规模的建立新索引。</li>
+<li>避免多个范围进行扫描，一方面是范围查询会导致，但是对于多个等值的条件查询，最好的办法是尽量控制搜索范围。</li>
+</ol>
+<p>​    </p>
+<p>​    对于索引的策略我们还需要了解下面的细节</p>
+<ul>
+<li>单行访问很慢，特别是随机访问要比顺序访问要慢更多，一次性加载很多数据页会造成性能的浪费。</li>
+<li>顺序访问范围数据很快，顺序IO的速度不需要多磁道查找，比随机的访问IO块很多，顺序访问也可以使用group by进行聚合计算。</li>
+<li>索引覆盖速度很快，如果查询字段包含了索引列，就不需要回表。</li>
+</ul>
+<p>索引碎片优化</p>
+<p>​    Innodb的数据结构和特性会导致索引存在数据碎片，对于任何存储结构来说顺序的存储结构是最合适的，并且索引顺序访问要比随机访问快更多，数据存储的碎片比索引本身复杂很多，索引碎片通常包含下面的情况：</p>
+<ul>
+<li>行碎片：数据行的数据被存储在多个数据页当中，碎片可能会导致性能的下降。</li>
+<li>行间碎片：逻辑顺序上的页，行在磁盘上不顺序存储，行间数据碎片会导致全表扫描。</li>
+<li>剩余空间碎片：数据页的间隙有大量的垃圾数据导致的浪费。</li>
+</ul>
+<p>​    对于上面几点，对于myisam 都有可能出现，但是innodb的行碎片不会出现，内部会移动碎片重写到一个片段。</p>
+<p>​    索引碎片的处理方式：在Mysql中可以通过<code>optimize table</code>导入和导出的方式重新整理数据，防止数据碎片问题。</p>
+<p>​    </p>
+<p>索引规则</p>
+<ul>
+<li>索引必须按照索引顺序从左到右匹配</li>
+<li>如果在查询中间出现范围，则范围查询之后的索引失效</li>
+<li>不能跳过索引列的方式查询（和B+tree索引数据结构设计有关系）</li>
+</ul>
+<p>​    接着是索引顺序问题，由于BTree的结构特性，索引都是按照建立顺序进行查找的，通常不包含排序和分组的情况下，把选择性最高的索引放在最左列是一个普遍正确策略。</p>
+<p>​    如何查看索引基数：<code>show index from sakila.actor</code>，还有一种方式是通过<code>information_schema.statistics</code> 表查询这些信息，可以编写为一个查询给出选择性较低的索引。</p>
+<p>​    当innodb打开某些表的时候会触发索引信息的统计，比如打开<code>information_schema</code>表或者使用<code>show table status</code>和<code>show index</code>的时候，所以如果在系统要运行压力较大的业务时期尽量避开这些操作。</p>
+<p><strong>冗余重复索引</strong></p>
+<p>​    Mysql允许同一个列上创建多种类型的索引，有时候会因为建表的特性问题给字段重复建索引造成不必要的性能浪费。冗余索引和重复索引有什么区别？</p>
+<p>​    冗余索引：是符合最左匹配法则的情况下重复对相同列建立索引。</p>
+<p>​    重复索引：是对于不最做的方式创建的索引就有可能是重复创建索引。</p>
+<p>​    比如联合索引：(A,B) 如果在创建 （A）或者（A，B）都是重复索引，但是创建（B）就不是重复索引而是冗余索引。另外某些十分特殊的情况下可能用到冗余索引，但是这会极大的增加索引维护的开销，最为直观的感受是插入、更新、删除的开销变得很大。</p>
+<p><strong>多列索引</strong></p>
+<p>​    首先多列索引不是意味着<code>where</code>字段出现的地方就需要加入，其次多列索引虽然在现在主流使用版本中（5.1版本之后）实现了索引内部合并，也就是使用<code>and or</code>或者<code>and</code>和<code>or</code>合并的方式相交使用索引，但是他存在下面几个缺点</p>
+<ul>
+<li>内部优化器的合并和计算十分耗费CPU的性能，索引反而增加数据查询复杂度，效率也不好</li>
+<li>往往会存在优化过度的情况，导致运行效果还不如全表扫描</li>
+<li>出现多列索引合并通常意味着建立索引的方式不对，存在反向优化的嫌疑</li>
+</ul>
+<p><strong>文件排序</strong></p>
+<p>​    文件排序遵循Innodb的Btree索引的最基本原则：<strong>最左前缀原则</strong>，如果索引列的顺序和order by排序一致，并且查询列都和排序列都一样才会用索引替代排序，对于多表查询则排序字段<strong>全为第一个表</strong>才能进行索引排序。但是有一个特例那就是排序字段的前导列为<strong>常量</strong>的时候依然可以使用索引排序。</p>
+<p>​    案例：rental 表的联合索引列进行排序</p>
+<blockquote>
+<p>Backward index scan 是 MySQL-8.0.x 针对上面场景的一个专用优化项，它可以从索引的后面往前面读，性能上比加索引提示要好的多</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">select</span> rental_id,staff_id <span class="keyword">from</span> rental <span class="keyword">where</span> rental_date = <span class="string">'2005-05-25'</span> <span class="keyword">order</span> <span class="keyword">by</span> inventory_id <span class="keyword">desc</span>, customer_id <span class="keyword">asc</span>;</span><br><span class="line"><span class="comment">-- 1 SIMPLE rental ref rental_date rental_date 5 const 1 100.00 Using filesort</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">select</span> rental_id,staff_id <span class="keyword">from</span> rental <span class="keyword">where</span> rental_date = <span class="string">'2005-05-25'</span> <span class="keyword">order</span> <span class="keyword">by</span> inventory_id <span class="keyword">desc</span>;</span><br><span class="line"><span class="comment">-- Backward-index-scan</span></span><br><span class="line"><span class="comment">-- Backward index scan 是 MySQL-8.0.x 针对上面场景的一个专用优化项，它可以从索引的后面往前面读，性能上比加索引提示要好的多</span></span><br><span class="line"><span class="comment">-- 1 SIMPLE rental ref rental_date rental_date 5 const 1 100.00 Backward index scan</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">select</span> rental_id,staff_id <span class="keyword">from</span> rental <span class="keyword">where</span> rental_date = <span class="string">'2005-05-25'</span> <span class="keyword">order</span> <span class="keyword">by</span> inventory_id, staff_id;</span><br><span class="line"><span class="comment">-- 1 SIMPLE rental ref rental_date rental_date 5 const 1 100.00 Using filesort</span></span><br><span class="line"><span class="comment">-- 无法使用索引</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">select</span> rental_id,staff_id <span class="keyword">from</span> rental <span class="keyword">where</span> rental_date &gt; <span class="string">'2005-05-25'</span> <span class="keyword">order</span> <span class="keyword">by</span> inventory_id, customer_id;</span><br><span class="line"><span class="comment">-- 1 SIMPLE rental ALL rental_date 16008 50.00 Using where; Using filesort</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">select</span> rental_id,staff_id <span class="keyword">from</span> rental <span class="keyword">where</span> rental_date = <span class="string">'2005-05-25'</span> <span class="keyword">and</span> inventory_id <span class="keyword">in</span> (<span class="number">1</span>,<span class="number">2</span>) <span class="keyword">order</span> <span class="keyword">by</span> customer_id;</span><br><span class="line"><span class="comment">-- 1 SIMPLE rental range rental_date,idx_fk_inventory_id rental_date 8 2 100.00 Using index condition; Using filesort</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> actor_id, title <span class="keyword">from</span> film_actor <span class="keyword">inner</span> <span class="keyword">join</span> film <span class="keyword">using</span>(film_id) <span class="keyword">order</span> <span class="keyword">by</span> actor_id;</span><br><span class="line"><span class="comment">-- 1 SIMPLE film index PRIMARY idx_title 514 1000 100.00 Using index; Using temporary; Using filesort</span></span><br><span class="line"><span class="comment">-- 1 SIMPLE film_actor ref idx_fk_film_id idx_fk_film_id 2 sakila.film.film_id 5 100.00 Using index</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="查询优化排查"><a href="#查询优化排查" class="headerlink" title="查询优化排查"></a>查询优化排查</h2><p>​    查询优化的排查意味着我们需要先了解Mysql的各个组件在各步骤中做了哪些事情，下面这张图来自于《高性能Mysql》，对于一次客户端的请求，大致分为下面的流程：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202203212336431.png" alt=""></p>
+<ol>
+<li><p>客户端发送请求</p>
+</li>
+<li><p>服务器查询执行缓存</p>
+<ul>
+<li>不重要，8.0之后已经删除</li>
+</ul>
+</li>
+<li><p>服务端进行SQL解析和预处理</p>
+<ul>
+<li>权限检查</li>
+<li>词法解析</li>
+<li>语法树</li>
+</ul>
+</li>
+<li><p><strong>优化器生成执行计划</strong></p>
+<ul>
+<li><p>优化器存在的问题？</p>
+</li>
+<li><p>优化器如何工作？</p>
+</li>
+</ul>
+</li>
+<li><p>根据执行计划调用存储引擎的APi接口执行查询</p>
+</li>
+<li><p>结果返回客户端</p>
+</li>
+</ol>
+<p>​    对于关系型的数据库来说，核心部分在于查询优化器和执行计划的部分，因为不管我们如何编写SQL语句，如果没有强大的优化器和执行计划那么一切都是空谈，所以本部分的重点也会围绕优化器进行讲解，在此之前我们先看看其他组件的工作：</p>
+<p>​    首先查询缓存不需要过多解释，他的作用是当用户重复执行一个查询的时候会内部对于结果进行缓存，但是一旦用户修改查询条件，缓存就失效了，在早期的互联网环境中这种处理很不错，可以减少磁盘IO和CPU的压力，但是到了现在的环境下显然不适合，所以8.0删除也是可以理解的。</p>
+<p>​    接着是解析器，解析器这部分主要工作是通过解析语法形成解析树对于语句进行预处理，预处理可以类看作我们编译器把我们写的编程语句“翻译”为机器代码的过程，让下一步的优化器可以认识这颗解析树去进行解析，</p>
+<p>​    如果想要了解SQL解析优化的底层过程，可以从这篇文章入手：</p>
+<p>​    <span class="exturl" data-url="aHR0cHM6Ly90ZWNoLm1laXR1YW4uY29tLzIwMTgvMDUvMjAvc3FsLXBhcnNlci11c2VkLWluLW10ZHAuaHRtbA==" title="https://tech.meituan.com/2018/05/20/sql-parser-used-in-mtdp.html">SQL解析在美团的应用 - 美团技术团队 (meituan.com)<i class="fa fa-external-link"></i></span></p>
+<p>​    在上面的博客中提到了一个DBA必须掌握的工具<strong>pt-query-digest</strong>，分析慢查询日志，下面这个文章中提供了一个实际的案例来排查和优化，案例较为简单适合刚接触这个工具的人进行学习和思考，这里一并列出来了。</p>
+<p>​    <span class="exturl" data-url="aHR0cHM6Ly9hd3MuYW1hem9uLmNvbS9jbi9ibG9ncy9jaGluYS9wdC1xdWVyeS1kaWdlc3QtcmRzLW15c3FsLXNsb3ctc2VhcmNobmV3Lw==" title="https://aws.amazon.com/cn/blogs/china/pt-query-digest-rds-mysql-slow-searchnew/">使用 pt-query-digest 分析 RDS MySQL 慢查询日志 | 亚马逊AWS官方博客 (amazon.com)<i class="fa fa-external-link"></i></span></p>
+<blockquote>
+<p>SQL解析部分笔记：</p>
+<p>词法分析：核心代码在sql/sql_lex.c文件中的，<code>MySQLLex→lex_one_Token</code></p>
+<p><strong>MySQL语法分析树生成过程</strong>：全部的源码在<code>sql/sql_yacc.yy</code>中，在MySQL5.6中有17K行左右代码</p>
+<p>最核心的结构是SELECT_LEX，其定义在<code>sql/sql_lex.h</code>中</p>
+</blockquote>
+<p>​    下面我们来深入看看优化器的部分工作内容以及Mysql优化历史：</p>
+<p>​    由于讲述优化器的内容较少，这里直接总结《高性能Mysql》的内容，优化器也不需要研究和记忆，因为随着版本的迭代不断更新优化器会不断调整，一切要以真实实验为准：</p>
+<p><strong>1. 子查询关联</strong>：</p>
+<p>​    下面的查询在通常情况下我们会认为先进行子查询，然后通过for循环扫描film表进行匹配操作，然后从explain的结果中可以看到这里的查询线进行了全表扫描，然后通过关联索引进行第二层的for循环查询，这样的写法类似<code>exists</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> sakila.film <span class="keyword">where</span> film_id <span class="keyword">in</span> (<span class="keyword">select</span> film_id <span class="keyword">from</span> film_actor <span class="keyword">where</span> actor_id)</span><br><span class="line"><span class="comment">-- 1	SIMPLE	film		ALL	PRIMARY				1000	100.00	</span></span><br><span class="line"><span class="comment">-- 1	SIMPLE	film_actor		ref	idx_fk_film_id	idx_fk_film_id	2	sakila.film.film_id	5	90.00	Using where; Using index; FirstMatch(film)</span></span><br></pre></td></tr></table></figure>
+
+<p>​    优化这个子查询的方式使用关联查询替代子查询，但是需要注意这里存在where条件才会走索引，否则和上面的结果没有区别：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> film.* <span class="keyword">from</span> sakila.film film  <span class="keyword">join</span> film_actor actor <span class="keyword">using</span> (film_id) <span class="keyword">where</span> actor.actor_id = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>​    另一种是使用exists的方式进行关联匹配。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> film <span class="keyword">where</span> <span class="keyword">exists</span> (<span class="keyword">select</span> * <span class="keyword">from</span> film_actor actor <span class="keyword">where</span> actor.film_id =  film.film_id <span class="keyword">and</span> actor.actor_id = <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​    可以看到哪怕到了5.8的版本，Mysql的子查询优化既然没有特别大的改进，所以通常情况下如果不确定in查询的内容大小，建议用exists或者join进行查询，另外也不要相信什么in查询就一定慢点说法，在不同的mysql优化器版本中可能会有不同的效果。</p>
+<p><strong>2. union查询</strong></p>
+<p>​    虽然多数情况下我们会用union替换or，但是更多的情况是应该尽量避免使用union，因为union查询会产生临时表和中间结果集容易导致优化索引失效，需要注意的是 <strong>union</strong>会触发内部的排序动作，也就是说union会等价于<code>order by</code>的排序，如果数据不是强烈要求不能重复，那么更建议使用union all，对于优化器来说这样工作更加简单，直接把两个结果集凑在一起就行，也不会进行排序。</p>
+<p>​    union查询能不用就不用，除非是用来代替or查询的时候酌情考虑是否有必要使用。</p>
+<p>​    最后注意union的产生排序不受控制的，可能会出现意料之外的结果。</p>
+<p><strong>3. 并行查询优化</strong></p>
+<p>​    并行查询优化在8.0中终于有了实现，可以根据参数：<code>innodb_parallel_read_threads =并行数</code>来验证。</p>
+<p>​    由于个人是M1的CPU，读者可以根据自己的实际情况进行实验。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">local</span> innodb_parallel_read_threads = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> payment;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">local</span> innodb_parallel_read_threads = <span class="number">6</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> payment;</span><br></pre></td></tr></table></figure>
+
+<p>从执行结果可以看到仅仅是1万多条数据的count(*)查询就有明显直观的差距：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204051714387.png" alt=""></p>
+<p><strong>4. 哈希关联</strong></p>
+<p>​    官方文档的介绍地址：<span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2hhc2gtam9pbnMuaHRtbA==" title="https://dev.mysql.com/doc/refman/8.0/en/hash-joins.html">Mysql官方文档哈希关联<i class="fa fa-external-link"></i></span></p>
+<p>​    在MySQL 8.0.18中Mysql终于增加了哈希关联的功能。在此之前的版本中，Mysql的优化器通常只支持for循环嵌套关联，曲线救国的方法是建立一个哈希索引或者使用Memory存储引擎，而新版本提供的哈希关联则提供了一种新的对关联方式，哈希关联的方式如下：</p>
+<p>​    把一张小表数据存储到<strong>内存</strong>中的哈希表里，通过匹配大表中的数据计算<strong>哈希值</strong>，并把符合条件的数据从内存中返回客户端。    </p>
+<p>​    对于Mysql的哈希关联，我们直接使用官方的例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t1 (c1 <span class="built_in">INT</span>, c2 <span class="built_in">INT</span>);</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t2 (c1 <span class="built_in">INT</span>, c2 <span class="built_in">INT</span>);</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t3 (c1 <span class="built_in">INT</span>, c2 <span class="built_in">INT</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPLAIN</span></span><br><span class="line">     <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t1</span><br><span class="line">         <span class="keyword">JOIN</span> t2 <span class="keyword">ON</span> t1.c1=t2.c1;</span><br><span class="line"><span class="comment">-- Using where; Using join buffer (hash join)</span></span><br></pre></td></tr></table></figure>
+
+<p>​    除开等值查询以外，Mysql的8.0.20之后提供了更多的支持，比如在 MySQL 8.0.20 及更高版本中，连接不再需要包含至少一个等连接条件才能使用哈希连接，除此之外它还包括下面的内容：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 8.0.20 支持范围查询哈希关联</span></span><br><span class="line"><span class="keyword">EXPLAIN</span>  <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t1 <span class="keyword">JOIN</span> t2 <span class="keyword">ON</span> t1.c1 &lt; t2.c1;</span><br><span class="line"><span class="comment">-- 8.0.20 支持 in关联</span></span><br><span class="line"><span class="keyword">EXPLAIN</span>  <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t1 </span><br><span class="line">        <span class="keyword">WHERE</span> t1.c1 <span class="keyword">IN</span> (<span class="keyword">SELECT</span> t2.c2 <span class="keyword">FROM</span> t2);</span><br><span class="line"><span class="comment">-- 8.0.20 支持 not exists 关联</span></span><br><span class="line"><span class="keyword">EXPLAIN</span>  <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t2 </span><br><span class="line">         <span class="keyword">WHERE</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> (<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> t1.c1 = t2.c2);</span><br><span class="line"><span class="comment">-- 8.0.20 支持 左右外部连接</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t1 <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> t2 <span class="keyword">ON</span> t1.c1 = t2.c1;</span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t1 <span class="keyword">RIGHT</span> <span class="keyword">JOIN</span> t2 <span class="keyword">ON</span> t1.c1 = t2.c1;</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>注意8.0.18版本的哈希关联<strong>仅仅支持join查询</strong>，对于可能会带来笛卡尔积的左连和右连接查询是不支持的。但是在后续的版本中提供了更多查询条件支持</p>
+<p>另外，8.0.20版本之前想要查看是否使用hash join，需要结合 <code>format=tree</code> 选项。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204051721828.png" alt="哈希关联"></p>
+<p>​    最终Mysql在8.0.18版本中曾经提供过开关哈希索引和设置优化器提示<code>optimizer_switch</code>等参数来判定是否给予hash join的提示，真是闲的蛋疼（官方自己也这么认为）所以在8.0.19立马就把这些参数给废弃。</p>
+<p>​    注意哈希连接不是没有限制的，了解哈希关联的流程就会发现如果哈希表过大，会导致整个哈希关联过程在磁盘中完成其速度可想而知，所以官方提供了下面的建议：</p>
+<ul>
+<li>增加<code>join_buffer_size</code>，也就是增加哈希关联的哈希表缓存大小，防止进入磁盘关联。</li>
+<li>增加<code>open_files_limit</code>数量，这个参数什么意思这里就不介绍了，意义是增加这个参数可以增加关联的时候关联次数。</li>
+</ul>
+<blockquote>
+<p>吐槽：说句心里话自Mysql被Oracle收购之后，越来越商业化的同时进步也越来越小，in查询优化这一点其实在很多开源库甚至Mysql的原作者给解决了，但是Mysql到了8.0依然和多年前的《高性能Mysql》结果没有差别。哎。。。。。</p>
+<p>Mysql数据库的发展也告诉我们时刻保持开放的心态，吸取教训正视不足和改进，才不会被时代逐渐淘汰。</p>
+</blockquote>
+<p><strong>5. 松散索引</strong></p>
+<p>​    松散索引在Mysql5.6之后已经支持，松散索引简单理解就是在进行多列索引扫描的时候，即使次索引不是有序的，但是跳过索引是有序的，也可以走索引来快速匹配数据。</p>
+<pre><code>松散索引的优化细节放到了下半部分的文章，这里简单讲述一下大致的工作原理。</code></pre><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204051830883.png" alt=""></p>
+<ol start="6">
+<li><strong>查询同时更新数据</strong></li>
+</ol>
+<p>​    在Postgresql中，支持下面的语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">update</span> tbl_info</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">name</span> = tmp.name</span><br><span class="line"><span class="keyword">from</span> </span><br><span class="line">(<span class="keyword">select</span> <span class="keyword">name</span> <span class="keyword">from</span> tbl_user <span class="keyword">where</span> <span class="keyword">name</span> =<span class="string">'xxx'</span>)</span><br><span class="line">tmp</span><br><span class="line">[<span class="keyword">where</span> ....]</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 比如下面的写法：</span></span><br><span class="line"><span class="keyword">UPDATE</span> <span class="string">`sakila`</span>.<span class="string">`actor`</span> <span class="keyword">SET</span> <span class="string">`first_name`</span> = <span class="string">'PENELOPE'</span></span><br><span class="line"><span class="keyword">from</span> </span><br><span class="line">(<span class="keyword">select</span> address,address_id <span class="keyword">from</span> address <span class="keyword">where</span> address_id = <span class="number">1</span>) tmp</span><br><span class="line"> <span class="keyword">WHERE</span> <span class="string">`actor_id`</span> = <span class="number">1</span> <span class="keyword">and</span> actor.actor_id = tmp.address_id;</span><br></pre></td></tr></table></figure>
+
+<p>​    但是很可惜这种语法在Mysql是没有办法实现也是不支持的，哪怕到了8.0.26依然没有支持，这和Mysql的优化器设计有着本质的关系。</p>
+<ol start="7">
+<li><strong>优化器提示设置</strong></li>
+</ol>
+<p>优化器提示没有多少意义，这里直接略过了。</p>
+<ol start="8">
+<li><strong>最大值和最小值优化</strong></li>
+</ol>
+<p>​    从实际的情况来看Mysql最大值和最小值这两个函数使用并不是很多所以不再进行介绍了，另外无论什么样的数据库都不是很建议频繁使用函数，而是改用业务+简单SQL实现高效索引优化。</p>
+<p>其他慢查询优化</p>
+<p>​    对于慢查询的优化我们需要清楚优化是分为几种类别的，在Mysql中优化策略分为<strong>动态优化</strong>和<strong>静态优化</strong>：静态优化主要为优化更好的写法，比如常数的排序和一些固定的优化策略等，这些动作通常在一次优化过程中就可以完成。而动态优化策略要复杂很多，可能会在执行的过程中优化，有可能在执行过后重新评估执行计划。</p>
+<p>​    静态优化是受优化器影响的，不同版本有不同情况，所以这里讲述动态优化的情况，而动态优化主要包含下面的内容：</p>
+<ul>
+<li>关联表顺序，有时候关联表顺序和查询顺序不一定相同。</li>
+<li>重写外连接为内连接：如果一个外连接关联是没有必要的就优化掉外连接关联。</li>
+<li>等价替换，比如 a&gt;5 and a= 5被优化为a &gt;= 5 ，类似数学的逻辑公式简化</li>
+<li>优化count()、max()、min()等函数：有时候找最大和最小值只需要找最大和最小的索引记录，这时候由于不需要遍历，可以认为直接为哈希的获取记录的方式，所以在查询分析的 extra 里面进行体现（Select tables optimized away），比如：explain select max(actor_id) from actor;</li>
+<li>预估和转化常数：以连接查询为例，如果在查询条件中可以实现预估关联的记录条数，那么对于一个关联查询来说就有可能被优化器作为常数进行优化，因为事先取出记录的条数被优化器知晓。所以优化起来十分简单。</li>
+<li>子查询优化：子查询虽然有可能被索引优化但是需要尽量避免使用。</li>
+<li>覆盖索引扫描：让索引和查询列一致，是非常高效的优化和执行方式</li>
+<li>提前终止查询：提前终止查询指的是当遇到一些查询条件会让查询提前完成，优化器会提前判断加快数据的匹配和搜索速度</li>
+<li>等值传递，如果范围查询可以根据关联表查询优化，那么无需 显式的提示则可以直接搜索数据。</li>
+</ul>
+<p>​    </p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>这里汇总了文章中出现的一些参考资料：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2hhc2gtam9pbnMuaHRtbA==" title="https://dev.mysql.com/doc/refman/8.0/en/hash-joins.html">Mysql官方文档哈希关联<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly90ZWNoLm1laXR1YW4uY29tLzIwMTgvMDUvMjAvc3FsLXBhcnNlci11c2VkLWluLW10ZHAuaHRtbA==" title="https://tech.meituan.com/2018/05/20/sql-parser-used-in-mtdp.html">SQL解析在美团的应用 - 美团技术团队 (meituan.com)<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9hd3MuYW1hem9uLmNvbS9jbi9ibG9ncy9jaGluYS9wdC1xdWVyeS1kaWdlc3QtcmRzLW15c3FsLXNsb3ctc2VhcmNobmV3Lw==" title="https://aws.amazon.com/cn/blogs/china/pt-query-digest-rds-mysql-slow-searchnew/">使用 pt-query-digest 分析 RDS MySQL 慢查询日志 | 亚马逊AWS官方博客 (amazon.com)<i class="fa fa-external-link"></i></span></li>
+</ul>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>​    上半部分以理论为主，下半部分将会着重实战内容进行介绍。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/04/06/suoyinlilun/" title="三高Mysql - Mysql索引和查询优化（偏理论部分）">https://whitestore.top/2022/04/06/suoyinlilun/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/03/touzibubian/" rel="prev" title="《投资中最简单的事》读书笔记 - 寻找不变性">
+      <i class="fa fa-chevron-left"></i> 《投资中最简单的事》读书笔记 - 寻找不变性
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/06/suoyinshizhan/" rel="next" title="三高Mysql - Mysql索引和查询优化（偏实战部分）">
+      三高Mysql - Mysql索引和查询优化（偏实战部分） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#三高Mysql-Mysql索引和查询优化（偏理论部分）"><span class="nav-number">1.</span> <span class="nav-text">三高Mysql - Mysql索引和查询优化（偏理论部分）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#【知识点】"><span class="nav-number">3.</span> <span class="nav-text">【知识点】</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前置准备"><span class="nav-number">4.</span> <span class="nav-text">前置准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sakila-db"><span class="nav-number">4.1.</span> <span class="nav-text">sakila-db</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#work-bench"><span class="nav-number">4.2.</span> <span class="nav-text">work-bench</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#正文部分"><span class="nav-number">5.</span> <span class="nav-text">正文部分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#索引类型"><span class="nav-number">5.1.</span> <span class="nav-text">索引类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引策略"><span class="nav-number">5.2.</span> <span class="nav-text">索引策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询优化排查"><span class="nav-number">5.3.</span> <span class="nav-text">查询优化排查</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">7.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="zgc收集器的实现细节">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解JVM - ZGC收集器">
+<meta property="og:url" content="https://whitestore.top/2022/02/20/jvmzgc/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="zgc收集器的实现细节">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210813223734.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210813230712.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210814103420.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210814104852.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210814155951.png">
+<meta property="article:published_time" content="2022-02-20T12:43:43.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.910Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="zgc收集器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210813223734.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/02/20/jvmzgc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入理解JVM - ZGC收集器 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/jvmzgc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解JVM - ZGC收集器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-20 20:43:43" itemprop="dateCreated datePublished" datetime="2022-02-20T20:43:43+08:00">2022-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/02/20/jvmzgc/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/jvmzgc/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+            <div class="post-description">zgc收集器的实现细节</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入理解JVM-ZGC收集器"><a href="#深入理解JVM-ZGC收集器" class="headerlink" title="深入理解JVM - ZGC收集器"></a>深入理解JVM - ZGC收集器</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    上文讲到了Shenadoah收集器，这一节我们来讲一下ZGC收集器，ZGC收集器是JDK11之后由Oracle官方开发的一款低延迟垃圾收集器。另外这里吐槽一句ZGC的内容非常复杂并且知识点巨多，所以建议泡杯茶边喝边看。</p>
+<p>​    在正式的介绍之前，先看下ZGC支持的内容：</p>
+<blockquote>
+<p>关于ZGC的关键字如下：</p>
+<ul>
+<li>Concurrent（并发）</li>
+<li>Region-based（region）</li>
+<li>Compacting（压缩-整理算法）</li>
+<li>NUMA-aware（NUMA支持）</li>
+<li>Using colored pointers（染色指针）</li>
+<li>Using load barriers（读屏障）</li>
+</ul>
+</blockquote>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ol>
+<li>介绍ZGC收集器，以及ZGC收集器的特点（重点：染色指针）</li>
+<li>了解ZGC的基本工作原理，以及工作流程和步骤</li>
+<li>ZGC的深入学习方式了解（文末）</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="ZGC兼容性"><a href="#ZGC兼容性" class="headerlink" title="ZGC兼容性"></a>ZGC兼容性</h1><h1 id="Supported-Platforms"><a href="#Supported-Platforms" class="headerlink" title="Supported Platforms"></a>Supported Platforms</h1><table>
+<thead>
+<tr>
+<th align="left">Platform</th>
+<th align="left">Supported</th>
+<th align="left">Since</th>
+<th align="left">Comment</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Linux/x64</td>
+<td align="left">YES</td>
+<td align="left">JDK 11</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">Linux/AArch64</td>
+<td align="left">YES</td>
+<td align="left">JDK 13</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">macOS</td>
+<td align="left">YES</td>
+<td align="left">JDK 14</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">Windows</td>
+<td align="left">YES</td>
+<td align="left">JDK 14</td>
+<td align="left">Requires Windows version 1803 (Windows 10 or Windows Server 2019) or later.</td>
+</tr>
+</tbody></table>
+<h1 id="ZGC收集器"><a href="#ZGC收集器" class="headerlink" title="ZGC收集器"></a>ZGC收集器</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>​    ZGC收集器从名称上来看是一个缩写，然而实际上他是<code>Z Garbage Collector</code>的缩写，ZGC和Shenadoah垃圾收集器类似，都是面对低延迟为设计目标的垃圾收集器，并且都希望垃圾收集器的收集时间控制在10ms以内。</p>
+<blockquote>
+<p>可以说Shenandoah是对G1垃圾收集器的扩展和升级。而ZGC更像是对于PGC垃圾收集器和C4垃圾收集器的结合。</p>
+<p>至于PGC和C4是个啥东西，这里简单理解为一款 <strong>实现了标记和整理阶段都全程与用户线程并发运行 的垃圾收集</strong>，但是只能在Azul VM的虚拟机上运行（2005年就实现了，有点牛）</p>
+</blockquote>
+<p>​    如果一定要用一段简单的话介绍的话：ZGC收集器是一个<strong>基于Region</strong>内存布局的，（暂时<strong>）不设置分代</strong>，同时使用了<strong>读屏障</strong>（注意没有使用写屏障），使用了<strong>染色指针</strong>和<strong>内存多重映射</strong>等技术，并且是基于 <strong>标记-整理</strong>算法的，以低延迟为核心的垃圾收集器。</p>
+<p>​    </p>
+<h1 id="ZGC的特点与特性："><a href="#ZGC的特点与特性：" class="headerlink" title="ZGC的特点与特性："></a>ZGC的特点与特性：</h1><p>​    下面来说说ZGC的垃圾收集器的特点，ZGC的特性十分复杂，也是本文最为重点的内容：</p>
+<h2 id="压缩-整理算法"><a href="#压缩-整理算法" class="headerlink" title="压缩-整理算法"></a>压缩-整理算法</h2><p>​    ZGC使用的是<strong>压缩整理+复制算法</strong>进行处理，复制算法用于将存活对象复制到空闲的region。标记整理用于保证收集之后不会出现内存碎片。</p>
+<h2 id="Region"><a href="#Region" class="headerlink" title="Region"></a><strong>Region</strong></h2><p>​    和Shenandoah收集器一样，ZGC使用了region作为堆内存的布局但是ZGC的region具备大中小三个容量的region：</p>
+<ul>
+<li>小型：固定为<strong>2MB</strong>，放置小于256Kb的小对象</li>
+<li>中型：固定为<strong>32MB</strong>，放置大于256Kb以及小于4Mb的对象</li>
+<li>大型：<strong>容量不固定</strong>，可以动态的扩展，但是必须为2MB的整数倍，放置4MB以上的对象，每个大region只会存放一个对象，虽然称作大对象，但是明显可以存放4MB的对象，并且大对象有个比较严重的问题是不能进行重分配（ZGC的处理动作，在工作流程会提到），复制一个大对象的代价十分高昂，所以zgc禁止了这一个操作。</li>
+</ul>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210813223734.png" alt=""></p>
+<h2 id="并发整理算法"><a href="#并发整理算法" class="headerlink" title="并发整理算法"></a><strong>并发整理算法</strong></h2><p>​    ZGC使用的也是是<strong>并发整理</strong>的垃圾回收算法，但是ZGC并发整理是通过<strong>读屏障和转发指针</strong>实现的，和shenandoah的实现方式完全不同。下面我们先来了解一下什么是染色指针。</p>
+<h2 id="染色指针："><a href="#染色指针：" class="headerlink" title="染色指针："></a><strong>染色指针</strong>：</h2><p>​    首先，ZGC使用的转发指针被称为 <strong>染色指针</strong>。染色指针是最纯粹的标记记录存在的方法，它<strong>直接将少量额外的信息存储在指针上</strong>，ZGC盯上的是寻址空间被操作系统占用之后剩下的46位空间的物理地址空间，<strong>将高4位提取出来存储4个标志信息</strong>，虚拟机可以直接通过这几个信息指针看到引用的三色标记状态，是否重分配（移动过），是否只能通过finalize()才能访问到，（64位的linux高18位是占用的）当然只有46位的地址空间也直接导致ZGC能够管理的内存<strong>不可以超过4TB</strong>，使用物理地址空间意味着<strong>不能使用指针压缩技术</strong>。</p>
+<p>​    为了更好的理解，我们来看一下官方源代码中给出的图，说白了染色指针就是用了一部分地址空间来存放一些对象的标记信息，同时在对象移动之后也能保证对象引用的同步移动，0-41 这 42 位就是正常的地址，所以说 ZGC 最大支持 4TB (理论上可以16TB)的内存，因为就只用了42 位用来表示地址，这也决定了他不能进行指针压缩和不支持32位的操作系统，42-45位表示的是标志位，他们就是用来记录对象引用的，同时会指向同一个对象。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210813230712.png" alt=""></p>
+<p>​    这里有一点需要注意的是这几个变量：M0、M1、Remapped、Finalizable。其中，[0~4TB) 对应Java堆，[4TB ~ 8TB) 称为M0地址空间，[8TB ~ 12TB) 称为M1地址空间，[16TB ~ 20TB) 称为Remapped空间。这里有个问题就是<strong>[12TB ~ 16TB)</strong> 这一段空间是没有使用的，<strong>其实染色指针是可以实现到16TB，并且在JDK13中已经实现了</strong>，为什么JDK11没有做呢？就是在这里进行了预留，在JDK13已经将这个预留空间进行的填充，让ZGC支持16G的内存。</p>
+<p>​    ZGC将对象存活信息存储在42~45位中，这与传统的垃圾回收并将对象存活信息放在对象头中完全不同。</p>
+<blockquote>
+<p>对象引用移动在以前是如何实现的？</p>
+<p>​    在以前的实现中，如果想在对象存储额外的信息比如想要收集垃圾收集器的信息，就需要在对象头额外的扩展字段，比如对象头和对象年龄以及对象的锁状态等信息，这些信息在通常情况下是十分流畅好用的，但是一旦对象移动，事情就变得十分复杂了，这些信息究竟和谁产生关联？注意这里有个误区，认为这些数据和对象本身有关，然而实际上，它和<strong>对象的引用存在关系</strong>，胃泌素会这样，试想一下假设只存在对象但是本身没有对象的引用，这种对象有价值么？显然这种对象是垃圾对象。所以对象的引用才是和这些数据存在关联的。</p>
+<p>​    而为了实现对象的引用记住这一点，在Hotspot的设计方案中，出现过把标记标记在对象头（Serial），把标记记录放置到独立的数据结构（G1，Shenadoah ）Bitmap。</p>
+</blockquote>
+<p>​        </p>
+<p><strong>染色指针是如何工作的？</strong></p>
+<p>​    介绍完染色指针的实现，我们来看下染色指针是如何工作的：<strong>染色指针</strong>可以使得一旦某个Region的存活对象被移走之后，这个Region立即就能够被释放和重用掉，而不必等待整个堆中所有指向该Region的引用都被修正后才能清理。意味着只要有空闲的region，ZGC就可以完成回收的操作。</p>
+<blockquote>
+<p>Shenandoah的问题就在于此，转发指针的方式毫无疑问需要对于引用的指向进行修复（CAS锁），意味着会出现所有的region都会存活的极端情况，这时候如果需要复制的话会需要一个<strong>至少有一半空闲空间Region来完成回收的操作。</strong></p>
+</blockquote>
+<p>​    为什么染色指针可以做到这种事情，这又和染色指针的自愈特性有关系了。</p>
+<h3 id="指针自愈"><a href="#指针自愈" class="headerlink" title="指针自愈"></a>指针自愈</h3><p>​    简单概括来说就是在访问到重分配的对象会被内存屏障捕获之后通过转发指针记录表将指向旧对象的引用修复到指向新引用，这个过程就是指针自愈。</p>
+<p>​    什么是染色指针的指针自愈呢？这里牵扯到 “<strong>并发重分配</strong>”的过程，为了加深指针的概念这里放到一起讲解，我们跳过<strong>并发重分配</strong>的处理过程，实现这一步的关键就是染色指针，在ZGC中可以根据染色指针知道对象的引用是否在一个重分配集当中，如果用户线程访问了重分配集中的对象，这一个操作就会被预先放置的内存屏障截获，然而<strong>立即根据region的转发表记录将访问转发到新复制的对象，同时修正引用的值</strong>，然后让引用指向新对象。</p>
+<blockquote>
+<p>​    注意这个过程看起来和shenandoah的转发指针没两样，但是要注意的是shenadoah用的是读写屏障+带CAS锁操作的转发指针实现的。而ZGC直接通过染色指针加上转发指针记录表记录以及写屏障直接实现了这一个操作。两者存在本质的差别。</p>
+</blockquote>
+<h3 id="虚拟内存映射技术"><a href="#虚拟内存映射技术" class="headerlink" title="虚拟内存映射技术"></a>虚拟内存映射技术</h3><p>​    注意这个技术是为了实现染色指针使用的，它的作用是<strong>多个虚拟地址指向同一个物理地址</strong>，经过多重映射转换之后，就可以实现染色指针的正常访问和寻址了。</p>
+<h2 id="读屏障"><a href="#读屏障" class="headerlink" title="读屏障"></a>读屏障</h2><p>​    G1需要通过写屏障来维护记忆集，才能处理跨代指针，得以实现Region的增量回收，Shenadoah之前文章也说过只用转发指针（brooks pointer）+读写屏障完成对象新旧引用的修复动作。而<strong>ZGC没有用写屏障</strong>，而是只是用<strong>读屏障</strong>实现了并发垃圾回收的动作，具体如何应用</p>
+<blockquote>
+<p>​    读屏障是JVM向应用代码插入一小段代码的技术。当应用线程从堆中读取对象引用时，就会执行这段代码。需要注意的是，仅“<strong>从堆中读取对象引用</strong>”才会触发这段代码。</p>
+</blockquote>
+<p>读屏障示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Object o = obj.FieldA   <span class="comment">// 从堆中读取引用，需要加入屏障</span></span><br><span class="line">&lt;Load barrier&gt;</span><br><span class="line">Object p = o  <span class="comment">// 无需加入屏障，因为不是从堆中读取引用</span></span><br><span class="line">o.dosomething() <span class="comment">// 无需加入屏障，因为不是从堆中读取引用</span></span><br><span class="line"><span class="keyword">int</span> i =  obj.FieldB  <span class="comment">//无需加入屏障，因为不是对象引用</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="NUMA-支持（JDK15）"><a href="#NUMA-支持（JDK15）" class="headerlink" title="NUMA 支持（JDK15）"></a><strong>NUMA 支持</strong>（JDK15）</h2><p>​    下面是NUMA的官方wik介绍，注意在jdk15的版本才支持，JDK11是没有进行支持的，另外g1收集器在jdk14版本中也完成了支持。ZGC实现NUMA的方式如下：</p>
+<p>​    当Java线程分配一个对象时对象将最终位于正在执行的Java线程CPU的本地内存中，如果本地内存不足则从远程内存分配，zgc收集器会优先尝试在请求线程当前处理器多本地内存上分配对象，</p>
+<blockquote>
+<p>​    ZGC具有NUMA 支持，这意味着它会尽量将 Java 堆分配定向到 NUMA 本地内存。 默认情况下启用此功能。 但是如果 JVM 检测到它绑定到系统中的 CPU子集它将自动禁用。 也就是说我们通常基本不需要管这个参数，但是可以使用 <code>-XX:+UseNUMA</code> 或 <code>-XX:-UseNUMA</code> 选项来进行控制。</p>
+<p>​    在 NUMA 机器（例如多路 x86 机器）上运行时，启用 NUMA 支持通常会显着提升性能。</p>
+</blockquote>
+<p>​    在介绍什么是NUMA之前，先了解什么是SMP：</p>
+<blockquote>
+<p>对称多处理器结构（Symmetric Multi-Processor，<strong>SMP</strong>）</p>
+<p>​    对称多处理系统内有许多紧耦合多处理器，在这样的系统中，所有的CPU共享全部资源，如总线，内存和I/O系统等，简单来说就是这种结构中所有的CPU共享一个资源，最大的特点也是计算机共享一个内存资源，这种结构在早期的南北桥的CPU结构上非常常见，结构图如下：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210814103420.png" alt=""></p>
+<p>​    从图中可以看到，由于所有的CPU访问到的内存内容都是一致的（访问速度也是一致的），所以 SMP 也被称为一致存储器访问结构 (<strong>UMA</strong> ： Uniform Memory Access)</p>
+</blockquote>
+<p>​    </p>
+<p>​    随着现代处理器的不断进步，SMP架构让内存跟不上CPU的处理速度，导致大量的内存被“浪费”，所以后来人们改进出了NUMA的架构：</p>
+<blockquote>
+<p>非一致内存访问 （Non-Uniform Memory Access，<strong>NUMA</strong>）</p>
+<p>wik地址：<span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvTm9uLXVuaWZvcm1fbWVtb3J5X2FjY2Vzcw==" title="https://en.wikipedia.org/wiki/Non-uniform_memory_access">https://en.wikipedia.org/wiki/Non-uniform_memory_access<i class="fa fa-external-link"></i></span></p>
+<p>​    由于 SMP 在扩展能力上的限制，人们开始探究如何进行有效地扩展从而构建大型系统的技术， NUMA 就是这种努力下的结果之一。NUMA实现的就是把内容和CPU集成到一个单元上，同时由于这种CPU和内存并到一起的结构，会出现内存的访问“不一致”的特性，所以这也是被称为非一致性内存访问的原因</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210814104852.png" alt=""></p>
+<p>​    从上图可以看到NUMA 尝试为每个处理器提供单独的内存来解决这个问题，避免在多个处理器尝试寻址同一内存时性能下降。</p>
+</blockquote>
+<p>​        最后，在ZGC之前的收集器就只有针对吞吐量设计的<strong>Parallel Scavenge</strong>支持NUMA内存分配，在JDK14G1完成了支持，JDK15中ZGC也完成了支持。</p>
+<h2 id="仅支持64位系统"><a href="#仅支持64位系统" class="headerlink" title="仅支持64位系统"></a><strong>仅支持64位系统</strong></h2><p>​    ZGC仅支持64位系统，它把64位虚拟地址空间划分为多个子空间，原因是使用了<strong>染色指针</strong>。</p>
+<h1 id="ZGC的工作流程"><a href="#ZGC的工作流程" class="headerlink" title="ZGC的工作流程"></a>ZGC的工作流程</h1><p>​    这篇文章只能大致提一下大致的工作流程，如果要完全了解细节，需要看看 <strong>《新一代垃圾回收器ZGC设计与实现》</strong>这本书。</p>
+<p>​    ZGC的运作过程大致可划分为以下四个大的阶 段。全部四个阶段都是可以并发执行的，仅是两个阶段中间会存在短暂的停顿小阶段：比如初始标记初始化 GC ROOT，和Shenandoah的初始标记一致。</p>
+<p>​    这里书中介绍了4个比较重要的步骤：<strong>并发标记、并发预备重分配、并发重分配、并发重映射</strong>。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210814155951.png" alt=""></p>
+<p>​    </p>
+<h2 id="初始标记"><a href="#初始标记" class="headerlink" title="初始标记"></a>初始标记</h2><p>​    所有的垃圾收集器都有这一步，注意这个阶段是JVM的一个痛点，即使到了<strong>ZGC也会出现STW</strong>，并且标记出所有的GC ROOT对象，并且记录到标记栈当中。</p>
+<h2 id="并发标记"><a href="#并发标记" class="headerlink" title="并发标记"></a>并发标记</h2><p>​    根据GC ROOT的标记遍历对象图，同样也要经过类似G1和Shenadoah的初始标记，最终标记等步骤的短暂停顿，注意ZGC的标记是在指针而不是在对象上，标记阶段会更新M1、M2的标志位。（标记为1）</p>
+<h2 id="并发预备重分配"><a href="#并发预备重分配" class="headerlink" title="并发预备重分配"></a>并发预备重分配</h2><p>​    这个阶段需要用特定查询条件统计得出收集过程要清理哪些Region，将这些Region组成重分配集，重分配集和G1收集器的回收集有区别，ZGC的垃圾回收不是计算最有价值回收的REGION，而是扫描所有的Region，用范围更大的扫描省去记忆集的维护操作。</p>
+<p>​    所以重分配<strong>只是决定了哪些存活对象会被複製到其他Region</strong>，标记的过程是针对全堆的，JDK12支持的类卸载和弱引用的处理也是根据这个阶段处理的。</p>
+<h2 id="并发重分配"><a href="#并发重分配" class="headerlink" title="并发重分配"></a>并发重分配</h2><p>​    核心阶段。这个过程把重分配存活对象复制到新Region，并发重分配需要为每一个Region维护一个转发表，记录从旧对象到新对象的转向关系，至于如何实现的，之前说过了指针自愈的特点，这里也不再进行赘述。</p>
+<h2 id="并发重映射"><a href="#并发重映射" class="headerlink" title="并发重映射"></a>并发重映射</h2><p>​    重映射的工作就是修正堆中指向重分配集中旧对象的所有引用，也可以直接认为就是真正进行对象引用修复的一个步骤，从这一点来看shenandoah的并发引用更新阶段是一样的，但是ZGC并不需要马上完成这个操作（因为有指针自愈的特性），ZGC把并发重映射阶段要做的工作巧妙的合并到<strong>下一次垃圾收集循环</strong>中的并发标记阶段中去完成，这样做的好处是节省遍历对象图的开销。</p>
+<p>​    一旦所有指针修复，新旧对象的引用关系<strong>转发表</strong>就可以释放了。</p>
+<blockquote>
+<p>最后提一下：《深入理解JVM虚拟机》关于工作流程这一阶段介绍的细节有点少，如果要了解每一步细节，请看推荐阅读和相关的书籍内容。</p>
+</blockquote>
+<h1 id="ZGC的缺点"><a href="#ZGC的缺点" class="headerlink" title="ZGC的缺点"></a>ZGC的缺点</h1><p>​    ZGC最大的缺点是 <strong>不分代</strong>，为什么这时候不分代反而成为缺点了呢，使用Region不是挺好的么，其实是因为分代比较难实现，并且文章开头就说过Azul在0几年就实现了并发的垃圾回收和对象分配，并且是基于分代的，当然他是针对特定的虚拟机来实现的，而JDK要考虑不同操作系统兼容，要考量的事情很多，比如下面的内容：</p>
+<ul>
+<li>如果大量小对象分配，zgc会因为并发收集跟不上对象建立的速度，而不断堆积浮动垃圾</li>
+<li>因为没有分代，所以并不能十分高速并且精准回收，需要复杂的算法进行控制</li>
+</ul>
+<h1 id="官方FAQ"><a href="#官方FAQ" class="headerlink" title="官方FAQ"></a>官方FAQ</h1><h2 id="为什么叫做ZGC？"><a href="#为什么叫做ZGC？" class="headerlink" title="为什么叫做ZGC？"></a>为什么叫做ZGC？</h2><p>​    它不代表任何东西，ZGC 只是一个名称。 它最初受到 <strong>ZFS（</strong>文件系统）的启发或致敬，ZFS（文件系统）首次出现时在许多方面都是革命性的。 最初，ZFS 是“Zettabyte File System”的首字母缩写，但是这个意思被放弃了，后来被说不代表任何东西。 这只是一个名字。 有关更多详细信息，请参阅 Jeff Bonwick 的博客。</p>
+<h2 id="升级日志："><a href="#升级日志：" class="headerlink" title="升级日志："></a>升级日志：</h2><p>​    如果不知道哪个版本加了什么新特性，可以直接从官网的wiki查到：<span class="exturl" data-url="aHR0cHM6Ly93aWtpLm9wZW5qZGsuamF2YS5uZXQvZGlzcGxheS96Z2MjTWFpbi1DaGFuZ2VMb2c=" title="https://wiki.openjdk.java.net/display/zgc#Main-ChangeLog">Main-ChangeLog<i class="fa fa-external-link"></i></span></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">JDK <span class="number">16</span></span><br><span class="line"><span class="function">Concurrent Thread Stack <span class="title">Scanning</span> <span class="params">(JEP <span class="number">376</span>)</span></span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> in-place relocation</span></span><br><span class="line"><span class="function">Performance <span class="title">improvements</span> <span class="params">(allocation/initialization of forwarding tables, etc)</span></span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function">JDK 15</span></span><br><span class="line"><span class="function">Production <span class="title">ready</span> <span class="params">(JEP <span class="number">377</span>)</span></span></span><br><span class="line"><span class="function">Improved NUMA awareness</span></span><br><span class="line"><span class="function">Improved allocation concurrency</span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> Class Data <span class="title">Sharing</span> <span class="params">(CDS)</span></span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> placing the heap on NVRAM</span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> compressed class pointers</span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> incremental uncommit</span></span><br><span class="line"><span class="function">Fixed support <span class="keyword">for</span> transparent huge pages</span></span><br><span class="line"><span class="function">Additional JFR events</span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function">JDK 14</span></span><br><span class="line"><span class="function">macOS <span class="title">support</span> <span class="params">(JEP <span class="number">364</span>)</span></span></span><br><span class="line"><span class="function">Windows <span class="title">support</span> <span class="params">(JEP <span class="number">365</span>)</span></span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> tiny/small <span class="title">heaps</span> <span class="params">(down to <span class="number">8</span>M)</span></span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> JFR leak profiler</span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> limited and discontiguous address space</span></span><br><span class="line"><span class="function">Parallel pre-<span class="title">touch</span> <span class="params">(when using -XX:+AlwaysPreTouch)</span></span></span><br><span class="line"><span class="function">Performance <span class="title">improvements</span> <span class="params">(clone intrinsic, etc)</span></span></span><br><span class="line"><span class="function">Stability improvements</span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function">JDK 13</span></span><br><span class="line"><span class="function">Increased max heap size from 4TB to 16TB</span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> uncommitting unused <span class="title">memory</span> <span class="params">(JEP <span class="number">351</span>)</span></span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> -XX:SoftMaxHeapSIze</span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> the Linux/AArch64 platform</span></span><br><span class="line"><span class="function">Reduced Time-To-Safepoint</span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function">JDK 12</span></span><br><span class="line"><span class="function">Support <span class="keyword">for</span> concurrent class unloading</span></span><br><span class="line"><span class="function">Further pause time reductions</span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function">JDK 11</span></span><br><span class="line"><span class="function">Initial version of ZGC</span></span><br><span class="line"><span class="function">Does not support class <span class="title">unloading</span> <span class="params">(using -XX:+ClassUnloading has no effect)</span></span></span><br></pre></td></tr></table></figure>
+
+<h1 id="推荐阅读："><a href="#推荐阅读：" class="headerlink" title="推荐阅读："></a>推荐阅读：</h1><p>​    这里搜集了几篇大牛的文章，个人的文章也有参考和借鉴：</p>
+<ul>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly90ZWNoLm1laXR1YW4uY29tLzIwMjAvMDgvMDYvbmV3LXpnYy1wcmFjdGljZS1pbi1tZWl0dWFuLmh0bWw=" title="https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html">新一代垃圾回收器ZGC的探索与实践<i class="fa fa-external-link"></i></span></p>
+</li>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20veWVzY29kZS9wLzEzOTk3ODIyLmh0bWw=" title="https://www.cnblogs.com/yescode/p/13997822.html">美团面试官问我： ZGC 的 Z 是什么意思<i class="fa fa-external-link"></i></span></p>
+</li>
+<li><p><a href="https://www.douban.com/doulist/2545443/" target="_blank" rel="noopener">R大的JVM学习进程 - <strong>从表到里学习JVM实现</strong></a></p>
+</li>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuaXRleWUuY29tL2Jsb2cvcmVkbmF4ZWxhZngtMTg4NjE3MA==" title="https://www.iteye.com/blog/rednaxelafx-1886170">R大博客<i class="fa fa-external-link"></i></span></p>
+</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    可以看到ZGC的比Shenandoah复杂了不止一丁半点，内容比较多，需要花不少的时间来消化理解，但是如果不深入源代码这些原理都是比较好理解的，当然这里包含了不少操作系统的知识，如果觉得阅读困难有必要补补CSAPP的基础。</p>
+<p>​    这里也不要犯难，如果把ZGC原理和实现方式弄熟，在面试官面前吹水基本是没问题的，因为能和你探讨JVM源码级别的实现的人这时候你也不是一般人了。所以不要有犯难的心理。</p>
+<p>​    这里很多地方都参考了博客，有些内容直接搬过来了，所以多看看别人的文章看看别人如何理解然后自己再去看一遍书又会有不一样的理解，学习基本都是这么过来的，不断的借鉴和思考就是成长的过程。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>​    又是一篇大长文，不知道有多少人可以看完。</p>
+<p>​    因为工作流程这一块个人学习之后觉得有点粗糙，后续会根据个人学习ZGC的内容再次进行总结。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/02/20/jvmzgc/" title="深入理解JVM - ZGC收集器">https://whitestore.top/2022/02/20/jvmzgc/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/jvm/" rel="tag"># jvm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/20/shenadoahshoujiqi/" rel="prev" title="深入理解JVM - Shenadoah收集器">
+      <i class="fa fa-chevron-left"></i> 深入理解JVM - Shenadoah收集器
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/20/shijieshi/" rel="next" title="《半小时漫画世界史（一）》读书笔记">
+      《半小时漫画世界史（一）》读书笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#深入理解JVM-ZGC收集器"><span class="nav-number">1.</span> <span class="nav-text">深入理解JVM - ZGC收集器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">3.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZGC兼容性"><span class="nav-number">4.</span> <span class="nav-text">ZGC兼容性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Supported-Platforms"><span class="nav-number">5.</span> <span class="nav-text">Supported Platforms</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZGC收集器"><span class="nav-number">6.</span> <span class="nav-text">ZGC收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">6.1.</span> <span class="nav-text">介绍</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZGC的特点与特性："><span class="nav-number">7.</span> <span class="nav-text">ZGC的特点与特性：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#压缩-整理算法"><span class="nav-number">7.1.</span> <span class="nav-text">压缩-整理算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Region"><span class="nav-number">7.2.</span> <span class="nav-text">Region</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发整理算法"><span class="nav-number">7.3.</span> <span class="nav-text">并发整理算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#染色指针："><span class="nav-number">7.4.</span> <span class="nav-text">染色指针：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#指针自愈"><span class="nav-number">7.4.1.</span> <span class="nav-text">指针自愈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟内存映射技术"><span class="nav-number">7.4.2.</span> <span class="nav-text">虚拟内存映射技术</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读屏障"><span class="nav-number">7.5.</span> <span class="nav-text">读屏障</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NUMA-支持（JDK15）"><span class="nav-number">7.6.</span> <span class="nav-text">NUMA 支持（JDK15）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#仅支持64位系统"><span class="nav-number">7.7.</span> <span class="nav-text">仅支持64位系统</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZGC的工作流程"><span class="nav-number">8.</span> <span class="nav-text">ZGC的工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始标记"><span class="nav-number">8.1.</span> <span class="nav-text">初始标记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发标记"><span class="nav-number">8.2.</span> <span class="nav-text">并发标记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发预备重分配"><span class="nav-number">8.3.</span> <span class="nav-text">并发预备重分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发重分配"><span class="nav-number">8.4.</span> <span class="nav-text">并发重分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发重映射"><span class="nav-number">8.5.</span> <span class="nav-text">并发重映射</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZGC的缺点"><span class="nav-number">9.</span> <span class="nav-text">ZGC的缺点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#官方FAQ"><span class="nav-number">10.</span> <span class="nav-text">官方FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么叫做ZGC？"><span class="nav-number">10.1.</span> <span class="nav-text">为什么叫做ZGC？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#升级日志："><span class="nav-number">10.2.</span> <span class="nav-text">升级日志：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐阅读："><span class="nav-number">11.</span> <span class="nav-text">推荐阅读：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">12.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">13.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

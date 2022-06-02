@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="编译优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解jvm - 编译优化（上）">
+<meta property="og:url" content="https://whitestore.top/2022/02/20/bianyijvm/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="编译优化">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823072723.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823134454.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823134454.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823220938.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823220957.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823220856.png">
+<meta property="article:published_time" content="2022-02-20T14:25:01.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.937Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="jvm优化">
+<meta property="article:tag" content="Jim">
+<meta property="article:tag" content="优化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823072723.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/02/20/bianyijvm/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入理解jvm - 编译优化（上） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/bianyijvm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解jvm - 编译优化（上）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-20 22:25:01" itemprop="dateCreated datePublished" datetime="2022-02-20T22:25:01+08:00">2022-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/02/20/bianyijvm/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/bianyijvm/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">编译优化</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>  编译优化的内容还是不少的，当然主要的内容集中在后端的编译上面，为了控制篇幅的长度所以这里选择拆分为上下两部分讲解，我们平时写的代码和实际运行时候的代码效果是完全不一样的，了解编译优化的细节是有必要的。</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ol>
+<li>了解javac的基本编译过程以及基本的处理细节</li>
+<li>了解基本的前端优化手段：语法糖和泛型的实现</li>
+<li>了解前后端编译的内容以及部分后端编译的内容。</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="Javac的编译过程"><a href="#Javac的编译过程" class="headerlink" title="Javac的编译过程"></a>Javac的编译过程</h1><p>  javac的工程代码并不属于java se api的一部分，同时由于jdk9的版本之后模块化被单独分离出来了，书中使用了jdk9的版本来讲解关于javac的编译过程。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>  包所在的位置（jdk9）：JDK_SRC_HOM E/src/jdk.comp iler/share/classes/com/sun/tools/javac</p>
+<p>  如果需要搭建一个javac的工程只要新建一个工程并且把下面路径的内容复制到工程的下面即可。</p>
+<blockquote>
+<p> J D K _ SR C _ H O M E / l a n gt o o l s / s r c / s h a r e / c l a s s e s / c o m / s u n / * </p>
+</blockquote>
+<p>  拷贝完成之后，一个支持javac命令的工程就搭建好了</p>
+<h2 id="javac的编译步骤"><a href="#javac的编译步骤" class="headerlink" title="javac的编译步骤"></a>javac的编译步骤</h2><p>  关于javac的编译步骤基本如下，需要注意的是这里包含了jdk5版本中的注解处理器的内容：</p>
+<ol>
+<li><p>准备：初始化插入式注解处理器</p>
+</li>
+<li><p>解析和填充符号表过程</p>
+<ol>
+<li><p>词法分析</p>
+</li>
+<li><p>填充符号表</p>
+</li>
+</ol>
+</li>
+<li><p>插入式注解处理器处理过程：</p>
+<ol>
+<li>插入式注解处理器的执行阶段</li>
+</ol>
+</li>
+<li><p>分析与字节码生成（语法分析是IDE常用部分）</p>
+<ol>
+<li><p>标注检查（数据分析，常量折叠优化）</p>
+</li>
+<li><p>数据流和数据分析（上下文语义分析检查）</p>
+</li>
+<li><p>解语法糖（由desagrc 方法触发）</p>
+</li>
+<li><p>字节码生成</p>
+</li>
+</ol>
+<p>下面是书中对于整个编译过程的一张图表演示，可以看到顺序不是固定的，而是会存在更换顺序的情况：</p>
+</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823072723.png" alt=""></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823134454.png" alt=""></p>
+<h1 id="前端优化"><a href="#前端优化" class="headerlink" title="前端优化"></a>前端优化</h1><h2 id="注解处理器"><a href="#注解处理器" class="headerlink" title="注解处理器"></a>注解处理器</h2><p>  注解处理器的步骤是在jdk5当中新增的内容，在Javac源码中，插入式注解处理器的初始化过程是在initPorcessAnnotations()方法中完成的，而它 的执行过程则是在processAnnotations()方法中完成。这个方法会判断是否还有新的注解处理器需要执 行 ， 如 果 有 的 话 ， 通 过 c o m . s u n . t o o l s . j a v a c . p r o c e s s i n g. J a v a c P r o c e s s i n g- E n v i r o n m e n t 类 的 d o P r o c e s s i n g( ) 方 法 来生成一个新的JavaComp iler对象，对编译的后续步骤进行处理。</p>
+<h2 id="语法糖"><a href="#语法糖" class="headerlink" title="语法糖"></a>语法糖</h2><p>  java 在升级的过程中引入了很多的语法糖写法， 比如jdk5的增强for循环和泛型，jdk7的泛型菱形标记和try-catch-resource，jdk8的lambada表达式等，这些语法糖对于jdk的易用性给予了很多支持。这里挑几个重点的升级进行描述：</p>
+<h3 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h3><p>  泛型的启发来源于pizza的后身scala语言的作者Martin Odersky，当他捣鼓出泛型这个东西 之后，立马被java官方邀请开发java的泛型，可怜的Martin Odersky受制于java的语法限制以及向后兼容的特性，最后做出来的成果反而更加类似C#的泛型（挺讽刺的），最终的结果就到了现在java官方还在背着这个技术偷懒的债。</p>
+<p>  扯远了，泛型相信所有的java开发者都很熟悉了，这里不再进行单独介绍。通常情况下实现泛型有下面的两种办法：</p>
+<ul>
+<li><p>泛化类型以前保持不变，平行加入泛化新类型</p>
+</li>
+<li><p>已有类型泛型化，不加入任何泛型类型。</p>
+<p>java使用的是第二种方式，原因无他，只是因为偷懒而已，在当时如果有更多时间讨论的话选择第一种是更好的选择也会有更多的解决方案，下面来简单了解一下泛型的基本特征以及需要实现的内容：</p>
+<h3 id="类型擦除"><a href="#类型擦除" class="headerlink" title="类型擦除"></a>类型擦除</h3></li>
+</ul>
+<p>​    首先，java引入了类型擦除的机制，java的泛型在初始阶段叫做裸类型（父类型），裸类型可以看作是jdk5之前的类型即不带尖括号的类型，在实现裸类型上面有两种实现方式：</p>
+<ul>
+<li>由虚拟机进行真正的构造</li>
+<li>编译时还原，在元素访问的时候类型强转。</li>
+</ul>
+<p>没错，java实现的方式也是使用了第二种方式，强转的实现相比 第一种方法要简单很多，但是也会带来下面的问题：</p>
+<ul>
+<li>原始类型的支持变麻烦，java 用自动的类型转换替代直接导致了自动拆装箱的时候效率十分的低下</li>
+<li>在运行阶段无法读取到泛型的类型，java的泛型只能算是一个“伪造”泛型。</li>
+</ul>
+<p>泛型的擦除机制决定了java的泛型支持更多的是服务于编译器。</p>
+<blockquote>
+<p>注意：1. 擦除只是code字节码擦除。2. 元数据保留擦除前的信息。</p>
+</blockquote>
+<h3 id="泛化后的属性"><a href="#泛化后的属性" class="headerlink" title="泛化后的属性"></a>泛化后的属性</h3><p>Sinature属性：：存储的是方法在字节码层面的特殊签名，属性中保存参数化的类型信息而不是原始的类型，</p>
+<p>值类型的支持：值类型也称之为valueType也就是可以定义基础数据类型的类型。</p>
+<h2 id="条件编译的实现"><a href="#条件编译的实现" class="headerlink" title="条件编译的实现"></a>条件编译的实现</h2><p>​    条件编译可以简单理解为通过if语句这个指令进行实现，java天生不支持条件编译，但是C和C++里面却是可以完成的。</p>
+<p>​    Java语言中条件编译的实现，也是Java语言的一颗语法糖，根据布尔常量值的真假，编译器将会把 分支中不成立的代码块消除掉，这一工作将在编译器解除语法糖阶段(com.sun.tools.javac.comp .Lower 类中)完成。</p>
+<p>​    最后条件编译上有个历史事件就是之前所说的<strong>Shenandoah</strong>收集器被jdk官方用条件编译给抹除，导致这款收集器不被商用jdk支持，也只能在openJDK上面使用。</p>
+<p>  通过上面的内容学习和了解，可以发现前端的编译作用是比较小的，可以算是是语法糖的一部分，而后端优化就没有那么简单了，下面我们来看下后端优化是如何实现的。</p>
+<h1 id="后端优化"><a href="#后端优化" class="headerlink" title="后端优化"></a>后端优化</h1><h2 id="即时编译器"><a href="#即时编译器" class="headerlink" title="即时编译器"></a>即时编译器</h2><p>  即使编译器的重要地位自不用说，到现在还是主流编译器的Hotspot就可以说明即时编译器的重要性，而Hotspot里面一项重要的优化就是即使编译器，在了解即时编译器之前，我们需要弄清楚下面的问题：</p>
+<ul>
+<li><p>为什么解释器和即时编译器并存</p>
+</li>
+<li><p>为什么要多个编译器</p>
+</li>
+<li><p>什么时候用解释器，什么时候用即时编译器</p>
+</li>
+<li><p>哪些代码为本地代码，如何编译</p>
+</li>
+<li><p>外部如何观察结果</p>
+<p>通过解决上面的问题，我们就可以大致了解即时编译的核心内容。</p>
+<blockquote>
+<p>即时编译的方式：面向方法而不是面向局部代码，这种方法在字节码序列号替换的方式被称为栈上替换，方法还在栈桢的时候被编译器进行隐式替换。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="为什么会并存解释器和编译器？"><a href="#为什么会并存解释器和编译器？" class="headerlink" title="为什么会并存解释器和编译器？"></a>为什么会并存解释器和编译器？</h3><p>  并不是所有的即时编译器都是用的解释器和编译器并存的模式，但是目前主流的的几款产品中基本都存在这种共存的运行模式，他有什么作用呢？首先，它可以作为一个逃生门，在通常的情况下保持正常的配合操作，但是一旦编译器忙不过来的时候或者本地代码过多的情况下，就可以使用解释器“兜底”，可以保证任何情况下总是可以正常的运行代码。正所谓男女搭配，干活不累。</p>
+<h3 id="为什么有多个呢？"><a href="#为什么有多个呢？" class="headerlink" title="为什么有多个呢？"></a>为什么有多个呢？</h3><p>  在Hotspot的编译器下有两个编译器：</p>
+<ul>
+<li><p>C1:客户端编译器：效率高，非常快，但是质量一般</p>
+</li>
+<li><p>C2:服务端编译器：质量高但是效率要低一些</p>
+<p>编译器为什么不止一个还有多个，这又是有关历史的话题，在早期的工作模式下面，解释器会根据服务器的资源以及用户指定的匹配前端编译器处理来提高效率，所以存在多个也是可以理解的。</p>
+</li>
+</ul>
+<h3 id="分层编译"><a href="#分层编译" class="headerlink" title="分层编译"></a>分层编译</h3><p>  我们不再需要了解以前的工作原理，而是要了解jdk7之后彻底实现的分层编译手段：</p>
+<ol>
+<li><p><strong>纯解释器模式：第一层</strong></p>
+</li>
+<li><p><strong>客户端编译器执行，开启部分监控：第二层</strong></p>
+</li>
+<li><p><strong>客户端编译器执行，开启完整监控：第三层</strong></p>
+</li>
+<li><p><strong>服务端编译为本地代码：第四层</strong></p>
+<p>当然上面的步骤不是完全固定的，根据实际情况会做顺序的调整，下面是书中给出的一张图：</p>
+</li>
+</ol>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823134454.png" alt="分层编译"></p>
+<h2 id="热点代码探测"><a href="#热点代码探测" class="headerlink" title="热点代码探测"></a>热点代码探测</h2><p>  热点探测有两种方式：基于采样的热点探测(Sample Based Hot Spot Code Detection)和基于计数器的热点探测(Counter Based Hot Spot Code Detection)，在HotSpot虚拟机中使用的是第二种基于计数器的热点探测方法，为了实现热点计数，HotSpot为每个方法准备了 两类计数器:方法调用计数器(Invocation Counter)和回边计数器(Back Edge Counter，“回边”的意思 就是指在循环边界往回跳转)。</p>
+<p>  热点代码探测是Hotspot又一项“灵魂”后端优化，热点代码又被称之为多次调用的代码或者多次执行循环体的代码，但是hotspot是如何判断的呢？如何获取某个方法执行多少次？以及怎么算“够久”？</p>
+<p>  首先我们先回答执行多少次的问题，hotspot使用的是两种计数器来完成：<strong>方法调用计数器和回边计数器。</strong></p>
+<p>  而够久稍微复杂一些，方法调用和回边计数的判定方式是不一样的。下面用一个简单的列表来说明一下触发方法调用器热点代码的判定条件：</p>
+<h3 id="方法调用计数器"><a href="#方法调用计数器" class="headerlink" title="方法调用计数器"></a>方法调用计数器</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">方法调用器：客户端编译器<span class="number">15000</span>次，服务端编译器<span class="number">10000</span>次</span><br><span class="line">条件：回边+方法调用&gt;=上面的阈值</span><br><span class="line">注意：时间范围内的调用次数。</span><br><span class="line">统计方法：半衰周期。</span><br></pre></td></tr></table></figure>
+
+<h3 id="回边计数器"><a href="#回边计数器" class="headerlink" title="回边计数器"></a>回边计数器</h3><p>  方法调用计数器好懂一些，这里不做过多解释，下面我们补充一下回边计数器的细节，回边计数器就是指统计循环代码中执行的次数，当然不是单纯的计算循环体的执行次数，而是使用下面的公示计算：</p>
+<blockquote>
+<p>客户端模式（默认为13995）：方法调用计数器阈值(-XX:  C o m p i l e T h r e s h o l d ) 乘 以 O SR 比 率 ( - X X : O n St a c k R e p l a c e P e r c e n t a ge ) 除 以 1 0 0 。 其 中 - X X : OnStackRep lacePercentage默认值为933</p>
+<p>服务端模式（默认为10700）<strong>：</strong>方法调用计数器阈值(-XX:  C o m p i l e T h r e s h o l d ) 乘 以 ( O SR 比 率 ( - X X : O n St a c k R e p l a c e P e r c e n t a ge ) 减 去 解 释 器 监 控 比 率 ( - X X : InterpreterProfilePercentage)的差值)除以100。其中-XX:OnStack ReplacePercentage默认值为140，- X X : I n t e r p r e t e r P r o f i l e P e r c e n t a ge 默 认 值 为 3 3。</p>
+</blockquote>
+<p>  当回边方法触发到到阈值的时候，会触发一个叫做“栈上替换”的操作。并且回边计数器没有半衰周期的概念，当到达绝对值的条件的时候就会触发，而如果这个数字一直增长到达计数器的上限并且溢出，回边计数器会重置并且顺带把方法计数器的值为归0。最后在回边计数到达阈值的时候，会稍微降低当前回边计数器的值让下一次的代码依旧执行循环（不然栈上替换完了，循环也执行完了就没有意义了）。</p>
+<h2 id="结构图对比："><a href="#结构图对比：" class="headerlink" title="结构图对比："></a>结构图对比：</h2><p>我们根据上面的描述来看下两个计数器的计算逻辑结构图：</p>
+<h3 id="方法调用"><a href="#方法调用" class="headerlink" title="方法调用"></a>方法调用</h3><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823220938.png" alt="方法调用触发即时编译"></p>
+<p>​    </p>
+<h3 id="回边计数器-1"><a href="#回边计数器-1" class="headerlink" title="回边计数器"></a>回边计数器</h3><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823220957.png" alt="回边计数器"></p>
+<h3 id="前后端编译概览"><a href="#前后端编译概览" class="headerlink" title="前后端编译概览"></a>前后端编译概览</h3><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210823220856.png" alt="前后端编译概览"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>  本节我们讲述了javac指令的底层执行过程，以及前端优化和后端优化，前端优化主要是对于java的语法糖优化以及一项重要的优化注解生成器。在后续的文章中我们介绍了部分后端编译优化的方式，即使编译器，以及热点代码探测，在即时编译里面我们讲述了分层编译的功能。最后我们用结构图讲述了编译的内容。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>  本文讲述了关于后端编译的部分，下一节将会讲述关于后端编译的另外一部分内容。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/02/20/bianyijvm/" title="深入理解jvm - 编译优化（上）">https://whitestore.top/2022/02/20/bianyijvm/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/jvm/" rel="tag"># jvm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/20/dongtaileixing/" rel="prev" title="深入理解JVM - 动态类型语言">
+      <i class="fa fa-chevron-left"></i> 深入理解JVM - 动态类型语言
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/20/hotpots/" rel="next" title="深入理解JVM - Hotspot算法细节">
+      深入理解JVM - Hotspot算法细节 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Javac的编译过程"><span class="nav-number">3.</span> <span class="nav-text">Javac的编译过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">3.1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#javac的编译步骤"><span class="nav-number">3.2.</span> <span class="nav-text">javac的编译步骤</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前端优化"><span class="nav-number">4.</span> <span class="nav-text">前端优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#注解处理器"><span class="nav-number">4.1.</span> <span class="nav-text">注解处理器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#语法糖"><span class="nav-number">4.2.</span> <span class="nav-text">语法糖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#泛型"><span class="nav-number">4.2.1.</span> <span class="nav-text">泛型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型擦除"><span class="nav-number">4.2.2.</span> <span class="nav-text">类型擦除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#泛化后的属性"><span class="nav-number">4.2.3.</span> <span class="nav-text">泛化后的属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件编译的实现"><span class="nav-number">4.3.</span> <span class="nav-text">条件编译的实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后端优化"><span class="nav-number">5.</span> <span class="nav-text">后端优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#即时编译器"><span class="nav-number">5.1.</span> <span class="nav-text">即时编译器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么会并存解释器和编译器？"><span class="nav-number">5.1.1.</span> <span class="nav-text">为什么会并存解释器和编译器？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么有多个呢？"><span class="nav-number">5.1.2.</span> <span class="nav-text">为什么有多个呢？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分层编译"><span class="nav-number">5.1.3.</span> <span class="nav-text">分层编译</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#热点代码探测"><span class="nav-number">5.2.</span> <span class="nav-text">热点代码探测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方法调用计数器"><span class="nav-number">5.2.1.</span> <span class="nav-text">方法调用计数器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回边计数器"><span class="nav-number">5.2.2.</span> <span class="nav-text">回边计数器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结构图对比："><span class="nav-number">5.3.</span> <span class="nav-text">结构图对比：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方法调用"><span class="nav-number">5.3.1.</span> <span class="nav-text">方法调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回边计数器-1"><span class="nav-number">5.3.2.</span> <span class="nav-text">回边计数器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前后端编译概览"><span class="nav-number">5.3.3.</span> <span class="nav-text">前后端编译概览</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">7.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

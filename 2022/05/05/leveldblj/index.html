@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="关于LevelDB的拓展">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LSM-Tree - LevelDb了解和实现">
+<meta property="og:url" content="https://whitestore.top/2022/05/05/leveldblj/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="关于LevelDB的拓展">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162304929.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162304981.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162028858.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162042324.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162252652.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162251954.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162252669.png">
+<meta property="article:published_time" content="2022-05-05T06:31:32.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.642Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="LevelDB">
+<meta property="article:tag" content="lsm-tree">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162304929.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/05/05/leveldblj/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LSM-Tree - LevelDb了解和实现 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/05/leveldblj/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LSM-Tree - LevelDb了解和实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-05 14:31:32" itemprop="dateCreated datePublished" datetime="2022-05-05T14:31:32+08:00">2022-05-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93-LevelDB/" itemprop="url" rel="index"><span itemprop="name">数据库-LevelDB</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/05/leveldblj/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/05/leveldblj/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">关于LevelDB的拓展</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="LSM-Tree-LevelDb了解和实现"><a href="#LSM-Tree-LevelDb了解和实现" class="headerlink" title="LSM-Tree - LevelDb了解和实现"></a>LSM-Tree - LevelDb了解和实现</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>自从[[《数据密集型型系统设计》LSM-Tree VS BTree]]这篇文章完成之后，对于LSM-Tree这种结构非常感兴趣，于是趁热打铁在之后的几天静下心来研究了一下LevelDB的具体实现，最终阅读了一下源代码。</p>
+<p>本文涉及了LevelDB的基础功能和相关数据结构的介绍，最后讲述LevelDB中至关重要的读写操作，通过设计数据结构和读写操作的讲解，相信读者可以自行解答为什么LevelDB可以做到极为高效的读写操作，并且比查询操作要远远优秀。</p>
+<a id="more"></a>
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Levledb是Google的两位Fellow （Jeaf Dean和Sanjay Ghemawat）设计和开发的嵌入式K-V系统，读写性能非常彪悍，官方网站报道其写性能40万/s，读性能达到6万/s，写操作要远快于读操作。</p>
+<blockquote>
+<p>如果对于这个数据结构感兴趣，可以访问下面的github:<br><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2dvb2dsZS9sZXZlbGRi" title="https://github.com/google/leveldb">https://github.com/google/leveldb<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h1 id="意义"><a href="#意义" class="headerlink" title="意义"></a>意义</h1><p>需要注意的是Level-DB不仅是LSM-Tree日志存储结构的代表作品，同时也是对于Bigtable中SSTable的实践和扩展。</p>
+<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p>首先底层的基础数据结构是LSM-Tree，同时存储结构为Key-Value形式，但是在此基础上进行了一些调整，比如让数据存储在磁盘并且保证数据的<strong>顺序读写</strong>，为了高效读取设计了大小树结构，也就是将LSM- Tree一分为二，大的存磁盘，小的常驻内存，两者共同维护同一个。</p>
+<p>当数据不断写入导致树不断的膨胀，此时为了频繁的磁盘写入对于数据肯定会有很大的影响，索引LevelDb将树在此基础上又拆分了多层，当一层的数据到达一定量的时候就往下一层归并，最终形成一颗自上而下的增长树。LevelDb的Level就是这么来的。</p>
+<p>下面是这种特殊结构的设计图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162304929.png" alt=""></p>
+<h2 id="基本特征"><a href="#基本特征" class="headerlink" title="基本特征"></a>基本特征</h2><ul>
+<li>键和值是任意字节数组。</li>
+<li>数据按key排序存储。</li>
+<li>调用者可以提供自定义比较函数来覆盖排序顺序。</li>
+<li>基本运算是<code>Put(key,value)</code>, <code>Get(key)</code>, <code>Delete(key)</code>.</li>
+<li>可以在一个原子批处理中进行多项更改。</li>
+<li>用户可以创建临时快照以获得一致的数据视图。</li>
+<li>支持对数据进行前向和后向迭代。</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9nb29nbGUuZ2l0aHViLmlvL3NuYXBweS8=" title="https://google.github.io/snappy/">使用Snappy 压缩库<i class="fa fa-external-link"></i></span>自动压缩数据。</li>
+<li>外部活动（文件系统操作等）通过虚拟接口中继，因此用户可以自定义操作系统交互。</li>
+<li>系统可移植性很强，因为底层使用了C++编写。</li>
+</ul>
+<h2 id="数据结构-1"><a href="#数据结构-1" class="headerlink" title="数据结构"></a>数据结构</h2><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162304981.png" alt=""></p>
+<p>下面是各个组件介绍：</p>
+<ul>
+<li><p><strong>Memtable</strong>：LevelDB在写入数据的时候并不会直接写入磁盘，而是和多数的数据库工具一样先写入到内存的数据结构，内存数据结构通过跳表实现，新的数据会首先写入这里，<strong>Memtable</strong>负责管理所有的Key数据，这种数据结构效率可以比拟二叉查找树，绝大多数操作的时间复杂度为O(log n)。</p>
+</li>
+<li><p><strong>Log</strong>：Level-DB是典型的日志存储结构形式，在写入<strong>Memtable</strong>之前首先写入日志文件，对于写入日志以单纯的<strong>追加</strong>形式进行写入，这一点相比Btree相关的注重事务的复杂日志维护要简单不少，Level-DB和多数的LSM-Tree没有太大区别，日志的主要作用是数据库崩溃之后进行数据恢复，比如当程序出现下面的问题之后可以通过Log进行数据恢复：</p>
+</li>
+</ul>
+<ol>
+<li>写log期间进程异常。</li>
+<li>写log完成，写内存未完成。</li>
+<li>write动作完成（即log、内存写入都完成）后，进程异常。</li>
+<li>Immutable memtable持久化过程中进程异常。</li>
+<li>其他压缩异常（较为复杂，首先不在这里介绍）。</li>
+</ol>
+<ul>
+<li><strong>Immutable Memtable</strong>：顾名思义不可变的内存数据结构，当内存数据结构数据满了之后就需要触发数据合并的操作，此时需要停掉数据读写并且对数据进行压缩。</li>
+</ul>
+<blockquote>
+<p>不可变的数据结构其实是通过简单的C++ 锁机制实现的，不需要额外的维护锁对象控制。</p>
+</blockquote>
+<ul>
+<li><p><strong>SST文件：</strong>：磁盘数据存储文件，分为Level 0到Level N多层，每一层包含多个SST文件；单层SST文件总量随层次增加成倍增长。SST文件本身是不可被修改的，这是Level-DB 设计哲学的一环，通过追加的和定期合并文件的方式实现了“删除”的操作，同时在读取的时候通过特殊的标记来判断更新还是删除操作，借此保证获取到最新的数据，这些内容在源代码中都能很好的发现，在后续的文章中会详细的解释，这里只需要有个大概的概念即可。</p>
+</li>
+<li><p><strong>Manifest文件</strong>： Level-Db存在版本控制的概念，版本信息的差别主要来自于每一层维护的元信息的差别。Manifest文件在整个系统中十分关键，不仅维护了最大key和最小key，Manifest文件中还记录SST文件在不同Level的分布，同时MainFest主要管理SST文件的层级，在进行<strong>合并</strong>操作的时候需要依赖Mainfest文件中的元信息完成合并的关键步骤。</p>
+</li>
+</ul>
+<blockquote>
+<p>元信息包括：(1)最大Key值，(2)最小Key值，(3)文件大小。</p>
+</blockquote>
+<ul>
+<li><strong>Current文件</strong>：LevelDB启动时的首要任务就是找到当前的Manifest，而Manifest可能有多个，Current文件记录了<strong>Manifest文件</strong>相关的文件名。</li>
+</ul>
+<h1 id="读写操作"><a href="#读写操作" class="headerlink" title="读写操作"></a>读写操作</h1><p>在了解源代码之前我们从数据库的读写操作进行分析。如果了解Btree和事务型数据库的生态就会发现两者的差别是非常大的，Level-DB 的最大优点是读写速度要优秀于查询动作，由于不需要事务所以他的性能要比Btree的高非常多。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162028858.png" alt=""></p>
+<p>可以看到整个Level-DB分为两次写操作，头一次是写入log，接着才是写入记录数据，但是写入记录的数据并不会立刻写到磁盘，而是通过一些触发机制完成。</p>
+<p>由于记录日志的方式够简单直接，所以Level-DB可以拥有很好的写入性能，如果在用户写入完成但是数据没入盘的时候突然发生系统宕机没有影响，因为数据压根没有写入硬盘，只要再次读日志还原相关操作即可。</p>
+<h2 id="写操作实现"><a href="#写操作实现" class="headerlink" title="写操作实现"></a>写操作实现</h2><p>LevelDb对外提供了1）Put2）Delete两种接口，但是更新的操作和删除的操作可以看作是同一个操作，一个Delete操作会被转换成一个value为空的Put操作。</p>
+<p>另外LevelDB 专门提供了批量操作的工具Batch完成批量操作的动作，为了保证数据的完整性，内部会通过加锁的方式实现原子操作。</p>
+<p>Batch的整体结构大致如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162042324.png" alt=""></p>
+<blockquote>
+<p>注意：这个结构图并不完整，在源代码里面还有其他的信息，这里简化了部分数据</p>
+</blockquote>
+<p>批量操作的每一个操作项都是通过类似上面的结构组成，通过type来标记整个记录的数据项类型，在记录key的内容之前，会记录key的长度，同样记录value的值之前会记录整个value的长度。</p>
+<p>另外batch中还会维护一个size值表示key+value长度的总和，以及每条数据项额外的8个字节表示，这8个字节标识用于存储一条数据项额外的一些信息。</p>
+<p><strong>原子性</strong>操作：</p>
+<p>写操作的原子性体现日志记录操作上，一条日志记录的所有内容代表了一次写操作，这也是日志的写入最小单位。</p>
+<p>既然是日志写入就会出现下面两种情况：</p>
+<ul>
+<li>未开始写入或者日志写一半断电。</li>
+<li>日志写入完成真实数据没有变动。</li>
+</ul>
+<p><strong>合并写入</strong>操作：<br>#LevelDb合并写入操作<br>合并写入是对于日志问题的最大挑战， 为了保证操作原子性，并发写入的时候只有一个线程允许操作日志和追加数据，但是这样显然会影响写入的性能并且导致多线程阻塞等待，为了提高写入的性能，对于多线程频繁的写入的操作进行“合并”，将单一线程对于同一个日志的多次操作进行合并。</p>
+<p>整个合并写入的流程如下：<br><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162252652.png" alt=""></p>
+<ul>
+<li>第一次写入获取写入锁。</li>
+<li>写操作没有达到出发合并写入的阈值，并且存在其他写入线程等待的情况下，将会“帮忙”把其他线程的写操作和自己进行合并。</li>
+<li>如果到达了合并写入的阈值，并且没有其他线程等待的时候，把所有的内容合并写入到日志文件，然后再存储到数据库当中。</li>
+<li>通知其他“被帮忙”的线程我已经帮你们把活干完了并且把操作结果告诉你们，同时释放写锁给下一个访问线程。</li>
+</ul>
+<p>对于其他的线程来说合并写入的操作类似下面的情况：</p>
+<ul>
+<li>等待上一个锁的持有者完成合并写入操作，如果操作成功接受结果并且返回。</li>
+<li>如果上一个线程操作失败或者没有进行表明当前的锁可以进行合并写入了，则自动接任务继续尝试合并写入的操作。</li>
+<li>如果还是没有合并完成继续等待锁和合并结果。</li>
+</ul>
+<p>通过这样的处理可以发现无论那个线程进来都可以尝试帮其他线程工作，但是仅限于和自己的操作相关的内容可以尝试合并。</p>
+<h2 id="读操作实现"><a href="#读操作实现" class="headerlink" title="读操作实现"></a>读操作实现</h2><p>读操作的实现通过下面两种方式完成：</p>
+<ul>
+<li>通过<code>get</code>接口完成数据的获取。</li>
+<li>为了提高读取的效率，会通过快照对于当前读到的数据进行缓存，最终通过快照的<code>get</code>接口完成数据获取。</li>
+</ul>
+<blockquote>
+<p>从这里来看，快照即是缓存也是代理。</p>
+</blockquote>
+<p>其实两个操作类似，只不过一次读操作之前加入了快照，但是快照读到的数据不会因为后续的记录操作出现改动。</p>
+<p>快照类似数据库某一个时刻状态的一个拷贝，对于大量的读操作来说可以减轻数据查找的压力。<br><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162251954.png" alt=""></p>
+<p>这里可能会存在疑问，读取的快照出现更新的时候会出现什么情况？<br>这里就必须要简单描述一下快照的实现了，快照的实现是通过 <strong>乐观锁</strong> 的方式实现的，内部通过维护一个 <strong>版本号</strong>的方式记录同一个Key的操作结果，同时一条记录有唯一的序列号，序列号在每次记录变动的时候不断+1，意味着序列号越大记录的值越新。</p>
+<p>也就是说通过<strong>序列号</strong>和<strong>版本号</strong>这两个值可以模拟整个数据项的变更状态，同时为了保证快照的有效性，可以通过版本号和序列号检查是否对应，反过来说，如果当前序列号超过快照的序列号，则直接“掩盖”保证快照不会读到最新的数据。</p>
+<blockquote>
+<p>如果你了解Mysql的InnoDB中的MVCC机制，那么相信更好理解。</p>
+</blockquote>
+<p><strong>读取</strong>的步骤：</p>
+<ul>
+<li>在memtable中获取指定Key，如果数据符合条件则结束查找。</li>
+<li>在Imumemtable中查找指定Key，如果数据符合条件则结束查找。</li>
+<li>按低层至高层的顺序在level i层的sstable文件中查找指定的key，若搜索到符合条件的数据项就会结束查找，否则返回Not Found错误，表示数据库中不存在指定的数据。<br><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204162252669.png" alt=""></li>
+</ul>
+<blockquote>
+<p>在LevelDB的每一层扫描SSTable 是按照顺序扫描的方式进行查找的（中间不会跳过）。<br>Level0层最为特殊，因为SSTable之间的Key会出现重合的情况，所以这时候会根据文件编号更大的作为查找参考<br>PS：为什么要文件编号更大的数据作为参考，因为序列号是递增的，所以更大的文件编号会存在更新的数据。<br>Level N层的数据，Key之间不会存在重合，并且由于每一层通过Mainfest的元数据找到最大key和最小key进行快速的定位操作，最终每一层只需要扫描一个SSTable就可以往下查找。</p>
+</blockquote>
+<p>在memory db或者sstable的查找过程中，需要根据指定的序列号拼接一个<strong>internalKey</strong>，如果查找用户key一致且seq号<strong>不大于</strong>指定seq的数据。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>本节内容简单介绍了LevelDB，并且介绍了内部几个重要的数据结构内容，之后介绍了有关Level读写操作的细节，这些内容的理解对于后续介绍源代码是一个前提和铺垫。</p>
+<p>在介绍完数据结构和读写操作的大致流程之后，下一节将会深入具体的源代码进行拓展介绍。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/05/05/leveldblj/" title="LSM-Tree - LevelDb了解和实现">https://whitestore.top/2022/05/05/leveldblj/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LevelDB/" rel="tag"># LevelDB</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/06/suoyinshizhan/" rel="prev" title="三高Mysql - Mysql索引和查询优化（偏实战部分）">
+      <i class="fa fa-chevron-left"></i> 三高Mysql - Mysql索引和查询优化（偏实战部分）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/05/gxycwysdn/" rel="next" title="14岁懂社会-《给想要成为医生的你》读书笔记">
+      14岁懂社会-《给想要成为医生的你》读书笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LSM-Tree-LevelDb了解和实现"><span class="nav-number">1.</span> <span class="nav-text">LSM-Tree - LevelDb了解和实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">3.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#意义"><span class="nav-number">4.</span> <span class="nav-text">意义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据结构"><span class="nav-number">5.</span> <span class="nav-text">数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本特征"><span class="nav-number">5.1.</span> <span class="nav-text">基本特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构-1"><span class="nav-number">5.2.</span> <span class="nav-text">数据结构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#读写操作"><span class="nav-number">6.</span> <span class="nav-text">读写操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#写操作实现"><span class="nav-number">6.1.</span> <span class="nav-text">写操作实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读操作实现"><span class="nav-number">6.2.</span> <span class="nav-text">读操作实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">7.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

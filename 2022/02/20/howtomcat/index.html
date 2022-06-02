@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="笔记总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《HowTomcatWork》笔记总结（一）">
+<meta property="og:url" content="https://whitestore.top/2022/02/20/howtomcat/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="笔记总结">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-20T14:49:55.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.700Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="howtomcatwork">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://whitestore.top/2022/02/20/howtomcat/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《HowTomcatWork》笔记总结（一） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/howtomcat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《HowTomcatWork》笔记总结（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-20 22:49:55" itemprop="dateCreated datePublished" datetime="2022-02-20T22:49:55+08:00">2022-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/02/20/howtomcat/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/howtomcat/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+            <div class="post-description">笔记总结</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="《HowTomcatWork》笔记总结（一）"><a href="#《HowTomcatWork》笔记总结（一）" class="headerlink" title="《HowTomcatWork》笔记总结（一）"></a>《HowTomcatWork》笔记总结（一）</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这一篇是howTomcatWork的书籍笔记内容。下面是根据书中的内容做的一部分个人笔记。</p>
+<h1 id="书籍地址："><a href="#书籍地址：" class="headerlink" title="书籍地址："></a>书籍地址：</h1><blockquote>
+<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMWphem81NXNBX2hDUDlfMlFfMk5CclE=" title="https://pan.baidu.com/s/1jazo55sA_hCP9_2Q_2NBrQ">https://pan.baidu.com/s/1jazo55sA_hCP9_2Q_2NBrQ<i class="fa fa-external-link"></i></span><br>提取码：lp96<br>–来自百度网盘超级会员V6的分享</p>
+</blockquote>
+<h1 id="个人评价"><a href="#个人评价" class="headerlink" title="个人评价"></a>个人评价</h1><p>​    没啥好说的，tomcat作者写的书，看了下海淘居然要500多确实吓到了。虽然代码使用的是tomcat5的版本，但是可以基本理解tomcat的内部工作机制。也可以看到作者是如何用一个十多行的肉鸡服务器代码不断升级成为现在的tomcat的模样。</p>
+<p>​    本文是个人根据看书记录的一些笔记，中间逻辑不一定连贯，因为有些内容过于基础没有记录的价值，所以挑了一些个人关注的点。</p>
+<a id="more"></a>
+
+<h1 id="一个最简单的Servlet是如何工作的"><a href="#一个最简单的Servlet是如何工作的" class="headerlink" title="一个最简单的Servlet是如何工作的"></a>一个最简单的Servlet是如何工作的</h1><ol>
+<li>创建Request 对象，并且解析HTTP的请求信息，通过Request对象封装了这些信息的具体细节</li>
+</ol>
+<p>具体接口：</p>
+<blockquote>
+<p><code>javax.servlet.ServletRequest</code> 或<code>javax.servlet.http.ServletRequest</code></p>
+</blockquote>
+<ol start="2">
+<li>创建Response对象,封装了客户需需要的真正数据，封装了响应体的相关信息</li>
+</ol>
+<blockquote>
+<p> <code>javax.servlet.ServletResponse</code> 或<code>javax.servlet.http.ServletResponse</code></p>
+</blockquote>
+<ol start="3">
+<li>servlet的<code>service</code> 方法，根据此方法对于请求头进行解析，同时创建response将数据回传给客户端</li>
+</ol>
+<h1 id="tomcat的基本结构"><a href="#tomcat的基本结构" class="headerlink" title="tomcat的基本结构"></a>tomcat的基本结构</h1><p>​    Tomcat把服务器在大体上可以拆分为两部分，一部分叫做<strong>容器</strong>，另一部分叫做<strong>连接器</strong></p>
+<h2 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h2><p>作用：接收到每一个 HTTP 请求构造一个 ==request== 和 ==response== 对象</p>
+<h2 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h2><p>作用：接受连接器的请求根据<code>service</code>方法进行响应给对应的客户端</p>
+<blockquote>
+<p> Tomcat 4 和 和  5的主要区别</p>
+<ul>
+<li><p>Tomcat 5 支持 Servlet 2.4 和 JSP 2.0 规范，而 Tomcat 4 支持 Servlet 2.3 和 JSP 1.2。</p>
+</li>
+<li><p>比起 Tomcat 4，Tomcat 5 有一些更有效率的默认连接器。</p>
+</li>
+<li><p>Tomcat 5 共享一个后台处理线程，而 Tomcat 4 的组件都有属于自己的后台处理线程。<br>因此，就这一点而言，Tomcat 5 消耗较少的资源。</p>
+</li>
+<li><p>Tomcat 5 并不需要一个映射组件(mapper component)用于查找子组件，因此简化了代码。</p>
+</li>
+</ul>
+</blockquote>
+<h1 id="构建一个最简单的web程序"><a href="#构建一个最简单的web程序" class="headerlink" title="构建一个最简单的web程序"></a>构建一个最简单的web程序</h1><h2 id="构建对象"><a href="#构建对象" class="headerlink" title="构建对象"></a>构建对象</h2><p>​    下方的代码简单阅读即可，无需自己动手实验</p>
+<h3 id="HttpServer"><a href="#HttpServer" class="headerlink" title="HttpServer"></a>HttpServer</h3><p> 用于构建一个服务器，同时建立serverSocket套接字等待链接</p>
+<ul>
+<li>调用<code>httprequest.parse()</code>方法</li>
+</ul>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpServer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭容器的请求路径</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SHUTDOWN = <span class="string">"/SHUTDOWN"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 静态资源根路径</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String WEBROOT = System.getProperty(<span class="string">"user.dir"</span>) + File.separator + <span class="string">"webroot"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 是否关闭标识</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> SHUTDOWN_FLAG = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> HttpServer().await();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 具体的server 方法，等待socket请求</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">await</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 默认为8080端口</span></span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">8080</span>;</span><br><span class="line">        String host = <span class="string">"127.0.0.1"</span>;</span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 创建套接字</span></span><br><span class="line">            serverSocket = <span class="keyword">new</span> ServerSocket(port, <span class="number">1</span>, InetAddress.getByName(<span class="string">"127.0.0.1"</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.exit(-<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (!SHUTDOWN_FLAG) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 等待套接字</span></span><br><span class="line">                Socket accept = serverSocket.accept();</span><br><span class="line">                HttpRequest httpRequest = <span class="keyword">new</span> HttpRequest(accept.getInputStream());</span><br><span class="line">                <span class="comment">// 处理请求数据</span></span><br><span class="line">                httpRequest.parse();</span><br><span class="line">                <span class="comment">// 创建响应对象，处理响应信息</span></span><br><span class="line">                HttpResponse httpResponse = <span class="keyword">new</span> HttpResponse(accept.getOutputStream());</span><br><span class="line">                <span class="comment">// 设置静态资源</span></span><br><span class="line">                httpResponse.setRequest(httpRequest);</span><br><span class="line">                httpResponse.setResource();</span><br><span class="line">                <span class="comment">// 关闭的套接字</span></span><br><span class="line">                accept.close();</span><br><span class="line">                <span class="comment">// 判断请求Url是否为 /shutdown</span></span><br><span class="line">                SHUTDOWN_FLAG = httpRequest.getUri().equalsIgnoreCase(SHUTDOWN);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="HttpRequest"><a href="#HttpRequest" class="headerlink" title="HttpRequest"></a>HttpRequest</h3><p>​    以httpserver 的请求inputstream, 解析请求内容，分解请求uri</p>
+<p>​    使用<code>parse()</code>方法解析请求信息，设置到stringbuffer里面</p>
+<p>​    使用<code>parseUri(str)</code>截取请求信息的请求uri,设置到属性里面</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpRequest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 缓冲区的大小为 1M</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BUFFER_COUNT = <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 请求路径</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String uri;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 请求流</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> InputStream inputStream;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HttpRequest</span><span class="params">(InputStream inputStream)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.inputStream = inputStream;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解析inputstream 对于内容进行解析</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">parse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 字符串缓冲池</span></span><br><span class="line">        StringBuffer stringBuffer = <span class="keyword">new</span> StringBuffer(BUFFER_COUNT);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">byte</span>[] byteBuffer = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER_COUNT];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (inputStream == <span class="keyword">null</span>) &#123;</span><br><span class="line">            System.err.println(<span class="string">"未找到套接字"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> read = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 读取数据到byte数组</span></span><br><span class="line">            read = inputStream.read(byteBuffer);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.exit(-<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//读取byte数组的数据进入到stringbuffer</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; read; i++) &#123;</span><br><span class="line">            stringBuffer.append((<span class="keyword">char</span>)byteBuffer[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 打印stringbuffer</span></span><br><span class="line">        System.err.println(stringBuffer.toString());</span><br><span class="line">        <span class="comment">// 获取uri</span></span><br><span class="line">        uri = parseUri(stringBuffer.toString());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解析请求，获取请求Uri</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> requestString 需要处理的uri</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">parseUri</span><span class="params">(String requestString)</span></span>&#123;</span><br><span class="line">        <span class="comment">// 建立index1 和 2</span></span><br><span class="line">        <span class="keyword">int</span> index1, index2;</span><br><span class="line">        <span class="comment">// 获取到第一个空行</span></span><br><span class="line">        index1 = requestString.indexOf(<span class="string">' '</span>);</span><br><span class="line">        <span class="keyword">if</span>(index1 != -<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="comment">// 从index1 开始找</span></span><br><span class="line">            index2 = requestString.indexOf(<span class="string">' '</span>, index1 + <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span>(index2 &gt; index1)&#123;</span><br><span class="line">                <span class="comment">// 获取请求路径</span></span><br><span class="line">                <span class="keyword">return</span> requestString.substring(index1 + <span class="number">1</span>, index2);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getUri</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> uri;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="HttpResonse"><a href="#HttpResonse" class="headerlink" title="HttpResonse"></a>HttpResonse</h3><p>​    以 httpserver 的请求outputstream ，获取输入流，将数据返回给客户端</p>
+<p>​    关键方法为<code>setResouces</code>，获取请求Uri，同时使用file 读取文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpResponse</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 组合httprequest</span></span><br><span class="line"><span class="comment">     * 根据request返回对应到信息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> HttpRequest request;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 输出流</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> OutputStream outputStream;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 缓冲区大小</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BUFFER_COUNT = <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HttpResponse</span><span class="params">(OutputStream outputStream)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.outputStream = outputStream;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置静态资源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setResource</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String errMsg = <span class="string">"404 msg"</span>;</span><br><span class="line">        <span class="comment">// 字节缓存区</span></span><br><span class="line">        <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER_COUNT];</span><br><span class="line">        <span class="comment">// 读取静态资源</span></span><br><span class="line">        File file = <span class="keyword">new</span> File(HttpServer.WEBROOT, request.getUri());</span><br><span class="line">        <span class="keyword">if</span> (file.exists()) &#123;</span><br><span class="line">            <span class="comment">// 文件流</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                FileInputStream fileInputStream = <span class="keyword">new</span> FileInputStream(file);</span><br><span class="line">                <span class="comment">// 读取字节</span></span><br><span class="line">                <span class="keyword">int</span> ch = fileInputStream.read(bytes, <span class="number">0</span>, BUFFER_COUNT);</span><br><span class="line">                <span class="comment">// 输出</span></span><br><span class="line">                <span class="keyword">while</span> (ch != -<span class="number">1</span>) &#123;</span><br><span class="line">                    <span class="comment">// 写入流</span></span><br><span class="line">                    outputStream.write(bytes, <span class="number">0</span>, ch);</span><br><span class="line">                    <span class="comment">// 重复读取数据到缓冲区</span></span><br><span class="line">                    ch = fileInputStream.read(bytes, <span class="number">0</span>, BUFFER_COUNT);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (outputStream != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    outputStream.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                outputStream.write(errMsg.getBytes());</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (outputStream != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    outputStream.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置request</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> httpRequest</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRequest</span><span class="params">(HttpRequest httpRequest)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.request = httpRequest;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="基本步骤："><a href="#基本步骤：" class="headerlink" title="基本步骤："></a>基本步骤：</h2><p>下面是代码的基本交互步骤：</p>
+<ol>
+<li>创建httpserver 对象</li>
+<li>绑定端口和主机，建立套接字连接</li>
+<li><code>accept()</code>方法等待请求，阻塞当前线程</li>
+<li>创建reuqest 请求对象</li>
+<li>获取<code>inputstream</code>解析请求信息</li>
+<li>获取请求到uri,设置到Request对象</li>
+<li>创建 response 响应对象</li>
+<li>设置响应对象的request，拿到uri, 同时使用Io，读取请求对应到文件</li>
+<li><code>outputstream</code> 解析文件流数据，使用write 返回到客户端</li>
+<li>无论成功还是失败，关闭流（重要）</li>
+</ol>
+<h2 id="补充内容："><a href="#补充内容：" class="headerlink" title="补充内容："></a>补充内容：</h2><p>​    这里重点关注关于套接字的一些知识</p>
+<h3 id="ServerSocket"><a href="#ServerSocket" class="headerlink" title="ServerSocket"></a>ServerSocket</h3><p>​    服务器套接字的另一个重要的属性是 <strong>backlog</strong>，这是服务器套接字开始==拒绝==传入的请求之前，传入的连接请求的==最大队列长度==。</p>
+<h3 id="parseUri-处理逻辑"><a href="#parseUri-处理逻辑" class="headerlink" title="parseUri() 处理逻辑"></a>parseUri() 处理逻辑</h3><p><code>GET /index.html HTTP/1.1</code>。parse 方法从传递给 Requst 对象的套接字的 InputStream 中读取整个字节流并在一个缓冲区中存储字节数组。然后它使用缓冲区字节数据的字节来填入一个 StringBuffer 对象，并且把代表 StringBuffer 的字符串传递给 parseUri 方法。</p>
+<h2 id="Http请求对于servlet的操作"><a href="#Http请求对于servlet的操作" class="headerlink" title="Http请求对于servlet的操作"></a>Http请求对于servlet的操作</h2><p>​    当第一次调用 servlet 的时候，加载该 servlet 类并调用 servlet 的 init 方法(仅仅一次)。</p>
+<ul>
+<li>对每次请求，构造一个 javax.servlet.ServletRequest 实例和一个<br>javax.servlet.ServletResponse 实例。</li>
+<li>调用 servlet 的 service 方法，同时传递 ServletRequest 和 ServletResponse 对象。</li>
+<li>当 servlet 类被关闭的时候，调用 servlet 的 destroy 方法并卸载 servlet 类。<br>本章的第一个servlet容器不是全功能的。因此，她不能运行什么除了非常简单的servlet，<br>而且也不调用 servlet 的 init 方法和 destroy 方法。相反它做了下面的事情：</li>
+<li>等待 HTTP 请求。</li>
+<li>构造一个 ServletRequest 对象和一个 ServletResponse 对象。</li>
+<li>假如该请求需要一个静态资源的话，调用 StaticResourceProcessor 实例的 process 方<br>法，同时传递 ServletRequest 和 ServletResponse 对象。</li>
+<li>假如该请求需要一个 servlet 的话，加载 servlet 类并调用 servlet 的 service 方法，<br>同时传递 ServletRequest 和 ServletResponse 对象</li>
+</ul>
+<h2 id="StringManager"><a href="#StringManager" class="headerlink" title="StringManager"></a>StringManager</h2><h3 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h3><ol>
+<li>使用单例模式</li>
+<li>每个实例会读取包对应的一个属性文件</li>
+<li>StringManager 类被设计成一个 StringManager实例可以被包里边的所有类共享</li>
+<li>getManager() 方法被 同步修饰，并且使用hashtable对于manager进行管理（tomcat4）</li>
+</ol>
+<h3 id="核心方法解释"><a href="#核心方法解释" class="headerlink" title="核心方法解释"></a>核心方法解释</h3><p><strong>SocketInputStream</strong>：套接字读取流，主要用于处理Http请求中的各种参数，为了提高效率，使用懒加载特性读取</p>
+<ol>
+<li>回收检查流数据</li>
+<li>检查空行，如果出现-1抛出结尾异常</li>
+<li>获取servlet方法名称<ol>
+<li>如果缓冲区已经满了，则进行扩展<ol>
+<li>我们在内部缓冲区的尽头</li>
+<li>如果到了缓冲区结尾，将指针归位</li>
+</ol>
+</li>
+<li>这里有一个关键点：<strong>System.arraycopy</strong> 用来扩展缓冲区</li>
+</ol>
+</li>
+<li>阅读协议</li>
+</ol>
+<h1 id="模块解释"><a href="#模块解释" class="headerlink" title="模块解释"></a>模块解释</h1><p>​    关于部分模块的相关解释。</p>
+<h2 id="解析头部"><a href="#解析头部" class="headerlink" title="解析头部"></a>解析头部</h2><ul>
+<li>你可以通过使用类的无参数构造方法构造一个 HttpHeader 实例。</li>
+<li>一旦你拥有一个HttpHeader实例，你可以把它传递给SocketInputStream的readHeader<br>方法。假如这里有头部需要读取，readHeader 方法将会相应的填充 HttpHeader 对象。<br>假如再也没有头部需要读取了，HttpHeader实例的nameEnd和valueEnd字段将会置零。</li>
+<li>为了获取头部的名称和值，使用下面的方法：</li>
+<li>String name = new String(header.name, 0, header.nameEnd);</li>
+<li>String value = new String(header.value, 0, header.valueEnd);</li>
+</ul>
+<h2 id="启动器"><a href="#启动器" class="headerlink" title="启动器"></a>启动器</h2><ul>
+<li><p>启动应用程序</p>
+</li>
+<li><p>连接器</p>
+</li>
+<li><p>创建一个 HttpRequest 对象</p>
+</li>
+<li><p>创建一个 HttpResponse 对象</p>
+</li>
+<li><p>静态资源处理器和 servlet 处理器</p>
+</li>
+<li><p>运行应用程序</p>
+</li>
+</ul>
+<p>startup 模块只有一个类，Bootstrap，用来启动应用的。connector 模块的类可以分为五组：</p>
+<ul>
+<li><p>连接器和它的支撑类(HttpConnector 和 HttpProcessor)。</p>
+</li>
+<li><p>指代 HTTP 请求的类(HttpRequest)和它的辅助类。</p>
+</li>
+<li><p>指代 HTTP 响应的类(HttpResponse)和它的辅助类。</p>
+</li>
+<li><p>Facade 类(HttpRequestFacade 和 HttpResponseFacade)。</p>
+</li>
+<li><p>Constant 类</p>
+</li>
+</ul>
+<h1 id="问题以及解决"><a href="#问题以及解决" class="headerlink" title="问题以及解决"></a>问题以及解决</h1><p>​    如何避免在servlet调用连接器的时候，不需要请求参数可以避免掉getParamMap,getAttribute等昂贵开销的操作？</p>
+<p>​    Tomcat 的默认连接器(和本章应用程序的连接器)试图不解析参数直到 servlet 真正需要它的时候，通过这样来获得更高效率</p>
+<h1 id="小知识补充"><a href="#小知识补充" class="headerlink" title="小知识补充"></a>小知识补充</h1><ol>
+<li>System 在打印的时候 print 方法不会刷新输出。</li>
+<li>在一个 servlet 容器里边，一个类加载器可以找到 servlet 的地方被称为资源库(repository）。</li>
+<li>通过外观模式将Request对象的细节隐藏，setvlet调用内部无法知道，但是在解析的时候依然可以相互通信，只需要使用faced将接口进行一层包裹， 即可保证getUri()方法安全性</li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    书中第一个章节内容比较简单，后续章节代码的难度会逐渐上升，同时使用了不少的设计模式也是需要多加阅读理解和消化的</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>​    这篇笔记目的是让更多人了解这本书，这本书算是一本神书，毕竟开发的原作者自己写的东西毫无疑问是一手知识了。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/02/20/howtomcat/" title="《HowTomcatWork》笔记总结（一）">https://whitestore.top/2022/02/20/howtomcat/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/20/hotpots/" rel="prev" title="深入理解JVM - Hotspot算法细节">
+      <i class="fa fa-chevron-left"></i> 深入理解JVM - Hotspot算法细节
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/20/haigui/" rel="next" title="《海龟交易法则》读书笔记">
+      《海龟交易法则》读书笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#《HowTomcatWork》笔记总结（一）"><span class="nav-number">1.</span> <span class="nav-text">《HowTomcatWork》笔记总结（一）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书籍地址："><span class="nav-number">3.</span> <span class="nav-text">书籍地址：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#个人评价"><span class="nav-number">4.</span> <span class="nav-text">个人评价</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一个最简单的Servlet是如何工作的"><span class="nav-number">5.</span> <span class="nav-text">一个最简单的Servlet是如何工作的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tomcat的基本结构"><span class="nav-number">6.</span> <span class="nav-text">tomcat的基本结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#连接器"><span class="nav-number">6.1.</span> <span class="nav-text">连接器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器"><span class="nav-number">6.2.</span> <span class="nav-text">容器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构建一个最简单的web程序"><span class="nav-number">7.</span> <span class="nav-text">构建一个最简单的web程序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#构建对象"><span class="nav-number">7.1.</span> <span class="nav-text">构建对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HttpServer"><span class="nav-number">7.1.1.</span> <span class="nav-text">HttpServer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HttpRequest"><span class="nav-number">7.1.2.</span> <span class="nav-text">HttpRequest</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HttpResonse"><span class="nav-number">7.1.3.</span> <span class="nav-text">HttpResonse</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本步骤："><span class="nav-number">7.2.</span> <span class="nav-text">基本步骤：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#补充内容："><span class="nav-number">7.3.</span> <span class="nav-text">补充内容：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ServerSocket"><span class="nav-number">7.3.1.</span> <span class="nav-text">ServerSocket</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#parseUri-处理逻辑"><span class="nav-number">7.3.2.</span> <span class="nav-text">parseUri() 处理逻辑</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Http请求对于servlet的操作"><span class="nav-number">7.4.</span> <span class="nav-text">Http请求对于servlet的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StringManager"><span class="nav-number">7.5.</span> <span class="nav-text">StringManager</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#特点："><span class="nav-number">7.5.1.</span> <span class="nav-text">特点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心方法解释"><span class="nav-number">7.5.2.</span> <span class="nav-text">核心方法解释</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模块解释"><span class="nav-number">8.</span> <span class="nav-text">模块解释</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#解析头部"><span class="nav-number">8.1.</span> <span class="nav-text">解析头部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动器"><span class="nav-number">8.2.</span> <span class="nav-text">启动器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题以及解决"><span class="nav-number">9.</span> <span class="nav-text">问题以及解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小知识补充"><span class="nav-number">10.</span> <span class="nav-text">小知识补充</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">12.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="图床处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阿里云OSS图床搭建">
+<meta property="og:url" content="https://whitestore.top/2022/05/21/abioss/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="图床处理">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032203859.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032207275.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032156464.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032157443.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032023825.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032036671.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032105135.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032215220.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032249369.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032253953.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032254752.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204041251396.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204041300935.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204041303779.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204041306584.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204041315333.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204041345412.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204041333383.png">
+<meta property="article:published_time" content="2022-05-21T10:50:06.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.958Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="OSS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032203859.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/05/21/abioss/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>阿里云OSS图床搭建 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/abioss/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          阿里云OSS图床搭建
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 18:50:06" itemprop="dateCreated datePublished" datetime="2022-05-21T18:50:06+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/abioss/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/abioss/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">图床处理</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="阿里云OSS图床搭建"><a href="#阿里云OSS图床搭建" class="headerlink" title="阿里云OSS图床搭建"></a>阿里云OSS图床搭建</h1><h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>过去介绍过Gitee的图床搭建，用了一年多都挺稳定了，访问速度尚可，但是2022年开始发现不是很稳定，并且部分网站会发现“图片消失”的情况，F12看一下发现是很多外国网站给直接<strong>302临时重定向</strong>了。</p>
+<p>所以为了保证数据安全，这里无奈只能掏钱买阿里云的 OSS做图床了，查了下价钱也还能接受，标准LRS存储一年也就10块钱。</p>
+<p>本文就根据OSS配置再结合个人常用的几个软件来总结阿里云OSS相关配置和应用。</p>
+<a id="more"></a>
+
+<h2 id="计费方式"><a href="#计费方式" class="headerlink" title="计费方式"></a>计费方式</h2><p>在了解具体的使用之前，这里简要介绍一下计费的方式。</p>
+<p>阿里云有目前有两种计费方式，如果你不想买资源包等等操作，那么默认开通OSS之后就可以直接拿来用，直接<strong>按量计费</strong>的方式即可，先使用，后付费。</p>
+<ul>
+<li><p>按量收费计费公式：OSS的使用费用每小时结算一次，计算公式为：<strong>费用=实际资源使用量×对应资源每小时单价</strong>。</p>
+</li>
+<li><p>资源包：预先购买针对不同的计费项推出的优惠资源包，在费用结算时，优先从资源包抵扣用量，先购买，后抵扣，适用于业务用量相对稳定的场景。</p>
+</li>
+</ul>
+<blockquote>
+<p>注意：资源包一定要根据自己创建和使用的Bucket进行购买，比如标准存储就买标准存储的，低频存储的就买低频存储的，<strong>千万不要买错了，买错了不能反悔</strong>。当然标准的LRS比较便宜，但是粗略看了一下其他几个Burket选项都挺贵的，购买之前一定要确认清楚自己的需求和使用的Bucket类型。<br>如果对于费用计费有顾虑，可以阅读“资源包管理“中的”购买了资源包为什么还会欠费？“，里面都有相关解释。<br><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032203859.png" alt=""></p>
+</blockquote>
+<p>这里假定读者都是给个人学习或者简单使用的情况，所以使用的是购买资源包计费方式。</p>
+<h2 id="存储类型"><a href="#存储类型" class="headerlink" title="存储类型"></a>存储类型</h2><p>官方做了一张表，其实一般使用“标准类型”就够了，可能有的读者还想图便宜会想要买一个“低频访问”来玩玩，但是只要你去看一下低频访问资源包价格就会发现你会被文字游戏给坑了。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032207275.png" alt=""></p>
+<h2 id="新人优惠"><a href="#新人优惠" class="headerlink" title="新人优惠"></a>新人优惠</h2><p>新人优惠很重要，查了一下很多文章不会说这个东西，这里有必要强调一下，阿里云的OSS对于新人来说有送3个月免费100GB流量，基本相当于让你免费用3个月，这一点还是挺香的（<s>到期了薅完阿里薅腾讯云的</s>），所以创建OSS之后先不要急着用，先把免费的资源包领一下：</p>
+<p>地址：<span class="exturl" data-url="aHR0cHM6Ly93d3cuYWxpeXVuLmNvbS9wcm9kdWN0L29zcz9zcG09NTE3Ni4yMTIxMzMwMy5KXzY3MDQ3MzM5MjAuMTEuNDAyNzUzYzk3QVlCODQjSl8zMzMyMjQzMjIw" title="https://www.aliyun.com/product/oss?spm=5176.21213303.J_6704733920.11.402753c97AYB84#J_3332243220">对象存储OSS_云存储服务_企业数据管理_存储-阿里云 (aliyun.com)<i class="fa fa-external-link"></i></span>。</p>
+<p>滚动条下拉选择套餐即可。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032156464.png" alt=""></p>
+<p>地域选择大陆通用即可：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032157443.png" alt=""></p>
+<p>购买之后我们创建相关的Burket然后上传的时候就会从资源包扣费了。<br>注意你创建的Burket一定要和你的资源包匹配！<br>注意你创建的Burket一定要和你的资源包匹配！<br>注意你创建的Burket一定要和你的资源包匹配！</p>
+<p>很重要，否则不明不白的额外扣费让人恼火和后悔。</p>
+<h1 id="阿里云-OSS基础配置"><a href="#阿里云-OSS基础配置" class="headerlink" title="阿里云 OSS基础配置"></a>阿里云 OSS基础配置</h1><p>进入官网：<span class="exturl" data-url="aHR0cHM6Ly93d3cuYWxpeXVuLmNvbS8/c3BtPTUxNzYuMjEyMTMzMDMuSl8zMjA3NTI2MjQwLjEuMjg4MTUzYzlUREdrdHg=" title="https://www.aliyun.com/?spm=5176.21213303.J_3207526240.1.288153c9TDGktx">阿里云-上云就上阿里云 (aliyun.com)<i class="fa fa-external-link"></i></span>，在产品中选择 OSS，如果从来没开通过OSS，阿里云这里会给一份协议确认然后确认用户开通，这里就不截图了。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032023825.png" alt=""></p>
+<p>进入管理页面，刚进去看不知道要干啥，所以直接点击右边的OSS新手入门来了解也是一种方式。<br><span class="exturl" data-url="aHR0cHM6Ly9oZWxwLmFsaXl1bi5jb20vbGVhcm4vbGVhcm5pbmdwYXRoL29zcy5odG1sP3NwbT01MTc2Ljg0NjU5ODAuZ3VpZGUuMS40MTIzMTQ1MG1oNUxsNw==" title="https://help.aliyun.com/learn/learningpath/oss.html?spm=5176.8465980.guide.1.41231450mh5Ll7">OSS阿里云_ OSS是什么意思_对象储存OSS_阿里云OSS学习路径图_OSS Learning Path - 阿里云 (aliyun.com)<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032036671.png" alt=""></p>
+<p>我们切换到B<strong>ucket</strong>列表，选择“创建Bucket”。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032105135.png" alt=""></p>
+<p>进入页面之后，我们填写下面的内容：</p>
+<ul>
+<li>Bucket名称，唯一命名，起个自己喜欢的名字即可</li>
+<li>地域：选择和自己所在城市比较近的城市，国内选择国内的区域和节点即可。</li>
+<li>Endpoint：需要的话可以记录一下，比如我我选择的是：oss-cn-shenzhen.aliyuncs.com</li>
+<li>存储类型：如果仅仅作为备份使用，低频访问比较合适，但是如果是对外使用不管流量多少还是建议用标准的，归档存储一般用于永久存储备份重要数据。</li>
+<li>同城冗余和版本控制没啥必要，不用开</li>
+<li>读写权限：如果我们作为图床，需要用“公共读”允许匿名用户访问数据。（和PicGo配置有关）</li>
+<li>实时日志和定期备份个人认为如果是自己用也是没有必要，骗钱玩意。</li>
+</ul>
+<h2 id="购买资源包"><a href="#购买资源包" class="headerlink" title="购买资源包"></a>购买资源包</h2><p>创建完成之后，我们先不急着操作，我们先买个资源包，这里个人使用了“新人优惠”不给买了，这里就不演示购买操作了。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032215220.png" alt=""></p>
+<h2 id="AccessKey管理"><a href="#AccessKey管理" class="headerlink" title="AccessKey管理"></a>AccessKey管理</h2><p>接着是用户配置部分，我们需要在OSS中配置允许对外访问的AccessKey，这里我们点击右上角“头像”的”AccessKey管理“，这里其实用户体验不是很好。<br><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032249369.png" alt=""></p>
+<p>由于图床会对外访问，所以建议不要使用主账户的AccessToken进行操作，而是使用子账户方式进行操作处理，这里进入之后可以看到RAM用户管理，点击“创建用户”。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032253953.png" alt=""></p>
+<p>“创建用户”其他都可以自由操作，但是一定要选择“Open API”，这里需要进行安全验证。创建完整之后，我们便拥有了<strong>AccessKey ID，AccessKey Secret</strong>这两个关键配置，注意这两个配置只能查看一次，建议复制到自己本地存储后面需要使用到。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204032254752.png" alt=""></p>
+<p><strong>Burke授权</strong><br>创建用户之后，我们需要给创建的子用户授权，在管理页面选择新建子商户之后选择给商户添加权限。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204041251396.png" alt=""></p>
+<p>然后回到刚刚创建的bucket，在文件管理内给新建的用户授权。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204041300935.png" alt=""></p>
+<h2 id="配置PicGo"><a href="#配置PicGo" class="headerlink" title="配置PicGo"></a>配置PicGo</h2><p>PicGo是什么这里就略过了，我们直接来看PicGo的配置</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204041303779.png" alt=""></p>
+<p>关键部分：在软件中我们选择“阿里云OSS配置”然后根据参数填写下面的内容：</p>
+<ul>
+<li>keyId：这里用之前新建的<strong>子用户</strong>的 <strong>AccessKey</strong>。</li>
+<li>KeySecret：这里使用新建<strong>子用户</strong>的 <strong>AcessSecret</strong>。</li>
+<li>存储空间名称：这里按照下图填写<strong>Bucket域名</strong>，注意这里只需要<code>.aliyuncs.com</code>需要删除。</li>
+<li>默认存储区域：这里按照下图填写<strong>Endpoint</strong>，注意这里只需要<code>.aliyuncs.com</code>需要删除。</li>
+</ul>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204041306584.png" alt=""></p>
+<p>最后个人的配置如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204041315333.png" alt=""></p>
+<h2 id="配置Typera"><a href="#配置Typera" class="headerlink" title="配置Typera"></a>配置Typera</h2><p>安装Typera这里就跳过了，我们打开软件之后选择“图像”，然后切换到PicGo，验证一把之后会提示成功信息，之后我们修改上面“插入图片时….”的操作改为“上传图片”，以后图片都会往PicGo进行上传，不会出现在本地的一个临时路径了。</p>
+<blockquote>
+<p>这里不是很建议直接执行上传操作，更建议先放到一个指定文件夹然后确认无误之后进行复制粘贴的上传替换，当然OSS流量基本够用。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204041345412.png" alt=""></p>
+<h2 id="obsidian配置"><a href="#obsidian配置" class="headerlink" title="obsidian配置"></a>obsidian配置</h2><p>具体可以看作者的文章，基本上安装一个插件之后“Enable”即可直接使用，直接往Obsidian进行粘贴就会直接委托PicGo上传，然后出翔相关路径。<br><span class="exturl" data-url="aHR0cHM6Ly9mb3J1bS16aC5vYnNpZGlhbi5tZC90L3RvcGljLzM4OA==" title="https://forum-zh.obsidian.md/t/topic/388">在Obsidian中使用图床实现“一次上传、多次搬运”省心又省力 - 经验分享 - Obsidian 中文论坛<i class="fa fa-external-link"></i></span></p>
+<p>最后，我们截图粘贴查看是否触发PicGo上传，最终截图的路径如下：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9hZG9uZy1waWN0dXJlLm9zcy1jbi1zaGVuemhlbi5hbGl5dW5jcy5jb20vYWRvbmcvMjAyMjA0MDQxMzMzMzgzLnBuZw==" title="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204041333383.png">https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204041333383.png<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204041333383.png" alt=""></p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>gitee的图床个人目前已经不再进行上传，后续都将会改用OSS，另外个人建议定期给图床做一下本地备份，虽然可能并没有特别大的意义。</p>
+<p>另外如果对于图片的重要性不大，可以直接使用免费的图床。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/05/21/abioss/" title="阿里云OSS图床搭建">https://whitestore.top/2022/05/21/abioss/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%85%B6%E4%BB%96/" rel="tag"># 其他</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/05/gxycwysdn/" rel="prev" title="14岁懂社会-《给想要成为医生的你》读书笔记">
+      <i class="fa fa-chevron-left"></i> 14岁懂社会-《给想要成为医生的你》读书笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/21/bntydkcm/" rel="next" title="14岁懂社会-《被你讨厌的昆虫们》读书笔记">
+      14岁懂社会-《被你讨厌的昆虫们》读书笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#阿里云OSS图床搭建"><span class="nav-number">1.</span> <span class="nav-text">阿里云OSS图床搭建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text">介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#计费方式"><span class="nav-number">2.1.</span> <span class="nav-text">计费方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#存储类型"><span class="nav-number">2.2.</span> <span class="nav-text">存储类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新人优惠"><span class="nav-number">2.3.</span> <span class="nav-text">新人优惠</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#阿里云-OSS基础配置"><span class="nav-number">3.</span> <span class="nav-text">阿里云 OSS基础配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#购买资源包"><span class="nav-number">3.1.</span> <span class="nav-text">购买资源包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AccessKey管理"><span class="nav-number">3.2.</span> <span class="nav-text">AccessKey管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置PicGo"><span class="nav-number">3.3.</span> <span class="nav-text">配置PicGo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置Typera"><span class="nav-number">3.4.</span> <span class="nav-text">配置Typera</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#obsidian配置"><span class="nav-number">3.5.</span> <span class="nav-text">obsidian配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">4.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="请输入描述信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈设计模式 - 组合模式（十二）">
+<meta property="og:url" content="https://whitestore.top/2022/01/28/zuhemoshi/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="请输入描述信息">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210411163540.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20211018220151.png">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/5/166439743ad41a0b~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/5/166439744e33c5f1~tplv-t2oaga2asx-watermark.awebp">
+<meta property="article:published_time" content="2022-01-28T15:39:47.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.890Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="请输入关键字（英文逗号分隔多个关键字）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210411163540.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/01/28/zuhemoshi/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>浅谈设计模式 - 组合模式（十二） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/01/28/zuhemoshi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅谈设计模式 - 组合模式（十二）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-28 23:39:47" itemprop="dateCreated datePublished" datetime="2022-01-28T23:39:47+08:00">2022-01-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/01/28/zuhemoshi/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/28/zuhemoshi/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+            <div class="post-description">请输入描述信息</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="浅谈设计模式-组合模式（十二）"><a href="#浅谈设计模式-组合模式（十二）" class="headerlink" title="浅谈设计模式 - 组合模式（十二）"></a>浅谈设计模式 - 组合模式（十二）</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    组合模式是一种非常重要的设计模式，使用场景几乎随处可见，各类菜单和目录等地方都能看到组合模式的影子，组合模式通常情况下是和树形结构相辅相成的，而树是软件设计里面非常重要的数据结构，这篇文章将介绍什么是组合模式。</p>
+<h1 id="什么是组合模式"><a href="#什么是组合模式" class="headerlink" title="什么是组合模式"></a>什么是组合模式</h1><p>​    允许你将对象组合到树形结构表现“整体部分”的结构，组合能让客户以一致的方式处理个别对象和对象组合，组合其实更像是对于对于各种独立组建的“统一性”，可以将一类相似的事物看为一个整体但是拥有完全不同的工作机制。</p>
+<a id="more"></a>
+
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>​    可以说将相似的物品形成一个集合的模式就是组合模式，他能看两个相似的物品在一处进行完美的融合以及操作。当我们需要 <strong>整体/部分</strong>的操作时候，就可以使用这种形式。</p>
+<h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><ul>
+<li>组合模式讲究的是整体和部分之间的关系，整体可以包含部分，部分可以回溯到整体，互相包含</li>
+<li>组合模式可以让对象结构以“树”的形式包含关系。多数情况可以忽略整体和个体之前的差别</li>
+</ul>
+<h2 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h2><h3 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h3><ul>
+<li>组合模式可以帮助对象和组合的对象一视同仁的对待</li>
+</ul>
+<h3 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h3><ul>
+<li>继承结构，修改抽象类违反开放关闭原则</li>
+<li>如果层次结构非常深，递归结构影响效率</li>
+<li>使用迭代器有可能造成并发遍历菜单的问题</li>
+</ul>
+<blockquote>
+<p>组合模式以单一职责的原则换取透明性?</p>
+<p>组合模式破坏了的单一职责原则，组合了多个对象的方法，同时在方法里面做了多种操作，但是这样做却是可以让整个对象可以更加直观的了解整体和部分的特性，这是设计模式里面非常常见的操作。</p>
+</blockquote>
+<h2 id="组合模式的结构图"><a href="#组合模式的结构图" class="headerlink" title="组合模式的结构图"></a>组合模式的结构图</h2><p>​    组合模式的结构图如下：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210411163540.png" alt=""></p>
+<ul>
+<li><strong>Component 组件</strong>：定义组件的接口，这里可以设计为抽象类，可以设计为接口，可以视为组件的“可能的公共行为”。</li>
+<li><strong>Leaf 叶子节点</strong>：用于表示原始对象，叶子节点只需要实现自己的特殊功能即可，比如菜单的菜单子项。</li>
+<li><strong>Composite 组件节点</strong>：定义组件行为，可以具备子节点。同时实现叶子节点的相关操作（继承同一个接口），可以视为一个分类的大类</li>
+</ul>
+<h2 id="实际应用场景"><a href="#实际应用场景" class="headerlink" title="实际应用场景"></a>实际应用场景</h2><p>​    由于现实场景当中这样的设计模式结构是有树状结构转换而来的，所以组合模式的使用场景就是出现树形结构的地方。比如：<strong>文件目录显示</strong>，多及目录呈现等<strong>树形结构数据</strong>的操作。下面我们就使用一个菜单的结构来了解一下组合模式的“模板”代码。</p>
+<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="模拟场景"><a href="#模拟场景" class="headerlink" title="模拟场景"></a>模拟场景</h2><p>​    组合模式是为树形结构设计的一种设计模式，案例参照一个菜单的管理功能作为模拟，我们需要拿到不同的菜单分类，在菜单的分类里面，我们有需要拿到不同的菜单项，我们可以由任意的菜单项进入到不同的菜单分类，同时可以进入不同的叶子节点。</p>
+<p>​    这次的代码案例是从网上找的例子：</p>
+<h3 id="抽象组件"><a href="#抽象组件" class="headerlink" title="抽象组件"></a>抽象组件</h3><p>抽象组件定义了组件的通知接口，并实现了增删子组件及获取所有子组件的方法。同时重写了<code>hashCode</code>和<code>equales</code>方法（至于原因，请读者自行思考。如有疑问，请在评论区留言）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.jasongj.organization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Organization</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> List&lt;Organization&gt; childOrgs = <span class="keyword">new</span> ArrayList&lt;Organization&gt;();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">Organization</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.name = name;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> name;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addOrg</span><span class="params">(Organization org)</span> </span>&#123;</span><br><span class="line">    childOrgs.add(org);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeOrg</span><span class="params">(Organization org)</span> </span>&#123;</span><br><span class="line">    childOrgs.remove(org);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> List&lt;Organization&gt; <span class="title">getAllOrgs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> childOrgs;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">inform</span><span class="params">(String info)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name.hashCode();</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object org)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!(org <span class="keyword">instanceof</span> Organization)) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name.equals(((Organization) org).name);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="简单组件（部门）"><a href="#简单组件（部门）" class="headerlink" title="简单组件（部门）"></a>简单组件（部门）</h3><p>简单组件在通知方法中只负责对接收到消息作出响应。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.jasongj.organization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Department</span> <span class="keyword">extends</span> <span class="title">Organization</span></span>&#123;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">Department</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(name);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Logger LOGGER = LoggerFactory.getLogger(Department<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">inform</span><span class="params">(String info)</span></span>&#123;</span><br><span class="line">    LOGGER.info(<span class="string">"&#123;&#125;-&#123;&#125;"</span>, info, getName());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="复合组件（公司）"><a href="#复合组件（公司）" class="headerlink" title="复合组件（公司）"></a>复合组件（公司）</h3><p>复合组件在自身对消息作出响应后，还须通知其下所有子组件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.jasongj.organization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Company</span> <span class="keyword">extends</span> <span class="title">Organization</span></span>&#123;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Logger LOGGER = LoggerFactory.getLogger(Company<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">Company</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(name);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">inform</span><span class="params">(String info)</span></span>&#123;</span><br><span class="line">    LOGGER.info(<span class="string">"&#123;&#125;-&#123;&#125;"</span>, info, getName());</span><br><span class="line">    List&lt;Organization&gt; allOrgs = getAllOrgs();</span><br><span class="line">    allOrgs.forEach(org -&gt; org.inform(info+<span class="string">"-"</span>));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="awt的组合模式"><a href="#awt的组合模式" class="headerlink" title="awt的组合模式"></a>awt的组合模式</h2><blockquote>
+<p>​    组合模式因为使用了同样的接口，会让叶子节点实现一些不必要的功能，此时一般可以使用一个<strong>空对象</strong>或者使用更为<strong>激进</strong>的使用抛出异常的形式。</p>
+</blockquote>
+<p>​    awt这种老掉牙的东西就不多介绍，java的gui其实就是使用了组合模式，下面是一部分的案例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建组件</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">MethodsTank</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="comment">//创建组件等</span></span><br><span class="line">       jm = <span class="keyword">new</span> JMenu(<span class="string">"我的菜单(G)"</span>);</span><br><span class="line">       jmb = <span class="keyword">new</span> JMenuBar();</span><br><span class="line">       jl1 = <span class="keyword">new</span> JMenuItem(<span class="string">"开始新游戏(F)"</span>);</span><br><span class="line">       jl2 = <span class="keyword">new</span> JMenuItem(<span class="string">"结束游戏"</span>);</span><br><span class="line">       jl3 = <span class="keyword">new</span> JMenuItem(<span class="string">"重新开始(R)"</span>);</span><br><span class="line">       jl4 = <span class="keyword">new</span> JMenuItem(<span class="string">"存盘退出"</span>);</span><br><span class="line">       jl5 = <span class="keyword">new</span> JMenuItem(<span class="string">"回到上次游戏"</span>);</span><br><span class="line"></span><br><span class="line">       draw = <span class="keyword">new</span> DrawTank();</span><br><span class="line">       ses = <span class="keyword">new</span> selectIsSallup();</span><br><span class="line"></span><br><span class="line">       <span class="comment">//设置快捷键方式</span></span><br><span class="line">       jm.setMnemonic(<span class="string">'G'</span>);</span><br><span class="line">       jl1.setMnemonic(<span class="string">'f'</span>);</span><br><span class="line">       jl3.setMnemonic(<span class="string">'r'</span>);</span><br><span class="line">       jl4.setMnemonic(<span class="string">'q'</span>);</span><br><span class="line">       jl5.setMnemonic(<span class="string">'w'</span>);</span><br><span class="line"></span><br><span class="line">       <span class="comment">//开启闪烁线程</span></span><br><span class="line">       <span class="keyword">new</span> Thread(ses).start();</span><br><span class="line">       <span class="comment">//先运行开始画面</span></span><br><span class="line">       <span class="keyword">this</span>.addTank();</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addTank</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="comment">//添加菜单栏目</span></span><br><span class="line">       jm.add(jl1);</span><br><span class="line">       jm.add(jl2);</span><br><span class="line">       jm.add(jl3);</span><br><span class="line">       jm.add(jl4);</span><br><span class="line">       jm.add(jl5);</span><br><span class="line">       jmb.add(jm);</span><br><span class="line"></span><br><span class="line">       <span class="comment">//运行选关界面</span></span><br><span class="line">       <span class="keyword">this</span>.add(ses);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       <span class="comment">//对于子菜单添加事件</span></span><br><span class="line">       jl1.addActionListener(<span class="keyword">this</span>);</span><br><span class="line">       jl1.setActionCommand(<span class="string">"newgame"</span>);</span><br><span class="line">       jl2.addActionListener(<span class="keyword">this</span>);</span><br><span class="line">       jl2.setActionCommand(<span class="string">"gameexit"</span>);</span><br><span class="line">       jl3.addActionListener(<span class="keyword">this</span>);</span><br><span class="line">       jl3.setActionCommand(<span class="string">"restart"</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       <span class="comment">//设置窗体的一些基本属性</span></span><br><span class="line">       <span class="keyword">this</span>.setTitle(<span class="string">"我的坦克大战"</span>);</span><br><span class="line">       <span class="keyword">this</span>.setBounds(<span class="number">600</span>, <span class="number">350</span>, width, height);</span><br><span class="line">       <span class="comment">//添加菜单栏的方式</span></span><br><span class="line">       <span class="keyword">this</span>.setJMenuBar(jmb);</span><br><span class="line">       <span class="keyword">this</span>.setDefaultCloseOperation(<span class="keyword">this</span>.EXIT_ON_CLOSE);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       <span class="keyword">this</span>.setVisible(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>​    组合模式精髓在于“破而后立”，他虽然违反了设计原则，但是通过更加优雅的形式，实现了将单一的对象由部分变为一个整体。</p>
+<p>​    而组合模式也经常和适配器模式搭配使用，本文的案例只是一个简单的套板，对于组合模式的实际运用场景其实更常见的情况是关于菜单和菜单子项的内容。</p>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>​    组合模式很多情况下可能并不是十分用的上，更多的时候是和其他的设计模式搭配，组合模式我们需要关注的是“整体-部分”的融合统一即可。</p>
+<h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><p>​    这里有一篇讲的更好的资料，在组合模式的基础上给了一个质量稍高的案例代码：</p>
+<p>​    <span class="exturl" data-url="aHR0cHM6Ly9idWdzdGFjay5jbi9pdHN0YWNrLWRlbW8tZGVzaWduLzIwMjAvMDYvMDgvJUU5JTg3JThEJUU1JUFEJUE2LUphdmEtJUU4JUFFJUJFJUU4JUFFJUExJUU2JUE4JUExJUU1JUJDJThGLSVFNSVBRSU5RSVFNiU4OCU5OCVFNyVCQiU4NCVFNSU5MCU4OCVFNiVBOCVBMSVFNSVCQyU4Ri5odG1s" title="https://bugstack.cn/itstack-demo-design/2020/06/08/%E9%87%8D%E5%AD%A6-Java-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%AE%9E%E6%88%98%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F.html">实战组合模式「营销差异化人群发券，决策树引擎搭建场景」<i class="fa fa-external-link"></i></span></p>
+<h1 id="源码分析组合模式的典型应用"><a href="#源码分析组合模式的典型应用" class="headerlink" title="源码分析组合模式的典型应用"></a>源码分析组合模式的典型应用</h1><h2 id="java-awt中的组合模式"><a href="#java-awt中的组合模式" class="headerlink" title="java.awt中的组合模式"></a>java.awt中的组合模式</h2><p>Java GUI分两种：</p>
+<ul>
+<li>AWT(Abstract Window Toolkit)：抽象窗口工具集，是第一代的Java GUI组件。绘制依赖于底层的操作系统。基本的AWT库处理用户界面元素的方法是把这些元素的创建和行为委托给每个目标平台上（Windows、 Unix、 Macintosh等）的本地GUI工具进行处理。</li>
+<li>Swing，不依赖于底层细节，是轻量级的组件。现在多是基于Swing来开发。</li>
+</ul>
+<p>我们来看一个AWT的简单示例：</p>
+<blockquote>
+<p>注意：为了正常显示中文，需要在IDEA中的 <code>Edit Configurations -&gt; VM Options</code> 中设置参数 <code>-Dfile.encoding=GB18030</code></p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.awt.*;</span><br><span class="line"><span class="keyword">import</span> java.awt.event.WindowAdapter;</span><br><span class="line"><span class="keyword">import</span> java.awt.event.WindowEvent;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyFrame</span> <span class="keyword">extends</span> <span class="title">Frame</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyFrame</span><span class="params">(String title)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(title);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MyFrame frame = <span class="keyword">new</span> MyFrame(<span class="string">"这是一个 Frame"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义三个构件，添加到Frame中去</span></span><br><span class="line">        Button button = <span class="keyword">new</span> Button(<span class="string">"按钮 A"</span>);</span><br><span class="line">        Label label = <span class="keyword">new</span> Label(<span class="string">"这是一个 AWT Label!"</span>);</span><br><span class="line">        TextField textField = <span class="keyword">new</span> TextField(<span class="string">"这是一个 AWT TextField!"</span>);</span><br><span class="line"></span><br><span class="line">        frame.add(button, BorderLayout.EAST);</span><br><span class="line">        frame.add(label, BorderLayout.SOUTH);</span><br><span class="line">        frame.add(textField, BorderLayout.NORTH);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义一个 Panel，在Panel中添加三个构件，然后再把Panel添加到Frame中去</span></span><br><span class="line">        Panel panel = <span class="keyword">new</span> Panel();</span><br><span class="line">        panel.setBackground(Color.pink);</span><br><span class="line"></span><br><span class="line">        Label lable1 = <span class="keyword">new</span> Label(<span class="string">"用户名"</span>);</span><br><span class="line">        TextField textField1 = <span class="keyword">new</span> TextField(<span class="string">"请输入用户名："</span>, <span class="number">20</span>);</span><br><span class="line">        Button button1 = <span class="keyword">new</span> Button(<span class="string">"确定"</span>);</span><br><span class="line">        panel.add(lable1);</span><br><span class="line">        panel.add(textField1);</span><br><span class="line">        panel.add(button1);</span><br><span class="line"></span><br><span class="line">        frame.add(panel, BorderLayout.CENTER);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置Frame的属性</span></span><br><span class="line">        frame.setSize(<span class="number">500</span>, <span class="number">300</span>);</span><br><span class="line">        frame.setBackground(Color.orange);</span><br><span class="line">        <span class="comment">// 设置点击关闭事件</span></span><br><span class="line">        frame.addWindowListener(<span class="keyword">new</span> WindowAdapter() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">windowClosing</span><span class="params">(WindowEvent e)</span> </span>&#123;</span><br><span class="line">                System.exit(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        frame.setVisible(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>运行后窗体显示如下</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20211018220151.png" alt=""></p>
+<p>我们在Frame容器中添加了三个不同的构件 <code>Button</code>、<code>Label</code>、<code>TextField</code>，还添加了一个 <code>Panel</code> 容器，<code>Panel</code> 容器中又添加了 <code>Button</code>、<code>Label</code>、<code>TextField</code> 三个构件，为什么容器 <code>Frame</code> 和 <code>Panel</code> 可以添加类型不同的构件和容器呢？</p>
+<p>我们先来看下AWT Component的类图</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/5/166439743ad41a0b~tplv-t2oaga2asx-watermark.awebp" alt="AWT Component类图"></p>
+<p>GUI组件根据作用可以分为两种：基本组件和容器组件。</p>
+<ul>
+<li>基本组件又称构件，诸如按钮、文本框之类的图形界面元素。</li>
+<li>容器是一种比较特殊的组件，可以容纳其他组件，容器如窗口、对话框等。所有的容器类都是 <code>java.awt.Container</code> 的直接或间接子类</li>
+</ul>
+<p>容器父类 <code>Container</code> 的部分代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class Container extends Component &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * The components in this container.</span><br><span class="line">     * @see #add</span><br><span class="line">     * @see #getComponents</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private java.util.List&lt;Component&gt; component &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    public Component add(Component comp) &#123;</span><br><span class="line">        addImpl(comp, null, -1);</span><br><span class="line">        return comp;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 省略...</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>容器父类 <code>Container</code> 内部定义了一个集合用于存储 <code>Component</code> 对象，而容器组件 <code>Container</code> 和 基本组件如 <code>Button</code>、<code>Label</code>、<code>TextField</code> 等都是 <code>Component</code> 的子类，所以可以很清楚的看到这里应用了组合模式</p>
+<p><code>Component</code> 类中封装了组件通用的方法和属性，如图形的组件对象、大小、显示位置、前景色和背景色、边界、可见性等，因此许多组件类也就继承了 <code>Component</code> 类的成员方法和成员变量，相应的成员方法包括：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;getComponentAt(int x, int y)</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;getFont()</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;getForeground()</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;getName()</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;getSize()</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;paint(Graphics g)</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;repaint()</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;update()</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;setVisible(boolean b)</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;setSize(Dimension d)</span><br><span class="line">&amp;emsp;&amp;emsp;&amp;emsp;setName(String name)</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<h2 id="Java集合中的组合模式"><a href="#Java集合中的组合模式" class="headerlink" title="Java集合中的组合模式"></a>Java集合中的组合模式</h2><p><code>HashMap</code> 提供 <code>putAll</code> 的方法，可以将另一个 <code>Map</code> 对象放入自己的存储空间中，如果有相同的 key 值则会覆盖之前的 key 值所对应的 value 值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Map&lt;String, Integer&gt; map1 &#x3D; new HashMap&lt;String, Integer&gt;();</span><br><span class="line">        map1.put(&quot;aa&quot;, 1);</span><br><span class="line">        map1.put(&quot;bb&quot;, 2);</span><br><span class="line">        map1.put(&quot;cc&quot;, 3);</span><br><span class="line">        System.out.println(&quot;map1: &quot; + map1);</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Integer&gt; map2 &#x3D; new LinkedMap();</span><br><span class="line">        map2.put(&quot;cc&quot;, 4);</span><br><span class="line">        map2.put(&quot;dd&quot;, 5);</span><br><span class="line">        System.out.println(&quot;map2: &quot; + map2);</span><br><span class="line"></span><br><span class="line">        map1.putAll(map2);</span><br><span class="line">        System.out.println(&quot;map1.putAll(map2): &quot; + map1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">map1: &#123;aa&#x3D;1, bb&#x3D;2, cc&#x3D;3&#125;</span><br><span class="line">map2: &#123;cc&#x3D;4, dd&#x3D;5&#125;</span><br><span class="line">map1.putAll(map2): &#123;aa&#x3D;1, bb&#x3D;2, cc&#x3D;4, dd&#x3D;5&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>查看 <code>putAll</code> 源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    public void putAll(Map&lt;? extends K, ? extends V&gt; m) &#123;</span><br><span class="line">        putMapEntries(m, true);</span><br><span class="line">    &#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><code>putAll</code> 接收的参数为父类 <code>Map</code> 类型，所以 <code>HashMap</code> 是一个容器类，<code>Map</code> 的子类为叶子类，当然如果 <code>Map</code> 的其他子类也实现了 <code>putAll</code> 方法，那么它们都既是容器类，又都是叶子类</p>
+<p>同理，<code>ArrayList</code> 中的 <code>addAll(Collection&lt;? extends E&gt; c)</code> 方法也是一个组合模式的应用，在此不做探讨</p>
+<h2 id="Mybatis-SqlNode中的组合模式"><a href="#Mybatis-SqlNode中的组合模式" class="headerlink" title="Mybatis SqlNode中的组合模式"></a>Mybatis SqlNode中的组合模式</h2><p>MyBatis 的强大特性之一便是它的动态SQL，其通过 <code>if</code>, <code>choose</code>, <code>when</code>, <code>otherwise</code>, <code>trim</code>, <code>where</code>, <code>set</code>, <code>foreach</code> 标签，可组合成非常灵活的SQL语句，从而提高开发人员的效率。</p>
+<p>来几个官方示例：</p>
+<p>动态SQL – IF</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id&#x3D;&quot;findActiveBlogLike&quot;  resultType&#x3D;&quot;Blog&quot;&gt;</span><br><span class="line">  SELECT * FROM BLOG WHERE state &#x3D; ‘ACTIVE’ </span><br><span class="line">  &lt;if test&#x3D;&quot;title !&#x3D; null&quot;&gt;</span><br><span class="line">    AND title like #&#123;title&#125;</span><br><span class="line">  &lt;&#x2F;if&gt;</span><br><span class="line">  &lt;if test&#x3D;&quot;author !&#x3D; null and author.name !&#x3D; null&quot;&gt;</span><br><span class="line">    AND author_name like #&#123;author.name&#125;</span><br><span class="line">  &lt;&#x2F;if&gt;</span><br><span class="line">&lt;&#x2F;select&gt;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>动态SQL – choose, when, otherwise</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id&#x3D;&quot;findActiveBlogLike&quot;  resultType&#x3D;&quot;Blog&quot;&gt;</span><br><span class="line">  SELECT * FROM BLOG WHERE state &#x3D; ‘ACTIVE’</span><br><span class="line">  &lt;choose&gt;</span><br><span class="line">    &lt;when test&#x3D;&quot;title !&#x3D; null&quot;&gt;</span><br><span class="line">      AND title like #&#123;title&#125;</span><br><span class="line">    &lt;&#x2F;when&gt;</span><br><span class="line">    &lt;when test&#x3D;&quot;author !&#x3D; null and author.name !&#x3D; null&quot;&gt;</span><br><span class="line">      AND author_name like #&#123;author.name&#125;</span><br><span class="line">    &lt;&#x2F;when&gt;</span><br><span class="line">    &lt;otherwise&gt;</span><br><span class="line">      AND featured &#x3D; 1</span><br><span class="line">    &lt;&#x2F;otherwise&gt;</span><br><span class="line">  &lt;&#x2F;choose&gt;</span><br><span class="line">&lt;&#x2F;select&gt;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>动态SQL – where</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"findActiveBlogLike"</span>  <span class="attr">resultType</span>=<span class="string">"Blog"</span>&gt;</span></span><br><span class="line">  SELECT * FROM BLOG </span><br><span class="line">  <span class="tag">&lt;<span class="name">where</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">"state != null"</span>&gt;</span></span><br><span class="line">         state = #&#123;state&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">if</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">"title != null"</span>&gt;</span></span><br><span class="line">        AND title like #&#123;title&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">"author != null and author.name != null"</span>&gt;</span></span><br><span class="line">        AND author_name like #&#123;author.name&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">where</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>动态SQL – foreach</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"selectPostIn"</span> <span class="attr">resultType</span>=<span class="string">"domain.blog.Post"</span>&gt;</span></span><br><span class="line">  SELECT * FROM POST P WHERE ID in</span><br><span class="line">  <span class="tag">&lt;<span class="name">foreach</span> <span class="attr">item</span>=<span class="string">"item"</span> <span class="attr">index</span>=<span class="string">"index"</span> <span class="attr">collection</span>=<span class="string">"list"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">open</span>=<span class="string">"("</span> <span class="attr">separator</span>=<span class="string">","</span> <span class="attr">close</span>=<span class="string">")"</span>&gt;</span></span><br><span class="line">        #&#123;item&#125;</span><br><span class="line">  <span class="tag">&lt;/<span class="name">foreach</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>Mybatis在处理动态SQL节点时，应用到了组合设计模式，Mybatis会将映射配置文件中定义的动态SQL节点、文本节点等解析成对应的 SqlNode 实现，并形成树形结构。</p>
+<p><code>SQLNode</code> 的类图如下所示</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/5/166439744e33c5f1~tplv-t2oaga2asx-watermark.awebp" alt="Mybatis SqlNode 类图"></p>
+<p>需要先了解 <code>DynamicContext</code> 类的作用：主要用于记录解析动态SQL语句之后产生的SQL语句片段，可以认为它是一个用于记录动态SQL语句解析结果的容器</p>
+<p>抽象构件为 <code>SqlNode</code> 接口，源码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SqlNode</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(DynamicContext context)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><code>apply</code> 是 <code>SQLNode</code> 接口中定义的唯一方法，该方法会根据用户传入的实参，参数解析该SQLNode所记录的动态SQL节点，并调用 <code>DynamicContext.appendSql()</code> 方法将解析后的SQL片段追加到 <code>DynamicContext.sqlBuilder</code> 中保存，当SQL节点下所有的 <code>SqlNode</code> 完成解析后，我们就可以从 <code>DynamicContext</code> 中获取一条动态生产的、完整的SQL语句</p>
+<p>然后来看 <code>MixedSqlNode</code> 类的源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MixedSqlNode</span> <span class="keyword">implements</span> <span class="title">SqlNode</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> List&lt;SqlNode&gt; contents;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">MixedSqlNode</span><span class="params">(List&lt;SqlNode&gt; contents)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.contents = contents;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(DynamicContext context)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (SqlNode sqlNode : contents) &#123;</span><br><span class="line">      sqlNode.apply(context);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><code>MixedSqlNode</code> 维护了一个 <code>List&lt;SqlNode&gt;</code> 类型的列表，用于存储 <code>SqlNode</code> 对象，<code>apply</code> 方法通过 <code>for循环</code> 遍历 contents 并调用其中对象的 <code>apply</code> 方法，这里跟我们的示例中的 <code>Folder</code> 类中的 <code>print</code> 方法非常类似，很明显 <code>MixedSqlNode</code> 扮演了容器构件角色</p>
+<p>对于其他SqlNode子类的功能，稍微概括如下：</p>
+<ul>
+<li><code>TextSqlNode</code>：表示包含 <code>${}</code> 占位符的动态SQL节点，其 apply 方法会使用 <code>GenericTokenParser</code> 解析 <code>${}</code> 占位符，并直接替换成用户给定的实际参数值</li>
+<li><code>IfSqlNode</code>：对应的是动态SQL节点 <code>&lt;If&gt;</code> 节点，其 apply 方法首先通过 <code>ExpressionEvaluator.evaluateBoolean()</code> 方法检测其 test 表达式是否为 true，然后根据 test 表达式的结果，决定是否执行其子节点的 apply() 方法</li>
+<li><code>TrimSqlNode</code> ：会根据子节点的解析结果，添加或删除相应的前缀或后缀。</li>
+<li><code>WhereSqlNode</code> 和 <code>SetSqlNode</code> 都继承了 <code>TrimSqlNode</code></li>
+<li><code>ForeachSqlNode</code>：对应 <code>&lt;foreach&gt;</code> 标签，对集合进行迭代</li>
+<li>动态SQL中的 <code>&lt;choose&gt;</code>、<code>&lt;when&gt;</code>、<code>&lt;otherwise&gt;</code> 分别解析成 <code>ChooseSqlNode</code>、<code>IfSqlNode</code>、<code>MixedSqlNode</code></li>
+</ul>
+<p>综上，<code>SqlNode</code> 接口有多个实现类，每个实现类对应一个动态SQL节点，其中 <code>SqlNode</code> 扮演抽象构件角色，<code>MixedSqlNode</code> 扮演容器构件角色，其它一般是叶子构件角色</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/01/28/zuhemoshi/" title="浅谈设计模式 - 组合模式（十二）">https://whitestore.top/2022/01/28/zuhemoshi/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/28/jdkyouhua/" rel="prev" title="JDK常用优化手段摘录">
+      <i class="fa fa-chevron-left"></i> JDK常用优化手段摘录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/28/random/" rel="next" title="《早起黄金一小时》读书笔记">
+      《早起黄金一小时》读书笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#浅谈设计模式-组合模式（十二）"><span class="nav-number">1.</span> <span class="nav-text">浅谈设计模式 - 组合模式（十二）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是组合模式"><span class="nav-number">3.</span> <span class="nav-text">什么是组合模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">3.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特点"><span class="nav-number">3.2.</span> <span class="nav-text">特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优缺点"><span class="nav-number">3.3.</span> <span class="nav-text">优缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优点："><span class="nav-number">3.3.1.</span> <span class="nav-text">优点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点："><span class="nav-number">3.3.2.</span> <span class="nav-text">缺点：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组合模式的结构图"><span class="nav-number">3.4.</span> <span class="nav-text">组合模式的结构图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实际应用场景"><span class="nav-number">3.5.</span> <span class="nav-text">实际应用场景</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实战"><span class="nav-number">4.</span> <span class="nav-text">实战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#模拟场景"><span class="nav-number">4.1.</span> <span class="nav-text">模拟场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#抽象组件"><span class="nav-number">4.1.1.</span> <span class="nav-text">抽象组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单组件（部门）"><span class="nav-number">4.1.2.</span> <span class="nav-text">简单组件（部门）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复合组件（公司）"><span class="nav-number">4.1.3.</span> <span class="nav-text">复合组件（公司）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#awt的组合模式"><span class="nav-number">4.2.</span> <span class="nav-text">awt的组合模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结语"><span class="nav-number">5.</span> <span class="nav-text">结语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料："><span class="nav-number">6.</span> <span class="nav-text">参考资料：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码分析组合模式的典型应用"><span class="nav-number">7.</span> <span class="nav-text">源码分析组合模式的典型应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#java-awt中的组合模式"><span class="nav-number">7.1.</span> <span class="nav-text">java.awt中的组合模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java集合中的组合模式"><span class="nav-number">7.2.</span> <span class="nav-text">Java集合中的组合模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis-SqlNode中的组合模式"><span class="nav-number">7.3.</span> <span class="nav-text">Mybatis SqlNode中的组合模式</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

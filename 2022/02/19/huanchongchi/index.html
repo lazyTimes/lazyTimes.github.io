@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="请输入描述信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql专栏 - 缓冲池补充、数据页、表空间简述">
+<meta property="og:url" content="https://whitestore.top/2022/02/19/huanchongchi/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="请输入描述信息">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210904191126.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210904202851.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210904213013.png">
+<meta property="og:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210905111438.png">
+<meta property="article:published_time" content="2022-02-19T15:06:07.000Z">
+<meta property="article:modified_time" content="2022-06-02T10:09:44.648Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="请输入关键字（英文逗号分隔多个关键字）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210904191126.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/02/19/huanchongchi/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Mysql专栏 - 缓冲池补充、数据页、表空间简述 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/19/huanchongchi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mysql专栏 - 缓冲池补充、数据页、表空间简述
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-19 23:06:07" itemprop="dateCreated datePublished" datetime="2022-02-19T23:06:07+08:00">2022-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:44" itemprop="dateModified" datetime="2022-06-02T18:09:44+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/02/19/huanchongchi/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/19/huanchongchi/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+            <div class="post-description">请输入描述信息</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Mysql专栏-缓冲池补充、数据页、表空间简述"><a href="#Mysql专栏-缓冲池补充、数据页、表空间简述" class="headerlink" title="Mysql专栏 - 缓冲池补充、数据页、表空间简述"></a>Mysql专栏 - 缓冲池补充、数据页、表空间简述</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​        这一节我们来继续讲述关于缓冲池的内容，以及关于数据页和表空间的内容，当然内容页比较基础和简单，理解相关概念即可。</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ol>
+<li>补充缓冲池的内容，关于后台刷新线程，以及多线程访问buffer pool的锁模式等</li>
+<li>数据行和数据页的结构，简要的了解简单的内部细节。</li>
+<li>表空间以及数据区，以及整个mysql表的逻辑结构</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="缓冲池补充"><a href="#缓冲池补充" class="headerlink" title="缓冲池补充"></a>缓冲池补充</h1><p>​    在介绍具体的内容之前，这里先补充关于缓冲池的一些细节。</p>
+<h2 id="后台线程定时刷新冷数据"><a href="#后台线程定时刷新冷数据" class="headerlink" title="后台线程定时刷新冷数据"></a>后台线程定时刷新冷数据</h2><p>​    上一节提到了冷热数据分离，其实冷数据不可能是在缓冲池满的时候才会进行刷新的，而是会在LRU冷数据的尾部随机找几个缓存页刷入磁盘，他会有一个定时任务，每隔一段时间就进行刷新的操作，同时将刷新到磁盘之后的数据页加入到free链表当中。所以LRU的链表会定期把数据刷入到磁盘当中进行处理，并且在缓存没有用完的时候会清空一些无用的缓存页。</p>
+<h2 id="flush链表的数据定期刷入缓存"><a href="#flush链表的数据定期刷入缓存" class="headerlink" title="flush链表的数据定期刷入缓存"></a>flush链表的数据定期刷入缓存</h2><p>​    flush的链表存放的是脏页数据，当然它也有一个定时任务，会定期把flash链表的数据刷入到缓冲池当中，并且我们也可以大致认为整个LRU是不断的移动的，flush链表的缓存页页在不断的减少，free list的内容在不断变多。</p>
+<h2 id="多线程并发访问是否会加锁"><a href="#多线程并发访问是否会加锁" class="headerlink" title="多线程并发访问是否会加锁"></a>多线程并发访问是否会加锁</h2><p>​    多线程访问的时候会进行加锁，因为读取一个缓冲页涉及 free list, flush list, lru list三个链表的操作，并且还需要对于数据页进行哈希函数的查找操作，所以整个操作过程是肯定要加锁的，虽然看似操作的链表有三个，但是实际上耗费不了多少的性能，因为链表的操作都是一些指针的操作查找操作，所以基本都是一些常数的时间和空间消耗，即使是排队来一个个处理，也是没有多大的影响的。</p>
+<h2 id="多个buffer-pool并行优化"><a href="#多个buffer-pool并行优化" class="headerlink" title="多个buffer pool并行优化"></a>多个buffer pool并行优化</h2><p>​    当mysql的buffer pool大于1g的 时候其实可以配置多个缓冲池，MySQL默认的规则是：<strong>如果你给Buffer Pool分配的内存小于1GB，那么最多就只会给你一个Buffer Pool</strong>。比如在下面的案例当中如果是一个8G的Mysql服务器，可以做如下的配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[server]</span><br><span class="line">innodb_buffer_pool_size &#x3D; 8589934592</span><br><span class="line">innodb_buffer_pool_instances &#x3D; 4</span><br></pre></td></tr></table></figure>
+
+<p>​    这样就可以设置4个buffer pool，每一个占用2g大小。实际生产环境使用buffer pool进行调优是十分重要的。</p>
+<h2 id="运行过程中可以调整buffer-pool大小么？"><a href="#运行过程中可以调整buffer-pool大小么？" class="headerlink" title="运行过程中可以调整buffer pool大小么？"></a>运行过程中可以调整buffer pool大小么？</h2><p>​    就目前讲解来看，是无法实现动态的运行时期调整大小的。为什么？因为如果要调整的话需要把整个缓冲区的大小拷贝到新的内存，这个速度实在是太慢了。所以针对这一个问题，mysql引入了chunk的概念。</p>
+<h3 id="mysql的chunk机制把buffer-pool-拆小"><a href="#mysql的chunk机制把buffer-pool-拆小" class="headerlink" title="mysql的chunk机制把buffer pool 拆小"></a>mysql的chunk机制把buffer pool 拆小</h3><p>​    为了实现动态的buffer pool扩展，buffer pool是由很多chunk组成的，他的大小是<strong>innodb_buffer_pool_chunk_size</strong>参数控制的，默认值就是128MB，也就是说一个chunk就是一个默认的缓冲池的大小，同时缓存页和描述信息也是按照chunk进行分块的，假设有一个2G 的chunk的，它的每一个块是128M，也就是大概有16个chunk进行切割。</p>
+<p>​    有了chunk之后，申请新的内存空间的时候，我们要把之前的缓存复制到新的空间就好办了，直接生成新的到chunk即可。然后把数据搬移到新的chunk即可。</p>
+<h2 id="生产环境给多少buffer-pool合适？"><a href="#生产环境给多少buffer-pool合适？" class="headerlink" title="生产环境给多少buffer pool合适？"></a>生产环境给多少buffer pool合适？</h2><p>​    如果32g的mysql机器要给30g的buffer pool，想想也没有道理！crud的操作基本都是内存的操作，所以性能十分高，对于32g的内存，你的机器起码就得用好几个g的处理，所以首先我们可以分配一半的内存给mysql.或者给个60%左右的内容即可。</p>
+<pre><code>`innodb_buffer_pool_size`默认的情况下为128M，最大值取决于CPU的架构。在32-bit平台上，最大值为`(2^32 -1)`,在64-bit平台上最大值为`(2^64-1)`。当**缓冲池大小大于1G时**，将`innodb_buffer_pool_instances`设置大于1的值可以提高服务器的可扩展性。最后大的缓冲池可以减小多次磁盘I/O访问相同的表数据，如果数据库配置在专门的服务器当中，可以将缓冲池大小设置为服务器物理内存的60 - 80%，也就是说32g的内容给24g - 26g都是比较好的选择，当然 。</code></pre><h3 id="buffer-pool分配公式："><a href="#buffer-pool分配公式：" class="headerlink" title="buffer pool分配公式："></a>buffer pool分配公式：</h3><p>​    关于buffer pool，这里有一个关键的公式：<strong>buffer pool总大小=(chunk大小 * buffer pool实例数量)的倍数</strong>，默认的chunk大小是128M, 要给20G的buffer pool ，然后按照公式套入就是：<code>Buffer pool = 128 * 16 * 10</code>，也就是每一个chunk大小是128，再次强调一遍<code>buffer pool总大小=(chunk大小 * buffer pool数量)的倍数</code></p>
+<blockquote>
+<p>缓冲池的配置有如下的规定：</p>
+<ul>
+<li>缓冲池大小必须始终等于或者是<code>innodb_buffer_pool_chunk_size * innodb_buffer_pool_instances</code>的倍数（innodb_buffer_pool_instances 指的就是实例的数量）。</li>
+<li>如果将缓冲池大小更改为不等于或等于<code>innodb_buffer_pool_chunk_size * innodb_buffer_pool_instances</code>的倍数的值，则缓冲池大小将自动调整为等于或者是<code>innodb_buffer_pool_chunk_size * innodb_buffer_pool_instances</code>的倍数的值。</li>
+</ul>
+</blockquote>
+<h3 id="查看线上情况"><a href="#查看线上情况" class="headerlink" title="查看线上情况"></a>查看线上情况</h3><p>​    当你的数据库启动之后，执行<code>SHOW ENGINE INNODB STATUS</code>就可以了。此时你可能会看到如下一系列的东西:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Total memory allocated xxxx; Dictionary memory allocated xxx Buffer pool size xxxx Free buffers xxx</span><br><span class="line">Database pages xxx</span><br><span class="line">Old database pages xxxx</span><br><span class="line">Modified db pages xx</span><br><span class="line">Pending reads 0</span><br><span class="line">Pending writes: LRU 0, flush list 0, single page 0</span><br><span class="line">Pages made young xxxx, not young xxx</span><br><span class="line">xx youngs&#x2F;s, xx non-youngs&#x2F;s</span><br><span class="line">Pages read xxxx, created xxx, written xxx</span><br><span class="line">xx reads&#x2F;s, xx creates&#x2F;s, 1xx writes&#x2F;s</span><br><span class="line">Buffer pool hit rate xxx &#x2F; 1000, young-making rate xxx &#x2F; 1000 not xx &#x2F; 1000</span><br><span class="line">Pages read ahead 0.00&#x2F;s, evicted without access 0.00&#x2F;s, Random read ahead 0.00&#x2F;s LRU len: xxxx, unzip_LRU len: xxx</span><br><span class="line">I&#x2F;O sum[xxx]:cur[xx], unzip sum[16xx:cur[0]</span><br></pre></td></tr></table></figure>
+
+<p>​    下面我们给大家解释一下这里的东西，主要讲解这里跟buffer pool相关的一些东西。</p>
+<p>​    相关解释：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(1)Total memory allocated，这就是说buffer pool最终的总大小是多少</span><br><span class="line">(2)Buffer pool size，这就是说buffer pool一共能容纳多少个缓存页</span><br><span class="line">(3)Free buffers，这就是说free链表中一共有多少个空闲的缓存页是可用的</span><br><span class="line">(4)Database pages和Old database pages，就是说LRU链表中一共有多少个缓存页，以及冷数据区域里的缓存页 数量</span><br><span class="line">(5)Modified db pages，这就是flush链表中的缓存页数量</span><br><span class="line">(6)Pending reads和Pending writes，等待从磁盘上加载进缓存页的数量，还有就是即将从LRU链表中刷入磁盘的数 量、即将从flush链表中刷入磁盘的数量</span><br><span class="line">(7)Pages made young和not young，这就是说已经LRU冷数据区域里访问之后转移到热数据区域的缓存页的数 量，以及在LRU冷数据区域里1s内被访问了没进入热数据区域的缓存页的数量</span><br><span class="line">(8)youngs&#x2F;s和not youngs&#x2F;s，这就是说每秒从冷数据区域进入热数据区域的缓存页的数量，以及每秒在冷数据区 域里被访问了但是不能进入热数据区域的缓存页的数量</span><br><span class="line">(9)Pages read xxxx, created xxx, written xxx，xx reads&#x2F;s, xx creates&#x2F;s, 1xx writes&#x2F;s，这里就是说已经读取、 创建和写入了多少个缓存页，以及每秒钟读取、创建和写入的缓存页数量</span><br><span class="line">(10)Buffer pool hit rate xxx &#x2F; 1000，这就是说每1000次访问，有多少次是直接命中了buffer pool里的缓存的 (11)young-making rate xxx &#x2F; 1000 not xx &#x2F; 1000，每1000次访问，有多少次访问让缓存页从冷数据区域移动到 了热数据区域，以及没移动的缓存页数量</span><br><span class="line">(12)LRU len:这就是LRU链表里的缓存页的数量 (13)I&#x2F;O sum:最近50s读取磁盘页的总数 (14)I&#x2F;O cur:现在正在读取磁盘页的数量</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="数据行和数据页的结构"><a href="#数据行和数据页的结构" class="headerlink" title="数据行和数据页的结构"></a>数据行和数据页的结构</h1><p>​    在了解这些概念之前，我们需要先了解下面这些问题：</p>
+<p><strong>为什么mysql不能直接更新磁盘?</strong></p>
+<p>​    因为一个请求直接对于磁盘文件读写，虽然技术上没问题，但是性能会极差。磁盘的读写性能非常的差，所以不可能更新磁盘文件读取磁盘的。</p>
+<p><strong>为什么要引入数据页的概念?</strong></p>
+<p>​    一个数据肯定不是加载一条就读取一次磁盘文件的，就好比你烧柴不可能每次只拿一根，烧完再去拿一根，一般都是直接拿一捆柴拿然后拿到了一个个丢进去，这样就快了，数据页也是如此，之前说过一个数据页占16kb，所以肯定是加载很多行到数据页的内部。</p>
+<h2 id="数据行"><a href="#数据行" class="headerlink" title="数据行"></a>数据行</h2><p> <strong>数据行在磁盘里面怎么放?</strong></p>
+<p>​    之前都是讨论数据怎么在缓存页放，现在我们回过头来看下数据行在数据页里面要怎么放。这里其实涉及一个叫做<strong>行格式</strong>的概念<strong>，</strong>一个表可以指定一个行是以什么样的格式进行存储，比如下面的方式指定行格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE customer (</span><br><span class="line">name VARCHAR(10) NOT NULL, address VARCHAR(20),</span><br><span class="line">gender CHAR(1),</span><br><span class="line">job VARCHAR(30),</span><br><span class="line">school VARCHAR(50)</span><br><span class="line">) ROW_FORMAT&#x3D;COMPACT;</span><br></pre></td></tr></table></figure>
+
+<p>​    对于行的存储格式，在mysql当中是如下存储的：</p>
+<blockquote>
+<p>变长字段的长度列表，null值列表，数据头，column01的值，column02的值，column0n的值……</p>
+</blockquote>
+<p>​         <img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210904191126.png" alt=""></p>
+<p><strong>变长数据是如何存放的？</strong></p>
+<p>​    根据上面的行格式定义，相信也可以猜出来一部分，假设我们有一个字段是varchar（5）内容是abcd, 有一个字段是varchar(10)内容是 bcd，实际上存储则是按照下面这种格式存储，但是如果你是char(1)则不需要额外的一个变长字段长度的参数，直接放到对应的字段里面即可：</p>
+<table>
+<thead>
+<tr>
+<th>Ox03</th>
+<th>ox04</th>
+<th>null</th>
+<th>数据头</th>
+<th>abc</th>
+<th>Bcd</th>
+</tr>
+</thead>
+</table>
+<p>​    需要注意的是这里的变长长度参数是逆序存储的，是<strong>逆序存储</strong>的。</p>
+<p><strong>为什么一行数据的null不能直接存储？</strong></p>
+<p>​    null值是以二进制的方式进行存储的，并且变长参数的字段实际上只存储有值的数据，如果数据是没有值为一个null也不需要存储变长字段的长度参数。null值按照bit位存储的，并且在对应的null “坑位”放一个1 或者 0，<strong>1表示是null， 0表示不是null</strong>。</p>
+<p>​    举个例子，4个字段里面2个为null，2个不是则是<strong>1010</strong> ，但是实际存储的时候也是<strong>逆序的</strong>，也是逆序的是 0101</p>
+<p>​    另外存储的时候不是4个bit位置，而是使用8个bit的倍数（8的倍数，有点像java的对象头的补充数据位的操作.），如果不足8个则需要补0，所以最后的结果如下：</p>
+<blockquote>
+<p>0x09 0x04 00000101 头信息 column1=value1 column2=value2 … columnN=valueN，</p>
+</blockquote>
+<p><strong>那要如何存储？</strong></p>
+<p>​    其实就按照紧凑的方式存储成为一行的数据，这样紧凑的方式不仅可以节省空间，并且可以使得操作内存成为一种类似数组的顺序访问的操作。</p>
+<p><strong>40个bit位的数据头：(索引的时候才解读，伞兵，掠过)</strong></p>
+<p>​    在上面的结构图中，每一行数据的存储还需要一个40位的bit数据头，并且用来描述这个数据，这里我们先简单了解数据头的结构，在后续的内容会再次进行解释：</p>
+<ul>
+<li><p>首先1和2都是预留，第一个bit位和第二个都是预留的位置，没有任何的含义。</p>
+</li>
+<li><p>用一个bit位的<strong>delete_mask</strong>来标记这个行是否已经被删除了(第三位)。所以其实不管你怎么设计其实mysql内部的删除都是一个假删除</p>
+</li>
+<li><p>下一个bit位置使用1位<strong>min_rec_mask</strong>(第四位)，b+树当中的每一层的非叶子节点的最小值的标记</p>
+</li>
+<li><p>下一个bit位置为 4个<strong>bitn_owned</strong>（第五位），具体的作用暂时不进行介绍。</p>
+</li>
+<li><p>下一个为13个bit位的<strong>heap_no</strong>，记录在堆里的位置，关于堆也会放到索引里面介绍。</p>
+</li>
+<li><p>下一个是3bit的<strong>record_type</strong> 行数据类型：0普通类型，1b+树的叶子节点，2最小值数据，3最大值数据</p>
+</li>
+<li><p>最后是16个bit的<strong>next_record</strong>，这个是指向下一条数据的指针</p>
+</li>
+</ul>
+<p>每一行数据真实的物理存储结构：</p>
+<p>​    在真实的磁盘文件中，存储的内容还有不同，那就是关于数据的内容，上面我们介绍了如何存储一行数据。</p>
+<blockquote>
+<p> 0x09 0x04 00000101 0000000000000000000010000000000000011001 jack m xx_school</p>
+</blockquote>
+<p>​    然而实际上略微有些差别，在实际的磁盘存储的过程是按照 <strong>字符集编码</strong>进行存储的，一行数据实际上下面这样滴：</p>
+<blockquote>
+<p> 0x09 0x04 00000101 0000000000000000000010000000000000011001 616161 636320 6262626262</p>
+</blockquote>
+<pre><code>这种存储结构其实也可以说不论你的字段类型如何定义，到最后都是字符串。</code></pre><p>数据库真实存储的隐藏字段</p>
+<p>​    mysql在数据行里面增加了一些隐藏的字段，一方面是为了实现MVCC，另一方面是为了实现事务的需要。</p>
+<ul>
+<li><p>DB_ROW_ID：行唯一标识，不是主键id的字段，如果没有制定主键和unique key，就会内部加入一个ROW_ID</p>
+</li>
+<li><p>DB_TRX_ID：和事务有关的一个，那个事务更新这是事务的ID</p>
+</li>
+<li><p>DB_ROLL_PTR：这是一个回滚指针，进行事务回滚的</p>
+</li>
+</ul>
+<p>行溢出了怎么办?</p>
+<p>​    有时候我们定义的数据行数据量过大的时候，会出现一个数据页无法存储数据行的情况，mysql这里又使用了链表的的方式把多个数据页串联在一起，他个结构图如下所示：</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210904202851.png" alt=""></p>
+<p>​    从图中可以看出当数据溢出的时候，一个数据页会通过一个类似链表指针的方式指向下一个数据页的节点，通过链表的形式把许多个数据页串联在一起。</p>
+<p>​    至此我们可以做一点总结，当我们在数据库里插入一行数据的时候，实际上是在内存里插入一个有复杂存储结构的一行数据，然后随着一些条件的发生，这行数据会被刷到磁盘文件里去。</p>
+<h2 id="数据页"><a href="#数据页" class="headerlink" title="数据页"></a>数据页</h2><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210904213013.png" alt=""></p>
+<p><strong>最小单位是数据页</strong></p>
+<p>​    数据库的最小单位是数据页，但是数据页里不都是一行一行的数据么，其实一个数据页包含了下面的部分：<strong>文件头，数据页头，最大最小记录，多个数据行和空闲区域，最后是数据页目录和文件尾部</strong>，这里为了更好的观察结构，我把图横过来了：</p>
+<p><strong>大小占比</strong></p>
+<p>​    文件头38个字节，数据页头站了56个字节，最大和最小记录占了26个字节，数据行区域和空闲区域的大小是不固定的，数据页的目录也是不固定的，文件结尾占8位。（我擦，怎么多出这么多概念，这是啥东西，其实就是mysql设计的一种特殊的存储格式，理解即可）</p>
+<p>​    通过这种方式存放数据页，每一个数据页包含了很多数据行，每一个数据行就是用上面提到的方式进行存储的，数据页最开始的时候是空的。</p>
+<blockquote>
+<p>当出现很多个数据页的时候，可以看到如下的内容，更新缓存页的时候，LRU链表会不断的交替移动冷数据和热数据，通过LRU和flush把脏页刷到磁盘。</p>
+</blockquote>
+<h1 id="表空间和数据区的概念"><a href="#表空间和数据区的概念" class="headerlink" title="表空间和数据区的概念"></a>表空间和数据区的概念</h1><p>​    其实我们平时创建的表是存在<strong>表空间和数据区</strong>的概念的</p>
+<p>表空间</p>
+<p>​    从 InnoDB 逻辑存储结构来看，所有的数据都被逻辑的存放在一个空间中，这个空间就叫做表空间（tablespace）。表空间由 段（segment）、区（extent）、页（page）组成。</p>
+<p>​    当我们创建一个表之后，在磁盘上会有对应的表名称<code>.ibd</code>的磁盘文件。表空间的磁盘文件里面有很多的数据页，一个数据页最多16kb，因为不可能一个数据页一个磁盘文件，所以数据区的概念引入了。</p>
+<p>​    一个数据区对应64个数据页，就是16kb，一个数据区是1mb，256个数据区被划分为一组，对于表空间而言，他的第一组数据区的第一个数据区的前3个数据页，都是固定的，里面存放了一些描述性的数据。比 如FSP_HDR这个数据页，他里面就存放了表空间和这一组数据区的一些属性。IBUF_BITMAP 数据页，存放的就是insert buffer的信息，INODE 数据页存放的也是特殊信息。</p>
+<pre><code>再次强调一遍：我们平时创建的那些表都是有对 应的表空间的，每个表空间就是对应了磁盘上的数据文件，在表空间里有很多组数据区，一组数据区是256个数据区， 每个数据区包含了64个数据页，是1mb    </code></pre><p><strong>段（segment）</strong></p>
+<p>​    段(Segment)分为索引段，数据段，回滚段等。其中索引段就是非叶子结点部分，而数据段就是叶子结点部分，回滚段用于数据的回滚和多版本控制。一个段包含256个区(256M大小)。 </p>
+<p>​    一个段包含多少区：<strong>256个区</strong></p>
+<p><strong>区（extent）</strong></p>
+<p>​    区是页的集合，一个区包含64个连续的页，默认大小为 1MB (64*16K)。</p>
+<p><strong>页（page）</strong></p>
+<p>​    页是 InnoDB 管理的最小单位，常见的有 FSP_HDR，INODE, INDEX 等类型。所有页的结构都是一样的，分为文件头(前38字节)，页数据和文件尾(后8字节)。页数据根据页的类型不同而不一样。</p>
+<p>​    每个空间都分为多个页，通常每页16 KiB。空间中的每个页面都分配有一个32位整数页码，通常称为“偏移量”（offset），它实际上只是页面与空间开头的偏移量（对于多文件空间，不一定是文件的偏移量）。因此，页面0位于文件偏移量0，页面1位于文件偏移量16384，依此类推。 （InnoDB 的数据限制为64TiB，这实际上是每个空间的限制，这主要是由于页码是32位整数与默认页大小的组合</p>
+<p>最后可以用下面的图来表示具体内容<strong>：</strong></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210905111438.png" alt=""></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    本节我们继续补充了buffer pool的细节，同时了解了额数据行和数据页在磁盘上的存储结构，最后我们简单了解了一个表的逻辑存储接结构，主要的内容是表空间，数据区和数据页。至此，相信大家对于整个mysql的基础物理和逻辑结构有了一个大致的了解。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>​    本文篇幅稍长，感谢耐心观看，个人水平有限，如果有错误或者意见欢迎指点。</p>
+<h1 id="思考题："><a href="#思考题：" class="headerlink" title="思考题："></a>思考题：</h1><h2 id="为什么mysql要这样存放数据，为什么要让他们紧紧的挨在一起进行存储？"><a href="#为什么mysql要这样存放数据，为什么要让他们紧紧的挨在一起进行存储？" class="headerlink" title="为什么mysql要这样存放数据，为什么要让他们紧紧的挨在一起进行存储？"></a>为什么mysql要这样存放数据，为什么要让他们紧紧的挨在一起进行存储？</h2><pre><code>其实仔细想想不难给出答案，主要包含下面几个原因：</code></pre><ol>
+<li>尽可能存储更多的内容：紧凑意味着着可以存储更多的数据和内容，也可以保证缓冲池的空间利用率</li>
+<li>便于顺序读写：磁盘的顺序读写的速度在某种程度上可以匹敌内存，所以用这种格式存储是有利于io操作的</li>
+</ol>
+<h2 id="为什么null列表要按照bit位的操作进行存储？"><a href="#为什么null列表要按照bit位的操作进行存储？" class="headerlink" title="为什么null列表要按照bit位的操作进行存储？"></a>为什么null列表要按照bit位的操作进行存储？</h2><p>最后的数据样子如下：</p>
+<blockquote>
+<p>0x09 0x04 00000101 0000000000000000000010000000000000011001 00000000094C(DB_ROW_ID) 00000000032D(DB_TRX_ID) EA000010078E(DB_ROL_PTR) 616161 636320 6262626262</p>
+</blockquote>
+<p>​    如果你在执行CRUD的时候要从磁盘加载数据页到Buffer Pool的缓存 页的时候，一旦此时没有空闲的缓存页，就必须从LRU链表的冷数据区域的尾部把一个缓存页刷入磁盘，然后腾出来 一个空闲的缓存页，接着你才能基于缓存数据来执行这个CRUD的操作。但是如果频繁的出现这样的一个情况，那你的很多CRUD执行的时候，难道都要先刷一个缓存页到磁盘上去? 然后再从 磁盘上读取一个数据页到空闲的缓存页里来?这样岂不是每次CRUD操作都要执行两次磁盘IO?那么性能岂不是会极差?</p>
+<p>​    所以我们来思考一个问题:你的MySQL的内核参数，应该如何优化，优化哪些地方的行为，才能够尽可能的避免在执 行CRUD的时候，经常要先刷一个缓存页到磁盘上去，才能读取一个磁盘上的数据页到空闲缓存页里来?</p>
+<blockquote>
+<p> 其实结合我们了解到的buffer pool的运行原理就可以知道，如果要避免上述问题，说白了就是避免缓存页频繁的被使用完毕。那么我们知道实际上你在使用缓存页的过程中，有一个后台线程会定时把LRU链表冷数据区域的一些缓存页 刷入磁盘中。所以本质上缓存页一边会被你使用，一边会被后台线程定时的释放掉一批。</p>
+</blockquote>
+<h2 id="如何读取一个数据页的？"><a href="#如何读取一个数据页的？" class="headerlink" title="如何读取一个数据页的？"></a>如何读取一个数据页的？</h2><p>​    读取一个数据页的伪代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dataFile.setStartPosition(25347) </span><br><span class="line">dataFile.setEndPosition(28890) </span><br><span class="line">dataFile.write(cachePage)</span><br></pre></td></tr></table></figure>
+
+<p>​    在伪代码里面读取一个数据页首先需要的是开始和结束的时间位，通过表空间找到对应的段，然后找到对应的数据区，根据分区找到对应的数据页，然后页的内部数据行如下的方式进行展示：</p>
+<p>​    因为一个数据页的大小其实是固定的，所以一个数据页固定就是可能在一个磁盘文件里占据了某个开始位置到结束位置的一段数据，此时你写回去的时候也是一样的，选择好固定的一段位置的数据，直接把缓存页的数据写回去，就覆盖掉了原来的那个数据页了，就如上面的伪代码示意</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/02/19/huanchongchi/" title="Mysql专栏 - 缓冲池补充、数据页、表空间简述">https://whitestore.top/2022/02/19/huanchongchi/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/19/gitHub_rumen/" rel="prev" title="《github从入门到实践》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《github从入门到实践》读书笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/19/elastic-study/" rel="next" title="ELK技术栈学习-Elasticsearch">
+      ELK技术栈学习-Elasticsearch <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Mysql专栏-缓冲池补充、数据页、表空间简述"><span class="nav-number">1.</span> <span class="nav-text">Mysql专栏 - 缓冲池补充、数据页、表空间简述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">3.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#缓冲池补充"><span class="nav-number">4.</span> <span class="nav-text">缓冲池补充</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#后台线程定时刷新冷数据"><span class="nav-number">4.1.</span> <span class="nav-text">后台线程定时刷新冷数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flush链表的数据定期刷入缓存"><span class="nav-number">4.2.</span> <span class="nav-text">flush链表的数据定期刷入缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程并发访问是否会加锁"><span class="nav-number">4.3.</span> <span class="nav-text">多线程并发访问是否会加锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多个buffer-pool并行优化"><span class="nav-number">4.4.</span> <span class="nav-text">多个buffer pool并行优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行过程中可以调整buffer-pool大小么？"><span class="nav-number">4.5.</span> <span class="nav-text">运行过程中可以调整buffer pool大小么？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql的chunk机制把buffer-pool-拆小"><span class="nav-number">4.5.1.</span> <span class="nav-text">mysql的chunk机制把buffer pool 拆小</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生产环境给多少buffer-pool合适？"><span class="nav-number">4.6.</span> <span class="nav-text">生产环境给多少buffer pool合适？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#buffer-pool分配公式："><span class="nav-number">4.6.1.</span> <span class="nav-text">buffer pool分配公式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看线上情况"><span class="nav-number">4.6.2.</span> <span class="nav-text">查看线上情况</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据行和数据页的结构"><span class="nav-number">5.</span> <span class="nav-text">数据行和数据页的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据行"><span class="nav-number">5.1.</span> <span class="nav-text">数据行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据页"><span class="nav-number">5.2.</span> <span class="nav-text">数据页</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#表空间和数据区的概念"><span class="nav-number">6.</span> <span class="nav-text">表空间和数据区的概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">8.</span> <span class="nav-text">写在最后</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思考题："><span class="nav-number">9.</span> <span class="nav-text">思考题：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么mysql要这样存放数据，为什么要让他们紧紧的挨在一起进行存储？"><span class="nav-number">9.1.</span> <span class="nav-text">为什么mysql要这样存放数据，为什么要让他们紧紧的挨在一起进行存储？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么null列表要按照bit位的操作进行存储？"><span class="nav-number">9.2.</span> <span class="nav-text">为什么null列表要按照bit位的操作进行存储？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何读取一个数据页的？"><span class="nav-number">9.3.</span> <span class="nav-text">如何读取一个数据页的？</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:15</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
