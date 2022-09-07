@@ -1,8 +1,8 @@
 ---
 title: LSM-Tree - LevelDb Skiplist跳表
-subtitle: 在线性的数据数据结构中我们经常可以想到数组和链表
+subtitle: 更多内容建议看看原始论文
 author: 阿东
-url_suffix: levelskiplist
+url_suffix: level-skiplist
 tags:
   - 数据库
 categories:
@@ -15,7 +15,7 @@ date: 2022-05-21 19:10:02
 
 # LSM-Tree - LevelDb Skiplist跳表
 # 跳表介绍
-跳表（SkipList）是由William Pugh提出的。他在论文**《Skip lists: a probabilistic alternative to balanced trees》**中详细地介绍了有关跳表结构、插入删除操作的细节。
+跳表（SkipList）是由William Pugh提出的。他在论文<Skip lists: a probabilistic alternative to balanced trees>中详细地介绍了有关跳表结构、插入删除操作的细节。
 
 > 文档：Skiplist跳表原始论文 - pugh-skiplists-cacm1990.pdf
 链接：http://note.youdao.com/noteshare?id=667aed96f012edcada047baf75aa1769&sub=B427E00C818B428ABD38A813180AF9A8
