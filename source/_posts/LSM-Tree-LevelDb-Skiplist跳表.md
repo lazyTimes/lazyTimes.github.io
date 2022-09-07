@@ -1,8 +1,8 @@
 ---
 title: LSM-Tree - LevelDb Skiplist跳表
-subtitle: 更多内容建议看看原文《Skip lists: a probabilistic alternative to balanced trees》
+subtitle: 在线性的数据数据结构中我们经常可以想到数组和链表
 author: 阿东
-url_suffix: level-skiplist
+url_suffix: levelskiplist
 tags:
   - 数据库
 categories:

@@ -2,6 +2,7 @@
 title: 《how to die alone》读书笔记
 subtitle: 为什么而活，为什么而死
 author: lazytime
+url_suffix: howtodie
 tags:
   - 书籍
 categories:
