@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="拿到一台虚拟机Linux该干什么？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Linux】拿到一台虚拟机Linux该干什么？">
+<meta property="og:url" content="https://whitestore.top/2022/09/07/linuxshould/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="拿到一台虚拟机Linux该干什么？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220906164214.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220523114235.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220906162311.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220523112457.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220907101420.png">
+<meta property="article:published_time" content="2022-09-07T13:23:04.000Z">
+<meta property="article:modified_time" content="2022-09-08T02:18:34.397Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="xuniij">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220906164214.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/09/07/linuxshould/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Linux】拿到一台虚拟机Linux该干什么？ | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/09/07/linuxshould/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Linux】拿到一台虚拟机Linux该干什么？
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-09-07 21:23:04" itemprop="dateCreated datePublished" datetime="2022-09-07T21:23:04+08:00">2022-09-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-09-08 10:18:34" itemprop="dateModified" datetime="2022-09-08T10:18:34+08:00">2022-09-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%8D%E5%8A%A1%E7%AB%AF-linux/" itemprop="url" rel="index"><span itemprop="name">服务端-linux</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/09/07/linuxshould/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/09/07/linuxshould/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">拿到一台虚拟机Linux该干什么？</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="【Linux】拿到一台虚拟机Linux该干什么？"><a href="#【Linux】拿到一台虚拟机Linux该干什么？" class="headerlink" title="【Linux】拿到一台虚拟机Linux该干什么？"></a>【Linux】拿到一台虚拟机Linux该干什么？</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>很多时候我们喜欢在自己电脑上装一台Linux虚拟机玩，但是每次装好之后基本都是两眼无神，不知道下一步干啥，所以这篇文章主要就是解决安装好Linux之后，建议做的一些操作，帮助快速构建本地可用环境。</p>
+<p>本文演示的Linux版本为CenterOs7.9，使用的镜像是官方7.9的Miniual版本（也就是最小体积版本），VM Tool 的版本为16.2.3 build-19376536。整个过程步骤十分简单，比较适合新手使用。</p>
+<a id="more"></a>
+
+<h2 id="一、步骤"><a href="#一、步骤" class="headerlink" title="一、步骤"></a>一、步骤</h2><h2 id="1-1-虚拟机连接"><a href="#1-1-虚拟机连接" class="headerlink" title="1.1 虚拟机连接"></a>1.1 虚拟机连接</h2><p>通过虚拟机登录到LInux，切换Root角色，使用<code>sudo vi /etc/ssh/sshd_config</code>修改文件，注意不要改错文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/ssh/sshd_config</span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改端口</span></span><br><span class="line">Port 10022</span><br><span class="line"><span class="meta">#</span><span class="bash"> 由于是新的Linux虚拟机，建议还是先保留22端口，等能正常用10022登陆再去掉，万一10022登不上就嗝屁了（并不会）</span></span><br><span class="line">Port 22</span><br><span class="line"><span class="meta">#</span><span class="bash"> 不允许 ROOT 登陆，不成文规定</span></span><br><span class="line">PermitRootLogin: no</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-禁止root登陆"><a href="#1-2-禁止root登陆" class="headerlink" title="1.2 禁止root登陆"></a>1.2 禁止root登陆</h2><p>执行命令<code>vi /etc/ssh/sshd_config</code>，找到<code>PermitRootLogin</code>，将后面的yes改为no。</p>
+<p>记得把前面的注释 <code>#</code> 取消，这样root就不能远程登录了！通常用普通账号登录进去，要用到root的时候进入系统再使用命令<code>su root</code>。</p>
+<p>也可以构建 <strong>给予sudo权限的用户</strong> 操作自己的虚拟机（下文介绍），总之就是不要Root直接登录。</p>
+<p><code>vi</code> 命令是没有颜色提示的，所以如果想要更好的配置阅读体验，通常需要安装<code>vim</code>，命令<code>yum install vim -y</code>。</p>
+<p>再次强调拿到虚拟机之后第一手操作是<strong>关闭Root登录</strong>，不管是否为本地LInux服务。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 不允许 ROOT 登陆</span><br><span class="line">PermitRootLogin: no</span><br></pre></td></tr></table></figure>
+
+<p>修改完成之后的效果图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220906164214.png" alt="改端口禁ROOT"></p>
+<blockquote>
+<p>如果找不到配置，检查是否修改的是<strong>ssh_config</strong>，而不是<strong>sshd_config</strong>文件！</p>
+</blockquote>
+<h2 id="1-3-改登录端口（ssh）"><a href="#1-3-改登录端口（ssh）" class="headerlink" title="1.3 改登录端口（ssh）"></a>1.3 改登录端口（ssh）</h2><p>临时新增端口方法不建议使用，这里记录改文件永久生效的办法。</p>
+<p>因为是自己本地的虚拟机，所以直接图省事，把防火墙关闭，这样也不要老是去配端口。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+
+<p>根据要求加上自己需要的端口，将<code>#Port 22</code>的注释去掉并且换行加入<code>Port 10022</code>，如果是不是增加而是想直接修改端口的话，这里<strong>建议先保留22端口，等新端口可以登录再去掉</strong>。</p>
+<p>另外再介绍一下，443是https使用的端口，3128是squid使用的端口，一万以内的端口使用频率很高。</p>
+<p>如果是自己使用建议使用大端口，比如10000~65535以上，基本不会有中间件和其他的冲突问题。</p>
+<p>对于一些自己程序使用的端口，也是数建议千位数字前面加一个1,，基本可以保证不冲突。</p>
+<p>修改完成之后一定要记得 <strong>重启ssh服务</strong>：<code>systemctl restart sshd.service</code>，或者直接重启虚拟机Linux系统。</p>
+<h2 id="1-4-关闭linux内部防火墙"><a href="#1-4-关闭linux内部防火墙" class="headerlink" title="1.4 关闭linux内部防火墙"></a>1.4 关闭linux内部防火墙</h2><p><strong>检测自己添加了多少开放的端口</strong>  ：<code>firewall-cmd --zone=public --list-ports</code>。当然我这里演示是直接关掉防火墙，对外是畅通无阻的。</p>
+<p>临时新增方法（不建议使用）：<code>firewall-cmd --zone=public --add-port=12280/tcp --permanent</code> ，<code>--permanent</code>就是让端口永久生效</p>
+<p>不建议使用原因，第一个是不知道端口加来干嘛用的，后面容易忘，第二个是这个操作只能<strong>临时生效</strong>，重新启动又会还原。</p>
+<blockquote>
+<p>不建议使用的其他原因是执行此命令<strong>会把文件的所有注释清空</strong>！！</p>
+</blockquote>
+<p>注意改端口之后尝试外部连接是失效的，因为还有selinux和防火墙需要处理，这里依然图省事一并给他关了。</p>
+<p>所以这里firewalld 的基本使用如下：</p>
+<pre><code>启动：`systemctl start firewalld`
+关闭： `systemctl stop firewalld`
+查看状态：`systemctl status firewalld` 
+开机禁用  ： `systemctl disable firewalld`
+开机启用  ： `systemctl enable firewalld`</code></pre><p>我们需要关闭防火墙，当然这里只能在自己的虚拟机这么用，主要是减少自己捣鼓学习的时候避免各种不必要的麻烦，在真实的生产环境实际上更多情况是开启的。</p>
+<p>此外如果是云服务器提供商，这个配置通常也是关闭的，取而代之的是在外部做了一个安全网。</p>
+<p><strong>步骤</strong></p>
+<p>使用<code>systemctl status firewalld</code>检查状态。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220523114235.png" alt=""></p>
+<p>关闭<code>systemctl status firewalld.serivce</code>。</p>
+<blockquote>
+<p>这里有个挺蛋疼的踩坑点，感觉这块像是两个人写的（怪怪的），使用<code>systemctl stop firewalld</code>是临时关闭，重启之后防火墙又会自动打开，<code>systemctl status firewalld.serivce</code>是<strong>永久关闭防火墙服务</strong>。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220906162311.png" alt=""></p>
+<h2 id="1-5-关闭-SeLinux"><a href="#1-5-关闭-SeLinux" class="headerlink" title="1.5 关闭 SeLinux"></a>1.5 关闭 SeLinux</h2><p><strong>简易解释</strong></p>
+<p>关闭防火墙之后，接着是关闭 <strong>SeLinux</strong> 。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 注意需要ROOT 权限</span></span><br><span class="line"> vi /etc/selinux/config</span><br><span class="line"><span class="meta">#</span><span class="bash">　将 SELINUX=disabled 表示关闭</span></span><br><span class="line">SELINUX=disabled</span><br></pre></td></tr></table></figure>
+
+<p>操作完成之后使用 <code>:</code> 加上<code>-x</code> 保存，之后建议<code>reboot</code>一下。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220523112457.png" alt=""></p>
+<blockquote>
+<p> <strong>x 和 wq 的区别？</strong><br>       x 执行操作完毕，如果修改了文件，文件的最后修改时间会产生变化，没有，则不变化<br>       wq 执行操作完毕，不管文件有没有改动，最后修改时间都会产生变化</p>
+</blockquote>
+<p><strong>保姆解释</strong></p>
+<p><strong>永久生效</strong>的方法，执行命令 <code>vi /etc/selinux/config</code> 【需要<strong>ROOT</strong>权限】，出现如下文本。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> This file controls the state of SELinux on the system.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> SELINUX= can take one of these three values:</span></span><br><span class="line"><span class="meta">#</span><span class="bash">     enforcing - SELinux security policy is enforced.</span></span><br><span class="line"><span class="meta">#</span><span class="bash">     permissive - SELinux prints warnings instead of enforcing.</span></span><br><span class="line"><span class="meta">#</span><span class="bash">     disabled - No SELinux policy is loaded.</span></span><br><span class="line">SELINUX=enforcing</span><br><span class="line"><span class="meta">#</span><span class="bash"> SELINUXTYPE= can take one of three two values:</span></span><br><span class="line"><span class="meta">#</span><span class="bash">     targeted - Targeted processes are protected,</span></span><br><span class="line"><span class="meta">#</span><span class="bash">     minimum - Modification of targeted policy. Only selected processes are protected. </span></span><br><span class="line"><span class="meta">#</span><span class="bash">     mls - Multi Level Security protection.</span></span><br><span class="line">SELINUXTYPE=targeted</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下SELINUX是<code>enforcing</code>的，我们只需要修改这一部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELINUX&#x3D;disabled</span><br></pre></td></tr></table></figure>
+
+<p>最后<code>reboot</code>一下。</p>
+<h2 id="1-6-Sudo权限用户构建"><a href="#1-6-Sudo权限用户构建" class="headerlink" title="1.6 Sudo权限用户构建"></a>1.6 Sudo权限用户构建</h2><p>使用Root添加新用户，配置密码：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 添加新用户</span></span><br><span class="line">useradd 想要添加的用户名（英文）</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改密码</span></span><br><span class="line">passwd 想要添加的用户名（英文）</span><br><span class="line"><span class="meta">#</span><span class="bash"> 之后提示输入密码</span></span><br></pre></td></tr></table></figure>
+
+<p>让新用户具备SUDO的权限，<code>vi /etc/sudoers</code>，或者给这个文件赋予写入的权限<code>chmod u+w /etc/sudoers</code>（直接Root操作更方便）。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># Next comes the main part: which users can run what software on </span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># which machines (the sudoers file can be shared between multiple</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># systems).</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># Syntax:</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">#</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">#      user    MACHINE=COMMANDS</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">#</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># The COMMANDS section may have other options added to it.</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">#</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># Allow root to run any commands anywhere </span></span></span><br><span class="line">root    ALL=(ALL)       ALL</span><br><span class="line">zxd     ALL=(ALL)       ALL</span><br></pre></td></tr></table></figure>
+
+<p>后续使用者加上sudo 命令， 就可以具有root权限了，但是会提示输入密码。</p>
+<p>这样的用户既可以外部登录，操作的时候也相对安全一些，虽然有Sudo权限，但是实际上要比Root管的范围要小一点，Root依然是Linux的最高权限管理员。</p>
+<p><strong>另一种方法：错误示范</strong></p>
+<p>下面的方式通用是给普通用户穿一件Root的衣服，但是这样的话登录会被识别为Root登录，<strong>和禁用Root发生冲突</strong>，直白的说就是登不进系统（尴尬）。</p>
+<blockquote>
+<p>不建议从用户管理的角度做这种操作，因为本质上相当于复制了一个Root。</p>
+</blockquote>
+<p>创建一个新用户，但是给予root同等的权限，我们称之为伪Root的普通用户，换句话说叫做系统管理员。</p>
+<p>我们需要执行下面的步骤：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 添加新用户</span></span><br><span class="line">useradd 想要添加的用户名（英文）</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改密码</span></span><br><span class="line">passwd 想要添加的用户名（英文）</span><br><span class="line"><span class="meta">#</span><span class="bash"> 之后提示输入密码</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来是配置用户的Root权限，这里要使用Root身份进行操作：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/passwd</span><br></pre></td></tr></table></figure>
+
+<p>第一行是root身份，所以我们直接把相关配置赋给新用户。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#第一行内容</span><br><span class="line">root:x:0:0:root:&#x2F;root:&#x2F;bin&#x2F;bash</span><br><span class="line"># 新增用户（通常新增用户的最底部）</span><br><span class="line">zxd:x:1000:1000:zxd:&#x2F;home&#x2F;zxd:&#x2F;bin&#x2F;bash</span><br><span class="line"></span><br><span class="line"># 进行修改操作</span><br><span class="line"># 修改之前（通常新增用户的最底部）</span><br><span class="line">zxd:x:1000:1000:zxd:&#x2F;home&#x2F;zxd:&#x2F;bin&#x2F;bash</span><br><span class="line"></span><br><span class="line"># 修改之后</span><br><span class="line"># 删除掉</span><br><span class="line"># zxd:x:1000:1000:zxd:&#x2F;home&#x2F;zxd:&#x2F;bin&#x2F;bash</span><br><span class="line"># 新增下面这一行</span><br><span class="line">新增用户名:x:0:0:root:&#x2F;root:&#x2F;bin&#x2F;bash</span><br></pre></td></tr></table></figure>
+
+<p>最后验证一下，如果<code>su 新建用户名</code>之后前面显示的内容为Root则说明伪装成功：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost zxd]# su zxd</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-7-验证"><a href="#1-7-验证" class="headerlink" title="1.7 验证"></a>1.7 验证</h2><p>这里直接使用<strong>Xshell</strong>进行测试，使用10022登录，22端口无法登录，无法用root登录等均验证通过。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220907101420.png" alt=""></p>
+<h1 id="二、扩展思考"><a href="#二、扩展思考" class="headerlink" title="二、扩展思考"></a>二、扩展思考</h1><p>弄完基础配置的Linux系统之后，我们可以从下面的方面入手，当然后半部分基本为扩展学习建议：</p>
+<ul>
+<li>关闭 selinux 。</li>
+<li>SSH 改端口（ssh），1024以内的端口需要root启动的。比较常见的端口一般禁止占用：<ul>
+<li>0 - 65535 ；</li>
+<li>ssl 443 ；</li>
+<li>22 ；</li>
+<li>8080 ；</li>
+<li>80 ；</li>
+<li>1433 ；</li>
+<li>3306； </li>
+<li>10022（改完之后的登录端口） ；</li>
+<li>5022；</li>
+<li>禁止root登陆； </li>
+</ul>
+</li>
+<li>新建用户和组，给予目录的权限。</li>
+<li>开放linux内部防火墙（iptables 6（不维护）、firewalld 7） 。</li>
+<li>挂载硬盘 。</li>
+<li>NFS文件共享 。</li>
+<li>局域网拷贝 。</li>
+<li>文件自动同步 。</li>
+<li>检测服务器磁盘空间 。</li>
+<li>shell 自动清理磁盘 。</li>
+<li>构建软链接，硬链接 （windows,linux）。</li>
+<li>yum本地源。</li>
+<li>挂载光驱 （【无法联网的情况，学会可以使用本地源】）</li>
+<li>时间设置，时间同步，修改时区。 </li>
+<li>常用的命令熟悉。</li>
+<li>常用软件安装。</li>
+<li>根据所学解决甲方安全测评等单位，给出的服务器安全整改报告，或者自己设置一些难度比较高的挑战目标（如果有可能的话）。</li>
+</ul>
+<h1 id="三、小结"><a href="#三、小结" class="headerlink" title="三、小结"></a>三、小结</h1><p>轻松简单的文章，希望这篇文章对于读者有帮助。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿东
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/09/07/linuxshould/" title="【Linux】拿到一台虚拟机Linux该干什么？">https://whitestore.top/2022/09/07/linuxshould/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%8D%E5%8A%A1%E7%AB%AF-linux/" rel="tag"># 服务端-linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/24/httphuancun/" rel="prev" title="HTTP 缓存技术">
+      <i class="fa fa-chevron-left"></i> HTTP 缓存技术
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/09/07/lansizhi/" rel="next" title="【科普】蓝思值是什么？">
+      【科普】蓝思值是什么？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#【Linux】拿到一台虚拟机Linux该干什么？"><span class="nav-number">1.</span> <span class="nav-text">【Linux】拿到一台虚拟机Linux该干什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、步骤"><span class="nav-number">2.1.</span> <span class="nav-text">一、步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-虚拟机连接"><span class="nav-number">2.2.</span> <span class="nav-text">1.1 虚拟机连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-禁止root登陆"><span class="nav-number">2.3.</span> <span class="nav-text">1.2 禁止root登陆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-改登录端口（ssh）"><span class="nav-number">2.4.</span> <span class="nav-text">1.3 改登录端口（ssh）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-关闭linux内部防火墙"><span class="nav-number">2.5.</span> <span class="nav-text">1.4 关闭linux内部防火墙</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-关闭-SeLinux"><span class="nav-number">2.6.</span> <span class="nav-text">1.5 关闭 SeLinux</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-Sudo权限用户构建"><span class="nav-number">2.7.</span> <span class="nav-text">1.6 Sudo权限用户构建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-7-验证"><span class="nav-number">2.8.</span> <span class="nav-text">1.7 验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、扩展思考"><span class="nav-number">3.</span> <span class="nav-text">二、扩展思考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、小结"><span class="nav-number">4.</span> <span class="nav-text">三、小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">186</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:58</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

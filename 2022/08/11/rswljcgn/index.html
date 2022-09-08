@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="网络基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）">
+<meta property="og:url" content="https://whitestore.top/2022/08/11/rswljcgn/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="网络基础">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205232140810.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205232259633.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205240734243.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205250802048.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202206182257006.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202206182256279.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202206182255672.png">
+<meta property="article:published_time" content="2022-08-10T21:30:06.000Z">
+<meta property="article:modified_time" content="2022-09-08T02:18:34.397Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="网络基础概念">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205232140810.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/08/11/rswljcgn/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/08/11/rswljcgn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-11 05:30:06" itemprop="dateCreated datePublished" datetime="2022-08-11T05:30:06+08:00">2022-08-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-09-08 10:18:34" itemprop="dateModified" datetime="2022-09-08T10:18:34+08:00">2022-09-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">网络/网络基础</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/08/11/rswljcgn/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/11/rswljcgn/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+            <div class="post-description">网络基础</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="《网络是怎么样连接的》读书笔记-认识网络基础概念（一）"><a href="#《网络是怎么样连接的》读书笔记-认识网络基础概念（一）" class="headerlink" title="《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）"></a>《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）</h1><h2 id="本章重点"><a href="#本章重点" class="headerlink" title="本章重点"></a>本章重点</h2><ol>
+<li>关于互联网的一些历史补充</li>
+<li>解析URL的过程简述</li>
+<li>HTPP请求的基本结构和组成</li>
+<li>IP 地址、子网掩码以及DNS的基本了解，掌握概念和相关知识点。</li>
+</ol>
+<h2 id="讲讲历史"><a href="#讲讲历史" class="headerlink" title="讲讲历史"></a>讲讲历史</h2><p>1991年8月6日，在瑞士日内瓦的核子研究中心（CERN）工作的英国物理学家蒂姆·伯纳斯·李（Tim Berners-Lee），正式提出了World Wide Web，也就是如今我们非常熟悉的www。</p>
+<p>www是什么？万维网WWW是World Wide Web的简称，也称为Web、3W等。WWW是基于<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS/lrqLmiLfmnLovNTE2ODE1Mw==" title="https://baike.baidu.com/item/客户机/5168153">客户机<i class="fa fa-external-link"></i></span>/<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS/mnI3liqHlmagvMTAwNTcx" title="https://baike.baidu.com/item/服务器/100571">服务器<i class="fa fa-external-link"></i></span>方式的信息发现技术和<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS/otoXmlofmnKwvMjgzMjQyMg==" title="https://baike.baidu.com/item/超文本/2832422">超文本<i class="fa fa-external-link"></i></span>的<strong>综合技术</strong>。</p>
+<p>这里个人比较好奇我们天天都在说3w，3w，但是<strong>互联网是怎么出现的的书中并没有解释？</strong></p>
+<p>这里查了下网上资料根据个人理解解释一波：</p>
+<p>实际上网络最开始苗头出现在美苏冷战的时期美国建立的<strong>APRA</strong>科研部门，被突然扯出来的科研部门一盘散沙不知道干嘛，对付苏联的科研工作也没什么进展，直到一个叫做罗伯特·泰勒的哥们出现，他的突破口是发现小型的通信网络不能兼容不同型号的计算机，我们都知道技术的顶峰就是定规则，毫无疑问他选择构建一套协议让所有的计算机都能遵守这一套规则干活。</p>
+<p>于是他找来了几个牛逼的大佬开始捣鼓，中间巴拉巴拉做了很多事绕了很多弯，目的其实就是为了实现上面说的东西，最终在一次失败的“LOGIN”验证中虽然仅仅传输了“LO”两个字母就断开了，但是这次失败是历史性的进步，因为两个不同的设备实实在在的通信了，最终修复之后完成了这五个字母的正常传输。</p>
+<p>随后捯饬出的<strong>ARPANET（阿帕网）</strong> 这个项目，也就是正式的互联网雏形。</p>
+<p>课外知识到此结束，现在我们看看第一章主要看点：</p>
+<ol>
+<li>如何解析网址？</li>
+<li>DNS 服务器如何查询域名对应的 IP 地址？</li>
+<li>DNS服务器如何接力？</li>
+<li>浏览器如何将消息委托给操作系统发送给 Web 服务器？</li>
+</ol>
+<p>核心是理解DNS的角色地位和作用，以及浏览器如何跟DNS交互完成网址（域名）解析为IP这一个操作的，本章最后的委托流程是整个第二章的重点内容，笔记顺其自然的放到了第二章笔记当中，为了方便理解把笔记归纳到第二部分。</p>
+<a id="more"></a>
+
+<h2 id="如何解析网址"><a href="#如何解析网址" class="headerlink" title="如何解析网址"></a><strong>如何解析网址</strong></h2><p>我们从URL开始，什么是URL，URL是Uniform Resource Locator的简称，专业解释叫做统一资源定位符，除开我们常见的http、https协议之外，浏览器还可以进行ftp文件上传，下载文件，发送电子邮件，浏览新文化等操作。</p>
+<p>我们把这些行为看作是资源交互，虽然不同的资源交互会存在不同的URL组合，但是不管URL的组合形式如何变化，最终是<strong>开头决定一切</strong>，开头部分决定对待资源方式。</p>
+<p>解析网址我们可以看下面的例子：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205232140810.png" alt="img"></p>
+<p>碰到省略文件名的情况，通常下面几种：</p>
+<ul>
+<li><code>http://xxxx/dir/</code>表示 <code>/dir/</code> 之后的内容被省略，这时候通常情况下会设置对应这个目录的真实访问路径进行<strong>补全</strong>。</li>
+<li>对于web中最为经典的<code>http://localhost:8080/</code>访问路径，通常情况下Web服务器会访问到<code>/index.html</code>这个文件，如果没有就会返回404的页面。</li>
+<li>如果只有域名，比如<code>www.baidu.com</code>，那就会直接访问web服务器设置的根路径对应的资源和相关文件。</li>
+<li>含混不清的路径比如<code>http://localhost:8080/wishlist</code>，则会根据先判断是否为文件名，然后判断是否为目录的情况处理，或者看作一个请求映射到另一处资源，或者做一次重定向。</li>
+</ul>
+<p>上面的内容不必深究，只需要明白<strong>浏览器的第一步工作就是对 URL 进行解析</strong>。</p>
+<h2 id="Http请求"><a href="#Http请求" class="headerlink" title="Http请求"></a><strong>Http请求</strong></h2><p>http请求简单来说可以简单概括为一句话：<strong>对什么做了什么样的操作</strong>，所谓对什么指的是URL，表示标识了的目标对象，做什么样的操作就是所谓的方法，方法主要是分为两个<code>POST</code>和<code>GET</code>方法，其他方法基本没啥用处，个人只在偶尔几个对接文档中遇到过<code>PUT</code>和<code>HEAD</code>方法。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205232259633.png" alt="img"></p>
+<p><code>GET</code>方法：通常用于一些可见资源的访问，或者开放资源的访问，通常情况下不需要过多的限制就可以直接向具体的目录寻找需要的资源。</p>
+<p><code>POST</code>方法：比较常见的是使用表单或者 AJAX的方式访问，并且通常会指向一个WEB的应用程序，获取应用程序的数据需要传递服务器需要的一些有效参数，否则服务端会根据具体情况通知客户端无权访问。</p>
+<blockquote>
+<p><strong>AJAX</strong>即“<strong>Asynchronous JavaScript and XML</strong>”（非同步的<span class="exturl" data-url="aHR0cHM6Ly96aC5tLndpa2lwZWRpYS5vcmcvd2lraS9KYXZhU2NyaXB0" title="https://zh.m.wikipedia.org/wiki/JavaScript">JavaScript<i class="fa fa-external-link"></i></span>与<span class="exturl" data-url="aHR0cHM6Ly96aC5tLndpa2lwZWRpYS5vcmcvd2lraS9YTUw=" title="https://zh.m.wikipedia.org/wiki/XML">XML<i class="fa fa-external-link"></i></span>技术），指的是一套综合了多项技术的<span class="exturl" data-url="aHR0cHM6Ly96aC5tLndpa2lwZWRpYS5vcmcvd2lraS/ngI/opr3lmag=" title="https://zh.m.wikipedia.org/wiki/瀏覽器">浏览器<i class="fa fa-external-link"></i></span>端<span class="exturl" data-url="aHR0cHM6Ly96aC5tLndpa2lwZWRpYS5vcmcvd2lraS/ntrLpoIE=" title="https://zh.m.wikipedia.org/wiki/網頁">网页<i class="fa fa-external-link"></i></span>开发技术。Ajax的概念由<span class="exturl" data-url="aHR0cHM6Ly96aC5tLndpa2lwZWRpYS5vcmcvd2lraS/lgpHopb/Ct+ipueWnhuWjq8K36LOI55Ge54m5" title="https://zh.m.wikipedia.org/wiki/傑西·詹姆士·賈瑞特">杰西·詹姆士·贾瑞特<i class="fa fa-external-link"></i></span>所提出<span class="exturl" data-url="aHR0cHM6Ly96aC5tLndpa2lwZWRpYS5vcmcvemgtaGFucy9BSkFYI2NpdGVfbm90ZS0x" title="https://zh.m.wikipedia.org/zh-hans/AJAX#cite_note-1">[1]<i class="fa fa-external-link"></i></span>。</p>
+</blockquote>
+<p><strong>Http请求消息</strong></p>
+<p>知道了 <strong>对什么做了什么样的操作</strong>，现在来看看Http 具体是怎么做这件事情的。</p>
+<p>Http请求消息主要分为下面组织结构：</p>
+<ul>
+<li>第一行最开头的部分提取URL的内容，原封不动解析，末尾为HTTP版本号主要标记当前HTTP请求版本。</li>
+</ul>
+<blockquote>
+<p>例如：<code>GET /cgi/sample.cgi?Field1=ABCDEFG&amp;SendButton=SEND HTTP/1.1</code></p>
+</blockquote>
+<ul>
+<li><p>第二行为消息头，这里列举一些简单的内容：</p>
+<ul>
+<li><strong>Data</strong>：请求响应生成日期。</li>
+<li><strong>Pragma</strong>：数据是否允许缓存。</li>
+<li><strong>Transfer-Encoding</strong>：消息主体<strong>编码格式</strong>（重要）。</li>
+<li><strong>Via</strong>：经过的代理和网关。</li>
+</ul>
+</li>
+<li><p>消息头后面存在一行 <strong>完美没有内容的空行</strong>。</p>
+</li>
+<li><p>第四行为消息体，但是实验用的是GET方法所以通常内容为空。</p>
+</li>
+</ul>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205240734243.png" alt="img"></p>
+<p>我们以访问谷歌为例，下面的内容访问谷歌搜索页面的一次请求参考，这里的内容直接通过谷歌浏览器的F12拷贝，可以看到基本包含了请求行，消息头和消息行（GET通常没有所以下面没有体现）三种。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">常规</span><br><span class="line"></span><br><span class="line">1.  请求网址:https://www.google.com/</span><br><span class="line">2.  请求方法:GET</span><br><span class="line">3.  状态代码:200</span><br><span class="line">4.  远程地址:127.0.0.1:7890</span><br><span class="line">5.  引荐来源网址政策:origin</span><br><span class="line"></span><br><span class="line">请求标头</span><br><span class="line"></span><br><span class="line">1.  :authority:www.google.com</span><br><span class="line">2.  :method:GET</span><br><span class="line">3.  :path:/</span><br><span class="line">4.  :scheme:https</span><br><span class="line">5.  accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line">6.  accept-encoding:gzip, deflate, br</span><br><span class="line">7.  accept-language:zh,zh-TW;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6</span><br><span class="line">8.  cache-control:no-cache</span><br><span class="line">9.  cookie:SID=KQi0QVpC_wxTynb6H6HjGmVq-9mYvCuIDOMx9EmEUJ8ii7dJzN_1F-ho69FdK6AN9ekOkA.; __Secure-1PSID=KQi0QVpC_wxTynb6H6HjGmVq-9mYvCuIDOMx9EmEUJ8ii7dJaTdIpqSfRfNb-BvF0haitA.; __Secure-3PSID=KQi0QVpC_wxTynb6H6HjGmVq-9mYvCuIDOMx9EmEUJ8ii7dJ6_WQQeEF09oAZ9MQfe21sA.; HSID=AOdmIhuBCutDeMwVS; APISID=ckyVXTB27QMaC2gQ/AVulr1cMnMbpD0e1x; SSID=AL0-0R0Ofsj3zaqrr; SAPISID=dqpTwJeh7bnii2Ki/AfsaDUfE8uMVR1aqv; __Secure-1PAPISID=dqpTwJeh7bnii2Ki/AfsaDUfE8uMVR1aqv; __Secure-3PAPISID=dqpTwJeh7bnii2Ki/AfsaDUfE8uMVR1aqv; SEARCH_SAMESITE=CgQIvJUB; 1P_JAR=2022-05-24-23; AEC=AakniGOKhznRpAD797X4u508i2XHJjEVYQQHANlqaJC2JSZ1F7mAe-vX_rg; NID=511=K-qt_LW-4ad1IYdJgfPLZjJw772wez2L3_FK9hwrrHAaksdhT8bTqz4icJEnJviOb92zcnyfS4h7P8HB_Is0f_FebYTe_5DR3qFEclHS1R9N1P7r9pv7Z4p12341S72RZRfzIlQ3-CVZUqQKBm1Xy1i9fKwejMGHTPMY2hk02sA--ey8nAEyt1_A7SVMe0RvrEkPnVm88fBnyyyFMMSCeSG1oqYKeC2x7iHJ0GwdbEpeGojpMQyQxAn1jAdxyXbC0oko0rCFjYn7eUREz2A9KA; SIDCC=AJi4QfGQeW0y_3pnzuBs7KI-WabF5XR_-dQchpcoNUN_bRVICBknb39qNQhP4IklnPn6kW4M3d8; __Secure-3PSIDCC=AJi4QfFOaoqiWv0mqmOskkIKVYy_-QNOATkPOyhNt9B8BBTMnRqnv-0zdgVgBNmIJRwlzBS4x6U</span><br><span class="line">10.  pragma:no-cache</span><br><span class="line">11.  sec-ch-dpr:2</span><br><span class="line">12.  sec-ch-ua:" Not A;Brand";v="99", "Chromium";v="101", "Google Chrome";v="101"</span><br><span class="line">13.  sec-ch-ua-arch:"arm"</span><br><span class="line">14.  sec-ch-ua-bitness:"64"</span><br><span class="line">15.  sec-ch-ua-full-version:"101.0.4951.64"</span><br><span class="line">16.  sec-ch-ua-full-version-list:" Not A;Brand";v="99.0.0.0", "Chromium";v="101.0.4951.64", "Google Chrome";v="101.0.4951.64"</span><br><span class="line">17.  sec-ch-ua-mobile:?0</span><br><span class="line">18.  sec-ch-ua-model:""</span><br><span class="line">19.  sec-ch-ua-platform:"macOS"</span><br><span class="line">20.  sec-ch-ua-platform-version:"12.3.1"</span><br><span class="line">21.  sec-ch-ua-wow64:?0</span><br><span class="line">22.  sec-ch-viewport-width:1440</span><br><span class="line">23.  sec-fetch-dest:document</span><br><span class="line">24.  sec-fetch-mode:navigate</span><br><span class="line">25.  sec-fetch-site:same-origin</span><br><span class="line">26.  sec-fetch-user:?1</span><br><span class="line">27.  upgrade-insecure-requests:1</span><br><span class="line">28.  user-agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36</span><br><span class="line">29.  x-client-data:CLG1yQEIkrbJAQijtskBCMS2yQEIqZ3KAQjYjMsBCJShywEI2+/LAQjmhMwBCNupzAEI/qrMAQjDrMwBCKSvzAEYqKnKARirqcoB</span><br><span class="line">30. 已解码：message ClientVariations &#123; // Active client experiment variation IDs. repeated int32 variation_id = [3300017, 3300114, 3300131, 3300164, 3313321, 3327576, 3330196, 3340251, 3342950, 3347675, 3347838, 3348035, 3348388]; // Active client experiment variation IDs that trigger server-side behavior. repeated int32 trigger_variation_id = [3314856, 3314859]; &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>响应内容</strong></p>
+<p>响应页面也是类似的需要回应请求行需要的内容信息，同时告知自己允许接受什么样的请求，如果目标IP找不到通常会变为404结果。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">响应标头</span><br><span class="line"></span><br><span class="line">1.  accept-ch: Sec-CH-Viewport-Width  </span><br><span class="line">2.  accept-ch: Sec-CH-Viewport-Height</span><br><span class="line">3.  accept-ch: Sec-CH-DPR</span><br><span class="line">4.  accept-ch: Sec-CH-UA-Platform</span><br><span class="line">5.  accept-ch: Sec-CH-UA-Platform-Version</span><br><span class="line">6.  accept-ch: Sec-CH-UA-Full-Version</span><br><span class="line">7.  accept-ch: Sec-CH-UA-Arch</span><br><span class="line">8.  accept-ch: Sec-CH-UA-Model</span><br><span class="line">9.  accept-ch: Sec-CH-UA-Bitness</span><br><span class="line">10.  accept-ch: Sec-CH-UA-Full-Version-List</span><br><span class="line">11.  accept-ch: Sec-CH-UA-WoW64</span><br><span class="line">12.  alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"</span><br><span class="line">13.  bfcache-opt-in: unload</span><br><span class="line">14.  cache-control: private, max-age=0</span><br><span class="line">15.  content-encoding: br</span><br><span class="line">16.  content-length: 43734</span><br><span class="line">17.  content-type: text/html; charset=UTF-8</span><br><span class="line">18.  date: Tue, 24 May 2022 23:24:59 GMT</span><br><span class="line">19.  expires: -1</span><br><span class="line">20.  server: gws</span><br><span class="line">21.  set-cookie: 1P_JAR=2022-05-24-23; expires=Thu, 23-Jun-2022 23:24:59 GMT; path=/; domain=.google.com; Secure; SameSite=none</span><br><span class="line">22.  set-cookie: AEC=; expires=Mon, 01-Jan-1990 00:00:00 GMT; path=/; domain=www.google.com</span><br><span class="line">23.  set-cookie: AEC=; expires=Mon, 01-Jan-1990 00:00:00 GMT; path=/; domain=.www.google.com</span><br><span class="line">24.  set-cookie: AEC=; expires=Mon, 01-Jan-1990 00:00:00 GMT; path=/; domain=google.com</span><br><span class="line">25.  set-cookie: AEC=; expires=Mon, 01-Jan-1990 00:00:00 GMT; path=/; domain=.google.com</span><br><span class="line">26.  set-cookie: SIDCC=AJi4QfEXTiPm1BcAx1gfQzXOs-hmdcHylOVoSbbpy8cUIlP7hNwwfnfo_E8ZdTY1JZli8AqYYWk; expires=Wed, 24-May-2023 23:24:59 GMT; path=/; domain=.google.com; priority=high</span><br><span class="line">27.  set-cookie: __Secure-3PSIDCC=AJi4QfFdxOIbJrwDKltt2sBRVFIcLOCyqQmgTSfYjXTYwqbhh0GPLcR9cxsgyaIh1j_GITbGeHc; expires=Wed, 24-May-2023 23:24:59 GMT; path=/; domain=.google.com; Secure; HttpOnly; priority=high; SameSite=none</span><br><span class="line">28.  strict-transport-security: max-age=31536000</span><br><span class="line">29.  x-frame-options: SAMEORIGIN</span><br><span class="line">30.  x-xss-protection: 0</span><br></pre></td></tr></table></figure>
+
+<p>响应内容相对比较简单，主要关注重点为第一行内容中的状态码和响应短语，请求执行结果是成功还是失败。上面的交互内容需要注意Http请求严格遵循一个请求对应一个响应内容。</p>
+<blockquote>
+<p>注意：1 条请求消息中只能写 1 个 URI。如果需要获取多个文件，必须对每个文件单独发送 1 条请求。</p>
+</blockquote>
+<p>“如何解析网址？”这个问题从头到尾的介绍到这里就完成的，接下来来看看下一个问题”DNS 服务器如何查询域名对应的 IP 地址？”。</p>
+<h2 id="IP-和-DNS"><a href="#IP-和-DNS" class="headerlink" title="IP 和 DNS"></a><strong>IP 和 DNS</strong></h2><p>首先我们看看IP和DNS是啥，解析网址（域名）和发送请求和响应内容看似是浏览器完成的，实际上它并不具备这些功能， <strong>浏览器收发网络请求实际上需要依托操作系统完成</strong> ，而现代网络基本是<code>TCP/IP</code> 的天下，所以<code>IP</code>发挥关键作用，而<code>DNS</code>存储<code>IP</code>和域名映射的仓库。</p>
+<ul>
+<li>IP：可以类比做我们现实的具体位置，比如XX路XX号，XX路（网络号）对应的的是分配给<strong>整个子网</strong>的号码，而XX号（IP地址）的号码则分配给子网中的计算机，获得到IP地址之后就相当于锁定了当前计算机所在的具体位置，自然也可以可以找到了。</li>
+<li>DNS：直白来讲就是存储了域名和IP映射的记录的站点，浏览器要获取真实地址需要找DNS才能知道，因为域名放任用户自由定义将会出现同一个域名映射多个IP。</li>
+</ul>
+<p>下面我们先观察XX路XX号的号也就是IP地址是如何被找到的。</p>
+<p>发送网络的一方通过子网首先需要经过集线器，把内容转发到最近的路由器上，然后路由器会不断跨越找到离接受者更近的下一个路由器，最后再找到集线器然后在转发到接收者的路由器上，路由器在这里是方向盘的角色，而DNS寻址就像是导航。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202205250802048.png" alt="img"></p>
+<blockquote>
+<p>集线器和路由器是什么？ A　路由器：一种对包进行转发的设备。 B　集线器：一种对包进行转发的设备， 分为中继式集线器和交换式集线器两种.</p>
+</blockquote>
+<h2 id="IP地址的组成"><a href="#IP地址的组成" class="headerlink" title="IP地址的组成"></a>IP地址的组成</h2><p>IP地址是一个32位的Bit数，通过8个bit为一组分为4组，每一组用十进制表示并且使用小圆点断开。</p>
+<p>但是仅凭这32个bit是无法定位IP地址和网络号的，所以需要给IP地址附加信息。</p>
+<p>通常IP地址的组合有下面的方法：</p>
+<p>a）IP地址主体：<code>11.22.33.44</code></p>
+<p>b）IP和子网掩码：<code>11.22.33.44/255.255.255.0</code></p>
+<p>c）网络号的比特数作为子网掩码表示：<code>11.22.33.44/24</code></p>
+<p>d）子网地址：<code>11.22.33.0/24</code>，此时代表了整个子网</p>
+<p>e）子网广播地址：<code>11.22.33.255/24</code></p>
+<p>首先整个IP分为32位固定长度，每四个为一组用圆点分隔，通过 0 - 255的十进制表示，比如0就是8个0，255就是8个1，但是仅仅凭借32个位数是<strong>没法辨别</strong>这32位那一部分是网络号，那一部分是主机号的，所以下面是IP的基本组成：</p>
+<ul>
+<li><code>11.22.33.44</code>：表示基本的IP。</li>
+<li><code>11.22.33.44/255.255.255.0</code>：前面部分是基本IP，后面的部分表示子网掩码，表示方式和IP地址一致，注意最后的8位全部为0表示整个子网。</li>
+<li><code>11.22.33.44/24</code>： 这个24也是子网掩码，但是表示子网的方式是使用比特数。</li>
+<li><code>11.22.33.0/24</code>： 子网掩码没有变，IP地址变了，最后的8位0也是表示整个子网。</li>
+<li><code>11.22.33.255/24</code>： 子网掩码没有变，IP地址变了，最后的8位全部位1表示<strong>广播</strong> 整个子网。</li>
+</ul>
+<h3 id="什么是子网掩码？"><a href="#什么是子网掩码？" class="headerlink" title="什么是子网掩码？"></a>什么是子网掩码？</h3><p>初学者可能比较难以理解的概念，这里如果看不懂建议多找找资料挑一个看得懂的解释（关键是自己理解并且能自己复述）。</p>
+<p>下面是从书中原图，个人看完感觉并不是特别直观也不知道干嘛，所以做了一个补充说明。</p>
+<p>实际上下面图中网络号用了AND（位操作 <code>&amp;</code>）计算出网络号码，计算之后确认出网络号是10.1.2，而后面省略的部分其实是8个0的掩码掩盖主机，这里的子网就是 10.1.2.0，对应的主机IP是10.1.2.3。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202206182257006.png" alt=""></p>
+<p>如果看不懂上面说的是啥，这里补充解释一下：</p>
+<p>首先我们需要清楚子网掩码这东西是干嘛的，说白了就是划分网络号和主机号的，网络号可以看作一栋楼，主机是里面的小房间，但是房间编号可能是<code>101</code>，也可能是<code>0101</code>，更有可能是<code>00101</code>，具体得看掩盖的房间号从0000到1111有多少个，决定能分配给多少主机，而计算机0又很特殊，所以网络号的部分+ 子网掩码掩盖的位数部分（表现全为0）组成一个子网，<strong>只有在同一个子网的主机才能互相通信</strong>。</p>
+<p>所以<strong>子网掩码不能单独存在，它必须结合IP地址一起使用</strong>，子网掩码主要分为两个部分：全为1表示网络号，全为0表示的是主机号。</p>
+<p>那么我们随便设置一个子网掩码比如<code>255.255.255.111</code>行不行？</p>
+<p>答案是<strong>不行</strong>，<strong>不行</strong>，<strong>不行</strong>。因为<strong>子网掩码 必须是 连续的 1和0 组成</strong>，上面的掩码<code>255.255.255.0</code> 才是正确的用法，再举例比如<code>255.255.255.244</code>也是合格的子网掩码。</p>
+<p>我们举例说明一下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1100 0000.1010 1000.0000 0001.1000 0001 <span class="comment">-- 192.168.1.129</span></span><br><span class="line">1111 1111.1111 1111.1111 1111.0000 0000 <span class="comment">-- 255.255.255.0</span></span><br><span class="line">———————————————————— </span><br><span class="line">1100 0000.1010 1000.0000 0001.0000 0000 <span class="comment">-- 划分出最终子网网段：192.168.1.0</span></span><br><span class="line">注：确认最终的网络号和主机网段使用了位操作 &amp; （1 &amp; 1 = 1，1 &amp; 0 = 0）</span><br></pre></td></tr></table></figure>
+
+<p>从最终的结果来看<code>192.168.1.0</code> 的前面24位都为1是暴露的，而后面8位被子网掩码给遮掩住，所以他的另一种写法是<code>192.168.1.0/24</code>，表示24位是1代表网络号，剩余的8位用于表示主机号但是因为被掩盖了所以全部为0。</p>
+<p>虽然被掩盖了，但是主机号位置是0是1不需要关心的，主机号如果落在<code>192.168.1.0</code>到<code>192.168.1.255</code>表示同在一个网段内子网一视同仁，比如<code>192.168.1.129</code>表示其中的129位，包含在这个网段之内。</p>
+<p><strong>小结</strong></p>
+<ol>
+<li><strong>子网掩码 必须是 连续的 1和0 组成</strong>，简单记忆为1的部分来分割网络号，为0的部分用于掩盖主机号，同一个子网内的主机可以互相通信。</li>
+<li>子网掩码有两种写入方式一种是使用和I P 地址一样的32位完全表示方式，另一种是使用数字计算1比特数进行替换，比如24就是下面图中的24个1。</li>
+<li>IP 地址的主机号，全 0表示整个子网，全 1表示向子网上所有设备发送包。这里补充一下全为1的情况 - “广播”。</li>
+</ol>
+<blockquote>
+<p>广播是什么意思？广播地址是专门用于同时向该网络中所有主机进行广播的一个地址，只要是在同一个网段的主机都可以收听到广播。（例如<code>192.168.211.32/24</code>的广播地址为：<code>192.168.211.255</code>）</p>
+</blockquote>
+<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><p>DNS： <code>Domain Name System</code> <strong>域名服务系统</strong>，最常见的用法是将服务器名称和 IP 地址进行关联，当然只是它的主业，他有一些副业也挺重要但是不是关键感兴趣了解即可。</p>
+<p>IP是难以记忆的，而简短域名更容易被人记住。你可能会觉得域名长了也难记忆啊，虽然解析IP的速度要比解析域名来的快的很多，但是显然网民为了访问一个网站要记住一串数字显然是不可能的，同时域名实际上对于当时的互联网发展来说也是有意义的。</p>
+<p>所以谁来告诉主机域名的真实IP是多少？这时候DNS就上场了，DNS的作用是说白了就是用来映射IP和域名的一个东西。</p>
+<p>DNS是如何完成映射的？对于用户主机来说一定存在一个用于解析DNS的客户端，这个客户端通常被称为解析器，通过域名解析出IP地址的过程也被称为<strong>域名解析</strong>。</p>
+<p><strong>调用解析器</strong></p>
+<p>那么如何调用解析器？解析器实际上就是一段程序代码，这一段程序代码包含在底层操作系统的<code>Socket</code>库当中，通过<code>Socket</code>库调用解析器，然后解析器会向 DNS 服务器发送查询消息， DNS 服 务器根据请求查询IP然后返回响应消息。</p>
+<p>Socket 解析域名的过程非常简单，只需要一行代码就可以完成：<code>gethostbyname(&quot;</code><a href="http://www.lab.glasscom.com" target="_blank" rel="noopener"><code>www.lab.glasscom.com</code></a><code>&quot;);</code>。</p>
+<blockquote>
+<p>库：指的是通用程序组件的集合，用于规范程序代码的规范组建。以解析器为例，Socket 库是用于调用网络功能的程序组件集合。</p>
+</blockquote>
+<p><strong>解析器内部又是如何工作的？</strong></p>
+<p>在应用程序调用解析器的时候，此时控制权会转移到解析器，当控制权转为解析器之后解析器会生成要发送给 DNS 服务器的查询消息，生成过程类似构建一条“请告诉XXX的IP地址”的消息，并且发给DNS服务器完成解析。</p>
+<p>特别注意注意<strong>发送请求不是由解析器完成</strong>，而是需要再次委托给操作系统的<strong>协议栈</strong>完成，所以此时权限会再次转移到协议栈，协议栈最终通过网卡把消息发给DNS，然后DNS查到IP返回消息，至此一次DNS解析请求就完成了。</p>
+<p>值得注意的是 解析器会将取出的 IP 地址写入应用程序<strong>指定的内存地址</strong>中，此外还需要注意请求DNS服务器本身IP也是需要配置的，只不过这个 IP 地址是作为 TCP/IP 的项目事先设置好的，不需要再去查询直接就可以获取。</p>
+<p>最后在不同的操作系统中获取DNS服务器的地址方式会有差别。</p>
+<p>根据上面的描述，总结DNS解析流程：</p>
+<ol>
+<li>WEB浏览器发送域名解析请求，通过Socket向解析器进行请求解析，此时应用程序将会挂起。</li>
+<li>解析器负责“翻译”应用程序的DNS解析请求，但是把具体的请求操作委托给系统栈。</li>
+<li>系统栈负责将请求通过网卡发送给DNS服务器，等待DNS反馈结果。</li>
+<li>DNS获取真实IP之后将结果通过链路反向回送到应用程序。</li>
+</ol>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202206182256279.png" alt=""></p>
+<p><strong>DNS工作</strong></p>
+<p>接下来我们看看dns要如何工作，dns需要查询用户消息包含下面几个部分：</p>
+<ul>
+<li>域名：用来替代IP方便记忆。</li>
+<li>class：考虑到互联网之外的情况，当然外部网络现在只有标识为in的互联网。</li>
+<li>type：表示记录类型用于区分dns的解析方式，不同类型结果不同。</li>
+</ul>
+<p>需要注意的是所有a类型的记录在DNS上注册了，再比如所有邮件类型都是MX的类型，整个DNS工作其实就简单的根据类型和域名进行查表，找到匹配的就回传，否则就会找不到。</p>
+<p>域名层次：所谓域名层次就是DNS不可能是一台服务器，而是需要多台服务器配合，各自管理自己范围的内容，而对于域名来说越靠右边的部分在域名的层次里面越高。</p>
+<p>这样看来是不是有点意思，以日常生活举例并不是我们认为的<code>www</code>是最高，其实他是最低的等级，<code>.com</code>才是最高的。</p>
+<p><strong>DNS查找步骤</strong></p>
+<p>首先将负责管理下级域的 DNS 服务器的 IP 地址注册到它们的上级 DNS 服务器中，然后上级 DNS 服务器的 IP 地址再注册到更上一级的 DNS 服务器中，以此类推。</p>
+<p>举个例子，需要解析等域名为<code>www.baidu.com</code>，DNS需要事先把整个<code>www.baidu.com</code>整个域名注册到<code>baidu.com</code>，再把<code>baidu.com</code>注册到<code>com</code>域名，再把<code>com</code>注册到根域，这样就可以通过上级找下级。</p>
+<p>这里提到DNS有一个根域，根域名指的是就是一个句点 <code>.</code> ，和Linux的根路径意义表现形式上类似。</p>
+<p>根据根域可以解释为什么任何奇怪等域名都可以被访问到，原因是所有的下级都会注册到上级中，最后都有一个共同的 ，如果所有下级要找到根域，自然需要注册根域这个句点。</p>
+<p>DNS查找的过程是自下而上找最近的DNS然后自上而下找根域向下查找的的，也就是先找<strong>最近的dns</strong>找，没有找到就需要直接从根域进行查找，一路通过层级下探找到最终的ip，这也是为什么访问国外ip慢的原因，因为路由链路实在是很长，可能需要几十次dns搜索查找。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202206182255672.png" alt=""></p>
+<p><strong>DNS缓存</strong></p>
+<p>如果每个主机每次请求总是要通过DNS获取域名对应的IP信息，是不可能每次都DNS让找一遍的，实际上解析到的真实IP会预先缓存起来下次访问重复的数据直接返回即可。</p>
+<p>另外虽然前面介绍的是查找自上而下从根域向下查找，实际上DNS还可以利用缓存特性通过多个层级的共享域名加快访问速度跨级查找，比如<code>www.baidu.com</code>和<code>www.baidu</code> 可以共享缓存直接跳两个层级快速找到（当然这里其实找最近的一个DNS就能找到，这里仅仅是举例）。</p>
+<p>但是缓存有个副作用，就是不存在的ip地址消息也会缓存，不过为了防止这种情况一般会有过期时间，过期之后依然需要再次走一遍DNS查找流程。</p>
+<blockquote>
+<p>问题引导：问题</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cDovL3d3dy5uaWtrZWlicC5jby5qcC8=" title="http://www.nikkeibp.co.jp/">http://www.nikkeibp.co.jp/<i class="fa fa-external-link"></i></span> 中的 http 代表什么意思？</li>
+</ul>
+<p>表示的是HTTP 协议</p>
+<ul>
+<li>下面两个网址有什么不同？</li>
+</ul>
+<p>a. <span class="exturl" data-url="aHR0cDovL3d3dy5uaWtrZWlicC5jby5qcC9zYW1wbGU=" title="http://www.nikkeibp.co.jp/sample">http://www.nikkeibp.co.jp/sample<i class="fa fa-external-link"></i></span></p>
+<p>b. <span class="exturl" data-url="aHR0cDovL3d3dy5uaWtrZWlicC5jby5qcC9zYW1wbGUv" title="http://www.nikkeibp.co.jp/sample/">http://www.nikkeibp.co.jp/sample/<i class="fa fa-external-link"></i></span></p>
+<p>区别点在于sample 可能被解析出和预期不符合的结果。</p>
+<p>用来识别连接在互联网上的计算机和服务器的地址叫什么？</p>
+<p>IP地址</p>
+<p>根据 Web 服务器的域名来查询 IP 地址时所使用的服务器叫什么？</p>
+<p>DNHS服务器</p>
+<p>向 DNS 服务器发送请求消息的程序叫什么？</p>
+<p>解析器。</p>
+</blockquote>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/08/11/rswljcgn/" title="《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）">https://whitestore.top/2022/08/11/rswljcgn/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/" rel="tag"># 网络/网络基础</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/11/howtodie/" rel="prev" title="《how to die alone》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《how to die alone》读书笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/24/httphuancun/" rel="next" title="HTTP 缓存技术">
+      HTTP 缓存技术 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#《网络是怎么样连接的》读书笔记-认识网络基础概念（一）"><span class="nav-number">1.</span> <span class="nav-text">《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#本章重点"><span class="nav-number">1.1.</span> <span class="nav-text">本章重点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#讲讲历史"><span class="nav-number">1.2.</span> <span class="nav-text">讲讲历史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何解析网址"><span class="nav-number">1.3.</span> <span class="nav-text">如何解析网址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Http请求"><span class="nav-number">1.4.</span> <span class="nav-text">Http请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-和-DNS"><span class="nav-number">1.5.</span> <span class="nav-text">IP 和 DNS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP地址的组成"><span class="nav-number">1.6.</span> <span class="nav-text">IP地址的组成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是子网掩码？"><span class="nav-number">1.6.1.</span> <span class="nav-text">什么是子网掩码？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS"><span class="nav-number">1.7.</span> <span class="nav-text">DNS</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">186</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:58</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

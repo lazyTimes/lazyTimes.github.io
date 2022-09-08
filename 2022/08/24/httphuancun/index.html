@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="HTTP缓存技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP 缓存技术">
+<meta property="og:url" content="https://whitestore.top/2022/08/24/httphuancun/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="HTTP缓存技术">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220815060304.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220815060414.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220814190150.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220814182034.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202208160701622.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220814211613.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220815063339.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202208170727835.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202208170731807.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202208170708552.png">
+<meta property="article:published_time" content="2022-08-24T13:01:55.000Z">
+<meta property="article:modified_time" content="2022-09-08T02:18:34.394Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="缓存技术">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220815060304.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/08/24/httphuancun/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>HTTP 缓存技术 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/08/24/httphuancun/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HTTP 缓存技术
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-24 21:01:55" itemprop="dateCreated datePublished" datetime="2022-08-24T21:01:55+08:00">2022-08-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-09-08 10:18:34" itemprop="dateModified" datetime="2022-09-08T10:18:34+08:00">2022-09-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">网络/网络基础</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/08/24/httphuancun/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/24/httphuancun/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+            <div class="post-description">HTTP缓存技术</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="HTTP-缓存技术"><a href="#HTTP-缓存技术" class="headerlink" title="HTTP 缓存技术"></a>HTTP 缓存技术</h1><p>缓存技术出现在HTTP1.1当中，目的是尽可能的减少对于服务器进行请求。为了实现缓存技术，HTTP设计者在头部字段增加针对缓存的头部字段。HTTP 缓存有两种方式，<strong>强制缓存</strong>和<strong>协商缓存</strong>。</p>
+<h2 id="认识缓存"><a href="#认识缓存" class="headerlink" title="认识缓存"></a>认识缓存</h2><p>介绍具体的缓存技术之前，我们先来认识一下HTTP中的缓存特点。</p>
+<p>注意<strong>缓存只对获取文件有效</strong>，从服务器上拿到文件然后放入本地缓存，下次再获取则从本地缓存区获取文件，这样可以减轻服务器压力。</p>
+<p>缓存技术在HTTP中的体现是通过几个请求字段的配合，按照一定的判断流程控制。HTTP1.1主要通过下面三个请求头部信息判定缓存有效性：</p>
+<ul>
+<li><code>Cache-Control</code>：服务器可以返回此字段指定浏览器和中间缓存应该存活多久。</li>
+<li><code>ETag</code>：浏览器缓存过期的时候，通过Etag令牌检查文件是否出现改变。Etag 是特殊算法计算的唯一哈希值。</li>
+<li><code>Last-Modified</code>：和Etag用途相同，但是它是基于时间的策略检查是否更改。</li>
+</ul>
+<p>这三个字段基本囊括大部分HTTP缓存技术的应用场景。</p>
+<a id="more"></a>
+
+<h3 id="缓存位置"><a href="#缓存位置" class="headerlink" title="缓存位置"></a>缓存位置</h3><p>缓存位置通常存在下面几种：</p>
+<ul>
+<li>Service Work</li>
+<li>Memory Cache</li>
+<li>Disk Cache（常用）</li>
+<li>Push Cache</li>
+</ul>
+<h4 id="Service-Work"><a href="#Service-Work" class="headerlink" title="Service Work"></a>Service Work</h4><p>通常运行在浏览器的后台，主要功能是实现缓存，使用此组件需要请求协议为HTTPS，因为Service Work 本身会拦截请求，需要 HTTPS保证安全才能使用。</p>
+<h4 id="Memory-Cache"><a href="#Memory-Cache" class="headerlink" title="Memory Cache"></a>Memory Cache</h4><p>内存中的缓存，主要是当前页面已经捕获的资源。比如图片，脚本等，这种方式要比Disk Cache 要快上非常多，但是注意这个缓存寿命非常短，一旦关闭Tab，内存缓存会随着页面的关闭立马释放。</p>
+<p>内存缓存中有一块重要的缓存资源是 <strong>preloader 相关指令</strong>，也是页面优化的手段之一，可以做到解析脚本和CSS文件的同时请求下一个资源。</p>
+<h4 id="Disk-Cache"><a href="#Disk-Cache" class="headerlink" title="Disk Cache"></a>Disk Cache</h4><p>Disk Cache 存在于磁盘的缓存，读取虽然慢一点，但是可以实现持久化存储，并且容量比内存缓存要宽泛很多。</p>
+<p>Disk Cache的覆盖面在浏览器中占用比重很大，通常结合HTTP头部字段进行判断，如果跨站点下载文件，已经下载过的文件不会再次请求，而是直接从<code>Disk Cache</code> 获取。</p>
+<blockquote>
+<p>如何判断缓存进内存还是进磁盘？<br>通常有两个依据：</p>
+<ol>
+<li>如果是大文件，通常会进入磁盘当中进行缓存。</li>
+<li>如果是频繁访问的文件，也会放入磁盘。</li>
+</ol>
+</blockquote>
+<h4 id="Push-Cache"><a href="#Push-Cache" class="headerlink" title="Push Cache"></a>Push Cache</h4><p>推送缓存是HTTP/2 新加入的内容，上面三种情况都没有命中的时候才会尝试使用。它是会话级别缓存，一旦会话结束，也会立即释放缓存，生命周期只比内存缓存长一点点。</p>
+<h4 id="缓存过程"><a href="#缓存过程" class="headerlink" title="缓存过程"></a>缓存过程</h4><p>缓存的大致流程如下：</p>
+<ol>
+<li>客户端发起HTTP请求访问浏览器缓存，浏览器不存在缓存，告知客户端让它重新发请求。</li>
+<li>客户端再次发起HTTP请求到原始服务器，原始服务器返回结果和缓存规则。</li>
+<li>客户端再次发起请求，从浏览器的缓存中获取请求结果。</li>
+</ol>
+<p>注意第一步是隐式处理的，所以缓存过程主要有两个要点：</p>
+<ul>
+<li>每次请求都会检查浏览器是否存在缓存标识，以及请求的缓存结果。</li>
+<li>如果没有特殊字段禁用缓存，缓存将会把请求结果缓存存在浏览器缓存当中。</li>
+</ul>
+<p>缓存判定主要依赖两项技术：<strong>强制缓存</strong>和<strong>协商缓</strong>存，也是HTTP缓存技术的要点。将在下文进行进行介绍。</p>
+<h3 id="Pragma-头部"><a href="#Pragma-头部" class="headerlink" title="Pragma 头部"></a>Pragma 头部</h3><p>Pragma 于 HTTP1.0 中定义，单词含义叫做“编译指令”，几乎可以包含任何内容，目的是给浏览器发送请求中进行一些指令操作，但是主要的应用场景是缓存操控。</p>
+<p>Pragma主要作用是保持 HTTP1.0 向后兼容，因为<strong>缓存技术是在HTTP1.1中才出现</strong>的。</p>
+<p>比如让一些HTTP1.0的源服务识别客户端理解”无缓存“的请求头部，这时候Prama就可以派上用场。</p>
+<p>Pragma 如果被发送，将会应用于所有的应用程序和客户端。如果存在HTTP1.1缓存技术的相关请求头部字段，在<strong>服务器可以识别的前提下</strong>，会优先解析HTTP1.1的请求头部，从而忽略Pragma头部。</p>
+<p>但是这里介绍的所有内容都是 HTTP1.0 约定俗成的东西。HTTP1.0 本身不能算作标准，只能算作“草稿”，所以 <strong>Pragma 既没有明确规范，也没有可靠性</strong>，现在的网络环境这个字段基本不再使用。仅仅是有可能的向后兼容场景中用到。</p>
+<blockquote>
+<p>介绍这些内容，只是让大家知道点历史。</p>
+</blockquote>
+<p><strong>Pargma 头部使用方式</strong></p>
+<p>基本语法 <code>Pragma: 1# pragma-directive</code><br>举例  <code>Pragma: no-cache</code>（实际上也是唯一取值）</p>
+<h2 id="强制缓存"><a href="#强制缓存" class="headerlink" title="强制缓存"></a>强制缓存</h2><p>强制缓存指的是只要浏览器没有过期，就使用缓存进行返回，主动性在浏览器方。</p>
+<p>比如下面的请求当中，使用了缓存进行返回，强缓存利用两个响应头部实现， <strong>相对时间“Cache-Control”</strong> 以及 <strong>“Expire”绝对时间</strong> 两个字段。</p>
+<p>在讲述<code>Cache-Control</code>之前我们先停一下，先来了解后面这个过时的东西<strong>Expires</strong>。</p>
+<p><strong>Expires 有什么用？</strong> 这个字段的作用是设置一个特殊的时间，一旦超过这个时间，就会过期。简而言之就是所谓的<strong>绝对时间</strong>，比如我们设置时间为 <code>Expires：Sat，13 May 2022 07:00:00  GMT</code>，意味着一旦超过这个时间就会失效。</p>
+<p>但是这个时间是存在问题的，虽然原始服务器的时间无法更改，但是 <strong>客户端时间是可以自由改动的</strong>，这样就会导致客户端时间和服务器时间不一致，出现缓存一致性问题，你也可以把这种乱改时间的方式叫做<code>the world</code>（砸瓦鲁多）。</p>
+<p>此外<strong>Expires</strong>日期时间必须是格林威治时间（GMT），而不能是本地时间，也不能随意指定日期格式，局限性比较大。</p>
+<p>如果设置的Expires过期时间是固定时间，但是返回之前没有没有更新下一次过期时间，那么每一次客户端的请求都会进入到服务端，会加大服务端压力，缓存的意义也就失效了。</p>
+<p>于是Cache-Control针对Expires的局限性进行改进而在HTTP1.1中登场。</p>
+<p>如果同时有 <code>Cache-Control</code> 和 <code>Expires</code> 字段，<strong>Cache-Control的优先级高于 Expires</strong> 。所以通常情况下不建议使用 Expires，如果非要使用，建议用在静态资源上给资源设置绝对过期时间，或者作为双保险兼容所有HTTP代理服务使用。</p>
+<p>此外<code>Cache-Control</code>和<code>Expires</code>这两个字段的区别是 <code>Cache-Control</code> 字段的选项要多一些，<code>Cache-Control</code>是HTTP1.1标准协议中出现并推荐使用的，<code>Expires</code> 是HTTP1.0的规定，但是HTTP1.0并不是明确标准，不具备任何约束力。</p>
+<blockquote>
+<p>HTTP 1.0 虽然明面上属于草稿纸协议，Expires看似也不推荐使用，但是后续的协议并没有废弃它，所以还是有一定的存在意义的（前后兼容问题）。</p>
+</blockquote>
+<p>首部字段 <code>Expires</code> 会将资源失效的日期告知客户端。如果不希望资源被缓存，则建议把首部字段 <code>Expires</code> 和首部字段<code>Date</code>设置相同的时间。</p>
+<p><strong>强制缓存的使用策略</strong></p>
+<ul>
+<li><strong>第一次访问服务器资源</strong>，服务器会在返回资源的同时返回这两个字段，同时为这两个字段设置过期时间。</li>
+<li>浏览器第二次乃至更多次访问，首先比对 <strong>Cache-Control</strong>的时间是否过期，如果有就使用缓存，没有就<strong>重新请求</strong>。</li>
+<li>再次请求会更新 <code>Cache-Control</code>，之后以此反复。</li>
+</ul>
+<h3 id="Cache-Control例子"><a href="#Cache-Control例子" class="headerlink" title="Cache-Control例子"></a><code>Cache-Control</code>例子</h3><p>例子网址：<span class="exturl" data-url="aHR0cHM6Ly93ZWIuZGV2L2kxOG4vZW4vaHR0cC1jYWNoZS8jZXhhbXBsZXM=" title="https://web.dev/i18n/en/http-cache/#examples">https://web.dev/i18n/en/http-cache/#examples<i class="fa fa-external-link"></i></span></p>
+<table>
+<thead>
+<tr>
+<th align="left"><code>Cache-Control</code>价值</th>
+<th align="left">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>max-age=86400</code></td>
+<td align="left">响应可以由浏览器和中间缓存缓存长达 1 天（60 秒 x 60 分钟 x 24 小时）。</td>
+</tr>
+<tr>
+<td align="left"><code>private, max-age=600</code></td>
+<td align="left">响应可以由浏览器（但不是中间缓存）缓存长达 10 分钟（60 秒 x 10 分钟）。</td>
+</tr>
+<tr>
+<td align="left"><code>public, max-age=31536000</code></td>
+<td align="left">响应可以由任何缓存存储 1 年。</td>
+</tr>
+<tr>
+<td align="left"><code>no-store</code></td>
+<td align="left">不允许缓存响应，并且必须在每次请求时全部获取。</td>
+</tr>
+</tbody></table>
+<h3 id="Cache-Control-字段选项"><a href="#Cache-Control-字段选项" class="headerlink" title="Cache-Control 字段选项"></a>Cache-Control 字段选项</h3><ul>
+<li><code>max-age</code>：此参数为高优先级，代表缓存的最大存活时间，单位为秒，其实时间为客户端接受响应的那一刻计算。</li>
+<li><code>no-cache</code>：浏览器在每次使用缓存之前都必须使用服务器重新验证。注意这个字段并不是禁用缓存的真正含义，这里暂时卖个关子，下文继续解释。</li>
+<li><code>no-store</code>：缓存不应该缓存任何客户端和服务端的内容，实际上的<strong>不使用缓存</strong>。和no-cache的区别是这个设置完全才是真实的不使用缓存。</li>
+<li><code>public</code>：表示资源可以由任何代理进行缓存。</li>
+<li><code>private</code>：表示指定资源专属于特定用户，虽然依然可以缓存，但<strong>只能在客户端缓存</strong>，比如私有的网页响应由桌面浏览器缓存，不能给CDN进行加速。</li>
+</ul>
+<blockquote>
+<p>注意在<code>Cache-Control</code>指定<code>max-age</code>的属性时候，比起首部字段Expires，会优先处理max-age。</p>
+</blockquote>
+<p>在 <strong>《HTTP权威指南》</strong> 可以看到更多字段解释，上面仅仅列举一些常用字段。</p>
+<blockquote>
+<p>重点关注 no-cache，很容易误解含义的一个属性。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220815060304.png" alt="Cache-Control 常用字段 - 1"></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220815060414.png" alt="Cache-Control 常用字段 - 2"></p>
+<p><strong>s-maxage</strong></p>
+<p>有时候我们会看到下面的请求属性：<code>s-maxage</code></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220814190150.png" alt="s-maxage"></p>
+<p>它所表示的含义是覆盖<code>max-age</code>或者<code>Expires</code>头，但是仅适用于共享缓存 (比如各个代理)，私有缓存会忽略它（private）。</p>
+<p><strong>Cache-Control案例</strong></p>
+<p>通过下面的案例可以看到，内容是从<code>disk cache</code>本地返回的，没有请求服务器。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220814182034.png" alt=""></p>
+<p>强制缓存除了 <code>from disk cache</code> 之外，还有可能遇到使用<code>from memory cache</code>进行返回，表示同样不会访问服务器，但是返回的内容是从内存中来的，并且因为是内存所以如果关闭当前页面会被立马释放。</p>
+<p>更多有关Cache-Control的内容可以看看下面的资料网站。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvemgtQ04vZG9jcy9XZWIvSFRUUC9IZWFkZXJzL0NhY2hlLUNvbnRyb2w=" title="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control">Cache-Control - HTTP | MDN (mozilla.org)<i class="fa fa-external-link"></i></span></p>
+<h3 id="Expires-和-Cache-Control-两者对比"><a href="#Expires-和-Cache-Control-两者对比" class="headerlink" title="Expires 和 Cache-Control 两者对比"></a>Expires 和 Cache-Control 两者对比</h3><p>这个比较容易被问到，所以这里再啰嗦一遍。其实本质上区别并不是很大，只不过Expires 是  HTTP1.0 出现的，要比Cache-Control （HTTP1.1）出得早而已，并且Cache-Control本身就是为了替换Expires 而存在的。</p>
+<p>虽然目前大部分网站都是支持HTTP1.1 的，但是如果真的碰到只能识别HTTP1.0 的服务器，此字段依然有存在价值，所以这种做法只是一种保证前后兼容的稳定而已。</p>
+<h3 id="Cache-Control-流程图"><a href="#Cache-Control-流程图" class="headerlink" title="Cache-Control  流程图"></a><code>Cache-Control</code>  流程图</h3><p>图来自老外的博客：<span class="exturl" data-url="aHR0cHM6Ly93ZWIuZGV2L2kxOG4vZW4vaHR0cC1jYWNoZS8=" title="https://web.dev/i18n/en/http-cache/"># Prevent unnecessary network requests with the HTTP Cache<i class="fa fa-external-link"></i></span></p>
+<p>需要注意最后一步的Etag，是协商缓存中的重要判断依据，这部分内容会在下文解释。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202208160701622.png" alt="Cache-Control 流程图"></p>
+<h3 id="no-cache-VS-no-store"><a href="#no-cache-VS-no-store" class="headerlink" title="no-cache VS no-store"></a>no-cache VS no-store</h3><p>“no store”请求指令指示缓存不能存储此请求或对其的任何响应的任何部分。</p>
+<blockquote>
+<p>The “no-store” request directive indicates that a cache MUST NOT store any part of either this request or any response to it. This directive applies to both private and shared caches.</p>
+</blockquote>
+<p>no-store 比较好理解，它是真正意义上的不使用缓存，含义是禁用中间代理（浏览器，CDN，缓存服务器、代理）缓存响应内容，行为类似非代理缓存服务，一旦碰到缓存就会删除。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220814211613.png" alt=""></p>
+<p>“no cache”请求指令表示，如果未在源服务器上成功验证，缓存不得使用存储的响应来满足请求。</p>
+<blockquote>
+<p>The “no-cache” response directive indicates that the response MUST NOT be used to satisfy a subsequent request without successful validation on the origin server.</p>
+</blockquote>
+<p>上面是RFC协议的原话，这个定义非常容易误解，隐藏的含义是：<strong>实际上<code>no cache</code> 是会进行缓存的</strong>。</p>
+<p>什么时候缓存呢？在与原始服务器进行新鲜度再验证之前，缓存不能将其提供给客户端使用。而如果再度验证服务器没有对于内容进行更改，那么还是使用缓存数据进行处理。</p>
+<p>简而言之就是一句话：<strong>如果服务器没有更新内容，那么就会缓存数据，否则需要重新请求和服务器进行验证比对</strong>。</p>
+<p>大多数人会理解错这一层含义，会误认为是“不接受服务器的缓存响应”，实际上它是会接受的。《HTTP权威指南》解释说这个首部更适合用 <strong>do-not-serve-from-cache-without-revalidation（不需要请求服务，直接用缓存，除非服务器重新验证）</strong> 这个名字会更恰当一些，我们同样可以按照作者的建议进行理解。</p>
+<p>但是这里肯定又会问，你都<code>no-cache</code>了我怎么知道什么时候响应新内容呢？</p>
+<p>先别急，这里有一套稍微复杂的判断机制：<strong>协商缓存</strong>，学东西一点一点来，我们接着看其他几个强制缓存的问题。</p>
+<h3 id="max-age-0-和-no-cache-等价吗？"><a href="#max-age-0-和-no-cache-等价吗？" class="headerlink" title="max-age=0 和 no-cache 等价吗？"></a>max-age=0 和 no-cache 等价吗？</h3><p>这个问题比较偏门，但是作为面试题角度比较刁钻。</p>
+<p>两者的区别是<code>max-age=0</code>通常是告诉浏览器<strong>建议</strong>刷新缓存，<code>max-age=0</code>是<strong>非强制性（Should）</strong> 的，<code>no-cache</code>要求强制和服务器进行验证才允许使用缓存，所以<code>no-cache</code> 具有强制（MUST）性。</p>
+<p>但是怎么处理还得看浏览器的设计，所以不考虑浏览器设计的因素下，可以认为行为比较一致，或者直接自信点：它们差不多。</p>
+<h3 id="什么样的请求方法会被缓存？"><a href="#什么样的请求方法会被缓存？" class="headerlink" title="什么样的请求方法会被缓存？"></a>什么样的请求方法会被缓存？</h3><ul>
+<li>GET 请求通常具备缓存失效。</li>
+<li>HEAD方法跟GET方法相同，只不过服务器响应时不会返回消息体，所以HEAD请求会被缓存。（比较容易被忽略）</li>
+<li>PUT 无法被缓存。</li>
+<li>POST 缓存在指定明确的过期请柬请求字段的时候可以使用，但是基本没有被实施。</li>
+</ul>
+<blockquote>
+<p>HEAD 很容易被忽略，实际上它具备一定的作用：</p>
+<ul>
+<li>检查连接是否活跃（active）。</li>
+<li>检查网页是否存在改动。</li>
+<li>多用于获取RSS，网站标志等信息的场景使用。</li>
+</ul>
+</blockquote>
+<h3 id="缓存优先级判断"><a href="#缓存优先级判断" class="headerlink" title="缓存优先级判断"></a>缓存优先级判断</h3><p>采用下面的顺序：</p>
+<ol>
+<li>如果是共享缓存并且存在<code>s-maxage</code>，则为最高优先级。</li>
+<li>检查是否存在max-age。</li>
+<li>检查是否存在Expires，需要使用此时间减去响应字段的Date字段值，算出来的数值就是有效期。</li>
+</ol>
+<p>需要提醒这些时间是不会和时区产生影响的，因为返回的都是<strong>原始服务器的时间</strong>。</p>
+<p>但是在这里我们发现一个问题，如果上面条件都不满足，如果<strong>不存在到期时间</strong>咋办？</p>
+<p>因为原始服务器的时间并不是总是可靠的，如果请求当中没有任何“新鲜度“（max-age、Expires等过期时间）设置，请求头部也没指定任何禁用缓存和任何限制，那么这时候需要用<code>heuristic expiration time</code>这个值。</p>
+<p><code>heuristic expiration time</code>（中文说法：<strong>启发式缓存时间</strong>），在《HTTP权威指南》叫做试探性过期时间，其实是利用其他字段的算出一个“合理”的估计值（也就是 <code>Last-Modified</code>）。</p>
+<p>关于计算的方法，在RFC规范柄中没有强制如何设计，而是在协议中给出下面这句话：</p>
+<blockquote>
+<p>If the response has a Last-Modified header field (Section 2.2 of [RFC7232]), caches are encouraged to use a heuristic expiration value that is no more than some fraction of the interval since that time. A typical setting of this fraction might be 10%.</p>
+</blockquote>
+<p>如果响应具有<code>Last-Modified header</code>的标头字段（RFC7232的第2.2节），<strong>则鼓励缓存使用启发式缓存时间值</strong>，该值会计算一个不超过自该时间起间隔 * 某个比例（的时间）。<strong>比例的经典设置可能为10%</strong>。</p>
+<p>这是嘛意思？没看懂呀，其实这里要联系RFC原文的前后文了，这里就不贴英文了。大致意思是在优先级判断中的第三点判断，有效期计算被定义为<strong>Expires-Date字段</strong>。</p>
+<p>如果服务端返回<code>Last-Modified header</code> ，则计算方式为 <strong>Date字段 - Last-Modified字段值</strong>。</p>
+<p>但是如果直接这样计算有可能会太长了，RFC给出 10 % 的建议值。这个建议值有这两点考虑：</p>
+<ul>
+<li>很久之前存放的文档一般不会更改，所以留在缓存很安全，10%估计值的比率尚且可以接受（？）。</li>
+<li>频繁更新的内容通常缓存收益很小，使用估计值10%可以尽可能减少缓存时间，尽可能的返回最新内容。</li>
+</ul>
+<blockquote>
+<p>更新频率不同长短的资源都能收益，这样看起来这处理方式是不是很不错呀？但是<br>想法是好的，现实是这样做会带来更多麻烦，这点放到下面讨论。</p>
+</blockquote>
+<p>总而言之，不满足缓存优先级判断，浏览器通常会用  <strong>Last-Modified字段值</strong> 计算一个合适的参考值作为缓存过期时间存在，最终的计算公式为：</p>
+<p><strong><code>Last-Modified Time - Date</code> * 0.1 (10%)`</strong></p>
+<blockquote>
+<p>当存储的响应中存在显式过期时间时，缓存不得使用启发式缓存时间来确定新鲜度。不能使用此算法。官方这话是在暗示你要尽量给资源设置缓存过期时间，因为我建议的这东西不是特别靠谱。</p>
+</blockquote>
+<p>目前多数浏览器使用 <code>LM-factor</code> 算法（也就是上面的公式），使用的也是RFC协议建议的比例 10 %，20% 这个说法现在来看已经过时。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220815063339.png" alt=""></p>
+<blockquote>
+<p>10%以及悲观估计依据：<br>This specification does not provide specific algorithms, but does impose worst-case constraints on their results.<br>  本规范未提供具体算法，但对其结果施加了最坏情况约束，所谓的最坏情况约束就是 10%。</p>
+</blockquote>
+<p><strong>113 响应状态码</strong></p>
+<p>这里有个偏门的 113 响应状态码，表示如果缓存使用了超过24小时的有效时间并且响应时间大于24小时，不应该采取任何操作。1XX状态码需要后续的确认操作。</p>
+<p>但是实际上很多浏览器压根没有搭理过这个建议，也没有做响应措施，这一点需要注意。</p>
+<p><strong>如果Last-Modified都没有怎么办？</strong></p>
+<p>乖乖，如果这都没有的话，缓存通常会为没有任何新鲜周期线索的文档，分配一个默认的新鲜周期（通常是一个小时或一天）。</p>
+<p>有时比较保守的缓存会将这种试探性新鲜生存期设置为 0，强制缓存在每次将其提供给客户端之前验证一下这些数据是否仍然是新鲜的。</p>
+<p><strong>启发式缓存时间坏处</strong></p>
+<p>凡事都有例外，启发式缓存时间本意是好的，但是存在明显的弊端。</p>
+<p>假如一个文件超过一个月没设置过期时间，并且已经经过一个月的时间，这时候发现文件存在严重问题，需要立刻修复。</p>
+<p>这时候一旦修改，会导致上个版本3天之后才过期（1个月的10%=3天左右），意味着更新一个文件需要至少3天（20%就是将近一周），请求才会传新文件。如果使用CDN，这个时间还会更长。</p>
+<p>当然这种问题解决方案也很多，比如在设置文件的时候带上<strong>版本号或者编号</strong>，比如对外进行 302 临时重定向到另一个位置并且设置过期时间，或者先删文件再后重新添加，并且手动强制同步。</p>
+<p><strong>综上所述，尽量不要使用启发式缓存，尽量给每个请求设置过期时间，但是也不要设置过长时间，长时间的强缓存会因为CDN等缓存服务器的关系导致一个资源迟迟难以更新（哪怕没有启发式缓存时间）</strong>。</p>
+<p><strong>新协议对RFC2616的改动</strong></p>
+<p>注：[RFC2616] 第13.9节禁止缓存计算带有查询组件的URI的启发式新鲜度（即包含“？”的URI）。此项在实践中，这并没有得到广泛推广。</p>
+<p>综上所述，如果源服务器希望排除缓存，则鼓励它们发送显式指令（例如，缓存控制：无缓存）。</p>
+<h3 id="新响应的计算方式"><a href="#新响应的计算方式" class="headerlink" title="新响应的计算方式"></a>新响应的计算方式</h3><p>下面这个公式是判断依据：</p>
+<p><strong>response_is_fresh = (freshness_lifetime &gt; current_age)</strong></p>
+<p>判断依据十分简单，新鲜度的时间是否超过寿命，超过寿命就需要丢弃缓存重新请求。也正是因为这种简单粗暴的手法，使得缓存既能够提供便利的同时，不至于对于用户访问造成过多影响。</p>
+<h3 id="响应表头设置建议"><a href="#响应表头设置建议" class="headerlink" title="响应表头设置建议"></a>响应表头设置建议</h3><p>因为启发式缓存时间的存在，强烈建议重要的文件资源都加上缓存有效期。针对缓存有效期的响应头设计，通常有下面的几点建议：</p>
+<p><strong>版本化URL</strong></p>
+<p>比如针对CSS文件设置了长达一年的缓存过期时间，如果出现临时更改，有的用户如果刚好清除缓存可以看到最新的内容，而没有清除缓存的可能拿到本地旧版本文件。这样可以有更好的用户体验，旧缓存数据的用户在刷新缓存之后就可以看到新内容。</p>
+<p>通常情况下，在文件名中嵌入文件的版本号来执行此操作，例如<code>style.x234dff.css</code>。</p>
+<p><strong>无版本化URL</strong></p>
+<p>如果是没有版本化的URL很久突然要进行更新，则需要尽量添加头部。</p>
+<p><code>Cache-Control</code>值可以帮助我们微调未版本化 URL 的缓存位置和方式：</p>
+<ul>
+<li>no-cache：缓存请求当前URL的版本数据之前需要和服务器进行验证。</li>
+<li>no-store：屏蔽中间代理服务器的缓存行为，不存储缓存文件。</li>
+<li>private：浏览器可以缓存文件，但是中间代理缓存服务器不能缓存。</li>
+<li>public：响应可以被任何缓存进行存储。</li>
+</ul>
+<h2 id="协商缓存"><a href="#协商缓存" class="headerlink" title="协商缓存"></a>协商缓存</h2><p>缓存生效的情况下，浏览器会返回304状态码。协商缓存是在强制缓存失效之后，需要重新对比缓存，由服务器决定是否失效的一种机制。</p>
+<blockquote>
+<p>304：请求的资源没有改变，但是被重定向到已缓冲的文件，所以也叫做缓存重定向，这个子弹主要是用于缓存处理。</p>
+</blockquote>
+<p>协商缓存的请求步骤通常分为两步。</p>
+<p>初次访问：<br>    客户端请求依然需要发送到服务端，但是服务端会通知浏览器缓存请求响应信息，浏览器这时候会偷偷缓存请求。</p>
+<p>第二至更多次访问：<br>    1. 假设客户端请求资源已经过期，则在请求中携带Etag 访问服务器。<br>    2. 服务器比对Etag进行校验，比较是否和本地一致。<br>    3. 如果一致返回304，浏览器可以继续使用资源。<br>    4. 如果不一致就需要重新返回请求结果，再次进行缓存。</p>
+<p><strong>协商缓存实际上就是浏览器和服务器进行协商通过协商的结果判断是否使用本地缓存。</strong></p>
+<p><strong>主要涉及的请求头部</strong></p>
+<p>注意这里一共有<strong>两组四个字段</strong>进行判断，<code>ETag</code>和<code>If-None-Match</code>（一组）， <code>If-Modified-Since</code> 字段与 <code>Last-Modified</code> 字段（一组），<strong>前者优先级比后者高</strong>，同时出现会出现“短路效应”。</p>
+<h4 id="ETag和If-None-Match"><a href="#ETag和If-None-Match" class="headerlink" title="ETag和If-None-Match"></a><code>ETag</code>和<code>If-None-Match</code></h4><p>两者的值都是资源的唯一标识符（实际为文件资源的哈希散列值）。</p>
+<p>判断过程如下：</p>
+<ul>
+<li>浏览器请求资源，原始服务器返回报文中加入<code>Etag</code>值，资源更新则Etag值也会更新。</li>
+<li>浏览器再次请求资源，此时请求报文会加入<code>If-None-Match</code>，值为上一次响应报文的Etag值。</li>
+<li>服务器比对报文的<code>If-None-Match</code>和当前的<code>Etag</code>是否一致，不一致则更新Etag并且返回，下一次浏览器请求Etag将传输新的值。如果一致表示资源没有更新，状态码返回304，浏览器从本地缓存获取，<strong>此时响应头会同时返回Etag值</strong>。（虽然没有变化）</li>
+</ul>
+<h4 id="If-Modified-Since-字段与-Last-Modified-字段"><a href="#If-Modified-Since-字段与-Last-Modified-字段" class="headerlink" title="If-Modified-Since 字段与 Last-Modified 字段"></a><code>If-Modified-Since</code> 字段与 <code>Last-Modified</code> 字段</h4><p>位于请求头部的<code>If-Modified-Since</code> 字段以及位于响应头部中的 <code>Last-Modified</code> 字段。</p>
+<ul>
+<li>响应头部中的 <code>Last-Modified</code> 字段：表示资源的<code>Last-Modified</code>（ 最后修改时间）。</li>
+<li>请求头部的<code>If-Modified-Since</code> 字段：资源过期并且接收响应头部出现 <code>Last-Modified</code> （最后修改时间）声明，会发送此字段，并且此字段值等于<code>Last-Modified</code>（ 最后修改时间）。</li>
+</ul>
+<p>判断流程如下：</p>
+<ul>
+<li>浏览器第一次向服务端请求之后，服务端响应中加入 <code>Last-Modified</code> 字段，表示资源最后一次修改时间。</li>
+<li>浏览器再次请求，在请求报文中会加入<code>If-Modified-Since</code> 字段，字段值等于上一次浏览器返回的<code>Last-Modified</code> （最后一次修改时间）。</li>
+<li>服务器比对<code>Last-Modified</code> 和<code>If-Modified-Since</code> 字段，如果不一致则接受请求并且返回更新之后的资源，如果一致表示资源没有更新，返回304状态码，此时浏览器会从本地缓存获取资源文件。值得注意的是，<strong>本地请求如果是304，此时响应头中不会再添加<code>Last-Modified</code>字段</strong>。</li>
+</ul>
+<h3 id="协商缓存和强制缓存流程图"><a href="#协商缓存和强制缓存流程图" class="headerlink" title="协商缓存和强制缓存流程图"></a>协商缓存和强制缓存流程图</h3><p>这个图来自参考文章的第一篇，画的很棒，为作者点个赞：</p>
+<blockquote>
+<p>注意：If-None-Match 和 If-Modified-Since 的关系是：<code>If-None-Match &amp;&amp; If-Modified-Since</code>。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202208170727835.png" alt=""></p>
+<p>下面的图和上面类似，不过把<code>If-None-Match</code>和 <code>If-Modified-Since</code>丰富了一下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202208170731807.png" alt=""></p>
+<h3 id="如果同时发送If-None-Match-、If-Modified-Since字段怎么处理"><a href="#如果同时发送If-None-Match-、If-Modified-Since字段怎么处理" class="headerlink" title="如果同时发送If-None-Match 、If-Modified-Since字段怎么处理"></a>如果同时发送<code>If-None-Match</code> 、<code>If-Modified-Since</code>字段怎么处理</h3><p>此时服务器只要比较<code>If-None-Match</code>和<code>ETag</code>的内容是否一致即可，内容一致则返回304并且依然使用，不一致则返回新的请求结果，并且重新缓存。</p>
+<p><code>If-None-Match</code>判断优先级总是要高一些，IETF同样如此建议。</p>
+<h3 id="Etag-和-Last-Modifed-对比"><a href="#Etag-和-Last-Modifed-对比" class="headerlink" title="Etag 和 Last-Modifed 对比"></a>Etag 和 Last-Modifed 对比</h3><p><code>Etag</code>和<code>Last-Modifed</code>效果是相同的，为什么相同的功能需要两个字段控制？</p>
+<p>首先说一下结论，<code>Etag</code> 实际上更为推荐并且更常使用，因为它的细粒度更小，下面我们举个例子，再进行总结。</p>
+<p>我们先来举个栗子，假设一个资源从资源请求开始到当前请求过去了120秒接近过期节点，并且浏览器启用了同一个资源的新请求，此时HTTP刚好卡在过期节点之前找到缓存。虽然查到的缓存在获取那一刻是没有过期的，但是他不能这么干，因为此时在浏览器看来<strong>响应已经过期了</strong>，浏览器需要重新发一个新请求获得完整响应。</p>
+<p>上面的例子本意是好的，但是如果资源没有出现改变，就没有必要下载已经在缓存本地的信息，这么做明显是浪费服务器资源。如果很多个请求都在这个临界点访问，这样会加大服务器资源的浪费。</p>
+<p>所以基于时间的判断是不可靠的，Etag标头负责检查文件内容的哈希码，浏览器不需要知道哈希算法，只需要拿客户端请求的Etag值和当前本地缓存比对即可，如果Etag值一致，哪怕此时请求资源响应已经过期了，依然可以用本地缓存文件返回，跳过下载步骤。</p>
+<p>有了上面的案例，下面我们知道了为什么要引入Etag，下面是相关<strong>结论</strong>。</p>
+<p><strong>结论</strong></p>
+<ul>
+<li>有时候文件仅仅是改了日期（比如重新传了一份一模一样的覆盖），我们可以认为文件内容是没有改变的，依然可以用本地缓存而不是GET请求。</li>
+<li>文件如果改动非常频繁但是内容没有改变，<code>Last-Modifed</code>是S（秒）级，控制粒度大，很容易出现请求响应过期，并且频繁的重新下载。</li>
+<li>某些服务器不能精确表示最后修改时间，只能给出笼统的日期。</li>
+</ul>
+<p>总的来说就是基于时间的判断是不可靠的，使用Etag值可以更加精确控制缓存，所以引入服务器自动生成Etag校验码作为唯一标识符，如果资源频繁改动会重新生成Etag值，但是如果资源只是频繁的刷新修改日期，则Etag不变。</p>
+<p>在默认的情况下这两个值可以一起使用，但是牢记<strong>优先校验ETag</strong>（原因请看上面的栗子）。</p>
+<h2 id="用户行为对缓存影响"><a href="#用户行为对缓存影响" class="headerlink" title="用户行为对缓存影响"></a>用户行为对缓存影响</h2><p>这里直接用了网上的一张图，主要记住几个无效的项即可。</p>
+<p>下面是日常用户操作</p>
+<ol>
+<li>大部分网站打开网页通常优先检查disk cache，有就使用，没有就发送请求。</li>
+<li>F5刷新，因为此时TAB没有关闭，使用memory cache 是可用的，会被优先使用，而disk cache 会被滞后使用。</li>
+<li>强制刷新 (Ctrl + F5)：浏览器不使用缓存，因此发送的请求头部均带有 <code>Cache-control: no-cache</code>(为了兼容，还带了<code>Pragma: no-cache</code>)，此时返回200状态码和最新内容。</li>
+</ol>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202208170708552.png" alt=""></p>
+<h2 id="缓存策略建议"><a href="#缓存策略建议" class="headerlink" title="缓存策略建议"></a>缓存策略建议</h2><p>因为缓存是作用于文件的，而文件资源基本情况有两种：<strong>频繁改动的资源</strong>和<strong>长久不变化的资源</strong>。</p>
+<p>频繁变动的资源：</p>
+<ul>
+<li>首先需要使用 <code>Cache-Control: no-cache</code> 使浏览器每次都请求服务。</li>
+<li>配合 <code>ETag</code> 或者 <code>Last-Modified</code> 来验证资源是否有效。</li>
+</ul>
+<p>这样的处理方法可以显著的减少响应内容的大小。</p>
+<p>长久不变的资源：</p>
+<p>直接给一个<code>Max-age=31536000</code> 一年的时间让浏览器强制使用缓存，所以通常建议在文件名中加入哈希码和版本号等信息，防止长久缓存文件突然需要更新的时候能及时反馈给客户端。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDAxNTgxNjMzMQ==" title="https://segmentfault.com/a/1190000015816331">一张图理解Http缓存 - SegmentFault 思否<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9yZmMyY24uY29tL3JmYzcyMzQuaHRtbA==" title="https://rfc2cn.com/rfc7234.html">RFC7234 中文翻译 中文RFC RFC文档 RFC翻译 RFC中文版 (rfc2cn.com)<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9tcC53ZWl4aW4ucXEuY29tL3MvY1Vxa0czTkVUbUpiZ2xEWGZTZjB0Zw==" title="https://mp.weixin.qq.com/s/cUqkG3NETmJbglDXfSf0tg">【第1398期】一文读懂前端缓存 (qq.com)<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93ZWIuZGV2L2kxOG4vZW4vaHR0cC1jYWNoZS8=" title="https://web.dev/i18n/en/http-cache/">Prevent unnecessary network requests with the HTTP Cache (web.dev)<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC85OTM0MDExMA==" title="https://zhuanlan.zhihu.com/p/99340110"># 深入理解浏览器的缓存机制<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/08/24/httphuancun/" title="HTTP 缓存技术">https://whitestore.top/2022/08/24/httphuancun/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/" rel="tag"># 网络/网络基础</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/11/rswljcgn/" rel="prev" title="《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）">
+      <i class="fa fa-chevron-left"></i> 《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/09/07/linuxshould/" rel="next" title="【Linux】拿到一台虚拟机Linux该干什么？">
+      【Linux】拿到一台虚拟机Linux该干什么？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-缓存技术"><span class="nav-number">1.</span> <span class="nav-text">HTTP 缓存技术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#认识缓存"><span class="nav-number">1.1.</span> <span class="nav-text">认识缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存位置"><span class="nav-number">1.1.1.</span> <span class="nav-text">缓存位置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Service-Work"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">Service Work</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Memory-Cache"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">Memory Cache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Disk-Cache"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">Disk Cache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Push-Cache"><span class="nav-number">1.1.1.4.</span> <span class="nav-text">Push Cache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存过程"><span class="nav-number">1.1.1.5.</span> <span class="nav-text">缓存过程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pragma-头部"><span class="nav-number">1.1.2.</span> <span class="nav-text">Pragma 头部</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#强制缓存"><span class="nav-number">1.2.</span> <span class="nav-text">强制缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache-Control例子"><span class="nav-number">1.2.1.</span> <span class="nav-text">Cache-Control例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache-Control-字段选项"><span class="nav-number">1.2.2.</span> <span class="nav-text">Cache-Control 字段选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Expires-和-Cache-Control-两者对比"><span class="nav-number">1.2.3.</span> <span class="nav-text">Expires 和 Cache-Control 两者对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache-Control-流程图"><span class="nav-number">1.2.4.</span> <span class="nav-text">Cache-Control  流程图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#no-cache-VS-no-store"><span class="nav-number">1.2.5.</span> <span class="nav-text">no-cache VS no-store</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#max-age-0-和-no-cache-等价吗？"><span class="nav-number">1.2.6.</span> <span class="nav-text">max-age&#x3D;0 和 no-cache 等价吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么样的请求方法会被缓存？"><span class="nav-number">1.2.7.</span> <span class="nav-text">什么样的请求方法会被缓存？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存优先级判断"><span class="nav-number">1.2.8.</span> <span class="nav-text">缓存优先级判断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新响应的计算方式"><span class="nav-number">1.2.9.</span> <span class="nav-text">新响应的计算方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应表头设置建议"><span class="nav-number">1.2.10.</span> <span class="nav-text">响应表头设置建议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协商缓存"><span class="nav-number">1.3.</span> <span class="nav-text">协商缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ETag和If-None-Match"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">ETag和If-None-Match</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#If-Modified-Since-字段与-Last-Modified-字段"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">If-Modified-Since 字段与 Last-Modified 字段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#协商缓存和强制缓存流程图"><span class="nav-number">1.3.1.</span> <span class="nav-text">协商缓存和强制缓存流程图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如果同时发送If-None-Match-、If-Modified-Since字段怎么处理"><span class="nav-number">1.3.2.</span> <span class="nav-text">如果同时发送If-None-Match 、If-Modified-Since字段怎么处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Etag-和-Last-Modifed-对比"><span class="nav-number">1.3.3.</span> <span class="nav-text">Etag 和 Last-Modifed 对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户行为对缓存影响"><span class="nav-number">1.4.</span> <span class="nav-text">用户行为对缓存影响</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存策略建议"><span class="nav-number">1.5.</span> <span class="nav-text">缓存策略建议</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文章"><span class="nav-number">2.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">186</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">18:58</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
