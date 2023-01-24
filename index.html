@@ -197,6 +197,325 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/01/24/note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/01/24/note/" class="post-title-link" itemprop="url">【PHP】英文博客专栏PHP快速入门个人笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-01-24 11:41:12 / 修改时间：11:42:13" itemprop="dateCreated datePublished" datetime="2023-01-24T11:41:12+08:00">2023-01-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/01/24/note/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/01/24/note/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>21k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>19 分钟</span>
+            </span>
+            <div class="post-description">php英文内容了解</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="英文博客专栏PHP快速入门"><a href="#英文博客专栏PHP快速入门" class="headerlink" title="英文博客专栏PHP快速入门"></a>英文博客专栏PHP快速入门</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><pre><code>本文是对于英文原始博客的一个PHP入门专栏的个人笔记摘录，因为非常入门并且自身有JAVA语言基础，看的比较快并且会忽略很多共同点，建议读者有能力可以看看博客的原文顺带提升英文能力，作者文字表达能力非常强，写的非常棒。
+
+这篇专栏介绍了PHP8入门，专栏写于2022年中旬，不管是单词还是语法句式都十分通俗易懂，**学技术的同时提升英语水平并且有助于提升自信心**。</code></pre><h1 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h1><ul>
+<li><a href="#介绍">介绍</a></li>
+<li><a href="#过往历史">过往历史</a></li>
+<li><a href="#php是一个怎么样的语言">php是一个怎么样的语言</a></li>
+<li><a href="#设置PHP">设置PHP</a></li>
+<li><a href="#第一个PHP程序">第一个PHP程序</a></li>
+<li><a href="#基本类型">基本类型</a></li>
+<li><a href="#操作符">操作符</a><ul>
+<li><a href="#字符串操作">字符串操作</a></li>
+</ul>
+</li>
+<li><a href="#编写注释">编写注释</a></li>
+<li><a href="#和数字有关的内置函数">和数字有关的内置函数</a></li>
+<li><a href="#Array数组">Array数组</a><ul>
+<li><a href="#arrays常用函数">arrays常用函数</a></li>
+</ul>
+</li>
+<li><a href="#关联数组">关联数组</a></li>
+<li><a href="#条件语句">条件语句</a></li>
+<li><a href="#循环">循环</a></li>
+<li><a href="#函数">函数</a><ul>
+<li><a href="#匿名函数">匿名函数</a></li>
+<li><a href="#值传递和地址传递">值传递和地址传递</a></li>
+<li><a href="#箭头函数">箭头函数</a></li>
+<li><a href="#使用mapreducefilter函数循环数组处理">使用map,reduce,filter函数循环数组处理</a></li>
+</ul>
+</li>
+<li><a href="#面向对象">面向对象</a><ul>
+<li><a href="#面向对象讨论">面向对象讨论</a></li>
+<li><a href="#如何构建对象">如何构建对象</a></li>
+<li><a href="#属性和方法">属性和方法</a></li>
+<li><a href="#继承">继承</a></li>
+<li><a href="#重写">重写</a></li>
+<li><a href="#静态">静态</a></li>
+<li><a href="#对象比较">对象比较</a></li>
+<li><a href="#对象遍历">对象遍历</a></li>
+<li><a href="#对象克隆">对象克隆</a></li>
+<li><a href="#魔术方法">魔术方法</a></li>
+</ul>
+</li>
+<li><a href="#文件包含">文件包含</a></li>
+<li><a href="#文档系统的有用常量函数和变量">文档系统的有用常量、函数和变量</a></li>
+<li><a href="#错误">错误</a></li>
+<li><a href="#异常">异常</a></li>
+<li><a href="#日期">日期</a></li>
+<li><a href="#常量和枚举">常量和枚举</a></li>
+<li><a href="#PHP-web平台部署">PHP web平台部署</a><ul>
+<li><a href="#处理HTTP请求">处理HTTP请求</a></li>
+<li><a href="#_SEVER-对象">$_SEVER 对象</a></li>
+<li><a href="#使用cookies">使用cookies</a></li>
+<li><a href="#Sessions">Sessions</a></li>
+<li><a href="#IO">IO</a></li>
+<li><a href="#database">database</a></li>
+<li><a href="#JSON">JSON</a></li>
+<li><a href="#email">email</a></li>
+</ul>
+</li>
+<li><a href="#Composer">Composer</a></li>
+<li><a href="#部署PHP应用">部署PHP应用</a></li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/01/24/note/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/12/01/interviewcollection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/12/01/interviewcollection/" class="post-title-link" itemprop="url">Java collection of high-frequency interview questions</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-12-01 17:37:41 / 修改时间：17:39:08" itemprop="dateCreated datePublished" datetime="2022-12-01T17:37:41+08:00">2022-12-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/12/01/interviewcollection/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/12/01/interviewcollection/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>33k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>30 分钟</span>
+            </span>
+            <div class="post-description">有关JAVA的面试题</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h1><p><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTEwMTkzMC9lbg==" title="https://segmentfault.com/a/1190000041101930/en">java - Java collection of high-frequency interview questions_个人文章 - SegmentFault 思否<i class="fa fa-external-link"></i></span></p>
+<h1 id="This-article-catalog"><a href="#This-article-catalog" class="headerlink" title="This article catalog"></a>This article catalog</h1><ul>
+<li>What are the common collections? </li>
+<li>The difference between List, Set and Map</li>
+<li>Do you understand ArrayList?</li>
+<li>What is the expansion mechanism of ArrayList?</li>
+<li>How to remove an element while traversing the ArrayList?</li>
+<li>The difference between Arraylist and Vector</li>
+<li>The difference between Arraylist and LinkedList</li>
+<li>HashMap<ul>
+<li>What are the ways to resolve hash conflicts? What kind of HashMap is used?</li>
+<li>The hash algorithm used?</li>
+<li>Expansion process?</li>
+<li>Put method flow?</li>
+<li>The characteristics of red-black trees?</li>
+<li>Why use red-black trees instead of AVL trees?</li>
+<li>When resolving hash conflicts, why choose to use the linked list first, and then switch to the red-black tree?</li>
+<li>Why is the length of HashMap a power of 2?</li>
+<li>What is the default load factor of HashMap? Why is it 0.75?</li>
+<li>What is generally used as the key of HashMap?</li>
+<li>Why is HashMap thread unsafe?</li>
+<li>The difference between HashMap and HashTable?</li>
+</ul>
+</li>
+<li>The underlying principle of LinkedHashMap?</li>
+<li>Tell me about TreeMap?</li>
+<li>The underlying principle of HashSet?</li>
+<li>What is the difference between HashSet, LinkedHashSet and TreeSet?</li>
+<li>What is fail fast?</li>
+<li>What is fail safe?</li>
+<li>Tell me about ArrayDeque?</li>
+<li>Which collection classes are thread safe? What is unsafe?</li>
+<li>What is Iterator?</li>
+<li>What is the difference between Iterator and ListIterator?</li>
+<li>Concurrent container<ul>
+<li>ConcurrentHashMap<ul>
+<li>Put execution flow?</li>
+<li>How to expand?</li>
+<li>The difference between ConcurrentHashMap and Hashtable?</li>
+</ul>
+</li>
+<li>CopyOnWrite</li>
+<li>ConcurrentLinkedQueue</li>
+<li>Blocking queue<ul>
+<li>Blocking queue provided by JDK</li>
+<li>principle</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/12/01/interviewcollection/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/11/16/bdownload/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1104,248 +1423,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/google-bigtable/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/05/21/google-bigtable/" class="post-title-link" itemprop="url">谷歌三件套 - Bigtable</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-21 19:16:54" itemprop="dateCreated datePublished" datetime="2022-05-21T19:16:54+08:00">2022-05-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%B0%B7%E6%AD%8C%E4%B8%89%E4%BB%B6%E5%A5%97/" itemprop="url" rel="index"><span itemprop="name">谷歌三件套</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/05/21/google-bigtable/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/google-bigtable/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-            <div class="post-description">bigtable数据结构解析</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="谷歌三件套-Bigtable"><a href="#谷歌三件套-Bigtable" class="headerlink" title="谷歌三件套 - Bigtable"></a>谷歌三件套 - Bigtable</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>如标题所言，这一篇文章简单介绍BigTable，其实个人更建议看LevelDB这款开源数据库，因为这数据库也是Bigtable的作者 <strong>JeffreyDean</strong> 设计的，很多内容不能说像简直就是一模一样。</p>
-<p>值得注意的是，看Bigtable的内容<strong>千万不要带着关系型数据库的思维</strong>，建议看之前看看《数据密集型应用系统设计》的第三章，里面提到了LSM-Tree以及大数据系统设计思想，或者看看个人之前写的文章 [[《数据密集型型系统设计》LSM-Tree VS BTree]]</p>
-<h1 id="三件套论文资料"><a href="#三件套论文资料" class="headerlink" title="三件套论文资料"></a>三件套论文资料</h1><p>Bigtable 原始在线论文： <strong><span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvYmlndGFibGUtb3NkaTA2LnBkZg==" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/bigtable-osdi06.pdf">Bigtable: A Distributed Storage System for Structured Data<i class="fa fa-external-link"></i></span></strong></p>
-<p>MapReduct 原始在线论文：<span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvbWFwcmVkdWNlLW9zZGkwNC5wZGY=" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/mapreduce-osdi04.pdf">MapReduce: Simplified Data Processing on Large Clusters<i class="fa fa-external-link"></i></span></p>
-<p>GFS 原始在线论文：<span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvZ2ZzLXNvc3AyMDAzLnBkZg==" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/gfs-sosp2003.pdf">The Google File System<i class="fa fa-external-link"></i></span></p>
-<p>如果看不懂英文或者想要线下阅读，个人从某全是广告的技术网站买了一份中文翻译以及原始英文论文PDF，合并到一起免费分享给大家（虽然掏钱买也没几个钱）：</p>
-<p>链接: <span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMTVaMjRhcTYydTI1WV9MckhTYU5DQ3c=" title="https://pan.baidu.com/s/15Z24aq62u25Y_LrHSaNCCw">Google-GFS,Bigtable,Mapreduce三大论文英文原版+中文翻译<i class="fa fa-external-link"></i></span> 提取码: 82ok </p>
-<blockquote>
-<p>（如果链接失效可以关注公众号“懒时小窝” 回复“谷歌三件套”或者“谷歌”获取这些内容）</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/05/21/google-bigtable/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/szygw/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/05/21/szygw/" class="post-title-link" itemprop="url">《生之欲》观影感悟</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-21 19:15:11" itemprop="dateCreated datePublished" datetime="2022-05-21T19:15:11+08:00">2022-05-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/05/21/szygw/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/szygw/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-            <div class="post-description">乘着假期的尾巴看了这一部电影</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>乘着假期的尾巴看了这一部电影，不得不说虽然豆瓣的高分不一定是好电影，但是这一部上世纪五十年代的电影还是值得观看。</p>
-<p>本文内容<strong>包含剧透</strong>。</p>
-<blockquote>
-<p>兑现前两天立得看电影的Flag，个人认为不管是好的电影还是书籍都是值得记录和回忆的， 为了让自己不忘记电影留下点东西也为不白白浪费两个小时的 宝贵人生。</p>
-</blockquote>
-<h1 id="故事内容"><a href="#故事内容" class="headerlink" title="故事内容"></a><strong>故事内容</strong></h1><p>一句话概括：《生之欲》讲述了一位官僚在发现自己患了晚期癌症后，试图在他的生活中找到意义。</p>
-<blockquote>
-<p>A bureaucrat tries to find a meaning in his life after he discovers he has terminal cancer.</p>
-</blockquote>
-<p>《<strong>生之欲</strong>》（日语：生きる）在<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUE2JTk5JUU2JUI4JUFG" title="https://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF">香港<i class="fa fa-external-link"></i></span>译作《<strong>流芳颂</strong>》，乃是1952年由<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTk3JUE1JUU2JTlDJUFD" title="https://zh.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC">日本<i class="fa fa-external-link"></i></span>知名<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUIwJThFJUU2JUJDJTk0" title="https://zh.wikipedia.org/wiki/%E5%B0%8E%E6%BC%94">导演<i class="fa fa-external-link"></i></span><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUJCJTkxJUU2JUJFJUE0JUU2JTk4JThF" title="https://zh.wikipedia.org/wiki/%E9%BB%91%E6%BE%A4%E6%98%8E">黑泽明<i class="fa fa-external-link"></i></span>执导的<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1">电影<i class="fa fa-external-link"></i></span>，曾获得日本<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JUFGJThGJUU2JTk3JUE1JUU5JTlCJUJCJUU1JUJEJUIxJUU3JThEJThF" title="https://zh.wikipedia.org/wiki/%E6%AF%8F%E6%97%A5%E9%9B%BB%E5%BD%B1%E7%8D%8E">每日电影最佳影片奖<i class="fa fa-external-link"></i></span>、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIxJUU2JTk3JUFDJUU1JUEwJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1%E6%97%AC%E5%A0%B1">电影旬报<i class="fa fa-external-link"></i></span>年度最佳影片奖、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTlGJThGJUU2JTlFJTk3JUU1JUJEJUIxJUU1JUIxJTk1" title="https://zh.wikipedia.org/wiki/%E6%9F%8F%E6%9E%97%E5%BD%B1%E5%B1%95">柏林影展<i class="fa fa-external-link"></i></span>特别奖等奖项。</p>
-<p>在市公所工作30年的市民课课长渡边勘治每天过着盖章、签公文的乏味生活，某日因身体不适前往<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTg2JUFCJUU5JTk5JUEy" title="https://zh.wikipedia.org/wiki/%E9%86%AB%E9%99%A2">医院<i class="fa fa-external-link"></i></span>检查，结果竟被告知罹患<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU4JTgzJTgzJUU3JTk5JThD" title="https://zh.wikipedia.org/wiki/%E8%83%83%E7%99%8C">胃癌<i class="fa fa-external-link"></i></span>末期，只剩下约半年的生命。回到家中，<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg1JTkyJUU1JUFEJTkw" title="https://zh.wikipedia.org/wiki/%E5%85%92%E5%AD%90">儿子<i class="fa fa-external-link"></i></span>与<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUFBJUIzJUU1JUE5JUE2" title="https://zh.wikipedia.org/wiki/%E5%AA%B3%E5%A9%A6">媳妇<i class="fa fa-external-link"></i></span>对他并不友善，甚至可谓不孝。感到悲伤的渡边，带了毕生积蓄离家出走，也不去上班了。他在外头遇见一位<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUIwJThGJUU4JUFBJUFB" title="https://zh.wikipedia.org/wiki/%E5%B0%8F%E8%AA%AA">小说<i class="fa fa-external-link"></i></span><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU0JUJEJTlDJUU1JUFFJUI2" title="https://zh.wikipedia.org/wiki/%E4%BD%9C%E5%AE%B6">作家<i class="fa fa-external-link"></i></span>，告之自己将不久于人世，他认为从未替自己好好活过。小说家同情其遭遇，带他去打<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUJEJTg4JUU3JThGJUEwJUU2JUE5JTlG" title="https://zh.wikipedia.org/wiki/%E5%BD%88%E7%8F%A0%E6%A9%9F">小钢珠<i class="fa fa-external-link"></i></span>，甚至去<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUE2JTkzJUU5JTk5JUEy" title="https://zh.wikipedia.org/wiki/%E5%A6%93%E9%99%A2">声色场所<i class="fa fa-external-link"></i></span>。对渡边来说，虽然这些事很新鲜，但到头来却觉得空虚落寞。第二天他就告别了小说家，一个人孤独的走在街上。</p>
-<p>他遇见了市公所的一位年轻女职员小田切丰，后者表示她厌倦公务员无聊的工作，已觅得新职，却因课长没来上班，没人批准<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU4JUJFJUFEJUU4JTgxJUI3" title="https://zh.wikipedia.org/wiki/%E8%BE%AD%E8%81%B7">辞呈<i class="fa fa-external-link"></i></span>。渡边便将小田切带回家中，为她盖离职同意书；见她丝袜破掉，想为她买双新的。这天他要求小田切带他去玩，两人也度过快乐的一天。但回家后却遭到儿子辱骂，认为他之前带走的存款算是家用的一部分；儿子同时误会小田切是他的年轻<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTg0JTlCJUU0JUJBJUJB" title="https://zh.wikipedia.org/wiki/%E6%84%9B%E4%BA%BA">情人<i class="fa fa-external-link"></i></span>，要求父亲自重。</p>
-<p>过了几天后，渡边前往小田切新任职的<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU3JThFJUE5JUU1JTg1JUI3" title="https://zh.wikipedia.org/wiki/%E7%8E%A9%E5%85%B7">玩具<i class="fa fa-external-link"></i></span>工厂，希望她再陪着出去玩。小田切原本不想答应，但渡边苦苦哀求，她只好同意。晚上来到一家<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU4JUE1JUJGJUU5JUE0JTkwJUU1JUJCJUIz" title="https://zh.wikipedia.org/wiki/%E8%A5%BF%E9%A4%90%E5%BB%B3">西餐厅<i class="fa fa-external-link"></i></span>，渡边的举动让小田切以为他要对她不轨，十分害怕。没想到渡边告诉她自己得了不治之症，来日无多，但是见到小田切如此年轻有活力，希望小田切告诉他究竟活着是为了什么。小田切只好战战兢兢的拿出一只玩具<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg1JTk0" title="https://zh.wikipedia.org/wiki/%E5%85%94">兔<i class="fa fa-external-link"></i></span>子告诉他，她平常在工厂工作就是做这种东西；只要想到自己做出的东西是为别人带来欢乐，自己也就很开心。渡边突然想到自己想要什么了，向小田切道谢后便离开餐厅。此时碰巧有群年轻人替一位少女庆生，众人唱起<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU3JUE1JTlEJUU0JUJEJUEwJUU3JTk0JTlGJUU2JTk3JUE1JUU1JUJGJUFCJUU0JUI5JTkw" title="https://zh.wikipedia.org/wiki/%E7%A5%9D%E4%BD%A0%E7%94%9F%E6%97%A5%E5%BF%AB%E4%B9%90">生日快乐歌<i class="fa fa-external-link"></i></span>，仿佛在庆祝渡边的重生。</p>
-<p>翌日渡边再度回到市公所上班，将他请假这些日子的公文全数拿出来，发觉有件案子是许多妇女前来陈情，希望将某条臭水沟改建为<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg1JUFDJUU1JTlDJTky" title="https://zh.wikipedia.org/wiki/%E5%85%AC%E5%9C%92">公园<i class="fa fa-external-link"></i></span>，却屡屡遭到各单位互踢皮球不愿处理。他决定要处理这件事，带着下属开始各处奔走。5个月后，渡边过世，在灵堂上大家开始回忆他生命最后5个月的过程，发觉他非常努力奔走以建立公园，最后甚至选择在大<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUFB" title="https://zh.wikipedia.org/wiki/%E9%9B%AA">雪<i class="fa fa-external-link"></i></span>的夜里独自快乐的唱着歌，死于自己亲手建立的公园里。虽然在守灵的酒会上，大家如此怀念渡边所做的一切，但等到第二天上班时市公所 依就弥漫着官僚之气。尽管有职员看不过去，心中认为应该要继承渡边的精神，但也仅止于缅怀而已。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/05/21/szygw/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1415,20 +1492,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">188</span>
+          <span class="site-state-item-count">190</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">28</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">31</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1484,7 +1561,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -1500,7 +1577,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">19:06</span>
+    <span title="站点阅读时长">19:55</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>

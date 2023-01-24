@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="有关JAVA的面试题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java collection of high-frequency interview questions">
+<meta property="og:url" content="https://whitestore.top/2022/12/01/interviewcollection/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="有关JAVA的面试题">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201164716.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201164721.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201162736.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201163907.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221122065938.png">
+<meta property="article:published_time" content="2022-12-01T09:37:41.000Z">
+<meta property="article:modified_time" content="2022-12-01T09:39:08.588Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="面试题">
+<meta property="article:tag" content="interview">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201164716.png">
+
+<link rel="canonical" href="https://whitestore.top/2022/12/01/interviewcollection/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Java collection of high-frequency interview questions | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/12/01/interviewcollection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java collection of high-frequency interview questions
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-12-01 17:37:41 / 修改时间：17:39:08" itemprop="dateCreated datePublished" datetime="2022-12-01T17:37:41+08:00">2022-12-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/12/01/interviewcollection/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/12/01/interviewcollection/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>33k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>30 分钟</span>
+            </span>
+            <div class="post-description">有关JAVA的面试题</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h1><p><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MTEwMTkzMC9lbg==" title="https://segmentfault.com/a/1190000041101930/en">java - Java collection of high-frequency interview questions_个人文章 - SegmentFault 思否<i class="fa fa-external-link"></i></span></p>
+<h1 id="This-article-catalog"><a href="#This-article-catalog" class="headerlink" title="This article catalog"></a>This article catalog</h1><ul>
+<li>What are the common collections? </li>
+<li>The difference between List, Set and Map</li>
+<li>Do you understand ArrayList?</li>
+<li>What is the expansion mechanism of ArrayList?</li>
+<li>How to remove an element while traversing the ArrayList?</li>
+<li>The difference between Arraylist and Vector</li>
+<li>The difference between Arraylist and LinkedList</li>
+<li>HashMap<ul>
+<li>What are the ways to resolve hash conflicts? What kind of HashMap is used?</li>
+<li>The hash algorithm used?</li>
+<li>Expansion process?</li>
+<li>Put method flow?</li>
+<li>The characteristics of red-black trees?</li>
+<li>Why use red-black trees instead of AVL trees?</li>
+<li>When resolving hash conflicts, why choose to use the linked list first, and then switch to the red-black tree?</li>
+<li>Why is the length of HashMap a power of 2?</li>
+<li>What is the default load factor of HashMap? Why is it 0.75?</li>
+<li>What is generally used as the key of HashMap?</li>
+<li>Why is HashMap thread unsafe?</li>
+<li>The difference between HashMap and HashTable?</li>
+</ul>
+</li>
+<li>The underlying principle of LinkedHashMap?</li>
+<li>Tell me about TreeMap?</li>
+<li>The underlying principle of HashSet?</li>
+<li>What is the difference between HashSet, LinkedHashSet and TreeSet?</li>
+<li>What is fail fast?</li>
+<li>What is fail safe?</li>
+<li>Tell me about ArrayDeque?</li>
+<li>Which collection classes are thread safe? What is unsafe?</li>
+<li>What is Iterator?</li>
+<li>What is the difference between Iterator and ListIterator?</li>
+<li>Concurrent container<ul>
+<li>ConcurrentHashMap<ul>
+<li>Put execution flow?</li>
+<li>How to expand?</li>
+<li>The difference between ConcurrentHashMap and Hashtable?</li>
+</ul>
+</li>
+<li>CopyOnWrite</li>
+<li>ConcurrentLinkedQueue</li>
+<li>Blocking queue<ul>
+<li>Blocking queue provided by JDK</li>
+<li>principle</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+
+<h1 id="What-are-the-common-collections"><a href="#What-are-the-common-collections" class="headerlink" title="What are the common collections?"></a>What are the common collections?</h1><p>The Java collection class is mainly derived from two interfaces <strong>Collection</strong> and <strong>Map</strong> . Collection has three sub-interfaces: <strong>List</strong>, <strong>Set</strong>, and <strong>Queue</strong>.</p>
+<p><strong>List</strong>：List represents an ordered and repeatable collection, which can be accessed directly according to the index of the element;</p>
+<p><strong>Set</strong>：Set represents an unordered and non-repeatable collection, which can only be accessed according to the element itself</p>
+<p>Image source<span class="exturl" data-url="aHR0cDovL3d3dy5qdXN0ZG9qYXZhLmNvbS8yMDE5LzA5LzE2L2phdmEtY29sbGVjdGlvbi0xLw==" title="http://www.justdojava.com/2019/09/16/java-collection-1/">【集合系列】- 初探 java 集合框架图 | Just Do Java<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201164716.png" alt=""></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201164721.png" alt=""></p>
+<h1 id="The-difference-between-List-Set-and-Map"><a href="#The-difference-between-List-Set-and-Map" class="headerlink" title="The difference between List, Set and Map"></a>The difference between List, Set and Map</h1><ul>
+<li>List accesses elements by index, in order, elements are allowed to be repeated, and multiple nulls can be inserted;</li>
+<li>Set <strong>cannot store repeated elements</strong>, unordered, only one null is allowed;</li>
+<li>Map saves the key-value pair mapping;</li>
+<li>The bottom layer of List has two implementations: <strong>array and linked list;</strong> Set and Map containers have two implementations, based on hash storage and red-black tree.</li>
+<li>Set is implemented based on Map, and the element value in <strong>Set is the key value of Map</strong>.</li>
+</ul>
+<h1 id="Do-you-understand-ArrayList"><a href="#Do-you-understand-ArrayList" class="headerlink" title="Do you understand ArrayList?"></a>Do you understand ArrayList?</h1><p><code>ArrayList</code> is a dynamic array, and its capacity can grow dynamically. Before adding a large number of elements, the application can use the <code>ensureCapacity</code> operation to increase the capacity of the <code>ArrayList</code> ArrayList inherits AbstractList and implements the List interface.</p>
+<h1 id="What-is-the-expansion-mechanism-of-ArrayList"><a href="#What-is-the-expansion-mechanism-of-ArrayList" class="headerlink" title="What is the expansion mechanism of ArrayList?"></a>What is the expansion mechanism of ArrayList?</h1><p><strong>By default, the new capacity will be 1.5 times the original capacity</strong>. Take JDK1.8 as an example:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">//Determine whether e can be accommodated, if so, add it directly at the end; if not, expand it and then add e at the end  </span></span><br><span class="line">        ensureCapacityInternal(size + <span class="number">1</span>);  <span class="comment">// Increments modCount!!  </span></span><br><span class="line">        <span class="comment">//Add e to the end of the array        elementData[size++] = e;  </span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;    </span><br><span class="line">	&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="comment">// Each time an element is added, the arraylist needs to make a determination about the capacity of the list. The ensureCapacityInternal() method ensures that the array currently maintained by the ArrayList has the capacity to store new elements, and then stores the elements at the end of the array elementData after processing  </span></span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureCapacityInternal</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;  </span><br><span class="line">        ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calculateCapacity</span><span class="params">(Object[] elementData, <span class="keyword">int</span> minCapacity)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">//If an empty array is passed in, the minimum capacity is the maximum between the default capacity and minCapacity  </span></span><br><span class="line">        <span class="keyword">if</span> (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;  </span><br><span class="line">            <span class="keyword">return</span> Math.max(DEFAULT_CAPACITY, minCapacity);  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span> minCapacity;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureExplicitCapacity</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;  </span><br><span class="line">        modCount++;  </span><br><span class="line">        <span class="comment">// If the storage capacity of the ArrayList meets the minimum storage requirements, then return add to add the elements directly; if the minimum required storage capacity &gt; the storage capacity of the ArrayList, this means that the storage capacity of the ArrayList is insufficient, so you need to call the grow(); method to expand the capacity  </span></span><br><span class="line">        <span class="keyword">if</span> (minCapacity - elementData.length &gt; <span class="number">0</span>)  </span><br><span class="line">            grow(minCapacity);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grow</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 获取elementData数组的内存空间长度  </span></span><br><span class="line">        <span class="keyword">int</span> oldCapacity = elementData.length;  </span><br><span class="line">        <span class="comment">// 扩容至原来的1.5倍  </span></span><br><span class="line">        <span class="keyword">int</span> newCapacity = oldCapacity + (oldCapacity &gt;&gt; <span class="number">1</span>);  </span><br><span class="line">        <span class="comment">//校验容量是否够  </span></span><br><span class="line">        <span class="keyword">if</span> (newCapacity - minCapacity &lt; <span class="number">0</span>)  </span><br><span class="line">            newCapacity = minCapacity;  </span><br><span class="line">        <span class="comment">//若预设值大于默认的最大值，检查是否溢出  </span></span><br><span class="line">        <span class="keyword">if</span> (newCapacity - MAX_ARRAY_SIZE &gt; <span class="number">0</span>)  </span><br><span class="line">            newCapacity = hugeCapacity(minCapacity);  </span><br><span class="line">        <span class="comment">// 调用Arrays.copyOf方法将elementData数组指向新的内存空间  </span></span><br><span class="line">        <span class="comment">//并将elementData的数据复制到新的内存空间  </span></span><br><span class="line">        elementData = Arrays.copyOf(elementData, newCapacity);  </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>The essence of ArrayList expansion is to calculate the size of the new expanded array and instantiate it, and copy the contents of the original array to the new array.</p>
+<h1 id="How-to-remove-an-element-while-traversing-the-ArrayList"><a href="#How-to-remove-an-element-while-traversing-the-ArrayList" class="headerlink" title="How to remove an element while traversing the ArrayList?"></a>How to remove an element while traversing the ArrayList?</h1><p>Foreach delete will cause fast failure problem, you can use the remove() method of the iterator.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Iterator itr = list.iterator();</span><br><span class="line"><span class="keyword">while</span>(itr.hasNext()) &#123;</span><br><span class="line">      <span class="keyword">if</span>(itr.next().equals(<span class="string">"jay"</span>) &#123;</span><br><span class="line">        itr.remove();</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="The-difference-between-Arraylist-and-Vector"><a href="#The-difference-between-Arraylist-and-Vector" class="headerlink" title="The difference between Arraylist and Vector"></a>The difference between Arraylist and Vector</h1><ol>
+<li>When the memory is insufficient, ArrayList is <strong>expanded by 50% + 1 by default</strong>, and Vector is <strong>expanded by 1 times by default</strong>.</li>
+<li>Vector belongs to the <strong>thread-safe level</strong>, but in most cases, Vector is not used because it is relatively inefficient to operate on Vector.</li>
+</ol>
+<h1 id="The-difference-between-Arraylist-and-LinkedList"><a href="#The-difference-between-Arraylist-and-LinkedList" class="headerlink" title="The difference between Arraylist and LinkedList"></a>The difference between Arraylist and LinkedList</h1><ol>
+<li>ArrayList is implemented based on a <strong>dynamic array</strong>; LinkedList is implemented based on a <strong>linked list</strong>.</li>
+<li>For the get and set methods of <strong>random index access</strong>, <strong>ArrayList is faster than LinkedList.</strong> Because ArrayList finds elements directly through the array subscript; LinkedList moves the pointer to traverse each element until it finds it.</li>
+<li><strong>Adding and deleting elements, LinkedList is faster than ArrayList</strong>. Because ArrayList may expand and copy the array when adding and deleting elements; LinkedList needs time to instantiate objects, and only needs to modify the pointer.</li>
+</ol>
+<h1 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h1><p>HashMap is implemented <strong>using array + linked list + red-black tree</strong> (JDK1.8 adds the red-black tree part). When the length of the linked list is <strong>greater than 8 (TREEIFY_THRESHOLD)</strong>（阈值）, the linked list will be converted to a red-black tree, and the number of red-black tree nodes is less <strong>than 6 ( UNTREEIFY_THRESHOLD) is converted to a linked list</strong> to prevent frequent conversion.</p>
+<h2 id="What-are-the-ways-to-resolve-hash-conflicts-What-kind-of-HashMap-is-used"><a href="#What-are-the-ways-to-resolve-hash-conflicts-What-kind-of-HashMap-is-used" class="headerlink" title="What are the ways to resolve hash conflicts? What kind of HashMap is used?"></a>What are the ways to resolve hash conflicts? What kind of HashMap is used?</h2><p>Methods to resolve Hash conflicts include: <strong>open addressing</strong>, <strong>rehashing</strong>, and <strong>chain addressing.</strong> The chain address method is used in HashMap.</p>
+<ul>
+<li>The basic idea of <strong>open addressing</strong> method is that if <code>p=H(key)</code> event of a conflict（冲突）, places <code>p</code> basis, hash again, <code>p1=H(p)</code> , if p1 conflict again, places p1-based, and so on, until you find a hash address that does not conflict <code>pi</code> . Therefore, the length of the hash table required by the open addressing method <strong>must be greater than or equal to the elements that need to be stored</strong>, and because there is another hash, <strong>can only mark the deleted node, but cannot actually delete the node.</strong></li>
+<li><strong>And then hashing a plurality（多个） of different hash function, when <code>R1=H1(key1)</code> conflict occurs, then calculate <code>R2=H2(key1)</code> , until there is no conflict. Although this is not easy to produce a pile, but it increases（增加） the calculation time.</strong></li>
+<li>The <strong>chain address</strong> method composes a singly linked list of synonyms with the same hash value, and stores the <strong>head pointer of the singly linked list in the i-th unit of the hash table.</strong> The search, insertion and deletion are mainly performed in the synonym linked list. The linked list method is suitable for frequent insertions and deletions.</li>
+</ul>
+<h2 id="The-hash-algorithm-used"><a href="#The-hash-algorithm-used" class="headerlink" title="The hash algorithm used?"></a>The hash algorithm used?</h2><p>Hash algorithm: take the <strong>hashCode value of the key</strong>, <strong>high-order operation</strong>, and <strong>modulo operation</strong>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">h=key.hashCode() <span class="comment">//Step 1. Get the hashCode value</span></span><br><span class="line">h^(h&gt;&gt;&gt;<span class="number">16</span>)  <span class="comment">//Step 2 High-level participation in computing to reduce conflicts</span></span><br><span class="line"><span class="keyword">return</span> h&amp;(length-<span class="number">1</span>);  <span class="comment">//Step 3 Modulo operation</span></span><br></pre></td></tr></table></figure>
+
+<p>In the implementation of <strong>JDK1.8</strong>, the algorithm for high-order operations is optimized, <strong>which is implemented by the high-order 16-bit XOR of hashCode(): this can be done when the array is relatively small</strong>, and it can also ensure that both high and low bits are taken into account. In the calculation of Hash, conflicts can be reduced without too much overhead.</p>
+<h2 id="Put-method-process"><a href="#Put-method-process" class="headerlink" title="Put method process?"></a>Put method process?</h2><ol>
+<li><code>If the table is not initialized, the initialization process is performed first</code></li>
+<li><code>Use the hash algorithm to calculate the index of the key</code></li>
+<li><code>Determine whether there is an element at the index, and insert it directly if not</code></li>
+<li><code>If there is an element at the index, then traverse the insertion. There are two cases. One is the linked list form and the insertion is directly traversed to the end, and the other is the red-black tree and inserts according to the red-black tree structure.</code></li>
+<li><code>If the number of linked lists is greater than the threshold 8, it must be converted into a red-black tree structure</code></li>
+<li><code>After the addition is successful, it will check whether it needs expansion</code></li>
+</ol>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201162736.png" alt=""></p>
+<h2 id="The-characteristics-of-red-black-trees"><a href="#The-characteristics-of-red-black-trees" class="headerlink" title="The characteristics of red-black trees?"></a>The characteristics of red-black trees?</h2><ul>
+<li>Each node is either black or red.</li>
+<li>The root node is black.</li>
+<li>Each leaf node (NIL) is black.</li>
+<li>If a node is red, its child nodes <strong>must</strong> be black.</li>
+<li>All paths from a node to the descendants of that node contain the <strong>same number of black nodes.</strong></li>
+</ul>
+<h2 id="Why-use-red-black-trees-instead-of-AVL-trees"><a href="#Why-use-red-black-trees-instead-of-AVL-trees" class="headerlink" title="Why use red-black trees instead of AVL trees?"></a>Why use red-black trees instead of AVL trees?</h2><p>ConcurrentHashMap will be locked when put, using the red-black tree to insert faster, which can reduce the time waiting for the lock to be released. <strong>The red-black tree is an optimization of the AVL tree</strong>. It only requires partial balance. The non-strict balance is used to reduce the number of rotations when adding and deleting nodes, which improves the performance of insertion and deletion.</p>
+<h2 id="When-resolving-hash-conflicts-why-choose-to-use-the-linked-list-first-and-then-switch-to-the-red-black-tree"><a href="#When-resolving-hash-conflicts-why-choose-to-use-the-linked-list-first-and-then-switch-to-the-red-black-tree" class="headerlink" title="When resolving hash conflicts, why choose to use the linked list first, and then switch to the red-black tree?"></a>When resolving hash conflicts, why choose to use the linked list first, and then switch to the red-black tree?</h2><p><strong>Because red-black trees need to perform left-handed（左旋）</strong>, right-handed, and color-changing operations to maintain balance, <strong>singly linked lists do not</strong>. </p>
+<ul>
+<li>When the number of elements is less than 8, the linked list structure can guarantee query performance. </li>
+<li>When there are more than <strong>8 elements</strong>, the search time complexity of the red-black tree is <strong>O(logn)</strong>, while the linked list is O(n). At this time, the red-black tree is needed to speed up the query, but the efficiency（效率） of inserting and deleting nodes becomes <strong>slower</strong>. . </li>
+<li>If the red-black tree structure is used at the beginning, there are too few elements, and the efficiency of inserting and deleting nodes is slow, and performance is wasted.</li>
+</ul>
+<h2 id="Why-is-the-length-of-HashMap-a-power-of-2"><a href="#Why-is-the-length-of-HashMap-a-power-of-2" class="headerlink" title="Why is the length of HashMap a power of 2?"></a>Why is the length of HashMap a power of 2?</h2><p>The Hash value has a relatively（比较） large range value. Before using it, you need to perform a modulo（模数） operation on the length of the array, and the remainder obtained （获得）is the location where the element is stored, which is the corresponding array subscript. The calculation method for the subscript of this array is <strong>(n - 1) &amp; hash</strong> . </p>
+<p><strong>Set the length of HashMap to the power of 2, so that you can use (n - 1)&amp;hash bit operation instead of% remainder operation to improve performance.</strong></p>
+<h2 id="What-is-the-default-load-factor-of-HashMap-Why-is-it-0-75"><a href="#What-is-the-default-load-factor-of-HashMap-Why-is-it-0-75" class="headerlink" title="What is the default load factor of HashMap? Why is it 0.75?"></a>What is the default load factor of HashMap? Why is it 0.75?</h2><p>First look at the default constructor of HashMap:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> threshold;             <span class="comment">// Accommodates the maximum value of the key-value pair</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">float</span> loadFactor;    <span class="comment">// Load Factor</span></span><br><span class="line"><span class="keyword">int</span> modCount;  </span><br><span class="line"><span class="keyword">int</span> size;</span><br></pre></td></tr></table></figure>
+
+<p>The initial length of the Node[] table is <strong>16</strong>, and the default loadFactor is <strong>0.75</strong>. <strong>0.75 is a balanced choice for space and time efficiency</strong>. According to the Poisson distribution, loadFactor 0.75 is the smallest collision（碰撞）. Generally, it will not be modified, except under special circumstances（情况） in time and space:</p>
+<ul>
+<li>If there is a lot of memory space and time efficiency is very high, you can reduce the value of Load factor（负载因子）.</li>
+<li>If the memory space is tight and the time efficiency is not high, you can increase the value of the load factor, <strong>which can be greater than 1</strong>.</li>
+<li>In most cases it is recommended to set the initialization size as much as possible.</li>
+<li></li>
+</ul>
+<h2 id="What-is-generally-used-as-the-key-of-HashMap"><a href="#What-is-generally-used-as-the-key-of-HashMap" class="headerlink" title="What is generally used as the key of HashMap?"></a>What is generally used as the key of HashMap?</h2><p>Generally, immutable classes such as Integer and String are used as HashMap as the key. The String class is more commonly（通常） used.</p>
+<ul>
+<li>Because <strong>String is immutable</strong>, the hashcode is cached when it is created and does not need to be recalculated（重新计算） This is why the keys in HashMap often use strings.</li>
+<li>The <strong>equals()</strong> and <strong>hashCode()</strong> methods are used when obtaining objects, and the Integer and String classes have already rewritten the <strong>hashCode()</strong> and <strong>equals()</strong> methods, so <strong>you don’t need to rewrite these two methods yourself.</strong></li>
+</ul>
+<h2 id="Why-is-HashMap-thread-unsafe"><a href="#Why-is-HashMap-thread-unsafe" class="headerlink" title="Why is HashMap thread unsafe?"></a>Why is HashMap thread unsafe?</h2><p>Infinite loop of expansion under multi-threading. The HashMap in JDK1.7 uses the header insertion method to insert elements. In a multi-threaded environment, the circular linked list may appear when the capacity is expanded, forming an endless loop.</p>
+<p>In JDK1.8, in a multithreaded environment, data <strong>will overwrite</strong> .</p>
+<h2 id="The-difference-between-HashMap-and-HashTable"><a href="#The-difference-between-HashMap-and-HashTable" class="headerlink" title="The difference between HashMap and HashTable?"></a>The difference between HashMap and HashTable?</h2><ol>
+<li><strong>HashMap can accept null keys and values</strong>. Key-value pairs with null keys are placed in the linked list of the head node with subscript 0, while <strong>Hashtable cannot</strong>.</li>
+<li>HashMap is not thread-safe, HashTable is thread-safe. Jdk1.5 provides ConcurrentHashMap, which is a replacement for HashTable.</li>
+<li>Many methods of Hashtable are synchronous methods, which are slower than HashMap in a single-threaded environment.</li>
+<li>The use of hash value is different, HashTable directly uses the hashCode of the object. The HashMap recalculates the hash value.</li>
+</ol>
+<h1 id="The-underlying-principle-of-LinkedHashMap"><a href="#The-underlying-principle-of-LinkedHashMap" class="headerlink" title="The underlying principle of LinkedHashMap?"></a>The underlying principle of LinkedHashMap?</h1><p>HashMap is unordered, and the order of the elements obtained by iterating the HashMap is not the order in which they were originally placed in the HashMap, that is, their insertion order cannot be maintained.</p>
+<p>LinkedHashMap inherits from HashMap and is a fusion of HashMap and LinkedList, with the characteristics of both. Each put operation will insert the entry into the end of the doubly linked list.</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201163907.png" alt=""></p>
+<h1 id="Tell-me-about-TreeMap"><a href="#Tell-me-about-TreeMap" class="headerlink" title="Tell me about TreeMap?"></a>Tell me about TreeMap?</h1><p>TreeMap is a Map collection that can <strong>compare the size of elements</strong>, and <strong>sorts the incoming keys by size.</strong> You can use the natural order of the elements, or you can use a custom comparator in the collection to sort.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">extends</span> <span class="title">AbstractMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">NavigableMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;, <span class="title">Cloneable</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> Inheritance structure of TreeMap：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221122065938.png" alt=""></p>
+<p>TreeMap features:</p>
+<p>TreeMap is an ordered set of key-values, implemented through <strong>red-black trees</strong>. Sort according to the natural order（自然排序） of the keys or according to the provided Comparator.</p>
+<p>TreeMap inherits AbstractMap, implements the NavigableMap interface, and supports a series of navigation methods. Given a specific search target, it can return the closest match. For example, floorEntry() and ceilingEntry() return Map.Entry() objects that are less than or equal to or greater than or equal to a given key, respectively（各自的）, and return null if they do not exist. lowerKey(), floorKey, ceilingKey, and higherKey() only return the <strong>associated key</strong>.</p>
+<h1 id="The-underlying（根本）-principle-of-HashSet"><a href="#The-underlying（根本）-principle-of-HashSet" class="headerlink" title="The underlying（根本） principle of HashSet?"></a>The underlying（根本） principle of HashSet?</h1><p><strong>HashSet is implemented based on HashMap</strong>. The elements put into the HashSet are actually stored by the key of the HashMap, and the value of the HashMap stores a static Object object.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashSet</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">extends</span> <span class="title">AbstractSet</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">Set</span>&lt;<span class="title">E</span>&gt;, <span class="title">Cloneable</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">5024744406713321676L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> HashMap&lt;E,Object&gt; map; <span class="comment">//HashMap-based implementation</span></span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="What-is-the-difference-between-HashSet-LinkedHashSet-and-TreeSet"><a href="#What-is-the-difference-between-HashSet-LinkedHashSet-and-TreeSet" class="headerlink" title="What is the difference between HashSet, LinkedHashSet and TreeSet"></a>What is the difference between <strong>HashSet</strong>, <strong>LinkedHashSet</strong> and <strong>TreeSet</strong></h1><p><strong>HashSet</strong> is Set main interface implementation class, HashSet bottom is HashMap , thread-safe, a null value may be stored;</p>
+<p><strong>LinkedHashSet</strong> is HashSet , which can be traversed in the order of addition;</p>
+<p><strong>TreeSet</strong> uses a red-black tree at the bottom layer, which can be traversed in the order of adding elements, and the sorting method can be customized（自定义）.</p>
+<h1 id="What-is-fail-fast"><a href="#What-is-fail-fast" class="headerlink" title="What is fail fast?"></a>What is fail fast?</h1><p>Fast-fail is an error mechanism of <strong>Java collections</strong>. When multiple threads operate on the same collection, fast-fail events may occur.</p>
+<p>For example: when thread a is traversing the collection through iterator, another thread b modifies the content of the collection. At this time modCount (the number of modifications to the collection operation process) will increase by 1, which is not equal to expectedModCount, then when thread a accesses the collection, ConcurrentModificationException will be thrown.</p>
+<p>For example2: Modifying the collection while traversing will also generate fast-fail events.</p>
+<p>Solution：</p>
+<ol>
+<li><p>Use the Colletions.synchronizedList method || add synchronized to the place where the content of the collection is modified.</p>
+<blockquote>
+<p>Impact：<strong>block</strong> the traversal operation and <strong>affect performance</strong>（影响性能）.</p>
+</blockquote>
+</li>
+<li><p>Use CopyOnWriteArrayList to replace ArrayList.</p>
+<p> When the CopyOnWriteArrayList is <strong>modified</strong>, a <strong>new array</strong> is copied, the new array is operated, and the reference is moved to the new array after the operation is completed.</p>
+</li>
+</ol>
+<p>We can see the following code to confirm（Version JDK 1.8）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Object[] elements = getArray();</span><br><span class="line">            <span class="keyword">int</span> len = elements.length;</span><br><span class="line">            <span class="comment">// The old array will be copied and then operated on in the new array</span></span><br><span class="line">            Object[] newElements = Arrays.copyOf(elements, len + <span class="number">1</span>);</span><br><span class="line">            newElements[len] = e;</span><br><span class="line">            setArray(newElements);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="What-is-fail-safe"><a href="#What-is-fail-safe" class="headerlink" title="What is fail safe?"></a>What is fail safe?</h1><p>The containers under the java.util.concurrent package are safe to fail, and can be used and modified concurrently in multiple threads.</p>
+<p><strong>Principle</strong> : Since the copy of the original collection is traversed during iteration, the modification of the original collection during the traversal process cannot be detected by the iterator, so Concurrent Modification Exception will not be triggered.</p>
+<p><strong>Disadvantages</strong> : The advantage（好处） of copying content is to avoid Concurrent Modification Exception, but similarly, the iterator cannot access the modified content, that is: the iterator traverses the copy of the collection obtained at the moment of traversal. During this period, the modification iterator of the original collection is not known.</p>
+<h1 id="Tell-me-about-ArrayDeque"><a href="#Tell-me-about-ArrayDeque" class="headerlink" title="Tell me about ArrayDeque?"></a>Tell me about ArrayDeque?</h1><p>ArrayDeque implements a <strong>double-ended queue</strong>（双端队列）, using a circular array internally, and the default size is 16.</p>
+<p>characteristics：</p>
+<ol>
+<li>more efficient to <strong>add</strong> and <strong>delete</strong> elements at both ends</li>
+<li>The efficiency of searching and deleting <strong>based on element</strong>（基于元素） content is relatively low.</li>
+<li>There is <strong>no concept（概念） of index position</strong>, and operations cannot be performed based on （基于）index position.</li>
+</ol>
+<blockquote>
+<p>Both ArrayDeque and LinkedList implement the Deque interface. Both ArrayDeque and LinkedList are not thread-safe<br>We can be converted to <strong>thread synchronization</strong> using <strong>synchronizedXxx()</strong> in the <strong>Collections tool</strong> class.<br>For Example：<code>java.util.Collections#synchronizedCollection(java.util.Collection&lt;T&gt;)</code></p>
+</blockquote>
+<p>Hsow to choose them?</p>
+<ul>
+<li>If you only need to operate from <strong>both ends</strong>, ArrayDeque is more efficient.</li>
+<li>If you need to operate according to the index position at the same time, or often need to insert and delete in the middle , you should choose LinkedList</li>
+</ul>
+<h1 id="Which-collection-classes-are-thread-safe-What-is-unsafe"><a href="#Which-collection-classes-are-thread-safe-What-is-unsafe" class="headerlink" title="Which collection classes are thread safe? What is unsafe?"></a>Which collection classes are thread safe? What is unsafe?</h1><p>Thread safe collection class:</p>
+<ul>
+<li>Vector: It has more synchronization mechanism than ArrayList.</li>
+<li>Hashtable`</li>
+<li>ConcurrentHashMap: is an efficient and thread-safe collection.</li>
+<li>Stack: Stack is also thread-safe, inherited from Vector.</li>
+<li>ConcurrentHashMap<br>….（more java.util..current.*）</li>
+</ul>
+<p>Thread unsafe  collection class:`</p>
+<ul>
+<li>Hashmap</li>
+<li>Arraylist</li>
+<li>LinkedList</li>
+<li>HashSet</li>
+<li>TreeSet</li>
+<li>TreeMap</li>
+</ul>
+<h1 id="What-is-Iterator"><a href="#What-is-Iterator" class="headerlink" title="What is Iterator?"></a>What is Iterator?</h1><p>The Iterator pattern uses the same logic to iterate through collections.  It can abstract the access logic from different types of collection classes.</p>
+<p>With an iterator, <strong>you can traverse collection elements without knowing the internal implementation of the collection,</strong> using the interface provided by Iterator to unify traversal.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Collection</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">Iterable</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function">Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>There are three main methods: hasNext(), next() and remove().</p>
+<h1 id="What-is-the-difference-between-Iterator-and-ListIterator"><a href="#What-is-the-difference-between-Iterator-and-ListIterator" class="headerlink" title="What is the difference between Iterator and ListIterator?"></a>What is the difference between Iterator and ListIterator?</h1><p>ListIterator is an enhanced（强化） version of Iterator.</p>
+<ul>
+<li>ListIterator traversal can be reversed, because there are <strong>previous()</strong> and <strong>hasPrevious()</strong> methods, but Iterator cannot.</li>
+<li>ListIterator has <strong>add()</strong> method, which can add objects to List, but Iterator cannot.</li>
+<li>ListIterator can locate（定位） the current index position because of the <strong>nextIndex()</strong> and <strong>previousIndex()</strong> methods, but Iterator cannot.</li>
+<li>ListIterator can realize the modification of the object, and the set() method can be realized. Iierator can only be traversed and cannot be modified.</li>
+<li>ListIterator can only be used to traverse List and its subclasses, and Iterator can be used to traverse all collections.</li>
+</ul>
+<h1 id="Concurrent-container"><a href="#Concurrent-container" class="headerlink" title="Concurrent container"></a>Concurrent container</h1><p>Most of these containers provided by the JDK are in the java.util.concurrent package.</p>
+<ul>
+<li><strong>ConcurrentHashMap</strong>：thread-safe HashMap</li>
+<li><strong>CopyOnWriteArrayList</strong>： thread-safe List that performs（执行） very well in situations where more reads and less writes are performed, <strong>far better than Vector</strong>.</li>
+<li><strong>ConcurrentLinkedQueue</strong>:：efficient（高效） concurrent queue, implemented using a linked list. It can be seen as a thread-safe LinkedList, which is a <strong>non-blocking queue</strong>.</li>
+<li><strong>BlockingQueue</strong>: blocking queue interface, which is implemented in the JDK through linked lists, arrays, etc（..等等）. Very suitable for use as a data sharing channel.</li>
+<li><strong>ConcurrentSkipListMap</strong>：The <strong>jump table</strong>. Use the data structure of the jump table for quick search.</li>
+</ul>
+<h2 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h2><p>In a multi-threaded environment, using Hashmap for <strong>put operations will cause an endless</strong> loop, and ConcurrentHashMap that supports multi-threading should be used.</p>
+<blockquote>
+<p>Why put operations will cause an endless？If you want to know the third case What mean is, I recommend the english article：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9tYWlsaW5hdG9yLmJsb2dzcG90LmNvbS8yMDA5LzA2L2JlYXV0aWZ1bC1yYWNlLWNvbmRpdGlvbi5odG1s" title="https://mailinator.blogspot.com/2009/06/beautiful-race-condition.html">The Mailinator(tm) Blog: A Beautiful Race Condition<i class="fa fa-external-link"></i></span></p>
+<p>If you English is not so good, You also can see the article</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jb29sc2hlbGwuY24vYXJ0aWNsZXMvOTYwNi5odG1s" title="https://coolshell.cn/articles/9606.html">疫苗：Java HashMap的死循环 | 酷 壳 - CoolShell<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<p>JDK1.8 ConcurrentHashMap cancels the segment lock, and uses <strong>CAS</strong> and <strong>synchronized</strong> to ensure concurrency safety. </p>
+<p>The data structure adopts array + linked list/red-black binary tree. Synchronized only locks the first node of the current linked list or red-black binary tree.</p>
+<p><strong>Compared with JDK1.7 locking the HashEntry array</strong>, the lock granularity（颗粒度） is smaller and supports a higher amount of concurrency（并发性）.</p>
+<h3 id="Put-execution-flow"><a href="#Put-execution-flow" class="headerlink" title="Put execution flow?"></a>Put execution flow?</h3><p>The segment needs to be locked during put to ensure concurrency safety.</p>
+<p>The segment needs to be locked during put to ensure（确保） concurrency safety. When calling get, do not lock it because the node array member val and pointer next are modified with <strong>volatile</strong> and the modified values are immediately refreshed in main memory for visibility（可见）, and the node array table is also modified with volatile to ensure that its running process is visible to other threads.</p>
+<p>Here is the relevant code</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">transient</span> <span class="keyword">volatile</span> Node&lt;K,V&gt;[] table;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">volatile</span> V val;</span><br><span class="line">    <span class="keyword">volatile</span> Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Put operation process:</p>
+<ol>
+<li>If the table is not initialized, the initialization process is performed first.</li>
+<li>Use the hash algorithm to calculate the location of the key.</li>
+<li>If this position is empty, CAS is inserted directly（直接）, if it is not empty, then this node is taken out</li>
+<li>If the hash value of the retrieved node is MOVED(-1), it means that the array is currently being expanded and copied to the new array, and the current thread will also help copy</li>
+<li>If this node is not empty or expanding, it will be locked through synchronized to perform the addition operation. There are two cases here<ol>
+<li>one is that the linked list is directly traversed to the end to insert or overwrite the same key, </li>
+<li>the other is If it is a red-black tree, insert it according to the red-black tree structure`</li>
+</ol>
+</li>
+<li>If the number of linked lists is greater than the threshold 8, it will be converted into a <strong>red-black tree</strong> structure or expanded (table length is less than 64)</li>
+<li>After the addition is successful, it will check whether it needs expansion</li>
+</ol>
+<p>Code：<code>java.util.concurrent.ConcurrentHashMap#putVal</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">Node&lt;K,V&gt; f; <span class="keyword">int</span> n, i, fh;  </span><br><span class="line"><span class="keyword">if</span> (tab == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>) </span><br><span class="line">	<span class="comment">// If the table is not initialized, the initialization process is performed first.</span></span><br><span class="line">    tab = initTable();  </span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> ((f = tabAt(tab, i = (n - <span class="number">1</span>) &amp; hash)) == <span class="keyword">null</span>) &#123;  <span class="comment">//Use the hash algorithm to calculate the location of the key.</span></span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">	<span class="comment">// If this position is empty, CAS is inserted directly（直接）, if it is not empty, then this node is taken out</span></span><br><span class="line">    <span class="keyword">if</span> (casTabAt(tab, i, <span class="keyword">null</span>,  </span><br><span class="line">                 <span class="keyword">new</span> Node&lt;K,V&gt;(hash, key, value, <span class="keyword">null</span>)))  </span><br><span class="line">        <span class="keyword">break</span>;                   <span class="comment">// no lock when adding to empty bin  </span></span><br><span class="line">&#125;  </span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> ((fh = f.hash) == MOVED)  </span><br><span class="line">	<span class="comment">// If the hash value of the retrieved node is MOVED(-1), it means that the array is currently being expanded and copied to the new array, and the current thread will also help copy</span></span><br><span class="line">    tab = helpTransfer(tab, f);  </span><br><span class="line"><span class="keyword">else</span> &#123;  </span><br><span class="line">    V oldVal = <span class="keyword">null</span>;  </span><br><span class="line">    <span class="comment">// If this node is not empty or expanding, it will be locked through synchronized to perform the addition operation. There are two cases here</span></span><br><span class="line">    <span class="keyword">synchronized</span> (f) &#123;  </span><br><span class="line">	    <span class="comment">//one is that the linked list is directly traversed to the end to insert or overwrite the same key, </span></span><br><span class="line">        <span class="keyword">if</span> (tabAt(tab, i) == f) &#123;  </span><br><span class="line">            <span class="keyword">if</span> (fh &gt;= <span class="number">0</span>) &#123;  </span><br><span class="line">                binCount = <span class="number">1</span>;  </span><br><span class="line">                <span class="keyword">for</span> (Node&lt;K,V&gt; e = f;; ++binCount) &#123;  </span><br><span class="line">                    K ek;  </span><br><span class="line">                    <span class="keyword">if</span> (e.hash == hash &amp;&amp;  </span><br><span class="line">                        ((ek = e.key) == key ||  </span><br><span class="line">                         (ek != <span class="keyword">null</span> &amp;&amp; key.equals(ek)))) &#123;  </span><br><span class="line">                        oldVal = e.val;  </span><br><span class="line">                        <span class="keyword">if</span> (!onlyIfAbsent)  </span><br><span class="line">                            e.val = value;  </span><br><span class="line">                        <span class="keyword">break</span>;                    &#125;  </span><br><span class="line">                    Node&lt;K,V&gt; pred = e;  </span><br><span class="line">                    <span class="keyword">if</span> ((e = e.next) == <span class="keyword">null</span>) &#123;  </span><br><span class="line">                        pred.next = <span class="keyword">new</span> Node&lt;K,V&gt;(hash, key,  </span><br><span class="line">                                                  value, <span class="keyword">null</span>);  </span><br><span class="line">                        <span class="keyword">break</span>;                    &#125;  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">            <span class="comment">// the other is If it is a red-black tree, insert it according to the red-black tree structure</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (f <span class="keyword">instanceof</span> TreeBin) &#123;  </span><br><span class="line">                Node&lt;K,V&gt; p;  </span><br><span class="line">                binCount = <span class="number">2</span>;  </span><br><span class="line">                <span class="keyword">if</span> ((p = ((TreeBin&lt;K,V&gt;)f).putTreeVal(hash, key,  </span><br><span class="line">                                               value)) != <span class="keyword">null</span>) &#123;  </span><br><span class="line">                    oldVal = p.val;  </span><br><span class="line">                    <span class="keyword">if</span> (!onlyIfAbsent)  </span><br><span class="line">                        p.val = value;  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">if</span> (binCount != <span class="number">0</span>) &#123; </span><br><span class="line">	    <span class="comment">//   If the number of linked lists is greater than the threshold 8, it will be converted into a red-black tree structure or expanded (table length is less than 64)</span></span><br><span class="line">        <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD)  </span><br><span class="line">            treeifyBin(tab, i);  </span><br><span class="line">        <span class="keyword">if</span> (oldVal != <span class="keyword">null</span>)  </span><br><span class="line">            <span class="keyword">return</span> oldVal;  </span><br><span class="line">        <span class="keyword">break</span>;    &#125;  </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//  After the addition is successful, it will check whether it needs expansion</span></span><br><span class="line"><span class="keyword">if</span> (delta != <span class="number">0</span>)  </span><br><span class="line">    addCount((<span class="keyword">long</span>)delta, binCount);</span><br></pre></td></tr></table></figure>
+
+<h3 id="How-to-expand"><a href="#How-to-expand" class="headerlink" title="How to expand?"></a>How to expand?</h3><p>In the array expansion transfer method, a step size is set to indicate the length of the array processed by a thread, and the minimum value is 16. <strong>Only one thread will copy and move it in a step range.</strong></p>
+<h3 id="The-difference-between-ConcurrentHashMap-and-Hashtable"><a href="#The-difference-between-ConcurrentHashMap-and-Hashtable" class="headerlink" title="The difference between ConcurrentHashMap and Hashtable?"></a>The difference between ConcurrentHashMap and Hashtable?</h3><ol>
+<li><p>Hashtable achieves（实现） multi-thread synchronization by using the synchronized modification method. Therefore, the synchronization of Hashtable will <strong>lock the entire array.</strong> </p>
+<p> In the case of high concurrency, the performance will be very poor. ConcurrentHashMap uses more fine-grained locks to improve efficiency in concurrent situations（并发情况）. </p>
+<blockquote>
+<p>Note: Synchronized container (synchronized container) also achieves thread safety through the synchronized keyword, and locks all data when in use.</p>
+</blockquote>
+</li>
+<li><p>The default size of Hashtable is 11. When the threshold（阈值） is reached, the capacity is expanded according to the following formula（公式） each time: newCapacity = oldCapacity * 2 + 1. The default size of ConcurrentHashMap is 16, and the capacity is <strong>doubled</strong> when expanding.</p>
+</li>
+</ol>
+<h2 id="CopyOnWrite"><a href="#CopyOnWrite" class="headerlink" title="CopyOnWrite"></a>CopyOnWrite</h2><p>Copy-on-write. When we add elements to the container, we do not directly add to the container, but first copy the current container, <strong>copy out（导出） a new container</strong>, and then add elements to the new container, after adding the elements, then point the reference to the original container New container.</p>
+<p>The advantage of this is that the CopyOnWrite container can be <strong>read concurrently without locking</strong>, <strong>because the current container will not be modified</strong>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    <span class="comment">// ensure synchronization and avoid copying multiple copies when writing in multiple threads</span></span><br><span class="line">    lock.lock(); <span class="comment">//The add method requires a lock</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Object[] elements = getArray();</span><br><span class="line">        <span class="keyword">int</span> len = elements.length;</span><br><span class="line">        Object[] newElements = Arrays.copyOf(elements, len + <span class="number">1</span>); <span class="comment">//Copying a new array</span></span><br><span class="line">        newElements[len] = e;</span><br><span class="line">        setArray(newElements); <span class="comment">//The reference of the original container points to the new container</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Since JDK1.5, the Java Concurrency Package provides two concurrent containers implemented using the <strong>CopyOnWrite</strong> mechanism（机制）. They are <strong>CopyOnWriteArrayList</strong> and <strong>CopyOnWriteArraySet</strong>.</p>
+<p>When the add method in <strong>CopyOnWriteArrayList</strong> is added, it needs to be locked to ensure synchronization and avoid copying multiple copies when writing in multiple threads.</p>
+<p>There is no need to lock when reading. If other threads are adding data to <strong>CopyOnWriteArrayList</strong> when reading, the old data can still be read.</p>
+<blockquote>
+<p>这里有点像是模仿操作系统写时复制的理念。写操作在一份“虚拟空间”操作。</p>
+</blockquote>
+<p><strong>Disadvantages</strong>（缺点）：</p>
+<ul>
+<li><strong>Memory usage</strong> problem. Due to the copy-on-write mechanism of CopyOnWrite, the memory of <strong>two objects</strong> resides in the memory at the same time when the write operation is performed.</li>
+<li>The CopyOnWrite container cannot guarantee（保证） the real-time consistency of the data, and old data may be read.</li>
+</ul>
+<h2 id="ConcurrentLinkedQueue"><a href="#ConcurrentLinkedQueue" class="headerlink" title="ConcurrentLinkedQueue"></a>ConcurrentLinkedQueue</h2><p>Non-blocking queue. Efficient（高效） concurrent queues are implemented using linked lists. It can be seen as a thread-safe LinkedList, implemented through <strong>CAS operations</strong>.</p>
+<p>If the cost of locking the queue is high, it is suitable（适合） to use a lock-free <strong>ConcurrentLinkedQueue</strong> instead. It is suitable for scenarios（场景） where the performance requirements are relatively high and there are multiple threads to read and write to the queue <strong>at the same time</strong>.</p>
+<h4 id="non-blocking-queue"><a href="#non-blocking-queue" class="headerlink" title="non-blocking queue"></a>non-blocking queue</h4><ul>
+<li><strong>add(E e)</strong>: Insert element e to the end of the queue. If the insertion is successful, it returns true; if the insertion fails (ie, the queue is full), an exception will be thrown;</li>
+<li><strong>remove()</strong>: Remove the element at the head of the queue. If the removal（移除） is successful, it will return true; if the removal fails (the queue is empty), an exception will be thrown;</li>
+<li><strong>offer(E e)</strong>: Insert the element e at the end of the queue, if the insertion is successful, it returns true; if the insertion fails (that is, the queue is full), it returns false;</li>
+<li><strong>poll()</strong>: Remove and get the first element of the queue, if successful, return the first element of the team; otherwise, return null;  </li>
+<li><strong>peek():</strong> Get the first element of the queue, if successful, return the first element of the queue; otherwise, return null;</li>
+</ul>
+<p>For non-blocking queues, it is generally recommended（一般推荐） to use the three methods of offer, <strong>poll and peek</strong>, and it is not recommended to use the add and remove methods.</p>
+<blockquote>
+<p>Because the three methods of offer, poll, and peek can be used to determine whether the operation is successful or not through the return value, but the use of add and remove methods cannot achieve this effect.</p>
+</blockquote>
+<h2 id="Blocking-queue"><a href="#Blocking-queue" class="headerlink" title="Blocking queue"></a>Blocking queue</h2><p>The blocking queue is an important data structure under the <code>java.util.concurrent</code> package.</p>
+<p>BlockingQueue provides a <strong>thread-safe</strong> queue access method: when the blocking queue is inserting data, if the queue is full, the thread will block and wait until the queue is not full; When the queue fetches data, there is no blocking. if the queue is empty, the thread will block and wait <strong>until the queue is not empty</strong>.</p>
+<p>Many implementations of advanced（高级） synchronization classes under the Concurrency package are based on BlockingQueue, which is <strong>suitable for use as a data-sharing channel.</strong></p>
+<p>The difference between a blocking queue and a general queue is:</p>
+<ol>
+<li>（blocking queue）Multi-thread support, multiple threads can safely access the queue.</li>
+<li>Blocking operation. When the queue is empty, the consumer thread will block and wait for the queue to be not empty; when the queue is full, the production thread will block until the queue is not full.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Method\Processing Method</th>
+<th>Throw an exception</th>
+<th>Return special value</th>
+<th>Keeps blocking</th>
+<th>Timeout exit</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Insert method</td>
+<td>add(e)</td>
+<td>offer(e)</td>
+<td>put(e)</td>
+<td>offer(e,time,unit)</td>
+</tr>
+<tr>
+<td>Removal method</td>
+<td>remove()</td>
+<td>poll()</td>
+<td>take()</td>
+<td>poll(time,unit)</td>
+</tr>
+<tr>
+<td>Inspection Method</td>
+<td>element()</td>
+<td>peek()</td>
+<td>unavailable</td>
+<td>unavailable</td>
+</tr>
+</tbody></table>
+<h3 id="Blocking-queue-provided-by-JDK"><a href="#Blocking-queue-provided-by-JDK" class="headerlink" title="Blocking queue provided by JDK"></a>Blocking queue provided by JDK</h3><p>JDK7 provides 7 blocking queues, as follows</p>
+<h4 id="ArrayBlockingQueue"><a href="#ArrayBlockingQueue" class="headerlink" title="ArrayBlockingQueue"></a>ArrayBlockingQueue</h4><p>Bounded blocking queue, the bottom layer is implemented by array. Once the ArrayBlockingQueue is created, <strong>the capacity cannot be changed</strong>. The concurrency control adopts（采用） reentrant（可重入） locks to control, whether it is an insert operation or a read operation, a lock must be acquired（获得） before the operation can be performed.</p>
+<p>This queue sorts the elements according to the <strong>first-in-first-out (FIFO)</strong> principle.</p>
+<p>By default, the fairness（公平性） of thread access to the queue is <strong>not guaranteed</strong>（保证）. The parameter <code>fair</code> can be used to set whether the thread accesses the queue fairly. In order to ensure fairness, throughput is usually reduced.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ArrayBlockingQueue&lt;Integer&gt; blockingQueue = <span class="keyword">new</span> ArrayBlockingQueue&lt;Integer&gt;(<span class="number">10</span>,<span class="keyword">true</span>);<span class="comment">//fair</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="LinkedBlockingQueue"><a href="#LinkedBlockingQueue" class="headerlink" title="LinkedBlockingQueue"></a>LinkedBlockingQueue</h4><p>LinkedBlockingQueue is a bounded blocking queue implemented with a singly linked list, which can be used as an unbounded queue or a bounded queue. </p>
+<p>Usually when creating a LinkedBlockingQueue object, the maximum capacity of the queue is specified. <strong>The default and maximum length of this queue is <code>Integer.MAX_VALUE</code></strong> . This queue sorts the elements according to the first-in-first-out principle. Compared with ArrayBlockingQueue, it has higher throughput.</p>
+<h4 id="PriorityBlockingQueue"><a href="#PriorityBlockingQueue" class="headerlink" title="PriorityBlockingQueue"></a>PriorityBlockingQueue</h4><p>Support priority <strong>unbounded</strong> blocking queue. By default, the elements are arranged in ascending order（升序） in natural order.</p>
+<p>You can also customize the class to implement the <code>compareTo()</code> method to specify the element sorting rules, or when you initialize the PriorityBlockingQueue, specify the construction parameter <code>Comparator</code> for sorting.</p>
+<p>PriorityBlockingQueue can only specify the initial queue size. When inserting elements later, if there is not enough space, <strong>will automatically expand to</strong>.</p>
+<p>A thread-safe version of PriorityQueue. <strong>No null value can be inserted</strong>.  At the same time, the object inserted into the queue must be comparable in size (comparable), otherwise a ClassCastException will be reported. Its insert operation put method will not block, because it is an unbounded queue (the take method will block when the queue is empty).</p>
+<h4 id="DelayQueue"><a href="#DelayQueue" class="headerlink" title="DelayQueue"></a>DelayQueue</h4><p>Unbounded blocking queue that supports delayed acquisition of elements. The queue is implemented using <strong>PriorityBlockingQueue</strong>. The elements in the queue must implement the <strong>Delayed interface.</strong> When creating the element, you can specify how long it takes to get the current element from the queue. Only when the delay expires can elements be extracted from the queue.</p>
+<h4 id="SynchronousQueue"><a href="#SynchronousQueue" class="headerlink" title="SynchronousQueue"></a>SynchronousQueue</h4><p>In a blocking queue that does not store elements, each put must wait for a take operation, otherwise it cannot continue to add elements. Support fair access queue.</p>
+<p><strong>SynchronousQueue</strong> can be regarded（被视为） as a passer, responsible for passing the data processed by the producer thread directly to the consumer thread. </p>
+<p><strong>The queue itself does not store any elements</strong>, which is very suitable（适合） for transitive scenarios. The throughput of SynchronousQueue is higher than that of LinkedBlockingQueue and ArrayBlockingQueue.</p>
+<h4 id="LinkedTransferQueue"><a href="#LinkedTransferQueue" class="headerlink" title="LinkedTransferQueue"></a>LinkedTransferQueue</h4><p>An unbounded（无界） blocking TransferQueue queue composed of（组成） a linked list structure. Compared with other blocking queues, there are more tryTransfer and transfer methods.</p>
+<p><strong>Transfer method</strong>: If there is currently a consumer waiting to receive an element (take or time-limited poll method), transfer can immediately transfer the element passed by the producer to the consumer. </p>
+<p><strong>If there is no consumer waiting to receive the element</strong>, put the element in the tail node of the queue, and wait <strong>until</strong> the element is consumed by the consumer before returning.</p>
+<p><strong>tryTransfer method</strong>: used to test whether the elements passed by the producer can be directly passed to the consumer. If no consumers are waiting, <strong>return false</strong>. The difference with the above method is that the method returns immediately regardless（不论如何） of whether the consumer <strong>receives it or not</strong>. The transfer method must wait until the consumer has consumed it before returning.</p>
+<h3 id="principle"><a href="#principle" class="headerlink" title="principle"></a>principle</h3><p>JDK uses the notification mode（通知模式） to implement blocking queues. The so-called notification mode is that when the producer adds elements to the full queue, the producer will be blocked. When the consumer consumes（消費） the elements in a queue, the producer will be notified that the current queue is available.</p>
+<p>ArrayBlockingQueue uses Condition to achieve:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Condition notEmpty;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Condition notFull;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ArrayBlockingQueue</span><span class="params">(<span class="keyword">int</span> capacity, <span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (capacity &lt;= <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">    <span class="keyword">this</span>.items = <span class="keyword">new</span> Object[capacity];</span><br><span class="line">    lock = <span class="keyword">new</span> ReentrantLock(fair);</span><br><span class="line">    notEmpty = lock.newCondition();</span><br><span class="line">    notFull =  lock.newCondition();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (count == <span class="number">0</span>) <span class="comment">// When the queue is empty, block the current consumer</span></span><br><span class="line">            notEmpty.await();</span><br><span class="line">        <span class="keyword">return</span> dequeue();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(E e)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    checkNotNull(e);</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (count == items.length)</span><br><span class="line">            notFull.await();</span><br><span class="line">        enqueue(e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">enqueue</span><span class="params">(E x)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Object[] items = <span class="keyword">this</span>.items;</span><br><span class="line">    items[putIndex] = x;</span><br><span class="line">    <span class="keyword">if</span> (++putIndex == items.length)</span><br><span class="line">          putIndex = <span class="number">0</span>;</span><br><span class="line">     count++;</span><br><span class="line">     notEmpty.signal(); <span class="comment">// Notify the consumer to get the element when the queue is not empty</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Xander
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2022/12/01/interviewcollection/" title="Java collection of high-frequency interview questions">https://whitestore.top/2022/12/01/interviewcollection/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/11/16/bdownload/" rel="prev" title="'如何实现B站网页下载视频'">
+      <i class="fa fa-chevron-left"></i> '如何实现B站网页下载视频'
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/01/24/note/" rel="next" title="【PHP】英文博客专栏PHP快速入门个人笔记">
+      【PHP】英文博客专栏PHP快速入门个人笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Source"><span class="nav-number">1.</span> <span class="nav-text">Source</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#This-article-catalog"><span class="nav-number">2.</span> <span class="nav-text">This article catalog</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-are-the-common-collections"><span class="nav-number">3.</span> <span class="nav-text">What are the common collections?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-difference-between-List-Set-and-Map"><span class="nav-number">4.</span> <span class="nav-text">The difference between List, Set and Map</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Do-you-understand-ArrayList"><span class="nav-number">5.</span> <span class="nav-text">Do you understand ArrayList?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-the-expansion-mechanism-of-ArrayList"><span class="nav-number">6.</span> <span class="nav-text">What is the expansion mechanism of ArrayList?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#How-to-remove-an-element-while-traversing-the-ArrayList"><span class="nav-number">7.</span> <span class="nav-text">How to remove an element while traversing the ArrayList?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-difference-between-Arraylist-and-Vector"><span class="nav-number">8.</span> <span class="nav-text">The difference between Arraylist and Vector</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-difference-between-Arraylist-and-LinkedList"><span class="nav-number">9.</span> <span class="nav-text">The difference between Arraylist and LinkedList</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap"><span class="nav-number">10.</span> <span class="nav-text">HashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-are-the-ways-to-resolve-hash-conflicts-What-kind-of-HashMap-is-used"><span class="nav-number">10.1.</span> <span class="nav-text">What are the ways to resolve hash conflicts? What kind of HashMap is used?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-hash-algorithm-used"><span class="nav-number">10.2.</span> <span class="nav-text">The hash algorithm used?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Put-method-process"><span class="nav-number">10.3.</span> <span class="nav-text">Put method process?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-characteristics-of-red-black-trees"><span class="nav-number">10.4.</span> <span class="nav-text">The characteristics of red-black trees?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-use-red-black-trees-instead-of-AVL-trees"><span class="nav-number">10.5.</span> <span class="nav-text">Why use red-black trees instead of AVL trees?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#When-resolving-hash-conflicts-why-choose-to-use-the-linked-list-first-and-then-switch-to-the-red-black-tree"><span class="nav-number">10.6.</span> <span class="nav-text">When resolving hash conflicts, why choose to use the linked list first, and then switch to the red-black tree?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-is-the-length-of-HashMap-a-power-of-2"><span class="nav-number">10.7.</span> <span class="nav-text">Why is the length of HashMap a power of 2?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-the-default-load-factor-of-HashMap-Why-is-it-0-75"><span class="nav-number">10.8.</span> <span class="nav-text">What is the default load factor of HashMap? Why is it 0.75?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-generally-used-as-the-key-of-HashMap"><span class="nav-number">10.9.</span> <span class="nav-text">What is generally used as the key of HashMap?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-is-HashMap-thread-unsafe"><span class="nav-number">10.10.</span> <span class="nav-text">Why is HashMap thread unsafe?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-difference-between-HashMap-and-HashTable"><span class="nav-number">10.11.</span> <span class="nav-text">The difference between HashMap and HashTable?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-underlying-principle-of-LinkedHashMap"><span class="nav-number">11.</span> <span class="nav-text">The underlying principle of LinkedHashMap?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tell-me-about-TreeMap"><span class="nav-number">12.</span> <span class="nav-text">Tell me about TreeMap?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-underlying（根本）-principle-of-HashSet"><span class="nav-number">13.</span> <span class="nav-text">The underlying（根本） principle of HashSet?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-the-difference-between-HashSet-LinkedHashSet-and-TreeSet"><span class="nav-number">14.</span> <span class="nav-text">What is the difference between HashSet, LinkedHashSet and TreeSet</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-fail-fast"><span class="nav-number">15.</span> <span class="nav-text">What is fail fast?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-fail-safe"><span class="nav-number">16.</span> <span class="nav-text">What is fail safe?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tell-me-about-ArrayDeque"><span class="nav-number">17.</span> <span class="nav-text">Tell me about ArrayDeque?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Which-collection-classes-are-thread-safe-What-is-unsafe"><span class="nav-number">18.</span> <span class="nav-text">Which collection classes are thread safe? What is unsafe?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-Iterator"><span class="nav-number">19.</span> <span class="nav-text">What is Iterator?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-the-difference-between-Iterator-and-ListIterator"><span class="nav-number">20.</span> <span class="nav-text">What is the difference between Iterator and ListIterator?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Concurrent-container"><span class="nav-number">21.</span> <span class="nav-text">Concurrent container</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-number">21.1.</span> <span class="nav-text">ConcurrentHashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Put-execution-flow"><span class="nav-number">21.1.1.</span> <span class="nav-text">Put execution flow?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-to-expand"><span class="nav-number">21.1.2.</span> <span class="nav-text">How to expand?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-difference-between-ConcurrentHashMap-and-Hashtable"><span class="nav-number">21.1.3.</span> <span class="nav-text">The difference between ConcurrentHashMap and Hashtable?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CopyOnWrite"><span class="nav-number">21.2.</span> <span class="nav-text">CopyOnWrite</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ConcurrentLinkedQueue"><span class="nav-number">21.3.</span> <span class="nav-text">ConcurrentLinkedQueue</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#non-blocking-queue"><span class="nav-number">21.3.0.1.</span> <span class="nav-text">non-blocking queue</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Blocking-queue"><span class="nav-number">21.4.</span> <span class="nav-text">Blocking queue</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Blocking-queue-provided-by-JDK"><span class="nav-number">21.4.1.</span> <span class="nav-text">Blocking queue provided by JDK</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ArrayBlockingQueue"><span class="nav-number">21.4.1.1.</span> <span class="nav-text">ArrayBlockingQueue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LinkedBlockingQueue"><span class="nav-number">21.4.1.2.</span> <span class="nav-text">LinkedBlockingQueue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PriorityBlockingQueue"><span class="nav-number">21.4.1.3.</span> <span class="nav-text">PriorityBlockingQueue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DelayQueue"><span class="nav-number">21.4.1.4.</span> <span class="nav-text">DelayQueue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SynchronousQueue"><span class="nav-number">21.4.1.5.</span> <span class="nav-text">SynchronousQueue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LinkedTransferQueue"><span class="nav-number">21.4.1.6.</span> <span class="nav-text">LinkedTransferQueue</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#principle"><span class="nav-number">21.4.2.</span> <span class="nav-text">principle</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">190</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">19:55</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

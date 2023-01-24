@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="php英文内容了解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【PHP】英文博客专栏PHP快速入门个人笔记">
+<meta property="og:url" content="https://whitestore.top/2023/01/24/note/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="php英文内容了解">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105203.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105234.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105147.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105136.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/image-20230123212351539.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/image-20230123212507500.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105104.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105041.png">
+<meta property="article:published_time" content="2023-01-24T03:41:12.000Z">
+<meta property="article:modified_time" content="2023-01-24T03:42:13.351Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="php">
+<meta property="article:tag" content="英文博客">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105203.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/01/24/note/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【PHP】英文博客专栏PHP快速入门个人笔记 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/01/24/note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【PHP】英文博客专栏PHP快速入门个人笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-01-24 11:41:12 / 修改时间：11:42:13" itemprop="dateCreated datePublished" datetime="2023-01-24T11:41:12+08:00">2023-01-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/01/24/note/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/01/24/note/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>21k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>19 分钟</span>
+            </span>
+            <div class="post-description">php英文内容了解</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="英文博客专栏PHP快速入门"><a href="#英文博客专栏PHP快速入门" class="headerlink" title="英文博客专栏PHP快速入门"></a>英文博客专栏PHP快速入门</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><pre><code>本文是对于英文原始博客的一个PHP入门专栏的个人笔记摘录，因为非常入门并且自身有JAVA语言基础，看的比较快并且会忽略很多共同点，建议读者有能力可以看看博客的原文顺带提升英文能力，作者文字表达能力非常强，写的非常棒。
+
+这篇专栏介绍了PHP8入门，专栏写于2022年中旬，不管是单词还是语法句式都十分通俗易懂，**学技术的同时提升英语水平并且有助于提升自信心**。</code></pre><h1 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h1><ul>
+<li><a href="#介绍">介绍</a></li>
+<li><a href="#过往历史">过往历史</a></li>
+<li><a href="#php是一个怎么样的语言">php是一个怎么样的语言</a></li>
+<li><a href="#设置PHP">设置PHP</a></li>
+<li><a href="#第一个PHP程序">第一个PHP程序</a></li>
+<li><a href="#基本类型">基本类型</a></li>
+<li><a href="#操作符">操作符</a><ul>
+<li><a href="#字符串操作">字符串操作</a></li>
+</ul>
+</li>
+<li><a href="#编写注释">编写注释</a></li>
+<li><a href="#和数字有关的内置函数">和数字有关的内置函数</a></li>
+<li><a href="#Array数组">Array数组</a><ul>
+<li><a href="#arrays常用函数">arrays常用函数</a></li>
+</ul>
+</li>
+<li><a href="#关联数组">关联数组</a></li>
+<li><a href="#条件语句">条件语句</a></li>
+<li><a href="#循环">循环</a></li>
+<li><a href="#函数">函数</a><ul>
+<li><a href="#匿名函数">匿名函数</a></li>
+<li><a href="#值传递和地址传递">值传递和地址传递</a></li>
+<li><a href="#箭头函数">箭头函数</a></li>
+<li><a href="#使用mapreducefilter函数循环数组处理">使用map,reduce,filter函数循环数组处理</a></li>
+</ul>
+</li>
+<li><a href="#面向对象">面向对象</a><ul>
+<li><a href="#面向对象讨论">面向对象讨论</a></li>
+<li><a href="#如何构建对象">如何构建对象</a></li>
+<li><a href="#属性和方法">属性和方法</a></li>
+<li><a href="#继承">继承</a></li>
+<li><a href="#重写">重写</a></li>
+<li><a href="#静态">静态</a></li>
+<li><a href="#对象比较">对象比较</a></li>
+<li><a href="#对象遍历">对象遍历</a></li>
+<li><a href="#对象克隆">对象克隆</a></li>
+<li><a href="#魔术方法">魔术方法</a></li>
+</ul>
+</li>
+<li><a href="#文件包含">文件包含</a></li>
+<li><a href="#文档系统的有用常量函数和变量">文档系统的有用常量、函数和变量</a></li>
+<li><a href="#错误">错误</a></li>
+<li><a href="#异常">异常</a></li>
+<li><a href="#日期">日期</a></li>
+<li><a href="#常量和枚举">常量和枚举</a></li>
+<li><a href="#PHP-web平台部署">PHP web平台部署</a><ul>
+<li><a href="#处理HTTP请求">处理HTTP请求</a></li>
+<li><a href="#_SEVER-对象">$_SEVER 对象</a></li>
+<li><a href="#使用cookies">使用cookies</a></li>
+<li><a href="#Sessions">Sessions</a></li>
+<li><a href="#IO">IO</a></li>
+<li><a href="#database">database</a></li>
+<li><a href="#JSON">JSON</a></li>
+<li><a href="#email">email</a></li>
+</ul>
+</li>
+<li><a href="#Composer">Composer</a></li>
+<li><a href="#部署PHP应用">部署PHP应用</a></li>
+</ul>
+<a id="more"></a>
+
+<h1 id="原始博客地址"><a href="#原始博客地址" class="headerlink" title="原始博客地址"></a>原始博客地址</h1><p><span class="exturl" data-url="aHR0cHM6Ly90aGV2YWxsZXlvZmNvZGUuY29tL3BocC8=" title="https://thevalleyofcode.com/php/">https://thevalleyofcode.com/php/<i class="fa fa-external-link"></i></span></p>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>PHP是一个两级分化的语言，觉得它好的人称赞它简单，PHP的语法比较自由上手非常简单。而不好的人则会像我一样认为是个<strong>四不像</strong>语言，既有前端脚本的影子，但是同时支持面向对象的方式组合代码，总是会有种奇怪的感觉。</p>
+<p>但是不得不承认，世界上绝大多数WEB网站都是PHP构建的，PHP是web领域当之无愧的佼佼者。虽然这语言现在在国内是一潭死水，但是在国外它是能排进前十的热门编程语言。</p>
+<p>PHP在短短的几年内快速发展，从最开始几年的PHP4和PHP5的膨胀，到现在PHP8的版本发布，更新迭代的速度还是很快的。</p>
+<h1 id="过往历史"><a href="#过往历史" class="headerlink" title="过往历史"></a>过往历史</h1><p>PHP起源于1994年的个人博客网站，作者是rasmus lerdorf，PHP在1997到2000随着互联网的快速崛起并且爆炸式增长。</p>
+<p>用途：</p>
+<ul>
+<li>和HTML存在一点点交互动态的HTML语言，以及web应用程序当中对外提供访问。</li>
+<li>Facebook就是构建在PHP网站之上的，早期微微博也同样用的PHP语言</li>
+<li>wiki百科同样使用PHP构建</li>
+</ul>
+<h2 id="PHP是一个怎么样的语言"><a href="#PHP是一个怎么样的语言" class="headerlink" title="PHP是一个怎么样的语言"></a>PHP是一个怎么样的语言</h2><p>虽然PHP被戏称脚本语言，但是实际上它是解释型语言，和广大编译运行的服务端语言没什么区别。只不过和其他大部分解释型语言不同点是PHP<strong>不需要编译</strong>就可以运行，或者可以认为编译的动作本身就是<strong>自动</strong>的。这和Java，GO以及c语言等等都有很大不同。在JAVA领域PHP非常像JSP，但是实际对比会发现要比JSP更灵活和方便，也更好用。</p>
+<blockquote>
+<p>这个语言内部可自动通过编译器把代码翻译成机器可以认识以及可以运行的语言。</p>
+</blockquote>
+<p>从个人角度看PHP被称作脚本语言是比较合适的词，因为它在web领域如鱼得水。此外因为PHP是动态类型语言，开发者不需要关注变量类型，但是有时候又因为类型转化的问题出现一些难以察觉的错误。</p>
+<p>动态类型语言是高级编程语言的趋势这一点毋庸置疑。就连JDK11也实现了 <strong>var</strong> 关键词的动态类型语法糖定义就可以看出端倪。</p>
+<p>最后用作者的原文总结：PHP是一门很像JavaScript的语言，不同的是它有动态类型，灵活类型的解释型<strong>后端</strong>语言。</p>
+<h1 id="设置PHP"><a href="#设置PHP" class="headerlink" title="设置PHP"></a>设置PHP</h1><p>本部分作者介绍了mamp的安装使用，个人没有使用经验就不详细记录了，对于PHP作者推荐使用VScode 编辑器开发，个人使用下来发现确实好用，当然Jerbrian的PHP IDE也不错，对于常年使用IDEA的开发人员基本可以无缝衔接。</p>
+<p>PHP 开发一般依赖<strong>套件</strong>，PHP本身就是起源于个人博客专职于WEB Application领域，所以他需要最为根本的软件比如<strong>Apach，Mysql</strong>，<strong>Redis</strong>等等。</p>
+<p>PHP开源套件软件很多，这里就不过多展开了。当然套件开发不是强制的，当然开发者开发过程中也可以单独部署中间件和数据库。</p>
+<p>对于php的web应用，必备组件无外乎下面几个：</p>
+<ul>
+<li>PHP语言环境变量，推荐最新版的PHP8。</li>
+<li>数据库，通常以MySQL为主。</li>
+<li>apache或者nignix作为web服务器。</li>
+</ul>
+<p>PHP是面向http web应用程序开发语言，很多时候都需要和HTML页面配合，这和古老的JSP语言有点类似，但是实际使用的时候更多是和模板引擎以及框架配合。</p>
+<h1 id="第一个PHP程序"><a href="#第一个PHP程序" class="headerlink" title="第一个PHP程序"></a>第一个PHP程序</h1><p>PHP的Helloworld非常简单，只需要在mamp或者其他PHP程序的开发软件根目录创建<code>index.html</code>的文件即可。很多web server服务器基本都使用<strong>index.html</strong>作为默认的访问页面，所以如果直接访问localhost端口的webserver根路径，那么就会展示对应<code>index.html</code>页面。</p>
+<p>PHP代码通常以及<code>&lt;?php</code>开头以及<code>?&gt;</code>结尾，中间编写有关PHP语言代码即可，我们可以在<code>index.html</code>文件全文替换成下面的代码。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">'World'</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p> 虽然访问的是html页面，但是里面的PHP代码却会被识别翻译并且执行。</p>
+</blockquote>
+<h1 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h1><p>PHP是动态类型语言，定义变量方式如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$a = <span class="number">5</span>;</span><br><span class="line">$b = <span class="string">'444'</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>PHP支持下面的基础类型：</p>
+<ul>
+<li><code>bool</code> boolean values (true/false)</li>
+<li><code>int</code> integer numbers (no decimals)</li>
+<li><code>float</code> floating-point numbers (decimals)</li>
+<li><code>string</code> strings</li>
+<li><code>array</code> arrays</li>
+<li><code>object</code> objects</li>
+<li><code>null</code> a value that means “no value assigned”</li>
+</ul>
+<p>如果要知道变量的数据类型，可以使用<code>var_dump()</code>的方法检查：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$age = <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line">var_dump($age);</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h1><p>PHP的基础操作符：</p>
+<p>算数操作： <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> (division), <code>%</code> (remainder) and <code>**</code> (exponential).</p>
+<p>赋值操作：<code>=</code></p>
+<p>比较操作：<code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>，此外还有相等和全等操作，含义和JS的类似，相等可以类型不匹配比如 5==’5’，全等类型必须一致，比如5===’5’就是false。</p>
+<ul>
+<li><p><code>==</code> returns true if the two operands are equal.</p>
+</li>
+<li><p><code>===</code> returns true if the two operands are identical.</p>
+</li>
+</ul>
+<p>和比较操作相反的有!==以及!=符号。</p>
+<p>自增操作：++和 - - 操作。</p>
+<p>特殊符号：think new lines <code>\n</code> or tabs <code>\t</code></p>
+<p>拼接操作：PHP和其他语言比较大的区别，那就是类似字符串拼接用的是 “.”</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$fullName = $firstName . <span class="string">' '</span> . $lastName;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="字符串操作"><a href="#字符串操作" class="headerlink" title="字符串操作"></a>字符串操作</h2><p>字符串的操作和其他后端语言类似，下面简单列举博客中的一些实验，这里直接上代码就不过多解释了：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$name = <span class="string">'Flavio'</span>;</span><br><span class="line">strlen($name); <span class="comment">//6</span></span><br><span class="line"></span><br><span class="line">$name = <span class="string">'Flavio'</span>;</span><br><span class="line">substr($name, <span class="number">3</span>); <span class="comment">//"vio" - start at position 3, get all the rest</span></span><br><span class="line">substr($name, <span class="number">2</span>, <span class="number">2</span>); <span class="comment">//"av" - start at position 2, get 2 items</span></span><br><span class="line"></span><br><span class="line">$name = <span class="string">'Flavio'</span>;</span><br><span class="line">str_replace(<span class="string">'avio'</span>, <span class="string">'ower'</span>, $name); <span class="comment">//"Flower"</span></span><br><span class="line"></span><br><span class="line">$name = <span class="string">'Flavio'</span>;</span><br><span class="line">$itemObserved = str_replace(<span class="string">'avio'</span>, <span class="string">'ower'</span>, $name); <span class="comment">//"Flower"</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24udHJpbS5waHA=" title="https://www.php.net/manual/en/function.trim.php">trim()<i class="fa fa-external-link"></i></span> strips white space at the beginning and end of a string</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24uc3RydG91cHBlci5waHA=" title="https://www.php.net/manual/en/function.strtoupper.php">strtoupper()<i class="fa fa-external-link"></i></span> makes a string uppercase</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24uc3RydG9sb3dlci5waHA=" title="https://www.php.net/manual/en/function.strtolower.php">strtolower()<i class="fa fa-external-link"></i></span> makes a string lowercase</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24udWNmaXJzdC5waHA=" title="https://www.php.net/manual/en/function.ucfirst.php">ucfirst()<i class="fa fa-external-link"></i></span> makes the first character uppercase</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24uc3RycG9zLnBocA==" title="https://www.php.net/manual/en/function.strpos.php">strpos()<i class="fa fa-external-link"></i></span> finds the firsts occurrence of a substring in the string</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24uZXhwbG9kZS5waHA=" title="https://www.php.net/manual/en/function.explode.php">explode()<i class="fa fa-external-link"></i></span> to split a string into an array</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24uaW1wbG9kZS5waHA=" title="https://www.php.net/manual/en/function.implode.php">implode()<i class="fa fa-external-link"></i></span> to join array elements in a string</li>
+</ul>
+<h1 id="编写注释"><a href="#编写注释" class="headerlink" title="编写注释"></a>编写注释</h1><p>编写注释的方法如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// single comment</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">this is a comment</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//or</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * this is a comment</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//or to comment out a portion of code inside a line:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* this is a comment */</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="和数字有关的内置函数"><a href="#和数字有关的内置函数" class="headerlink" title="和数字有关的内置函数"></a>和数字有关的内置函数</h1><p>作者事先列举一些和数字或者数学计算有关函数：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24ucm91bmQucGhw" title="https://www.php.net/manual/en/function.round.php">round()<i class="fa fa-external-link"></i></span> to round a decimal number, up/down depending if the value is &gt; 0.5 or smaller</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24uY2VpbC5waHA=" title="https://www.php.net/manual/en/function.ceil.php">ceil()<i class="fa fa-external-link"></i></span> to round a a decimal number up</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24uZmxvb3IucGhw" title="https://www.php.net/manual/en/function.floor.php">floor()<i class="fa fa-external-link"></i></span> to round a decimal number down</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24ucmFuZC5waHA=" title="https://www.php.net/manual/en/function.rand.php">rand()<i class="fa fa-external-link"></i></span> generates a random integer</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24ubWluLnBocA==" title="https://www.php.net/manual/en/function.min.php">min()<i class="fa fa-external-link"></i></span> finds the lowest number in the numbers passed as arguments</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24ubWF4LnBocA==" title="https://www.php.net/manual/en/function.max.php">max()<i class="fa fa-external-link"></i></span> finds the highest number in the numbers passed as arguments</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vZnVuY3Rpb24uaXMtbmFuLnBocA==" title="https://www.php.net/manual/en/function.is-nan.php">is_nan()<i class="fa fa-external-link"></i></span> returns true if the number is not a number</li>
+</ul>
+<h1 id="Array数组"><a href="#Array数组" class="headerlink" title="Array数组"></a>Array数组</h1><p>数组定义可以用方括号或者array函数，数组可以当做其他编程语言的列表（容器）看待，不需要定义长度并且容量自动增长。</p>
+<p>列表里面的元素类型可以不一致，甚至元素可以是另一个列表。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数组定义</span></span><br><span class="line">$list = [];</span><br><span class="line"></span><br><span class="line">$list = <span class="keyword">array</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化定义</span></span><br><span class="line">$list = [<span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">$list = <span class="keyword">array</span>(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">$list = [<span class="string">'a'</span>, <span class="string">'b'</span>];</span><br><span class="line">$list[<span class="number">0</span>]; <span class="comment">//'a' --the index starts at 0</span></span><br><span class="line">$list[<span class="number">1</span>]; <span class="comment">//'b'</span></span><br><span class="line"></span><br><span class="line">$list = [<span class="number">1</span>, [<span class="number">2</span>, <span class="string">'test'</span>]];</span><br></pre></td></tr></table></figure>
+
+<p>添加元素可以使用空方括号的方式设置值，这时候参数会自动在末尾追加。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$list = [<span class="string">'a'</span>, <span class="string">'b'</span>];</span><br><span class="line">$list[] = <span class="string">'c'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">$list == [</span></span><br><span class="line"><span class="comment">  "a",</span></span><br><span class="line"><span class="comment">  "b",</span></span><br><span class="line"><span class="comment">  "c",</span></span><br><span class="line"><span class="comment">]</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>使用<strong>array_unshift</strong> 添加元素到列表头部：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$list = [<span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line">array_unshift($list, <span class="string">'a'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">$list == [</span></span><br><span class="line"><span class="comment">  "a",</span></span><br><span class="line"><span class="comment">  "b",</span></span><br><span class="line"><span class="comment">  "c",</span></span><br><span class="line"><span class="comment">]</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>使用count函数计算数组的元素数量：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$list = [<span class="string">'a'</span>, <span class="string">'b'</span>];</span><br><span class="line"></span><br><span class="line">count($list); <span class="comment">//2</span></span><br></pre></td></tr></table></figure>
+
+<p>检查元素是否在数组，使用<strong>in_array</strong> 函数`：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$list = [<span class="string">'a'</span>, <span class="string">'b'</span>];</span><br><span class="line"></span><br><span class="line">in_array(<span class="string">'b'</span>, $list); <span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="arrays常用函数"><a href="#arrays常用函数" class="headerlink" title="arrays常用函数"></a>arrays常用函数</h2><p>常用函数根据作者笔记记录即可。</p>
+<ul>
+<li><code>is_array()</code> to check if a variable is an array</li>
+<li><code>array_unique()</code> to remove duplicate values from an array</li>
+<li><code>array_search()</code> to search a value in the array and returns the key</li>
+<li><code>array_reverse()</code> to reverse an array</li>
+<li><code>array_reduce()</code> to reduce an array to a single value using a callback function</li>
+<li><code>array_map()</code> to apply a callback function to each item in the array. Typically used to create a new array by modifying the values of an existing array, without altering that.</li>
+<li><code>array_filter()</code> to filter an array to a single value using a callback function</li>
+<li><code>max()</code> to get the maximum value contained in the array</li>
+<li><code>min()</code> to get the minimum value contained in the array</li>
+<li><code>array_rand()</code> to get a random item from the array</li>
+<li><code>array_count_values()</code> to count all the values in the array</li>
+<li><code>implode()</code> to turn an array into a string</li>
+<li><code>array_pop()</code> to remove the last item of the array and return its value</li>
+<li><code>array_shift()</code> same as <code>array_pop()</code> but removes the first item instead of the last</li>
+<li><code>sort()</code> to sort an array</li>
+<li><code>rsort()</code> to sort an array in reversing order</li>
+<li><code>array_walk()</code> similarly to <code>array_map()</code> does something for every item in the array, but in addition it can change values in the existing array</li>
+</ul>
+<p>&#x20;</p>
+<h1 id="关联数组"><a href="#关联数组" class="headerlink" title="关联数组"></a>关联数组</h1><p>到目前为止，我们已经使用了带有增量数字索引的数组：0、1、2… 您还可以使用带有命名索引（键）的数组，我们称它们为关联数组：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$list = [<span class="string">'first'</span> =&gt; <span class="string">'a'</span>, <span class="string">'second'</span> =&gt; <span class="string">'b'</span>];</span><br><span class="line"></span><br><span class="line">$list[<span class="string">'first'</span>] <span class="comment">//'a'</span></span><br><span class="line">$list[<span class="string">'second'</span>] <span class="comment">//'b'</span></span><br></pre></td></tr></table></figure>
+
+<p>可以通过关联数组进行标记key以及value，关联数组同样有比较多的操作方法：</p>
+<ul>
+<li><code>array_key_exists()</code> to check if a key exists in the array</li>
+<li><code>array_keys()</code> to get all the keys from the array</li>
+<li><code>array_values()</code> to get all the values from the array</li>
+<li><code>asort()</code> to sort an associative array by value</li>
+<li><code>arsort()</code> to sort an associative array in descending order by value</li>
+<li><code>ksort()</code> to sort an associative array by key</li>
+<li><code>krsort()</code> to sort an associative array in descending order by key</li>
+</ul>
+<p>在此处查看所有有关联数组函数：<span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vcmVmLmFycmF5LnBocA==" title="https://www.php.net/manual/en/ref.array.php"> https://www.php.net/manual/en/ref.array.php<i class="fa fa-external-link"></i></span></p>
+<h1 id="条件语句"><a href="#条件语句" class="headerlink" title="条件语句"></a>条件语句</h1><p>条件语句的最基础用法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$age = <span class="number">17</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ($age &gt; <span class="number">18</span>) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'You can enter the pub'</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'You cannot enter the pub'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里用了cannot而不是can’t是因为单引号嵌套会出现“截断”导致报错，需要单引号内部嵌套需要使用转义符<code>\</code><strong>反斜杠</strong>。</p>
+<p><code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code>, <code>===</code> , <code>!=</code>, <code>!==</code> 这些符号在实际使用和条件语句一起使用：</p>
+<p>这里需要注意PHP提供了专门的 elseif，而不能像其他语言一样使用 <code>else[空格]if</code> 的语法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$age = <span class="number">17</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ($age &gt; <span class="number">20</span>) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'You are 20+'</span>;</span><br><span class="line">&#125; <span class="keyword">elseif</span> ($age &gt; <span class="number">18</span>) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'You are 18+'</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'You are &lt;18'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Swtich的语法和其他编程语言是一致的：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$age = <span class="number">17</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span>($age) &#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">15</span>:</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'You are 15'</span>;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">16</span>:</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'You are 16'</span>;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">17</span>:</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'You are 17'</span>;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">18</span>:</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'You are 18'</span>;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">default</span>:</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"You are $age"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h1><p>PHP的循环语句语法有<code>while</code>, <code>do while</code>, <code>for</code>, and <code>foreach</code>，<code>while</code>和<code>do while</code>的方法和大部分编程语言没什么不同。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$counter = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> ($counter &lt; <span class="number">10</span>) &#123;</span><br><span class="line">  <span class="keyword">echo</span> $counter;</span><br><span class="line">  $counter++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$counter = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">  <span class="keyword">echo</span> $counter;</span><br><span class="line">  $counter++;</span><br><span class="line">&#125; <span class="keyword">while</span> ($counter &lt; <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<p>主要差别是<code>foreach</code>语法，可以用他遍历列表，也可以用来遍历列表获取索引，也就遍历关联数组的<code>key/value</code>值。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$list = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($list <span class="keyword">as</span> $value) &#123;</span><br><span class="line">  <span class="keyword">echo</span> $value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$list = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($list <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">  <span class="keyword">echo</span> $key;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于普通for循环，可以使用count函数计算数组长度的size。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$list = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; count($list); $i++) &#123;</span><br><span class="line">  <span class="keyword">echo</span> $list[$i];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//result: abc</span></span><br></pre></td></tr></table></figure>
+
+<p>和循环搭配使用的break和continue语法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$list = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; count($list); $i++) &#123;</span><br><span class="line">  <span class="keyword">if</span> ($list[$i] == <span class="string">'b'</span>) &#123;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">echo</span> $list[$i];</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// result a</span></span><br><span class="line"></span><br><span class="line">$list = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; count($list); $i++) &#123;</span><br><span class="line">  <span class="keyword">if</span> ($list[$i] == <span class="string">'b'</span>) &#123;</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">echo</span> $list[$i];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//result: ac</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><p>PHP函数的主要特点：</p>
+<ul>
+<li>PHP的函数只支持单返回值。</li>
+<li>如果没有返回值或者省略则接收为null，注意这里是有陷阱的，如果调用一个无返回值的方法，会获得null的结果，PHP并不会对此报错。</li>
+<li>参数可以等号设置默认值。</li>
+<li>可以指定参数类型，也可以省略，省略会自动根据上下文猜测类型。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendEmail</span><span class="params">($to)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">"send an email to $to"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sendEmail(<span class="string">'test@test.com'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// result: send an email to test@test.com</span></span><br></pre></td></tr></table></figure>
+
+<p>可以手动指定参数的类型，当然绝大多数情况下不会这样写（很啰嗦还浪费时间），所以看一下就可以直接忘记：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendEmail</span><span class="params">(string $to, string $subject, string $body)</span> </span>&#123;</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PHP函数的参数支持定义的时候指定默认值，如果调用方没有传值就使用默认值：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendEmail</span><span class="params">($to, $subject = <span class="string">'test'</span>, $body = <span class="string">'test'</span>)</span> </span>&#123;</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sendEmail(<span class="string">'test@test.com'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>带返回值的函数定义如下，我们同样可以手动指定函数的返回值类型：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendEmail</span><span class="params">($to)</span>: <span class="title">bool</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendEmail</span><span class="params">($to)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$success = sendEmail(<span class="string">'test@test.com'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ($success) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'email sent successfully'</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'error sending the email'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h2><p>PHP的匿名函数和JavaScript的写法是类似的，使用变量接收不带名字的<code>function</code>方法，由于不带返回值的函数默认返回Null，所以可以认为匿名函数的变量就是Null。</p>
+<p>匿名函数是支持变量传递的，语法是在匿名方法后面追加<strong>use</strong>和<strong>括号</strong>。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$test = <span class="string">'test'</span>;</span><br><span class="line"></span><br><span class="line">$myfunction = <span class="function"><span class="keyword">function</span><span class="params">()</span> <span class="title">use</span> <span class="params">($test)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">echo</span> $test;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">'ok'</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$myfunction()</span><br></pre></td></tr></table></figure>
+
+<h2 id="值传递和地址传递"><a href="#值传递和地址传递" class="headerlink" title="值传递和地址传递"></a>值传递和地址传递</h2><p>PHP默认情况下的参数传递都是<strong>值传递</strong>，也就是说外部的参数传递在函数内部出现改变是<strong>不会</strong>一并改变的，因为值传递是用了一份变量副本进行数据操作。</p>
+<p>地址传递或者说引用传递需要在参数前面加<strong>取地址</strong>的符号，这里的写法就类似C语言的指针了。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$character = <span class="string">'a'</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">(&amp;$c)</span> </span>&#123;</span><br><span class="line">  $c = <span class="string">'b'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">test($character);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $character; <span class="comment">//'b'</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>PHP的箭头函数相当于JS的<strong>函数式编程</strong>，和Java的箭头函数类似，但是箭头函数用了等号而已。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$printTest = fn() =&gt; <span class="string">'test'</span>;</span><br><span class="line"></span><br><span class="line">$printTest(); <span class="comment">//'test'</span></span><br><span class="line"></span><br><span class="line">$multiply = fn($a, $b) =&gt; $a * $b;</span><br><span class="line"></span><br><span class="line">$multiply(<span class="number">2</span>, <span class="number">4</span>) <span class="comment">//8</span></span><br></pre></td></tr></table></figure>
+
+<p>前面提到过匿名函数需要使用 <code>use</code>语句接收外部参数，而箭头函数就<strong>不需要</strong>如此定义便可以直接接收外部参数，写法方便和简洁易懂：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$a = <span class="number">2</span>;</span><br><span class="line">$b = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">$multiply = fn() =&gt; $a * $b;</span><br><span class="line"></span><br><span class="line">$multiply()</span><br></pre></td></tr></table></figure>
+
+<p>总之PHP的函数有三种定义方法，普通函数，箭头函数和匿名函数。</p>
+<h2 id="使用map-reduce-filter函数循环数组处理"><a href="#使用map-reduce-filter函数循环数组处理" class="headerlink" title="使用map,reduce,filter函数循环数组处理"></a>使用map,reduce,filter函数循环数组处理</h2><p><strong>array_map</strong>：函数可以对于每个元素调用回调函数并且返回结果，最后会返回一个全新的列表。首个参数是回调函数，其次是列表。</p>
+<p><strong>array_filter</strong>：函数则是对于每个元素调用回调函数并且过滤掉不符合的元素，注意第一个参数是数组，然后第二个参数是回调函数，filter是符合函数回调结果的可以认为是有效的。</p>
+<p><strong>array_reduce</strong>：函数比较特殊一些，最后有一个参数有一个初始值，函数会从初始化的值对后续的每个元素进行回调函数合并，比如计算阶乘的值就可以用这个函数。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];</span><br><span class="line">$doubles = array_map(fn($value) =&gt; $value * <span class="number">2</span>, $numbers);</span><br><span class="line"></span><br><span class="line"><span class="comment">//$doubles is now [2, 4, 6, 8]</span></span><br><span class="line"></span><br><span class="line">$numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];</span><br><span class="line">$even = array_filter($numbers, fn($value) =&gt; $value % <span class="number">2</span> === <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//$even is now [2, 4]</span></span><br><span class="line"></span><br><span class="line">$numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];</span><br><span class="line"></span><br><span class="line">$result = array_reduce($numbers, fn($carry, $value) =&gt; $carry * $value, <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h1><h2 id="面向对象讨论"><a href="#面向对象讨论" class="headerlink" title="面向对象讨论"></a>面向对象讨论</h2><p>PHP的面向对象和JAVA的比较相似，可以说大部分语法都可以通用。</p>
+<h2 id="如何构建对象"><a href="#如何构建对象" class="headerlink" title="如何构建对象"></a>如何构建对象</h2><p>构建对象在PHP当中也是使用new的方式，可以通过new构建多个对象，但是对象名称不能重复。</p>
+<h2 id="属性和方法"><a href="#属性和方法" class="headerlink" title="属性和方法"></a>属性和方法</h2><p>属性和方法常常配合使用，这里一并介绍魔术方法构造参数。方法可以指定构造函数 <code>__construction</code>，其中可以添加初始化对象的行为，PHP 当中对象有很多内置函数都以 <strong>双下划线</strong>开头。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> $name;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">bark</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="keyword">$this</span>-&gt;name . <span class="string">' barked!'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$roger = <span class="keyword">new</span> Dog(<span class="string">'Roger'</span>);</span><br><span class="line">$roger-&gt;bark();</span><br></pre></td></tr></table></figure>
+
+<p>每个类默认有一个不执行任何工作的空构造器，重写之后如果无空构造函数，需要传入指定参数才能初始化，否则会出现PHP的error异常。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> string $name;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">bark</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="keyword">$this</span>-&gt;name . <span class="string">' barked!'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$roger = <span class="keyword">new</span> Dog(<span class="string">'Roger'</span>);</span><br><span class="line">$roger-&gt;name; <span class="comment">//'Roger'</span></span><br><span class="line">$roger-&gt;bark(); <span class="comment">//'Roger barked!'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// result</span></span><br><span class="line">TypeError: Dog::__construct():</span><br><span class="line">Argument <span class="comment">#1 ($name) must be of type int,</span></span><br><span class="line">string given on line <span class="number">14</span></span><br></pre></td></tr></table></figure>
+
+<p>对象属性在PHP中存在三个限定符号，可以手动指定下面三个级别：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span></span><br></pre></td></tr></table></figure>
+
+<p>这几个类别分别对应了继承对象可见，私有，对外公开，和JAVA、Python语言类似，这里就不过多扩展含义和更多用法案例了。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> $name;</span><br><span class="line">  <span class="keyword">public</span> $age;</span><br><span class="line">  <span class="keyword">public</span> $color;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$roger = <span class="keyword">new</span> Dog();</span><br><span class="line"></span><br><span class="line">$roger-&gt;name = <span class="string">'Roger'</span>;</span><br><span class="line">$roger-&gt;age = <span class="number">10</span>;</span><br><span class="line">$roger-&gt;color = <span class="string">'gray'</span>;</span><br><span class="line"></span><br><span class="line">var_dump($roger);</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">object(Dog)#1 (3) &#123;</span></span><br><span class="line"><span class="comment">  ["name"]=&gt; string(5) "Roger"</span></span><br><span class="line"><span class="comment">  ["age"]=&gt; int(10)</span></span><br><span class="line"><span class="comment">  ["color"]=&gt; string(4) "gray"</span></span><br><span class="line"><span class="comment">&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>如果需要外部访问，多数情况建议用get和set的方式，对于类内部的属性首先需要定义public，其次引用需要使用<strong>this→xxx</strong>的方式，注意这个this是不能省略的，也是和JAVA差别比较大的点，而外部则为对象的变量引用设置的名称加上→符号，比如<strong>dog→bark()</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$roger = <span class="keyword">new</span> Dog(<span class="string">'Roger'</span>);</span><br><span class="line">$roger-&gt;name; <span class="comment">//'Roger'</span></span><br><span class="line">$roger-&gt;bark(); <span class="comment">//'Roger barked!'</span></span><br></pre></td></tr></table></figure>
+
+<p>属性只有在<strong>public</strong>修饰符描述的情况下才能对外访问和修改，如果为private或者protected则不行，限定符的安全访问和Java的没什么区别。</p>
+<blockquote>
+<p> 方法内部的$this比较特殊，代表当前对象本身引用，和后端编程语言JAVA等类似。</p>
+</blockquote>
+<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>PHP的对象支持继承，具体语法如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$roger = <span class="keyword">new</span> Dog();</span><br><span class="line">$roger-&gt;eat();</span><br></pre></td></tr></table></figure>
+
+<h2 id="重写"><a href="#重写" class="headerlink" title="重写"></a>重写</h2><p>PHP重写和JAVA的规则类似，所以我们按照JAVA的对象继承理解即可：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> $age;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'the animal is eating'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'the dog is eating'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="静态"><a href="#静态" class="headerlink" title="静态"></a>静态</h2><p>静态方法和静态属性都是在属性或者方法名称前面加static。对于static类或者对象内部使用self来定义，引用方式为两个冒号，比如<strong>User::getName</strong>。</p>
+<p><strong>User::getName</strong>标识静态变量的写法是强制规定的，否则编译器会报错<code>Undefined variable &#39;$version&#39;.intelephense(1008)</code>。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Utils</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> $version = <span class="string">'1.0'</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 静态常量的对象内部引用</span></span><br><span class="line"><span class="keyword">self</span>::$version;</span><br><span class="line"><span class="comment">// 静态常量的外部引用</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Utils</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">version</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'1.0'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">Utils::version</span><br></pre></td></tr></table></figure>
+
+<h2 id="对象比较"><a href="#对象比较" class="headerlink" title="对象比较"></a>对象比较</h2><p>前面的操作符提到过双等号和三等号有不同的含义，对于大部分情况下对象的比较<code>==</code>和<code>===</code>会返回true和false，下面的例子就是很好的解释。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> $name = <span class="string">'Good dog'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$roger = <span class="keyword">new</span> Dog();</span><br><span class="line">$syd = <span class="keyword">new</span> Dog();</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $roger == $syd; <span class="comment">//true</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $roger === $syd; <span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="对象遍历"><a href="#对象遍历" class="headerlink" title="对象遍历"></a>对象遍历</h2><p>对象遍历通常是遍历所有的内部属性值，可以使用关联循环的写法，这个对象遍历是PHP的一些语法特性，算是比较有意思的东西。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> $name = <span class="string">'Good dog'</span>;</span><br><span class="line">  <span class="keyword">public</span> $age = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">public</span> $color = <span class="string">'gray'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$dog = <span class="keyword">new</span> Dog();</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($dog <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">  <span class="keyword">echo</span> $key . <span class="string">': '</span> . $value . <span class="string">'&lt;br&gt;'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="对象克隆"><a href="#对象克隆" class="headerlink" title="对象克隆"></a>对象克隆</h2><p>PHP的<code>clone</code> 方法和JAVA一样属于浅拷贝，深入拷贝需要额外编写一些代码。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> $name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$roger = <span class="keyword">new</span> Dog();</span><br><span class="line">$roger-&gt;name = <span class="string">'Roger'</span>;</span><br><span class="line"></span><br><span class="line">$syd = <span class="keyword">clone</span> $roger;</span><br></pre></td></tr></table></figure>
+
+<h2 id="魔术方法"><a href="#魔术方法" class="headerlink" title="魔术方法"></a>魔术方法</h2><p>魔术方法可以理解为PHP为了方便开发者管理对象而提供的一些”切面“，开发者可以通过重写对象的特定方法控制行为：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> $name;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__clone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;cloned = <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$roger = <span class="keyword">new</span> Dog();</span><br><span class="line">$roger-&gt;name = <span class="string">'Roger'</span>;</span><br><span class="line"></span><br><span class="line">$syd = <span class="keyword">clone</span> $roger;</span><br><span class="line"><span class="keyword">echo</span> $syd-&gt;cloned;</span><br></pre></td></tr></table></figure>
+
+<p>其他的魔术方法包含：<code>__call()</code>, <code>__get()</code>, <code>__set()</code>, <code>__isset()</code>, <code>__toString()</code>。</p>
+<h1 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h1><p>文件包含的操作在PHP中有四种写法：<code>include</code>, <code>include_once</code>, <code>require</code>, <code>require_once</code>.</p>
+<blockquote>
+<p><code>include</code> loads the content of another PHP file, using a relative path.</p>
+<p><code>require</code> does the same, but if there’s any error doing so, the program halts. <code>include</code> will only generate a warning.</p>
+</blockquote>
+<p>“include”：使用相对路径加载另一个PHP文档的内容。</p>
+<p>“require”：执行相同的操作，但如果载入有任何错误进程将停止。注意“include”<strong>只会生成警告</strong>，require会直接抛出异常信息。</p>
+<p><strong><code>include_once</code>和<code>require_once</code>在没有<code>_once</code>的情况下执行与其相应函数相同的操作，但它们额外确保在进程执行期间仅包含一次文件。</strong></p>
+<p>按照作者的经验法则是经验法则永远不要使用包含或要求，因为您可能会加载同一个文档2次，include_once和require_once帮助您避免此问题。</p>
+<p>下面介绍文件包含的相关操作：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require_once</span>(<span class="string">'test.php'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//now we have access to the functions, classes</span></span><br><span class="line"><span class="comment">//and variables defined in the `test.php` file</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span>(<span class="string">'../test.php'</span>);</span><br><span class="line"><span class="keyword">require_once</span>(<span class="string">'test/test.php'</span>);</span><br><span class="line"><span class="keyword">require_once</span>(<span class="string">'/var/www/test/file.php'</span>);</span><br></pre></td></tr></table></figure>
+
+<h1 id="文档系统的有用常量、函数和变量"><a href="#文档系统的有用常量、函数和变量" class="headerlink" title="文档系统的有用常量、函数和变量"></a>文档系统的有用常量、函数和变量</h1><p>有关文件的魔法常量：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">__FILE__</span></span><br></pre></td></tr></table></figure>
+
+<p>还有一个和服务器有关的全局常量：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$_SERVER[<span class="string">'SCRIPT_FILENAME'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>除此之外其他的一些常用常量或者函数：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">getcwd():内置函数</span><br><span class="line"><span class="keyword">__DIR__</span>：另一个神奇常量</span><br><span class="line">将<span class="keyword">__FILE__</span>与 dirname（） 组合以获得</span><br><span class="line"></span><br><span class="line">当前文档夹的完整路径：dirname(<span class="keyword">__FILE__</span>)</span><br><span class="line">使用 $_SERVER[“DOCUMENT_ROOT”]</span><br></pre></td></tr></table></figure>
+
+<h1 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h1><p>PHP的错误或者说异常信息分为下面三类：</p>
+<ul>
+<li>Warnings</li>
+<li>Notices</li>
+<li>Errors</li>
+</ul>
+<p>前面两个错误都是警告类似的，虽然有可能在程序运行过程中会出现问题但是不影响程序运行，而最后一个error则是会由PHP的解释器直接返回报错信息。</p>
+<p>默认情况下PHP是不展示错误信息的，我们可以修改`<code>php.ini</code>`的配置进行调整。为了更快的了解配置文件的位置和相关信息，我们可以使用 phpinfo()方法和查看：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105203.png" alt=""></p>
+<p>原作者案例的对应的路径为：<code>/Applications/MAMP/bin/php/php8.1.0/conf/php.ini</code>，默认情况下为off，意味着错误将不再显示在网站中，但在这种情况下将在 MAMP（如果是别的开发脚手架则为其他的路径） 的 logs 文档夹的php_error.log文档中看到它们。</p>
+<p>个人的wampServer的对应错误日志信息如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105234.png" alt=""></p>
+<p>我们可以指定错误日志重定向到特定的目录：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">; Log errors to specified file. PHP<span class="string">'s default behavior is to leave this value</span></span><br><span class="line"><span class="string">; empty.</span></span><br><span class="line"><span class="string">; http://php.net/error-log</span></span><br><span class="line"><span class="string">; Example:</span></span><br><span class="line"><span class="string">;error_log = php_errors.log</span></span><br></pre></td></tr></table></figure>
+
+<p>添加错误信息可以通过方法error_log(‘test’);处理，下面截取框架的用法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Logs user information to webserver logs.</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> string $user   user name</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> string $status status message</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">logUser</span><span class="params">($user, $status = <span class="string">'ok'</span>)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (function_exists(<span class="string">'apache_note'</span>)) &#123;</span><br><span class="line">           apache_note(<span class="string">'userID'</span>, $user);</span><br><span class="line">           apache_note(<span class="string">'userStatus'</span>, $status);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">/* Do not log successful authentications */</span></span><br><span class="line">       <span class="keyword">if</span> (! $GLOBALS[<span class="string">'PMA_Config'</span>]-&gt;get(<span class="string">'AuthLogSuccess'</span>) &amp;&amp; $status == <span class="string">'ok'</span>) &#123;</span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       $log_file = <span class="keyword">self</span>::getLogDestination();</span><br><span class="line">       <span class="keyword">if</span> (<span class="keyword">empty</span>($log_file)) &#123;</span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       $message = <span class="keyword">self</span>::getLogMessage($user, $status);</span><br><span class="line">       <span class="keyword">if</span> ($log_file == <span class="string">'syslog'</span>) &#123;</span><br><span class="line">           <span class="keyword">if</span> (function_exists(<span class="string">'syslog'</span>)) &#123;</span><br><span class="line">               @openlog(<span class="string">'phpMyAdmin'</span>, LOG_NDELAY | LOG_PID, LOG_AUTHPRIV);</span><br><span class="line">               @syslog(LOG_WARNING, $message);</span><br><span class="line">               closelog();</span><br><span class="line">           &#125;</span><br><span class="line">       &#125; <span class="keyword">elseif</span> ($log_file == <span class="string">'php'</span>) &#123;</span><br><span class="line">           @error_log($message);</span><br><span class="line">       &#125; <span class="keyword">elseif</span> ($log_file == <span class="string">'sapi'</span>) &#123;</span><br><span class="line">           @error_log($message, <span class="number">4</span>);</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           @error_log(</span><br><span class="line">               date(<span class="string">'M d H:i:s'</span>) . <span class="string">' phpmyadmin: '</span> . $message . <span class="string">"\n"</span>,</span><br><span class="line">               <span class="number">3</span>, $log_file</span><br><span class="line">           );</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><p>异常通常是除开编程语言语法之外的可控错误，PHP和JAVA一样使用了<code>try{...}catch(Exception $e)</code>的方式进行处理：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="comment">//do something</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Throwable $e) &#123;</span><br><span class="line"><span class="comment">//we can do something here if an exception happens</span></span><br><span class="line">  <span class="keyword">echo</span> $e-&gt;getMessage();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实验中我们可以使用除0的异常检查异常信息的打印：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="number">1</span> / <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105147.png" alt=""></p>
+<p>异常处理的原则是细分不同的具体异常给出不同的提示，PHP的异常捕获规则和JAVA一致：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="number">1</span> / <span class="number">0</span>;</span><br><span class="line">&#125; <span class="keyword">catch</span> (DivisionByZeroError $e) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'Ooops I divided by zero!'</span>;</span><br><span class="line">&#125; <span class="keyword">catch</span> (Throwable $e) &#123;</span><br><span class="line">  <span class="keyword">echo</span> $e-&gt;getMessage();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PHP同样支持finally的写法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="number">1</span> / <span class="number">0</span>;</span><br><span class="line">&#125; <span class="keyword">catch</span> (DivisionByZeroError $e) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'Ooops I divided by zero!'</span>;</span><br><span class="line">&#125; <span class="keyword">catch</span> (Throwable $e) &#123;</span><br><span class="line">  <span class="keyword">echo</span> $e-&gt;getMessage();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">' ...done!'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>更多异常处理可以参考下面的网站：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vcmVzZXJ2ZWQuZXhjZXB0aW9ucy5waHA=" title="https://www.php.net/manual/en/reserved.exceptions.php">https://www.php.net/manual/en/reserved.exceptions.php<i class="fa fa-external-link"></i></span></p>
+<h1 id="日期"><a href="#日期" class="headerlink" title="日期"></a>日期</h1><h1 id="常量和枚举"><a href="#常量和枚举" class="headerlink" title="常量和枚举"></a>常量和枚举</h1><p>我们可以在 PHP 中使用 define（） 内置函数定义常量，使用语法如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="string">'TEST'</span>, <span class="string">'some value'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这种常量定义在使用的时候不需要使用$符号：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="string">'TEST'</span>, <span class="string">'some value'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> TEST;</span><br></pre></td></tr></table></figure>
+
+<p><code>define</code> 类似 C 语言的 typeof。</p>
+<p>其他定义常量的方法是const：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> BREED = <span class="string">'Siberian Husky'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>第三种定义常量的方法是定义枚举：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">enum Status &#123;</span><br><span class="line">  <span class="keyword">case</span> EATING;</span><br><span class="line">  <span class="keyword">case</span> SLEEPING;</span><br><span class="line">  <span class="keyword">case</span> RUNNING;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>枚举常量的使用方法如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> Status $status;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$dog = <span class="keyword">new</span> Dog();</span><br><span class="line"></span><br><span class="line">$dog-&gt;status = Status::RUNNING;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ($dog-&gt;status == Status::SLEEPING) &#123;</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="PHP-web平台部署"><a href="#PHP-web平台部署" class="headerlink" title="PHP web平台部署"></a>PHP web平台部署</h1><p>PHP 是一种服务器端语言，通常以 2 种方式使用。</p>
+<ol>
+<li>第一种方法是类似JSP一样在HTML中嵌入PHP后端语言代码达到动态数据展示的效果。</li>
+<li>第二种是PHP更像是负责生成“应用进程”的引擎，模板语言来生成HTML，并且所有内容都由我们所谓的框架管理。（推荐）</li>
+</ol>
+<h2 id="处理HTTP请求"><a href="#处理HTTP请求" class="headerlink" title="处理HTTP请求"></a>处理HTTP请求</h2><p>本部分介绍了在没有任何框架的情况下如何接收和处理HTTP请求，我们可以在webroot的路径创建一个test.php文件，此时如果对于脚手架配置伪静态，可以直接通过/test访问。</p>
+<p>WEB应用绝大部分都是POST和GET请求，PHP提供了<code>$_GET</code>, <code>$_POST</code> and <code>$_REQUEST</code> 这些方法</p>
+<blockquote>
+<p>$ <em>GET：对于任何请求，您可以使用  $\</em> GET 对象访问所有查询字符串数据，该对象称为超全局，并在我们所有的 PHP 文档中自动可用。<br>$_ POST：对于 POST、PUT 和 DELETE 请求，更有可能需要以<code>urlencoding</code> 数据的形式发布的数据或使用 FormData 对象，PHP 使用<code>$_POST</code>为您提供该对象。<br>$<em>REQUEST：$\</em> REQUEST囊括了上面两个魔法常量的内容。</p>
+</blockquote>
+<p>下面的案例介绍了有关这些魔法常量的用法</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">if</span> (<span class="keyword">isset</span>($_GET[<span class="string">'tables'</span>])) &#123;</span><br><span class="line">    $constrains = $GLOBALS[<span class="string">'dbi'</span>]-&gt;getForeignKeyConstrains(</span><br><span class="line">        $_REQUEST[<span class="string">'db'</span>],</span><br><span class="line">        $_GET[<span class="string">'tables'</span>]</span><br><span class="line">    );</span><br><span class="line">    $response = Response::getInstance();</span><br><span class="line">    $response-&gt;addJSON(<span class="string">'foreignKeyConstrains'</span>,$constrains);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用cookies-SEVER-对象"><a href="#使用cookies-SEVER-对象" class="headerlink" title="使用cookies$_SEVER 对象"></a>使用cookies$_SEVER 对象</h2><p><code>$_SERVER</code> 包含了许多非常有用的服务器信息，我们可以使用Phpinfo方法获取服务器内容：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105136.png" alt=""></p>
+<p>下面是基本用法：</p>
+<ul>
+<li><code>$_SERVER[&#39;HTTP_HOST&#39;]</code></li>
+<li><code>$_SERVER[&#39;HTTP_USER_AGENT&#39;]</code></li>
+<li><code>$_SERVER[&#39;SERVER_NAME&#39;]</code></li>
+<li><code>$_SERVER[&#39;SERVER_ADDR&#39;]</code></li>
+<li><code>$_SERVER[&#39;SERVER_PORT&#39;]</code></li>
+<li><code>$_SERVER[&#39;DOCUMENT_ROOT&#39;]</code></li>
+<li><code>$_SERVER[&#39;REQUEST_URI&#39;]</code></li>
+<li><code>$_SERVER[&#39;SCRIPT_NAME&#39;]</code></li>
+<li><code>$_SERVER[&#39;REMOTE_ADDR&#39;]</code></li>
+</ul>
+<p>$_GET方法的使用案例如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;form&gt;</span><br><span class="line">  &lt;input type=<span class="string">"text"</span> name=<span class="string">"name"</span> /&gt;</span><br><span class="line">  &lt;input type=<span class="string">"submit"</span> /&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_GET[<span class="string">'name'</span>])) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'&lt;p&gt;The name is '</span> . $_GET[<span class="string">'name'</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>$_POST方法的使用案例如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;form **method=<span class="string">"POST"</span>**&gt;</span><br><span class="line">  &lt;input type=<span class="string">"text"</span> name=<span class="string">"name"</span> /&gt;</span><br><span class="line">  &lt;input type=<span class="string">"submit"</span> /&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_POST[<span class="string">'name'</span>])) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'&lt;p&gt;The name is '</span> . $_POST[<span class="string">'name'</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这些内容直接使用的情况比较少，通常在框架中可以看到类似的引用。</p>
+<h2 id="使用cookies"><a href="#使用cookies" class="headerlink" title="使用cookies"></a>使用cookies</h2><p>PHP通过<code>$_COOKIE</code>变量可以获取到所有和Cookie有关的信息。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_COOKIE[<span class="string">'name'</span>])) &#123;</span><br><span class="line">  $name = $_COOKIE[<span class="string">'name'</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://www.php.net/manual/en/function.setcookie.php" target="_blank" rel="noopener"><code>setcookie()</code></a> 方法可以设置cookie信息，我们可以添加第三个参数来说明 cookie 何时过期。如果省略，Cookie 将在会话结束时/浏览器关闭时过期。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setcookie(<span class="string">'name'</span>, <span class="string">'Flavio'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>比如下面的代码可以设置7天之后过期：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setcookie(<span class="string">'name'</span>, <span class="string">'Flavio'</span>, time() + <span class="number">3600</span> * <span class="number">24</span> * <span class="number">7</span>);</span><br></pre></td></tr></table></figure>
+
+<p>我们只能在 Cookie 中存储有限数量的数据，用户在清除浏览器数据时可以在客户端清除 Cookie。下面是Cookie使用的一些简单例子：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_POST[<span class="string">'name'</span>])) &#123;</span><br><span class="line">  setcookie(<span class="string">'name'</span>, $_POST[<span class="string">'name'</span>]);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_POST[<span class="string">'name'</span>])) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'&lt;p&gt;Hello '</span> . $_POST[<span class="string">'name'</span>];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">isset</span>($_COOKIE[<span class="string">'name'</span>])) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'&lt;p&gt;Hello '</span> . $_COOKIE[<span class="string">'name'</span>];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line">&lt;form method=<span class="string">"POST"</span>&gt;</span><br><span class="line">  &lt;input type=<span class="string">"text"</span> name=<span class="string">"name"</span> /&gt;</span><br><span class="line">  &lt;input type=<span class="string">"submit"</span> /&gt;</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Sessions"><a href="#Sessions" class="headerlink" title="Sessions"></a>Sessions</h2><p>Cookie 的一个非常有趣的用例是基于 cookie 的会话。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>你会发现访问对应文件之后，你将会看到一个新cookie名称（<strong>PHPSESSID</strong>）被定义。这个ID就是我们常说的<strong>session ID</strong>。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/image-20230123212351539.png" alt="image-20230123212351539"></p>
+<p>与我们使用 cookie 的方式类似，我们现在可以使用 $_SESSION 来存储用户发送的信息，但这次它不存储在客户端。只有PHPSESSID会被存储到客户端。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_POST[<span class="string">'name'</span>])) &#123;</span><br><span class="line">  $_SESSION[<span class="string">'name'</span>] = $_POST[<span class="string">'name'</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_POST[<span class="string">'name'</span>])) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">'&lt;p&gt;Hello '</span> . $_POST[<span class="string">'name'</span>];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">isset</span>($_SESSION[<span class="string">'name'</span>])) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'&lt;p&gt;Hello '</span> . $_SESSION[<span class="string">'name'</span>];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line">&lt;form method=<span class="string">"POST"</span>&gt;</span><br><span class="line">  &lt;input type=<span class="string">"text"</span> name=<span class="string">"name"</span> /&gt;</span><br><span class="line">  &lt;input type=<span class="string">"submit"</span> /&gt;</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/image-20230123212507500.png" alt="image-20230123212507500"></p>
+<p>可以使用<code>session_unset()</code>方法删除Session当中的信息，如果需要移除session的cookie信息，可以使用下面的方法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setcookie(session_name(), <span class="string">''</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="IO"><a href="#IO" class="headerlink" title="IO"></a>IO</h2><p>PHP服务端访问可以使用下面的方法：</p>
+<p>文件是否存在<code>file_exists()</code>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file_exists(<span class="string">'test.txt'</span>) <span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+
+<p>文件大小获取：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filesize(<span class="string">'test.txt'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>PHP的文件读写使用同一个方法，不同的是提供访问参数使用了 读模式和写模式：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$file = fopen(<span class="string">'test.txt'</span>, <span class="string">'r'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>上面的方法为只读模式，同时提供描述信息作为返回值。我们可以调用 <code>fclose($fd)</code> 终止文件读写。</p>
+<p>下面是把文件内容读取到变量的方法，这里吐槽一下使用要比JAVA的套版代码简单很多，也比较符合新生高级编程语言的设计思路。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$file = fopen(<span class="string">'test.txt'</span>, <span class="string">'r'</span>)</span><br><span class="line"></span><br><span class="line">fread($file, filesize(<span class="string">'test.txt'</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">//or</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!feof($file)) &#123;</span><br><span class="line">	$data .= fgets($file, <span class="number">5000</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：feof() 检查我们是否尚未到达文档末尾，因为 <strong>fgets 一次读取 5000 字节</strong></p>
+</blockquote>
+<p>逐行扫描文件套版代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$file = fopen(<span class="string">'test.txt'</span>, <span class="string">'r'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(!feof($file)) &#123;</span><br><span class="line">  $line = fgets($file);</span><br><span class="line">  <span class="comment">//do something</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>要写入文件，必须一开始打开文件的时候指定写入模式，同时配合<code>fwrite</code>函数以及<code>fclose</code>形成完整的文件读写。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$data = <span class="string">'test'</span>;</span><br><span class="line">$file = fopen(<span class="string">'test.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line">fwrite($file, $data);</span><br><span class="line">fclose($file);</span><br></pre></td></tr></table></figure>
+
+<p>删除文件的方法如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unlink(<span class="string">'test.txt'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>更多文件读写方法参考：<span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vcmVmLmZpbGVzeXN0ZW0ucGhw" title="https://www.php.net/manual/en/ref.filesystem.php">https://www.php.net/manual/en/ref.filesystem.php<i class="fa fa-external-link"></i></span></p>
+<h2 id="database"><a href="#database" class="headerlink" title="database"></a>database</h2><p>所有后端语言必备的东西，这里列举了几个常用的database：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vYm9vay5wZ3NxbC5waHA=" title="https://www.php.net/manual/en/book.pgsql.php">PostgreSQL<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vc2V0Lm15c3FsaW5mby5waHA=" title="https://www.php.net/manual/en/set.mysqlinfo.php">MySQL<i class="fa fa-external-link"></i></span> / MariaDB</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vc2V0Lm1vbmdvZGIucGhw" title="https://www.php.net/manual/en/set.mongodb.php">MongoDB<i class="fa fa-external-link"></i></span></li>
+</ul>
+<p>绝大多数情况如果你需要一个数据库，你应该使用<strong>框架或ORM</strong>，这将节省SQL注入的安全问题，比如比较常见的<span class="exturl" data-url="aHR0cHM6Ly9sYXJhdmVsLmNvbS9kb2NzL2Vsb3F1ZW50" title="https://laravel.com/docs/eloquent">Laravel’s Eloquent<i class="fa fa-external-link"></i></span> 框架。</p>
+<h2 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h2><p><span class="exturl" data-url="aHR0cHM6Ly9mbGF2aW9jb3Blcy5jb20vanNvbi8=" title="https://flaviocopes.com/json/">JSON<i class="fa fa-external-link"></i></span> 是一种可移植的数据格式，我们用于表示数据并将数据从客户端发送到服务器。PHP提供了下面两个常用方法来实现JSON字符串和对象之间的转化：</p>
+<ul>
+<li><code>json_encode()</code> to encode a variable into JSON</li>
+<li><code>json_decode()</code> to decode a JSON string into a data type (object, array…)</li>
+</ul>
+<p>下面是一些简单使用例子：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$test = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"></span><br><span class="line">$encoded = json_encode($test); <span class="comment">// "["a","b","c"]" (a string)</span></span><br><span class="line"></span><br><span class="line">$decoded = json_decode($encoded); <span class="comment">// [ "a", "b", "c" ] (an array)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="email"><a href="#email" class="headerlink" title="email"></a>email</h2><p>发送邮件可以使用下面的方法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mail(<span class="string">'test@test.com'</span>, <span class="string">'this subject'</span>, <span class="string">'the body'</span>);</span><br></pre></td></tr></table></figure>
+
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL1BIUE1haWxlci9QSFBNYWlsZXI=" title="https://github.com/PHPMailer/PHPMailer">https://github.com/PHPMailer/PHPMailer<i class="fa fa-external-link"></i></span> 提供了更多有邮件相关的实用API。</p>
+<h1 id="部署PHP应用Composer"><a href="#部署PHP应用Composer" class="headerlink" title="部署PHP应用Composer"></a>部署PHP应用Composer</h1><p>Composer类似NodeJS的 NPM，和大部分的一站式依赖管理是类似的。Composer安装之后的页面内容如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105104.png" alt=""></p>
+<p>可以使用<code>composer require nesbot/carbon</code> 命令对于项目进行依赖导入。正确导入之后会出现<code>composer.json</code>以及<code>composer.lock</code>文件，<code>composer.lock</code>文件可以对于依赖版本进行锁定。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"require"</span>: &#123;</span><br><span class="line">        <span class="attr">"nesbot/carbon"</span>: <span class="string">"^2.58"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当对应目录引入依赖之后，在PHP文件当中可以使用下面的用法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Carbon</span>\<span class="title">Carbon</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> Carbon::now();</span><br></pre></td></tr></table></figure>
+
+<p>最终访问对应页面的展示内容如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124105041.png" alt=""></p>
+<p><strong>“require ‘vendor/autoload.php’;</strong>”行作用是<strong>启用自动加载</strong>。这里顺带提一下还记得我们谈论require_once（）和include_once（）吗？我们不需要手动搜索要包含的文档，我们只需使用 <strong>use</strong>  关键字将库导入我们的代码即可。</p>
+<h1 id="部署PHP应用"><a href="#部署PHP应用" class="headerlink" title="部署PHP应用"></a>部署PHP应用</h1><p>最后作者写了一篇从零开始搭建GIT的文章比较有意思，本部分内容建议结合一些框架项目学习，博客提到的内容比较入门这里就不记录了。</p>
+<p>See <span class="exturl" data-url="aHR0cHM6Ly9mbGF2aW9jb3Blcy5jb20vZ2l0aHViLXNldHVwLWZyb20temVyby8=" title="https://flaviocopes.com/github-setup-from-zero/">how to setup Git and GitHub from zero<i class="fa fa-external-link"></i></span></p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>更多的当作英文学习资料看待，顺带能学到一些技术内容，挺不错的。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/01/24/note/" title="【PHP】英文博客专栏PHP快速入门个人笔记">https://whitestore.top/2023/01/24/note/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/01/interviewcollection/" rel="prev" title="Java collection of high-frequency interview questions">
+      <i class="fa fa-chevron-left"></i> Java collection of high-frequency interview questions
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#英文博客专栏PHP快速入门"><span class="nav-number">1.</span> <span class="nav-text">英文博客专栏PHP快速入门</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#目录"><span class="nav-number">3.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原始博客地址"><span class="nav-number">4.</span> <span class="nav-text">原始博客地址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">5.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#过往历史"><span class="nav-number">6.</span> <span class="nav-text">过往历史</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP是一个怎么样的语言"><span class="nav-number">6.1.</span> <span class="nav-text">PHP是一个怎么样的语言</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#设置PHP"><span class="nav-number">7.</span> <span class="nav-text">设置PHP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第一个PHP程序"><span class="nav-number">8.</span> <span class="nav-text">第一个PHP程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本类型"><span class="nav-number">9.</span> <span class="nav-text">基本类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作符"><span class="nav-number">10.</span> <span class="nav-text">操作符</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串操作"><span class="nav-number">10.1.</span> <span class="nav-text">字符串操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写注释"><span class="nav-number">11.</span> <span class="nav-text">编写注释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#和数字有关的内置函数"><span class="nav-number">12.</span> <span class="nav-text">和数字有关的内置函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Array数组"><span class="nav-number">13.</span> <span class="nav-text">Array数组</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#arrays常用函数"><span class="nav-number">13.1.</span> <span class="nav-text">arrays常用函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关联数组"><span class="nav-number">14.</span> <span class="nav-text">关联数组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#条件语句"><span class="nav-number">15.</span> <span class="nav-text">条件语句</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#循环"><span class="nav-number">16.</span> <span class="nav-text">循环</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#函数"><span class="nav-number">17.</span> <span class="nav-text">函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#匿名函数"><span class="nav-number">17.1.</span> <span class="nav-text">匿名函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#值传递和地址传递"><span class="nav-number">17.2.</span> <span class="nav-text">值传递和地址传递</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#箭头函数"><span class="nav-number">17.3.</span> <span class="nav-text">箭头函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用map-reduce-filter函数循环数组处理"><span class="nav-number">17.4.</span> <span class="nav-text">使用map,reduce,filter函数循环数组处理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#面向对象"><span class="nav-number">18.</span> <span class="nav-text">面向对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#面向对象讨论"><span class="nav-number">18.1.</span> <span class="nav-text">面向对象讨论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何构建对象"><span class="nav-number">18.2.</span> <span class="nav-text">如何构建对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性和方法"><span class="nav-number">18.3.</span> <span class="nav-text">属性和方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承"><span class="nav-number">18.4.</span> <span class="nav-text">继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重写"><span class="nav-number">18.5.</span> <span class="nav-text">重写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态"><span class="nav-number">18.6.</span> <span class="nav-text">静态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象比较"><span class="nav-number">18.7.</span> <span class="nav-text">对象比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象遍历"><span class="nav-number">18.8.</span> <span class="nav-text">对象遍历</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象克隆"><span class="nav-number">18.9.</span> <span class="nav-text">对象克隆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#魔术方法"><span class="nav-number">18.10.</span> <span class="nav-text">魔术方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件包含"><span class="nav-number">19.</span> <span class="nav-text">文件包含</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文档系统的有用常量、函数和变量"><span class="nav-number">20.</span> <span class="nav-text">文档系统的有用常量、函数和变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#错误"><span class="nav-number">21.</span> <span class="nav-text">错误</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#异常"><span class="nav-number">22.</span> <span class="nav-text">异常</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#日期"><span class="nav-number">23.</span> <span class="nav-text">日期</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常量和枚举"><span class="nav-number">24.</span> <span class="nav-text">常量和枚举</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP-web平台部署"><span class="nav-number">25.</span> <span class="nav-text">PHP web平台部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#处理HTTP请求"><span class="nav-number">25.1.</span> <span class="nav-text">处理HTTP请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用cookies-SEVER-对象"><span class="nav-number">25.2.</span> <span class="nav-text">使用cookies$_SEVER 对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用cookies"><span class="nav-number">25.3.</span> <span class="nav-text">使用cookies</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sessions"><span class="nav-number">25.4.</span> <span class="nav-text">Sessions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO"><span class="nav-number">25.5.</span> <span class="nav-text">IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#database"><span class="nav-number">25.6.</span> <span class="nav-text">database</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSON"><span class="nav-number">25.7.</span> <span class="nav-text">JSON</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#email"><span class="nav-number">25.8.</span> <span class="nav-text">email</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署PHP应用Composer"><span class="nav-number">26.</span> <span class="nav-text">部署PHP应用Composer</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署PHP应用"><span class="nav-number">27.</span> <span class="nav-text">部署PHP应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">28.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">190</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">19:55</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
