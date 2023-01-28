@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Linux命令行学习和使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Linux】Linux命令快速学习神器tldr、cheat介绍和使用">
+<meta property="og:url" content="https://whitestore.top/2023/01/28/tldrcheat/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Linux命令行学习和使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230125221920.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124231214.png">
+<meta property="article:published_time" content="2023-01-28T03:42:10.000Z">
+<meta property="article:modified_time" content="2023-01-28T03:43:26.380Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="tldr">
+<meta property="article:tag" content="cheat">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230125221920.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/01/28/tldrcheat/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Linux】Linux命令快速学习神器tldr、cheat介绍和使用 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/01/28/tldrcheat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Linux】Linux命令快速学习神器tldr、cheat介绍和使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-01-28 11:42:10 / 修改时间：11:43:26" itemprop="dateCreated datePublished" datetime="2023-01-28T11:42:10+08:00">2023-01-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/01/28/tldrcheat/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/01/28/tldrcheat/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+            <div class="post-description">Linux命令行学习和使用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本文介绍tldr和Cheat等实用工具的安装和使用，这些工具虽然本身不能替代<code>man</code>、<code>info</code>等命令，但是在很多时候想要快速学习和掌握命令但是忘记常见用法非常有帮助。</p>
+<blockquote>
+<p>个人看法：对于非运维人员简直是神器。</p>
+</blockquote>
+<p><strong>tldr</strong>：全称 too long, Don’t read，翻译成中文就是太长不想阅读，比–help或者man这些传统手册更便捷、更便于使用。<br><strong>cheat</strong>：作弊。</p>
+<p>这两个命令有什么用？这里简单举个例子就知道了：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@VM-8-8-ubuntu:~$ sudo tldr ls</span><br><span class="line"></span><br><span class="line">  ls</span><br><span class="line"></span><br><span class="line">  List directory contents.</span><br><span class="line">  More information: https://www.gnu.org/software/coreutils/ls.</span><br><span class="line"></span><br><span class="line">  - List files one per line:</span><br><span class="line">    ls -1</span><br><span class="line"></span><br><span class="line">  - List all files, including hidden files:</span><br><span class="line">    ls -a</span><br><span class="line"></span><br><span class="line">  - List all files, with trailing / added to directory names:</span><br><span class="line">    ls -F</span><br><span class="line"></span><br><span class="line">  - Long format list (permissions, ownership, size, and modification date) of all files:</span><br><span class="line">    ls -la</span><br><span class="line"></span><br><span class="line">  - Long format list with size displayed using human-readable units (KiB, MiB, GiB):</span><br><span class="line">    ls -lh</span><br><span class="line"></span><br><span class="line">  - Long format list sorted by size (descending):</span><br><span class="line">    ls -lS</span><br><span class="line"></span><br><span class="line">  - Long format list of all files, sorted by modification date (oldest first):</span><br><span class="line">    ls -ltr</span><br><span class="line"></span><br><span class="line">  - Only list directories:</span><br><span class="line">    ls -d */</span><br></pre></td></tr></table></figure>
+
+<h1 id="内容概览"><a href="#内容概览" class="headerlink" title="内容概览"></a>内容概览</h1><ol>
+<li>Ubuntu和CenterOs介绍和安装<strong>tldr</strong>命令。<ol>
+<li>CenterOs和Ubuntu的安装方式使用</li>
+<li>Ubuntu的常见问题和解决方案。</li>
+</ol>
+</li>
+<li>Ubuntu和CenterOs介绍和安装<strong>cheat</strong>命令。<ol>
+<li>安装验证和使用</li>
+<li>Ubuntu和CenterOs处理方式一致</li>
+</ol>
+</li>
+<li>类似项目列举。</li>
+</ol>
+<a id="more"></a>
+
+
+<h1 id="官方资料"><a href="#官方资料" class="headerlink" title="官方资料"></a>官方资料</h1><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230125221920.png" alt=""></p>
+<p>在线wiki搜索：<span class="exturl" data-url="aHR0cHM6Ly90bGRyLm9zdGVyYS5pby8=" title="https://tldr.ostera.io/">tldr | simplified, community driven man pages (ostera.io)<i class="fa fa-external-link"></i></span><br>（注意国内访问比较慢，需要自带魔法）</p>
+<p>官方的安装介绍页面地址：<span class="exturl" data-url="aHR0cHM6Ly90bGRyLnNoLyNpbnN0YWxsYXRpb24=" title="https://tldr.sh/#installation">https://tldr.sh/#installation<i class="fa fa-external-link"></i></span></p>
+<p>tldr项目地址：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3RsZHItcGFnZXMvdGxkcg==" title="https://github.com/tldr-pages/tldr">https://github.com/tldr-pages/tldr<i class="fa fa-external-link"></i></span></p>
+<h1 id="tldr"><a href="#tldr" class="headerlink" title="tldr"></a>tldr</h1><h2 id="Ubuntu安装tldr"><a href="#Ubuntu安装tldr" class="headerlink" title="Ubuntu安装tldr"></a>Ubuntu安装tldr</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>Ubuntu 安装比较简单，直接使用<code>sudo apt-get install tldr</code>安装。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install tldr</span><br></pre></td></tr></table></figure>
+
+<p>如果上面的命令安装之后依然无法使用，可以按照下面的命令进行安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install npm</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install nodejs-legacy</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install n -g</span><br></pre></td></tr></table></figure>
+
+<p>注意这里有两种方式，一种是使用latest版本，另外一种是使用stable版本，个人建议使用stable版本，如果Ubuntu的系统版本比较低，则需要降低node版本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo n stable</span><br><span class="line">（或 sudo n latest）</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install -g tldr</span><br></pre></td></tr></table></figure>
+
+<p>当然也可以不使用nodeJS，也可以使用<code>pip</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 install tldr</span><br></pre></td></tr></table></figure>
+
+<p>如果是Mac系统就十分简单了：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install tldr</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h3><p>在ubuntu当中验证直接使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@VM-8-8-ubuntu:~$ tldr</span><br><span class="line">tldr - Simplified and community-driven man pages</span><br><span class="line"></span><br><span class="line">Usage: tldr [-v|--version] </span><br><span class="line">            ((-u|--update) | [-p|--platform PLATFORM] COMMAND | (-a|--about))</span><br><span class="line">  tldr Client program</span><br><span class="line"></span><br><span class="line">Available options:</span><br><span class="line">  -h,--help                Show this help text</span><br><span class="line">  -v,--version             Show version</span><br><span class="line">  -u,--update              Update offline cache of tldr pages</span><br><span class="line">  -p,--platform PLATFORM   Prioritize specfic platform while searching. Valid</span><br><span class="line">                           values include linux, osx, windows, sunos</span><br><span class="line">  COMMAND                  name of the command</span><br><span class="line">  -a,--about               About this program</span><br></pre></td></tr></table></figure>
+
+<h2 id="Ubuntu安装常见问题"><a href="#Ubuntu安装常见问题" class="headerlink" title="Ubuntu安装常见问题"></a>Ubuntu安装常见问题</h2><h3 id="No-tldr-entry-for-xxx"><a href="#No-tldr-entry-for-xxx" class="headerlink" title="No tldr entry for xxx"></a>No tldr entry for xxx</h3><p>Ubuntu安装tldr使用<code>tldr ls</code>之后，很有可能出现类似<code>No tldr entry for ls</code>的命令，出现这种情况可能有下面两种情况：</p>
+<ul>
+<li>首次安装需要更新tldr的“数据库”。</li>
+<li>当天用户安装使用<code>sudo</code>，tldr的数据库没法访问。</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@VM-8-8-ubuntu:~$ tldr ls</span><br><span class="line">No tldr entry <span class="keyword">for</span> ls</span><br></pre></td></tr></table></figure>
+
+<p>更新tldr的数据库：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@VM-8-8-ubuntu:~$ sudo tldr --update</span><br><span class="line">✔ Updating...</span><br><span class="line">✔ Creating index...</span><br></pre></td></tr></table></figure>
+
+<p>当然也可以使用<code>tldr -u</code>：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@VM-8-8-ubuntu:~$ sudo tldr --u</span><br></pre></td></tr></table></figure>
+
+<p><strong>sudo安装使用</strong></p>
+<p>个人的云服务器ubuntu使用了<code>sudo</code>安装之后，需要使用<code>sudo tldr</code>才可以正常使用，因为日常登录的用户为<code>ubuntu</code>用户，安装的过程全部使用<code>sudo</code>，查询某个命令也需要使用root身份进行查询。</p>
+<p>如果出现<code>No tldr entry for xxx</code>，有可能是你用的<code>sudo</code>安装但是当前的用户却没有<code>sudo</code>的权限。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@VM-8-8-ubuntu:~$ sudo tldr ls</span><br><span class="line"></span><br><span class="line">  ls</span><br><span class="line"></span><br><span class="line">  List directory contents.</span><br><span class="line">  More information: https://www.gnu.org/software/coreutils/ls.</span><br><span class="line"></span><br><span class="line">  - List files one per line:</span><br><span class="line">    ls -1</span><br><span class="line"></span><br><span class="line">  - List all files, including hidden files:</span><br><span class="line">    ls -a</span><br><span class="line"></span><br><span class="line">  - List all files, with trailing / added to directory names:</span><br><span class="line">    ls -F</span><br><span class="line"></span><br><span class="line">  - Long format list (permissions, ownership, size, and modification date) of all files:</span><br><span class="line">    ls -la</span><br><span class="line"></span><br><span class="line">  - Long format list with size displayed using human-readable units (KiB, MiB, GiB):</span><br><span class="line">    ls -lh</span><br><span class="line"></span><br><span class="line">  - Long format list sorted by size (descending):</span><br><span class="line">    ls -lS</span><br><span class="line"></span><br><span class="line">  - Long format list of all files, sorted by modification date (oldest first):</span><br><span class="line">    ls -ltr</span><br><span class="line"></span><br><span class="line">  - Only list directories:</span><br><span class="line">    ls -d */</span><br></pre></td></tr></table></figure>
+
+<h3 id="nodeJs版本降级"><a href="#nodeJs版本降级" class="headerlink" title="nodeJs版本降级"></a>nodeJs版本降级</h3><p>版本降级相关资料参考自：<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZhYnVsb3VzMTExMS9hcnRpY2xlL2RldGFpbHMvODQ5ODM4Njk=" title="https://blog.csdn.net/Fabulous1111/article/details/84983869">https://blog.csdn.net/Fabulous1111/article/details/84983869<i class="fa fa-external-link"></i></span></p>
+<h4 id="（1）安装node版本管理模块n"><a href="#（1）安装node版本管理模块n" class="headerlink" title="（1）安装node版本管理模块n"></a>（1）安装node版本管理模块n</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install n -g</span><br></pre></td></tr></table></figure>
+
+<p>下边步骤请根据自己需要选择</p>
+<h4 id="（2）安装稳定版"><a href="#（2）安装稳定版" class="headerlink" title="（2）安装稳定版"></a>（2）安装稳定版</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo n stable</span><br></pre></td></tr></table></figure>
+
+<h4 id="（3）安装最新版"><a href="#（3）安装最新版" class="headerlink" title="（3）安装最新版"></a>（3）安装最新版</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo n latest</span><br></pre></td></tr></table></figure>
+
+<h4 id="（4）-版本降级-升级"><a href="#（4）-版本降级-升级" class="headerlink" title="（4） 版本降级/升级"></a>（4） 版本降级/升级</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo n 版本号</span><br></pre></td></tr></table></figure>
+
+<h4 id="（5）检测目前安装了哪些版本的node"><a href="#（5）检测目前安装了哪些版本的node" class="headerlink" title="（5）检测目前安装了哪些版本的node"></a>（5）检测目前安装了哪些版本的node</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">n</span><br></pre></td></tr></table></figure>
+
+<p>提示内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  ο node&#x2F;16.15.1</span><br><span class="line">    node&#x2F;18.13.0</span><br><span class="line">    node&#x2F;19.5.0</span><br><span class="line"></span><br><span class="line">Use up&#x2F;down arrow keys to select a version, return key to install, d to delete, q to quit</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="切换版本（不会删除已经安装的其他版本）"><a href="#切换版本（不会删除已经安装的其他版本）" class="headerlink" title="切换版本（不会删除已经安装的其他版本）"></a>切换版本（不会删除已经安装的其他版本）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">n 版本号</span><br></pre></td></tr></table></figure>
+
+<p>比如：<code>n 16.15.1</code></p>
+<h4 id="（7）删除版本"><a href="#（7）删除版本" class="headerlink" title="（7）删除版本"></a>（7）删除版本</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo n rm 版本号</span><br></pre></td></tr></table></figure>
+
+<h4 id="（8）直接移除Nodejs"><a href="#（8）直接移除Nodejs" class="headerlink" title="（8）直接移除Nodejs"></a>（8）直接移除Nodejs</h4><p>PS：注意不同的操作系统命令会有差别，这里为Ubuntu的卸载方式</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get remove nodejs</span><br></pre></td></tr></table></figure>
+
+<h4 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install -g n</span><br><span class="line"></span><br><span class="line">sudo n install 16.15.1 <span class="comment"># 太新的也会有问题</span></span><br></pre></td></tr></table></figure>
+
+<p>以上就是ubuntu常见问题和处理。</p>
+<h2 id="CenterOs-安装-tldr"><a href="#CenterOs-安装-tldr" class="headerlink" title="CenterOs 安装 tldr"></a>CenterOs 安装 tldr</h2><p>CenterOs的安装方式和Ubuntu类似，这里展示安装Node环境之后安装tldr并使用的过程。</p>
+<h3 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h3><ol>
+<li>安装NodeJs，如果嫌麻烦可以直接安装<code>sudo yum install -y npm</code>。</li>
+</ol>
+<p>[[【Linux】NodeJs 安装和环境变量配置]]</p>
+<ol start="2">
+<li>我们使用官方提供的命令安装。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install -g tldr</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>如果是使用NodeJs环境变量设置的方式安装，需要设置软链接，tldr命令默认会安装到<code>nodeJs</code>安装路径的<strong>Bin</strong>目录下面，如果不好理解，可以参考下面的软链接构建命令。</li>
+</ol>
+<blockquote>
+<p>还有一种方式是在Path中设置<code>/xx/nodejs/bin</code> 为环境变量</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zxd@localhost ~]$ sudo ln -s /opt/nodeJs/bin/tldr /usr/<span class="built_in">local</span>/bin</span><br><span class="line">[sudo] password <span class="keyword">for</span> zxd:</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果软链接路径构建错误，可以使用<code>sudo ln -fs /opt/nodeJs/bin/tldr /usr/local/bin</code>加入 <code>-f</code>参数强制覆盖之前的软链接。</p>
+</blockquote>
+<h3 id="验证-1"><a href="#验证-1" class="headerlink" title="验证"></a>验证</h3><p>因为构建了<code>tldr</code>软链接，我们可以再任意路径使用这个命令。如果敲入<code>tldr</code>命令出现下面的提示证明安装成功：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">[zxd@localhost bin]$ tldr</span><br><span class="line">Usage: tldr <span class="built_in">command</span> [options]</span><br><span class="line"></span><br><span class="line">Simplified and community-driven man pages</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  -v, --version            Display version</span><br><span class="line">  -l, --list               List all commands <span class="keyword">for</span> the chosen platform <span class="keyword">in</span> the cache</span><br><span class="line">  -a, --list-all           List all commands <span class="keyword">in</span> the cache</span><br><span class="line">  -1, --single-column      List single <span class="built_in">command</span> per line (use with options -l or -a)</span><br><span class="line">  -r, --random             Show a random <span class="built_in">command</span></span><br><span class="line">  -e, --random-example     Show a random example</span><br><span class="line">  -f, --render [file]      Render a specific markdown [file]</span><br><span class="line">  -m, --markdown           Output <span class="keyword">in</span> markdown format</span><br><span class="line">  -o, --os [<span class="built_in">type</span>]          Override the operating system [linux, osx, sunos, windows]</span><br><span class="line">  --linux                  Override the operating system with Linux</span><br><span class="line">  --osx                    Override the operating system with OSX</span><br><span class="line">  --sunos                  Override the operating system with SunOS</span><br><span class="line">  --windows                Override the operating system with Windows</span><br><span class="line">  -t, --theme [theme]      Color theme (simple, base16, ocean)</span><br><span class="line">  -s, --search [keywords]  Search pages using keywords</span><br><span class="line">  -u, --update             Update the <span class="built_in">local</span> cache</span><br><span class="line">  -c, --clear-cache        Clear the <span class="built_in">local</span> cache</span><br><span class="line">  -h, --<span class="built_in">help</span>               Show this <span class="built_in">help</span> message</span><br><span class="line"></span><br><span class="line">  Examples:</span><br><span class="line"></span><br><span class="line">    $ tldr tar</span><br><span class="line">    $ tldr du --os=linux</span><br><span class="line">    $ tldr --search <span class="string">"create symbolic link to file"</span></span><br><span class="line">    $ tldr --list</span><br><span class="line">    $ tldr --list-all</span><br><span class="line">    $ tldr --random</span><br><span class="line">    $ tldr --random-example</span><br><span class="line"></span><br><span class="line">  To control the cache:</span><br><span class="line"></span><br><span class="line">    $ tldr --update</span><br><span class="line">    $ tldr --clear-cache</span><br><span class="line"></span><br><span class="line">  To render a <span class="built_in">local</span> file (<span class="keyword">for</span> testing):</span><br><span class="line"></span><br><span class="line">    $ tldr --render /path/to/file.md</span><br></pre></td></tr></table></figure>
+
+<p>我们使用<code>tldr ls</code>查看<code>ls</code>命令的用法，确实赏心悦目。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">[zxd@localhost ~]$ tldr ls</span><br><span class="line">✔ Page not found. Updating cache...</span><br><span class="line">⠴ Creating index...</span><br><span class="line">✔ Creating index...</span><br><span class="line"></span><br><span class="line">  ls</span><br><span class="line"></span><br><span class="line">  List directory contents.</span><br><span class="line">  More information: https://www.gnu.org/software/coreutils/ls.</span><br><span class="line"></span><br><span class="line">  - List files one per line:</span><br><span class="line">    ls -1</span><br><span class="line"></span><br><span class="line">  - List all files, including hidden files:</span><br><span class="line">    ls -a</span><br><span class="line"></span><br><span class="line">  - List all files, with trailing / added to directory names:</span><br><span class="line">    ls -F</span><br><span class="line"></span><br><span class="line">  - Long format list (permissions, ownership, size, and modification date) of all files:</span><br><span class="line">    ls -la</span><br><span class="line"></span><br><span class="line">  - Long format list with size displayed using human-readable units (KiB, MiB, GiB):</span><br><span class="line">    ls -lh</span><br><span class="line"></span><br><span class="line">  - Long format list sorted by size (descending):</span><br><span class="line">    ls -lS</span><br><span class="line"></span><br><span class="line">  - Long format list of all files, sorted by modification date (oldest first):</span><br><span class="line">    ls -ltr</span><br><span class="line"></span><br><span class="line">  - Only list directories:</span><br><span class="line">    ls -d */</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Cheat"><a href="#Cheat" class="headerlink" title="Cheat"></a>Cheat</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>这个漫画是Cheat恶搞man命令查一个命令需要翻几本书的时间，挺有意思的。</p>
+<blockquote>
+<p>cheat：有欺骗的意思，可以直接理解为<strong>舞弊</strong>或者<strong>作弊</strong>。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230124231214.png" alt=""></p>
+<h2 id="官方资料-1"><a href="#官方资料-1" class="headerlink" title="官方资料"></a>官方资料</h2><p>github项目地址：<br><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NoZWF0L2NoZWF0" title="https://github.com/cheat/cheat">cheat/cheat: cheat allows you to create and view interactive cheatsheets on the command-line. It was designed to help remind *nix system administrators of options for commands that they use frequently, but not frequently enough to remember. (github.com)<i class="fa fa-external-link"></i></span></p>
+<p>官方安装教程：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NoZWF0L2NoZWF0L2Jsb2IvbWFzdGVyL0lOU1RBTExJTkcubWQ=" title="https://github.com/cheat/cheat/blob/master/INSTALLING.md">cheat/INSTALLING.md at master · cheat/cheat (github.com)<i class="fa fa-external-link"></i></span></p>
+<h2 id="手动安装"><a href="#手动安装" class="headerlink" title="手动安装"></a>手动安装</h2><h3 id="类Unix"><a href="#类Unix" class="headerlink" title="类Unix"></a>类Unix</h3><p>类Unix系统可以使用下面一串命令解决。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /tmp \</span><br><span class="line">  &amp;&amp; wget https://github.com/cheat/cheat/releases/download/4.4.0/cheat-linux-amd64.gz \</span><br><span class="line">  &amp;&amp; gunzip cheat-linux-amd64.gz \</span><br><span class="line">  &amp;&amp; chmod +x cheat-linux-amd64 \</span><br><span class="line">  &amp;&amp; sudo mv cheat-linux-amd64 /usr/<span class="built_in">local</span>/bin/cheat</span><br></pre></td></tr></table></figure>
+
+<p>个人的CenterOs实验如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[zxd@localhost ~]$ <span class="built_in">cd</span> /tmp \</span><br><span class="line">&gt;   &amp;&amp; wget https://github.com/cheat/cheat/releases/download/4.4.0/cheat-linux-amd64.gz \</span><br><span class="line">&gt;   &amp;&amp; gunzip cheat-linux-amd64.gz \</span><br><span class="line">&gt;   &amp;&amp; chmod +x cheat-linux-amd64 \</span><br><span class="line">&gt;   &amp;&amp; sudo mv cheat-linux-amd64 /usr/<span class="built_in">local</span>/bin/cheat</span><br><span class="line">--2023-01-28 18:34:35--  https://github.com/cheat/cheat/releases/download/4.4.0/cheat-linux-amd64.gz</span><br><span class="line">Resolving github.com (github.com)... 20.205.243.166</span><br><span class="line">Connecting to github.com (github.com)|20.205.243.166|:443... connected.</span><br><span class="line">Unable to establish SSL connection.</span><br><span class="line">[zxd@localhost tmp]$ <span class="built_in">cd</span> /tmp   &amp;&amp; wget https://github.com/cheat/cheat/releases/download/4.4.0/cheat-linux-amd64.gz   &amp;&amp; gunzip cheat-linux-amd64.gz   &amp;&amp; chmod +x cheat-linux-amd64   &amp;&amp; sudo mv cheat-linux-amd64 /usr/<span class="built_in">local</span>/bin/cheat</span><br><span class="line">--2023-01-28 18:34:59--  https://github.com/cheat/cheat/releases/download/4.4.0/cheat-linux-amd64.gz</span><br><span class="line">Resolving github.com (github.com)... </span><br><span class="line">... 省略一些安装提示信息</span><br><span class="line"></span><br><span class="line">... github访问比较慢，耐心等待</span><br><span class="line">100%[=============================================================================&gt;] 4,696,443   9.87KB/s   <span class="keyword">in</span> 6m 11s </span><br><span class="line"></span><br><span class="line">2023-01-28 18:41:13 (12.4 KB/s) - ‘cheat-linux-amd64.gz’ saved [4696443/4696443]</span><br></pre></td></tr></table></figure>
+
+<p>个人的Ubuntu云服务器的实验如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@VM-8-8-ubuntu:~$ <span class="built_in">cd</span> /tmp \</span><br><span class="line">  &amp;&amp; wget https://github.com/cheat/cheat/releases/download/4.4.0/cheat-linux-amd64.gz \</span><br><span class="line">  &amp;&amp; gunzip cheat-linux-amd64.gz \</span><br><span class="line">  &amp;&amp; chmod +x cheat-linux-amd64 \</span><br><span class="line">  &amp;&amp; sudo mv cheat-linux-amd64 /usr/<span class="built_in">local</span>/bin/cheat</span><br><span class="line">--2023-01-28 10:56:00--  https://github.com/cheat/cheat/releases/download/4.4.0/cheat-linux-amd64.gz</span><br><span class="line">... 省略信息</span><br><span class="line">Saving to: ‘cheat-linux-amd64.gz’</span><br><span class="line"></span><br><span class="line">cheat-linux-amd64.gz              100%[==========================================================&gt;]   4.48M   871KB/s    <span class="keyword">in</span> 1m 42s  </span><br><span class="line"></span><br><span class="line">2023-01-28 10:57:43 (44.9 KB/s) - ‘cheat-linux-amd64.gz’ saved [4696443/4696443]</span><br><span class="line"></span><br><span class="line">ubuntu@VM-8-8-ubuntu:/tmp$ cheat</span><br><span class="line">A config file was not found. Would you like to create one now? [Y/n]: y</span><br><span class="line">Would you like to download the community cheatsheets? [Y/n]: y</span><br><span class="line">Cloning community cheatsheets to /home/ubuntu/.config/cheat/cheatsheets/community.</span><br><span class="line">Enumerating objects: 335, <span class="keyword">done</span>.</span><br><span class="line">Counting objects: 100% (335/335), <span class="keyword">done</span>.</span><br><span class="line">Compressing objects: 100% (314/314), <span class="keyword">done</span>.</span><br><span class="line">Total 335 (delta 36), reused 274 (delta 19), pack-reused 0</span><br><span class="line">Cloning personal cheatsheets to /home/ubuntu/.config/cheat/cheatsheets/personal.</span><br><span class="line">Created config file: /home/ubuntu/.config/cheat/conf.yml</span><br><span class="line">Please <span class="built_in">read</span> this file <span class="keyword">for</span> advanced configuration information.</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：这里可能需要更改版本号（“4.4.0”）和存档（“cheat-linux-amd64.gz”），具体取决于安装平台。</p>
+</blockquote>
+<p>可以阅读 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NoZWF0L2NoZWF0L3JlbGVhc2Vz" title="https://github.com/cheat/cheat/releases">releases page<i class="fa fa-external-link"></i></span> 了解当前命令支持的平台。</p>
+<h3 id="通过-go-install安装"><a href="#通过-go-install安装" class="headerlink" title="通过 go install安装"></a>通过 <code>go install</code>安装</h3><p>如果有GO 1.17 以上的版本，可以通过<code>go install</code>安装cheat。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> install github.com/cheat/cheat/cmd/cheat@latest</span><br></pre></td></tr></table></figure>
+
+<h3 id="其他安装方式"><a href="#其他安装方式" class="headerlink" title="其他安装方式"></a>其他安装方式</h3><p>下面是官方介绍的其他安装方式。</p>
+<table>
+<thead>
+<tr>
+<th>Package manager</th>
+<th>Package(s)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>aur</td>
+<td><span class="exturl" data-url="aHR0cHM6Ly9hdXIuYXJjaGxpbnV4Lm9yZy9wYWNrYWdlcy9jaGVhdA==" title="https://aur.archlinux.org/packages/cheat">cheat<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly9hdXIuYXJjaGxpbnV4Lm9yZy9wYWNrYWdlcy9jaGVhdC1iaW4=" title="https://aur.archlinux.org/packages/cheat-bin">cheat-bin<i class="fa fa-external-link"></i></span></td>
+</tr>
+<tr>
+<td>brew</td>
+<td><span class="exturl" data-url="aHR0cHM6Ly9mb3JtdWxhZS5icmV3LnNoL2Zvcm11bGEvY2hlYXQ=" title="https://formulae.brew.sh/formula/cheat">cheat<i class="fa fa-external-link"></i></span></td>
+</tr>
+<tr>
+<td>docker</td>
+<td><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Jhbm5tYW5uL2RvY2tlci1jaGVhdA==" title="https://github.com/bannmann/docker-cheat">docker-cheat<i class="fa fa-external-link"></i></span></td>
+</tr>
+<tr>
+<td>nix</td>
+<td><span class="exturl" data-url="aHR0cHM6Ly9zZWFyY2gubml4b3Mub3JnL3BhY2thZ2VzP2NoYW5uZWw9dW5zdGFibGUmc2hvdz1jaGVhdCZmcm9tPTAmc2l6ZT01MCZzb3J0PXJlbGV2YW5jZSZ0eXBlPXBhY2thZ2VzJnF1ZXJ5PWNoZWF0" title="https://search.nixos.org/packages?channel=unstable&show=cheat&from=0&size=50&sort=relevance&type=packages&query=cheat">nixos.cheat<i class="fa fa-external-link"></i></span></td>
+</tr>
+<tr>
+<td>snap</td>
+<td><span class="exturl" data-url="aHR0cHM6Ly9zbmFwY3JhZnQuaW8vY2hlYXQ=" title="https://snapcraft.io/cheat">cheat<i class="fa fa-external-link"></i></span></td>
+</tr>
+</tbody></table>
+<h2 id="基础使用"><a href="#基础使用" class="headerlink" title="基础使用"></a>基础使用</h2><p>和tldr类似，第一次使用cheat也需要构建“数据库”，但是cheat比tldr的使用体验更好，我们只需要按照提示输入两次<code>y</code>确认即可：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[zxd@localhost tmp]$ cheat </span><br><span class="line">A config file was not found. Would you like to create one now? [Y/n]: y</span><br><span class="line">Would you like to download the community cheatsheets? [Y/n]: y</span><br><span class="line">Cloning community cheatsheets to /home/zxd/.config/cheat/cheatsheets/community.</span><br><span class="line">Enumerating objects: 335, <span class="keyword">done</span>.</span><br><span class="line">Counting objects: 100% (335/335), <span class="keyword">done</span>.</span><br><span class="line">Compressing objects: 100% (314/314), <span class="keyword">done</span>.</span><br><span class="line">Total 335 (delta 36), reused 274 (delta 19), pack-reused 0</span><br><span class="line">Cloning personal cheatsheets to /home/zxd/.config/cheat/cheatsheets/personal.</span><br><span class="line">Created config file: /home/zxd/.config/cheat/conf.yml</span><br><span class="line">Please <span class="built_in">read</span> this file <span class="keyword">for</span> advanced configuration information.</span><br></pre></td></tr></table></figure>
+
+<p>最后是直接使用，个人感觉要比tldr麻烦事情少很多：</p>
+<blockquote>
+<p>和 tldr的区别是排版的方式有点不同</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[zxd@localhost tmp]$ cheat ls</span><br><span class="line"><span class="comment"># To display everything in &lt;dir&gt;, excluding hidden files:</span></span><br><span class="line">ls &lt;dir&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># To display everything in &lt;dir&gt;, including hidden files:</span></span><br><span class="line">ls -a &lt;dir&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># To display all files, along with the size (with unit suffixes) and timestamp:</span></span><br><span class="line">ls -lh &lt;dir&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># To display files, sorted by size:</span></span><br><span class="line">ls -S &lt;dir&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># To display directories only:</span></span><br><span class="line">ls -d */ &lt;dir&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># To display directories only, include hidden:</span></span><br><span class="line">ls -d .*/ */ &lt;dir&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># To display all files sorted by changed date, most recent first:</span></span><br><span class="line">ls -ltc </span><br><span class="line"></span><br><span class="line"><span class="comment"># To display files sorted by create time:</span></span><br><span class="line">ls -lt</span><br><span class="line"></span><br><span class="line"><span class="comment"># To display files in a single column:</span></span><br><span class="line">ls -1</span><br><span class="line"></span><br><span class="line"><span class="comment"># To show ACLs (MacOS):</span></span><br><span class="line"><span class="comment"># see also `cheat chmod` for `/bin/chmod` options for ACLs</span></span><br><span class="line">/bin/ls -le</span><br><span class="line"></span><br><span class="line"><span class="comment"># To show all the subtree files (Recursive Mode):</span></span><br><span class="line">ls -R</span><br></pre></td></tr></table></figure>
+
+<p>Uuntu的使用类似：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 基础使用</span></span><br><span class="line">ubuntu@VM-8-8-ubuntu:/tmp$ cheat cp</span><br><span class="line"><span class="comment"># To copy a file:</span></span><br><span class="line">cp ~/Desktop/foo.txt ~/Downloads/foo.txt</span><br><span class="line"></span><br><span class="line"><span class="comment"># To copy a directory:</span></span><br><span class="line">cp -r ~/Desktop/cruise_pics/ ~/Pictures/</span><br><span class="line"></span><br><span class="line"><span class="comment"># To create a copy but ask to overwrite if the destination file already exists:</span></span><br><span class="line">cp -i ~/Desktop/foo.txt ~/Documents/foo.txt</span><br><span class="line"></span><br><span class="line"><span class="comment"># To create a backup file with date:</span></span><br><span class="line">cp foo.txt&#123;,.<span class="string">"<span class="variable">$(date +%Y%m%d-%H%M%S)</span>"</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># To copy a symlink that points to a directory (and is thus soft) and not</span></span><br><span class="line"><span class="comment"># 'expand' the symlink (aka, preserve its nature as a symlink):</span></span><br><span class="line"><span class="comment"># Note this does NOT work (note trailing '/'):  cp -P /path/to/symlink-dir/</span></span><br><span class="line">cp -P &lt;symlink-dir&gt; &lt;dest-dir&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># To copy sparsely:</span></span><br><span class="line">cp --sparse=always &lt;src&gt; &lt;dest&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="类似项目"><a href="#类似项目" class="headerlink" title="类似项目"></a>类似项目</h1><p>还有更多和cheat以及tldr类似的项目，这里就不过多介绍了。</p>
+<p><a href="https://github.com/cheat/cheat" target="_blank" rel="noopener"><strong>Cheat</strong></a> 允许您在命令行上创建和查看交互式备忘单。它旨在帮助提醒 Linux 系统管理员他们经常使用但不够频繁而无法记住的命令的选项。</p>
+<p><a href="https://cheat.sh/" target="_blank" rel="noopener"><strong>cheat.sh</strong></a> 将来自多个来源（包括 tldr-pages）的备忘单聚合到 1 个统一界面中。</p>
+<p><a href="https://devhints.io/" target="_blank" rel="noopener"><strong>devhints Rico</strong></a> 的备忘单不仅仅关注命令行，还包括大量与编程相关的其他备忘单。</p>
+<p><a href="https://github.com/srsudar/eg" target="_blank" rel="noopener"><strong>eg</strong></a> 在命令行上提供了详细的示例和解释。示例来自存储库，但例如支持显示自定义示例和命令以及默认值。</p>
+<p><a href="https://github.com/gnebbia/kb" target="_blank" rel="noopener"><strong>kb</strong></a> 是一个极简的命令行知识库管理器。 kb 可用于以极简主义和干净的方式组织您的笔记和备忘单。它还支持非文本文档。</p>
+<p><a href="https://github.com/denisidoro/navi" target="_blank" rel="noopener"><strong>navi</strong></a> 是一个交互式备忘单工具，它允许您即时浏览特定示例或完整命令。</p>
+<p><span class="exturl" data-url="aHR0cDovL2Jyb3BhZ2VzLm9yZy8=" title="http://bropages.org/">bropages（已弃用）<i class="fa fa-external-link"></i></span>是对手册页的高度可读性补充。它显示了 Unix 命令的简明、常见示例。这些示例由用户群提交，可以投票赞成或反对；最好的条目是人们在查找命令时最先看到的内容。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>整体体验下来个人比较偏向cheat一点，类Unix系统安装官方的教程一个名称就可以完成，而tldr需要Node环境，同时因为Node更新速度就像喝汤容易导致Linux系统版本或者内核版本低而不支持的问题。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/01/28/tldrcheat/" title="【Linux】Linux命令快速学习神器tldr、cheat介绍和使用">https://whitestore.top/2023/01/28/tldrcheat/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/01/26/ubuntuvm/" rel="prev" title="【Ubuntu】Win11 VmWare虚拟机安装Ubuntu 22.04.1-server">
+      <i class="fa fa-chevron-left"></i> 【Ubuntu】Win11 VmWare虚拟机安装Ubuntu 22.04.1-server
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内容概览"><span class="nav-number">2.</span> <span class="nav-text">内容概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#官方资料"><span class="nav-number">3.</span> <span class="nav-text">官方资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tldr"><span class="nav-number">4.</span> <span class="nav-text">tldr</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu安装tldr"><span class="nav-number">4.1.</span> <span class="nav-text">Ubuntu安装tldr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">4.1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证"><span class="nav-number">4.1.2.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu安装常见问题"><span class="nav-number">4.2.</span> <span class="nav-text">Ubuntu安装常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#No-tldr-entry-for-xxx"><span class="nav-number">4.2.1.</span> <span class="nav-text">No tldr entry for xxx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nodeJs版本降级"><span class="nav-number">4.2.2.</span> <span class="nav-text">nodeJs版本降级</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#（1）安装node版本管理模块n"><span class="nav-number">4.2.2.1.</span> <span class="nav-text">（1）安装node版本管理模块n</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（2）安装稳定版"><span class="nav-number">4.2.2.2.</span> <span class="nav-text">（2）安装稳定版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（3）安装最新版"><span class="nav-number">4.2.2.3.</span> <span class="nav-text">（3）安装最新版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（4）-版本降级-升级"><span class="nav-number">4.2.2.4.</span> <span class="nav-text">（4） 版本降级&#x2F;升级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（5）检测目前安装了哪些版本的node"><span class="nav-number">4.2.2.5.</span> <span class="nav-text">（5）检测目前安装了哪些版本的node</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#切换版本（不会删除已经安装的其他版本）"><span class="nav-number">4.2.2.6.</span> <span class="nav-text">切换版本（不会删除已经安装的其他版本）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（7）删除版本"><span class="nav-number">4.2.2.7.</span> <span class="nav-text">（7）删除版本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（8）直接移除Nodejs"><span class="nav-number">4.2.2.8.</span> <span class="nav-text">（8）直接移除Nodejs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#简单使用"><span class="nav-number">4.2.2.9.</span> <span class="nav-text">简单使用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CenterOs-安装-tldr"><span class="nav-number">4.3.</span> <span class="nav-text">CenterOs 安装 tldr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-1"><span class="nav-number">4.3.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证-1"><span class="nav-number">4.3.2.</span> <span class="nav-text">验证</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cheat"><span class="nav-number">5.</span> <span class="nav-text">Cheat</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">5.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#官方资料-1"><span class="nav-number">5.2.</span> <span class="nav-text">官方资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#手动安装"><span class="nav-number">5.3.</span> <span class="nav-text">手动安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类Unix"><span class="nav-number">5.3.1.</span> <span class="nav-text">类Unix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过-go-install安装"><span class="nav-number">5.3.2.</span> <span class="nav-text">通过 go install安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他安装方式"><span class="nav-number">5.3.3.</span> <span class="nav-text">其他安装方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础使用"><span class="nav-number">5.4.</span> <span class="nav-text">基础使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类似项目"><span class="nav-number">6.</span> <span class="nav-text">类似项目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">7.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
