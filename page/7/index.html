@@ -197,6 +197,138 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/01/28/huigu1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/01/28/huigu1/" class="post-title-link" itemprop="url">深入理解JVM - 阶段总结与回顾（一）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-28 23:29:51" itemprop="dateCreated datePublished" datetime="2022-01-28T23:29:51+08:00">2022-01-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/01/28/huigu1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/28/huigu1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">jvm阶段总结和处理</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="深入理解JVM-阶段总结与回顾（一）"><a href="#深入理解JVM-阶段总结与回顾（一）" class="headerlink" title="深入理解JVM - 阶段总结与回顾（一）"></a>深入理解JVM - 阶段总结与回顾（一）</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这篇文章不写新内容，而是回顾之前的文章内容。</p>
+<h1 id="为什么开设专栏"><a href="#为什么开设专栏" class="headerlink" title="为什么开设专栏"></a>为什么开设专栏</h1><p>​    开设这个专栏的目的毫无疑问是给个人的成长做一个记录和归档，因为这段时间下来发现学东西一定要系统并且有目的循序渐进的学才有更快的成长，JVM的内容和细节是学不完的，所以要清楚学这个东西的作用是什么很关键，个人学这个东西无非就是为了面试以及了解底层原理，同时本着书到用时方恨少的原则编写专栏。</p>
+<h1 id="系列文章阶段总结："><a href="#系列文章阶段总结：" class="headerlink" title="系列文章阶段总结："></a>系列文章阶段总结：</h1><p>​    专栏地址：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vY29sdW1uLzY5Nzk1MzA1NzAzNTUzNDMzNjg=" title="https://juejin.cn/column/6979530570355343368">深入理解JVM虚拟机<i class="fa fa-external-link"></i></span></p>
+<p>​    第一篇：<a href="juejin.cn/post/6979529931952750623">深入理解JVM虚拟机 - JVM的初步了解</a></p>
+<p>​    系列的开篇，在第一篇专栏我们需要了解JVM到底是个什么东西，他对于JAVA开发者而言的重要意义，同时我们编写的代码是如何通过JVM运行并且实现我们想要的效果的，重点在于JAVA加载到JVM的工作流程。</p>
+<p>​    这里也讲述了JVM的双亲委派模型和Tomcat的双亲委派模型是如何打破他的，类加载器也是JVM的一个核心内容。</p>
+<p>​    第二篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTcxMDc3NTk2NjI0NzE1ODEz" title="https://juejin.cn/post/6971077596624715813">深入理解JVM虚拟机 - 虚拟机的发展历史<i class="fa fa-external-link"></i></span></p>
+<p>​    基本就是《深入理解JVM虚拟机》的笔记了，当然很多博客也介绍了。</p>
+<p>​    第三篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTgzMDYyOTk2NjI0ODY3MzM2" title="https://juejin.cn/post/6983062996624867336">深入理解JVM - 分代的基本概念<i class="fa fa-external-link"></i></span></p>
+<p>​    讲述了JVM的传统分代模型的特点，以及新生代和老年代的划分，重点是新生代如何进入老年代，需要的条件以及相关的参数设置也是面试高频点。最后介绍了JVM的调优参数。</p>
+<p>​    第四篇：<a href="juejin.cn/post/6970557978831388709">深入理解JVM虚拟机 - jvm的对象分配策略</a></p>
+<p>​    这篇文章个人认为值得关注的点是实际的JVM测试结果和书里面不一样！同时可以发现新版本当中的Parnew会在连续分配大对象的时候让对象直接进入老年代，真的很奇怪！还是建议学这些东西一定自己尝试，花点时间换来的收益是你意向不到的！</p>
+<p>​    第五篇：<a href="juejin.cn/post/6984356543470764068">深入理解JVM - 垃圾回收算法</a></p>
+<p>​    和标题一样，介绍JVM的垃圾回收算法以及新生代老年代是如何运用算法进行回收的，需要注意的是这些垃圾算法没有好坏之分，一切看实际垃圾收集器开发者的设计理念。比如CMS还是典型的标记-清除，但是到了G1就是标记整理了。</p>
+<p>​    第六篇：<a href="juejin.cn/post/6985036085390737415">深入理解JVM - CMS收集器</a></p>
+<p>​    讲述CMS收集器的手机细节，以及CMS的好搭档ParNew的一些处理细节，CMS+ParNew相信还是多数公司的首选垃圾收集器。毕竟不是谁都有那么庞大的用户量或者大项目这种。</p>
+<p>​    第七篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTg1MTc0NjM5Mjk1MDcwMjIy" title="https://juejin.cn/post/6985174639295070222">深入理解JVM - 实战老年代优化<i class="fa fa-external-link"></i></span></p>
+<p>​    无需多介绍，内容和标题类似。</p>
+<p>​    第八篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTg3MjI0Nzc5ODI0NTYyMjA2" title="https://juejin.cn/post/6987224779824562206">深入理解JVM - G1收集器<i class="fa fa-external-link"></i></span></p>
+<p>​    功能和使用看似都十分简单，然而内含的原理十分复杂，主要也是讲解G1收集器的一些功能和细节点。</p>
+<p>​    同时是否需要研究原理这就看个人需求了，当然多懂点总是好事。</p>
+<p>​    第九篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTg3OTYxNDA1OTQ1MTUxNTAy" title="https://juejin.cn/post/6987961405945151502">深入理解JVM - G1调优简述<i class="fa fa-external-link"></i></span></p>
+<p>​    感觉完全是水了一篇，可以不看，因为个人目前没遇到需要用上G1去调优的场景（=-=）</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/01/28/huigu1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/01/28/yueliang/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1238,124 +1370,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/08/17/202201282354/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/17/202201282354/" class="post-title-link" itemprop="url">深入理解JVM - 分代的基本概念</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-17 22:54:19" itemprop="dateCreated datePublished" datetime="2021-08-17T22:54:19+08:00">2021-08-17</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/08/17/202201282354/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/17/202201282354/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-            <div class="post-description">深入理解JVM的学习和使用</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="深入理解JVM-分代的基本概念"><a href="#深入理解JVM-分代的基本概念" class="headerlink" title="深入理解JVM - 分代的基本概念"></a>深入理解JVM - 分代的基本概念</h1><h1 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h1><p>[TOC]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    本次讲述jvm分代模型的基础概念，这个专栏会由浅入深的不断构建起来，循序渐进，和上一篇一样，是非常基础的内容</p>
-<p>​    其实这一篇才是对象分配的内容：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTcwNTU3OTc4ODMxMzg4NzA5" title="https://juejin.cn/post/6970557978831388709">深入理解JVM虚拟机 - jvm的对象分配策略<i class="fa fa-external-link"></i></span> 会发现里面有很多东西需要消化，而这一篇会讲一些基础的内容。</p>
-<h1 id="概述："><a href="#概述：" class="headerlink" title="概述："></a>概述：</h1><ol>
-<li>讲述JVM的基础分代模型以及版本升级的处理。</li>
-<li>对象分配的基础概念和知识。</li>
-<li>长期存活的对象是如何躲过垃圾回收进入到老年代</li>
-<li>jvm内存的核心参数解释以及基础配置</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/17/202201282354/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1425,20 +1439,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">193</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1510,7 +1524,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">20:12</span>
+    <span title="站点阅读时长">20:16</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>
