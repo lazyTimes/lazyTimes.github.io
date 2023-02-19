@@ -14,14 +14,6 @@ date: 2023-02-20 07:07:06
 ---
 # NameServ启动脚本分析
 
-## 概览
-
--   [mqnamesrv命令](#mqnamesrv命令)
--   [mqnamesrv 脚本](#mqnamesrv-脚本)
--   [runserver.sh 脚本](#runserversh-脚本)
-    -   [大于等于JDK9的启动参数](#大于等于JDK9的启动参数)
-    -   [等于JDK8的启动参数](#等于JDK8的启动参数)
-
 ## mqnamesrv 启动命令
 
 这里直接摘录了官方文档：
@@ -90,8 +82,6 @@ org.apache.rocketmq.namesrv.NamesrvStartup $@
 **$#** ：表示返回所有脚本参数的个数。
 
 再次强调前面的一大坨获取环境变量看不懂没关系，看懂核心的执行脚本即可。
-
-<!-- more -->
 
 # runserver.sh 脚本
 
@@ -183,7 +173,7 @@ choose_gc_options()
     # '1' means releases befor Java 9
     JAVA_MAJOR_VERSION=$("$JAVA" -version 2>&1 | sed -r -n 's/.* version "([0-9]*).*$/\1/p')
     if [ -z "$JAVA_MAJOR_VERSION" ] || [ "$JAVA_MAJOR_VERSION" -lt "9" ] ; then
-      # 大于JDK 9 版本之后的参数
+      # 小于JDK 9 版本的参数
       # 堆内存（初始堆内存）为 4 g，新生代 2g，其他空间为 2g。元空间初始化128m，最大的扩容元空间为320mb
       JAVA_OPT="${JAVA_OPT} -server -Xms4g -Xmx4g -Xmn2g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"
       # g1收集器在jdk11得到并行Full GC能力，而zgc在jdk11版本处于实验状态，这里选择了比较稳妥的 CMS 老年代垃圾回收器
@@ -193,6 +183,7 @@ choose_gc_options()
       JAVA_OPT="${JAVA_OPT} -verbose:gc -Xloggc:${GC_LOG_DIR}/rmq_srv_gc_%p_%t.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps"
       JAVA_OPT="${JAVA_OPT} -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=30m"
     else
+	  # JDK8 之后的参数
       JAVA_OPT="${JAVA_OPT} -server -Xms4g -Xmx4g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"
       JAVA_OPT="${JAVA_OPT} -XX:+UseG1GC -XX:G1HeapRegionSize=16m -XX:G1ReservePercent=25 -XX:InitiatingHeapOccupancyPercent=30 -XX:SoftRefLRUPolicyMSPerMB=0"
       JAVA_OPT="${JAVA_OPT} -Xlog:gc*:file=${GC_LOG_DIR}/rmq_srv_gc_%p_%t.log:time,tags:filecount=5,filesize=30M"
@@ -436,13 +427,12 @@ tmpfps的存在意义是可以动态的扩容和缩小，并且只要不使用�
 
 核心参数的部分就是JVM的启动参数配置，也是脚本最为核心部分。
 
-## 大于等于JDK9的启动参数
+## 小于JDK9的启动参数
 
-对应了 **gc_options** 的上半部分，首先判断JDK版本大于8之后的情况：
+对应了 **gc_options** 的上半部分，首先判断JDK版本小于9之前的情况：
 
 ```sh
     if [ -z "$JAVA_MAJOR_VERSION" ] || [ "$JAVA_MAJOR_VERSION" -lt "9" ] ; then
-      # 大于JDK 9 版本之后的参数
       # 堆内存（初始堆内存）为 4 g，新生代 2g，其他空间为 2g。元空间初始化128m，最大的扩容元空间为320mb
       JAVA_OPT="${JAVA_OPT} -server -Xms4g -Xmx4g -Xmn2g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"
       # g1收集器在jdk11得到并行Full GC能力，而zgc在jdk11版本处于实验状态，这里选择了比较稳妥的 CMS 老年代垃圾回收器
@@ -470,10 +460,7 @@ JAVA_OPT="${JAVA_OPT} -server -Xms4g -Xmx4g -Xmn2g -XX:MetaspaceSize=128m -XX:Ma
 > 如果是个人机器配置比较低，建议把这几个值调小一些。
 
 
-下面的参数比较关键，RocketMq在JDK8之后没有选择G1而是使用了CMS，也是个人不太理解的点，因为G1收集器在jdk11得到并行Full GC能力，而ZGC在JDK11版本处于实验状态。
-
-个人理解是考虑到后续的版本垃圾收集器变动比较大，这里选择了G1之前比较稳妥的 CMS 老年代垃圾回收器。
-
+下面的参数比较关键，RocketMq在JDK8没有选择G1而是使用了CMS，因为G1收集器在jdk11才得到并行Full GC能力，而ZGC在JDK11版本处于实验状态，在JDK8 用不成熟的G1不太合适。
 
 ```sh
 # UseCMSCompactAtFullCollection：CMS垃圾在进行了Full GC时，对老年代进行压缩整理，处理掉内存碎片
@@ -603,7 +590,7 @@ CMS 用的是标记清除的算法，使用CMS还是传统的**新生代和老�
 
 ### 日志参数配置
 
-总得来说 RocketMq 在JDK8以后的版本使用了老牌的`-XX:+UseConcMarkSweepGC` CMS垃圾收集器 和` -XX:+UseParNewGC` CMS垃圾 垃圾收集器。
+总得来说 RocketMq 在JDK8的版本使用了老牌的`-XX:+UseConcMarkSweepGC` CMS垃圾收集器 和` -XX:+UseParNewGC` CMS垃圾 垃圾收集器。
 
 ```sh
  -verbose:gc -Xloggc:${GC_LOG_DIR}/rmq_srv_gc_%p_%t.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps"
@@ -633,9 +620,9 @@ CMS 用的是标记清除的算法，使用CMS还是传统的**新生代和老�
 
 >  150M日志足够及时处理大部分问题，并且不会出现历史日志长期驻留磁盘的问题。但是这个参数需要谨慎设置，如果设置过小容易导致关键GC 日志丢失。
 
-## 等于JDK8的启动参数
+## JDK9之后的启动参数
 
-应该说是比较关键的版本，下面的参数对应JDK8的版本，很明显都是围绕G1垃圾收集器做的优化：
+应该说是比较关键的版本，很明显都是围绕G1垃圾收集器做的优化：
 
 ```java
     else
@@ -646,7 +633,7 @@ CMS 用的是标记清除的算法，使用CMS还是传统的**新生代和老�
 
 第一行
 
-对比发现JDK9版本没啥区别：堆内存（初始堆内存）为 4g，新生代 2g，其他空间为 2g。元空间初始化128m，最大的扩容元空间为320mb。
+堆内存分配基本没啥区别：堆内存（初始堆内存）为 4g，新生代 2g，其他空间为 2g。元空间初始化128m，最大的扩容元空间为320mb。
 
 第二行
 
@@ -710,8 +697,8 @@ ${JAVA_OPT} -Xlog:gc*:file=${GC_LOG_DIR}/rmq_srv_gc_%p_%t.log:time,tags:filecoun
 
 
 整个NameServ的启动脚本不算太复杂，这里简单归纳一下比较重要的点：
-- JDK9之后的版本抛弃G1，选择传统的CMS+ParNew经典组合，不过NameServ 大部分时候干的不是什么重活，从保证高可用的角度是没啥问题的。
-- JDK8使用的是G1垃圾收集器，并且参数都是尽可能的给新生代预留空间。
+- JDK9之前没有用G1，因为不成熟，选择传统的CMS+ParNew经典组合。
+- JDK9之后使用的是G1垃圾收集器，并且参数都是尽可能的给新生代预留空间。
 - NameServ 新生代的压力会比较大，整体思路是尽可能的减少垃圾，通过积极的GC保证垃圾尽可能被回收。
 
 # 写在最后
