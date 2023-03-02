@@ -4,7 +4,7 @@ subtitle: 分区事如何溢出的,如何处理
 author: 阿东
 url_suffix: yichu
 tags:
-  - jam
+  - jvm
 categories:
   - java-jvm
 keywords: Jim,溢出
