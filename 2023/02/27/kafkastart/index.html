@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Kafka-Server-start.sh启动脚本分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Kafka】Kafka-Server-start.sh 启动脚本分析（Ver 2.7.2）">
+<meta property="og:url" content="https://whitestore.top/2023/02/27/kafkastart/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Kafka-Server-start.sh启动脚本分析">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230223221451.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/image-20230224133728509.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/image-20230224133744539.png">
+<meta property="article:published_time" content="2023-02-26T23:42:33.000Z">
+<meta property="article:modified_time" content="2023-03-02T01:34:33.623Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Kafka">
+<meta property="article:tag" content="Kafka-Server-start.sh">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230223221451.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/02/27/kafkastart/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Kafka】Kafka-Server-start.sh 启动脚本分析（Ver 2.7.2） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/02/27/kafkastart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Kafka】Kafka-Server-start.sh 启动脚本分析（Ver 2.7.2）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-02-27 07:42:33" itemprop="dateCreated datePublished" datetime="2023-02-27T07:42:33+08:00">2023-02-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-02 09:34:33" itemprop="dateModified" datetime="2023-03-02T09:34:33+08:00">2023-03-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka/" itemprop="url" rel="index"><span itemprop="name">Kafka</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/02/27/kafkastart/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/02/27/kafkastart/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>40k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>36 分钟</span>
+            </span>
+            <div class="post-description">Kafka-Server-start.sh启动脚本分析</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Kafka-Server-start-sh"><a href="#Kafka-Server-start-sh" class="headerlink" title="Kafka-Server-start.sh"></a>Kafka-Server-start.sh</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$#</span> -lt 1 ];  </span><br><span class="line"><span class="keyword">then</span>  </span><br><span class="line"> <span class="comment"># 提示命令使用方法</span></span><br><span class="line"> <span class="built_in">echo</span> <span class="string">"USAGE: <span class="variable">$0</span> [-daemon] server.properties [--override property=value]*"</span> <span class="built_in">exit</span> 1  </span><br><span class="line"><span class="keyword">fi</span>  </span><br><span class="line">base_dir=$(dirname <span class="variable">$0</span>)  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$KAFKA_LOG4J_OPTS</span>"</span> = <span class="string">"x"</span> ]; <span class="keyword">then</span>  </span><br><span class="line">    <span class="built_in">export</span> KAFKA_LOG4J_OPTS=<span class="string">"-Dlog4j.configuration=file:<span class="variable">$base_dir</span>/../config/log4j.properties"</span>  </span><br><span class="line"><span class="keyword">fi</span>  </span><br><span class="line">  </span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$KAFKA_HEAP_OPTS</span>"</span> = <span class="string">"x"</span> ]; <span class="keyword">then</span>  </span><br><span class="line">    <span class="built_in">export</span> KAFKA_HEAP_OPTS=<span class="string">"-Xmx1G -Xms1G"</span>  </span><br><span class="line"><span class="keyword">fi</span>  </span><br><span class="line">  </span><br><span class="line">EXTRA_ARGS=<span class="variable">$&#123;EXTRA_ARGS-'-name kafkaServer -loggc'&#125;</span>  </span><br><span class="line">  </span><br><span class="line">COMMAND=<span class="variable">$1</span>  </span><br><span class="line"><span class="keyword">case</span> <span class="variable">$COMMAND</span> <span class="keyword">in</span>  </span><br><span class="line">  -daemon)  </span><br><span class="line">    EXTRA_ARGS=<span class="string">"-daemon "</span><span class="variable">$EXTRA_ARGS</span>  </span><br><span class="line">    <span class="built_in">shift</span>  </span><br><span class="line">    ;;  </span><br><span class="line">  *)  </span><br><span class="line">    ;;  </span><br><span class="line"><span class="keyword">esac</span>  </span><br><span class="line">  </span><br><span class="line"><span class="built_in">exec</span> <span class="variable">$base_dir</span>/kafka-run-class.sh <span class="variable">$EXTRA_ARGS</span> kafka.Kafka <span class="string">"<span class="variable">$@</span>"</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>判断参数有没有，参数个数小于1就提示用法；</li>
+<li>获取脚本当前路径赋值给变量 base_dir；</li>
+<li>判断日志参数 <strong>KAFKA_LOG4J_OPTS</strong> 是否为空，为空就给它一个值；</li>
+<li>判断堆参数 <strong>KAFKA_HEAP_OPTS</strong>是否为空，为空就默认给它赋值为 “-Xmx1G -Xms1G”，默认的堆空间指定为1G；</li>
+<li>判断启动命令中第一个参数是否为 <code>-daemon</code>，如果是就以<strong>守护进程启动</strong>（其实不是，是赋给另一个变量 EXTRA_ARGS）；</li>
+<li>执行命令。</li>
+</ol>
+<p>最后一个脚本是执行另一个脚本：<code>kafka-run-class.sh</code>，这个脚本的内容比较复杂了。</p>
+<a id="more"></a>
+
+<h1 id="kafka-run-class-sh"><a href="#kafka-run-class-sh" class="headerlink" title="kafka-run-class.sh"></a>kafka-run-class.sh</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$#</span> -lt 1 ];</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"USAGE: <span class="variable">$0</span> [-daemon] [-name servicename] [-loggc] classname [opts]"</span></span><br><span class="line">  <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># CYGWIN == 1 if Cygwin is detected, else 0.</span></span><br><span class="line"><span class="keyword">if</span> [[ $(uname -a) =~ <span class="string">"CYGWIN"</span> ]]; <span class="keyword">then</span></span><br><span class="line">  CYGWIN=1</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  CYGWIN=0</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$INCLUDE_TEST_JARS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  INCLUDE_TEST_JARS=<span class="literal">false</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Exclude jars not necessary for running commands.</span></span><br><span class="line">regex=<span class="string">"(-(test|test-sources|src|scaladoc|javadoc)\.jar|jar.asc)$"</span></span><br><span class="line"><span class="function"><span class="title">should_include_file</span></span>() &#123;</span><br><span class="line">  <span class="keyword">if</span> [ <span class="string">"<span class="variable">$INCLUDE_TEST_JARS</span>"</span> = <span class="literal">true</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">  file=<span class="variable">$1</span></span><br><span class="line">  <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$(echo "$file" | egrep "$regex")</span>"</span> ] ; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="built_in">return</span> 1</span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">base_dir=$(dirname <span class="variable">$0</span>)/..</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$SCALA_VERSION</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  SCALA_VERSION=2.13.3</span><br><span class="line">  <span class="keyword">if</span> [[ -f <span class="string">"<span class="variable">$base_dir</span>/gradle.properties"</span> ]]; <span class="keyword">then</span></span><br><span class="line">    SCALA_VERSION=`grep <span class="string">"^scalaVersion="</span> <span class="string">"<span class="variable">$base_dir</span>/gradle.properties"</span> | cut -d= -f 2`</span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$SCALA_BINARY_VERSION</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  SCALA_BINARY_VERSION=$(<span class="built_in">echo</span> <span class="variable">$SCALA_VERSION</span> | cut -f 1-2 -d <span class="string">'.'</span>)</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># run ./gradlew copyDependantLibs to get all dependant jars in a local dir</span></span><br><span class="line"><span class="built_in">shopt</span> -s nullglob</span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="keyword">for</span> dir <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/core/build/dependant-libs-<span class="variable">$&#123;SCALA_VERSION&#125;</span>*;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>:<span class="variable">$dir</span>/*"</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/examples/build/libs/kafka-examples*.jar;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  clients_lib_dir=$(dirname <span class="variable">$0</span>)/../clients/build/libs</span><br><span class="line">  streams_lib_dir=$(dirname <span class="variable">$0</span>)/../streams/build/libs</span><br><span class="line">  streams_dependant_clients_lib_dir=$(dirname <span class="variable">$0</span>)/../streams/build/dependant-libs-<span class="variable">$&#123;SCALA_VERSION&#125;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  clients_lib_dir=/opt/kafka-<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>/libs</span><br><span class="line">  streams_lib_dir=<span class="variable">$clients_lib_dir</span></span><br><span class="line">  streams_dependant_clients_lib_dir=<span class="variable">$streams_lib_dir</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$clients_lib_dir</span>"</span>/kafka-clients*.jar;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$streams_lib_dir</span>"</span>/kafka-streams*.jar;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/streams/examples/build/libs/kafka-streams-examples*.jar;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">      CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  VERSION_NO_DOTS=`<span class="built_in">echo</span> <span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span> | sed <span class="string">'s/\.//g'</span>`</span><br><span class="line">  SHORT_VERSION_NO_DOTS=<span class="variable">$&#123;VERSION_NO_DOTS:0:(($&#123;#VERSION_NO_DOTS&#125;</span> - 1))&#125; <span class="comment"># remove last char, ie, bug-fix number</span></span><br><span class="line">  <span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/streams/upgrade-system-tests-<span class="variable">$SHORT_VERSION_NO_DOTS</span>/build/libs/kafka-streams-upgrade-system-tests*.jar;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">      CLASSPATH=<span class="string">"<span class="variable">$file</span>"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line">  <span class="keyword">if</span> [ <span class="string">"<span class="variable">$SHORT_VERSION_NO_DOTS</span>"</span> = <span class="string">"0100"</span> ]; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"/opt/kafka-<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>/libs/zkclient-0.8.jar"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">    CLASSPATH=<span class="string">"/opt/kafka-<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>/libs/zookeeper-3.4.6.jar"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">if</span> [ <span class="string">"<span class="variable">$SHORT_VERSION_NO_DOTS</span>"</span> = <span class="string">"0101"</span> ]; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"/opt/kafka-<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>/libs/zkclient-0.9.jar"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">    CLASSPATH=<span class="string">"/opt/kafka-<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>/libs/zookeeper-3.4.8.jar"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$streams_dependant_clients_lib_dir</span>"</span>/rocksdb*.jar;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$streams_dependant_clients_lib_dir</span>"</span>/*hamcrest*.jar;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/tools/build/libs/kafka-tools*.jar;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> dir <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/tools/build/dependant-libs-<span class="variable">$&#123;SCALA_VERSION&#125;</span>*;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>:<span class="variable">$dir</span>/*"</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> cc_pkg <span class="keyword">in</span> <span class="string">"api"</span> <span class="string">"transforms"</span> <span class="string">"runtime"</span> <span class="string">"file"</span> <span class="string">"mirror"</span> <span class="string">"mirror-client"</span> <span class="string">"json"</span> <span class="string">"tools"</span> <span class="string">"basic-auth-extension"</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/connect/<span class="variable">$&#123;cc_pkg&#125;</span>/build/libs/connect-<span class="variable">$&#123;cc_pkg&#125;</span>*.jar;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">      CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line">  <span class="keyword">if</span> [ -d <span class="string">"<span class="variable">$base_dir</span>/connect/<span class="variable">$&#123;cc_pkg&#125;</span>/build/dependant-libs"</span> ] ; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>:<span class="variable">$base_dir</span>/connect/<span class="variable">$&#123;cc_pkg&#125;</span>/build/dependant-libs/*"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># classpath addition for release</span></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/libs/*;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/core/build/libs/kafka_<span class="variable">$&#123;SCALA_BINARY_VERSION&#125;</span>*.jar;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">shopt</span> -u nullglob</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$CLASSPATH</span>"</span> ] ; <span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"Classpath is empty. Please build the project first e.g. by running './gradlew jar -PscalaVersion=<span class="variable">$SCALA_VERSION</span>'"</span></span><br><span class="line">  <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># JMX settings</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_JMX_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  KAFKA_JMX_OPTS=<span class="string">"-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false "</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># JMX port to use</span></span><br><span class="line"><span class="keyword">if</span> [  <span class="variable">$JMX_PORT</span> ]; <span class="keyword">then</span></span><br><span class="line">  KAFKA_JMX_OPTS=<span class="string">"<span class="variable">$KAFKA_JMX_OPTS</span> -Dcom.sun.management.jmxremote.port=<span class="variable">$JMX_PORT</span> "</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Log directory to use</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$LOG_DIR</span>"</span> = <span class="string">"x"</span> ]; <span class="keyword">then</span></span><br><span class="line">  LOG_DIR=<span class="string">"<span class="variable">$base_dir</span>/logs"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Log4j settings</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_LOG4J_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="comment"># Log to console. This is a tool.</span></span><br><span class="line">  LOG4J_DIR=<span class="string">"<span class="variable">$base_dir</span>/config/tools-log4j.properties"</span></span><br><span class="line">  <span class="comment"># If Cygwin is detected, LOG4J_DIR is converted to Windows format.</span></span><br><span class="line">  (( CYGWIN )) &amp;&amp; LOG4J_DIR=$(cygpath --path --mixed <span class="string">"<span class="variable">$&#123;LOG4J_DIR&#125;</span>"</span>)</span><br><span class="line">  KAFKA_LOG4J_OPTS=<span class="string">"-Dlog4j.configuration=file:<span class="variable">$&#123;LOG4J_DIR&#125;</span>"</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="comment"># create logs directory</span></span><br><span class="line">  <span class="keyword">if</span> [ ! -d <span class="string">"<span class="variable">$LOG_DIR</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">    mkdir -p <span class="string">"<span class="variable">$LOG_DIR</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># If Cygwin is detected, LOG_DIR is converted to Windows format.</span></span><br><span class="line">(( CYGWIN )) &amp;&amp; LOG_DIR=$(cygpath --path --mixed <span class="string">"<span class="variable">$&#123;LOG_DIR&#125;</span>"</span>)</span><br><span class="line">KAFKA_LOG4J_OPTS=<span class="string">"-Dkafka.logs.dir=<span class="variable">$LOG_DIR</span> <span class="variable">$KAFKA_LOG4J_OPTS</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Generic jvm settings you want to add</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  KAFKA_OPTS=<span class="string">""</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set Debug options if enabled</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$KAFKA_DEBUG</span>"</span> != <span class="string">"x"</span> ]; <span class="keyword">then</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Use default ports</span></span><br><span class="line">    DEFAULT_JAVA_DEBUG_PORT=<span class="string">"5005"</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$JAVA_DEBUG_PORT</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">        JAVA_DEBUG_PORT=<span class="string">"<span class="variable">$DEFAULT_JAVA_DEBUG_PORT</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Use the defaults if JAVA_DEBUG_OPTS was not set</span></span><br><span class="line">    DEFAULT_JAVA_DEBUG_OPTS=<span class="string">"-agentlib:jdwp=transport=dt_socket,server=y,suspend=<span class="variable">$&#123;DEBUG_SUSPEND_FLAG:-n&#125;</span>,address=<span class="variable">$JAVA_DEBUG_PORT</span>"</span></span><br><span class="line">    <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$JAVA_DEBUG_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">        JAVA_DEBUG_OPTS=<span class="string">"<span class="variable">$DEFAULT_JAVA_DEBUG_OPTS</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Enabling Java debug options: <span class="variable">$JAVA_DEBUG_OPTS</span>"</span></span><br><span class="line">    KAFKA_OPTS=<span class="string">"<span class="variable">$JAVA_DEBUG_OPTS</span> <span class="variable">$KAFKA_OPTS</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Which java to use</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$JAVA_HOME</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  JAVA=<span class="string">"java"</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  JAVA=<span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Memory options</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_HEAP_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  KAFKA_HEAP_OPTS=<span class="string">"-Xmx256M"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># JVM performance options</span></span><br><span class="line"><span class="comment"># MaxInlineLevel=15 is the default since JDK 14 and can be removed once older JDKs are no longer supported</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_JVM_PERFORMANCE_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  KAFKA_JVM_PERFORMANCE_OPTS=<span class="string">"-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent -XX:MaxInlineLevel=15 -Djava.awt.headless=true"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> [ <span class="variable">$#</span> -gt 0 ]; <span class="keyword">do</span></span><br><span class="line">  COMMAND=<span class="variable">$1</span></span><br><span class="line">  <span class="keyword">case</span> <span class="variable">$COMMAND</span> <span class="keyword">in</span></span><br><span class="line">    -name)</span><br><span class="line">      DAEMON_NAME=<span class="variable">$2</span></span><br><span class="line">      CONSOLE_OUTPUT_FILE=<span class="variable">$LOG_DIR</span>/<span class="variable">$DAEMON_NAME</span>.out</span><br><span class="line">      <span class="built_in">shift</span> 2</span><br><span class="line">      ;;</span><br><span class="line">    -loggc)</span><br><span class="line">      <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_GC_LOG_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">        GC_LOG_ENABLED=<span class="string">"true"</span></span><br><span class="line">      <span class="keyword">fi</span></span><br><span class="line">      <span class="built_in">shift</span></span><br><span class="line">      ;;</span><br><span class="line">    -daemon)</span><br><span class="line">      DAEMON_MODE=<span class="string">"true"</span></span><br><span class="line">      <span class="built_in">shift</span></span><br><span class="line">      ;;</span><br><span class="line">    *)</span><br><span class="line">      <span class="built_in">break</span></span><br><span class="line">      ;;</span><br><span class="line">  <span class="keyword">esac</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># GC options	</span></span><br><span class="line">GC_FILE_SUFFIX=<span class="string">'-gc.log'</span></span><br><span class="line">GC_LOG_FILE_NAME=<span class="string">''</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$GC_LOG_ENABLED</span>"</span> = <span class="string">"xtrue"</span> ]; <span class="keyword">then</span></span><br><span class="line">  GC_LOG_FILE_NAME=<span class="variable">$DAEMON_NAME</span><span class="variable">$GC_FILE_SUFFIX</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># The first segment of the version number, which is '1' for releases before Java 9</span></span><br><span class="line">  <span class="comment"># it then becomes '9', '10', ...</span></span><br><span class="line">  <span class="comment"># Some examples of the first line of `java --version`:</span></span><br><span class="line">  <span class="comment"># 8 -&gt; java version "1.8.0_152"</span></span><br><span class="line">  <span class="comment"># 9.0.4 -&gt; java version "9.0.4"</span></span><br><span class="line">  <span class="comment"># 10 -&gt; java version "10" 2018-03-20</span></span><br><span class="line">  <span class="comment"># 10.0.1 -&gt; java version "10.0.1" 2018-04-17</span></span><br><span class="line">  <span class="comment"># We need to match to the end of the line to prevent sed from printing the characters that do not match</span></span><br><span class="line">  JAVA_MAJOR_VERSION=$(<span class="string">"<span class="variable">$JAVA</span>"</span> -version 2&gt;&amp;1 | sed -E -n <span class="string">'s/.* version "([0-9]*).*$/\1/p'</span>)</span><br><span class="line">  <span class="keyword">if</span> [[ <span class="string">"<span class="variable">$JAVA_MAJOR_VERSION</span>"</span> -ge <span class="string">"9"</span> ]] ; <span class="keyword">then</span></span><br><span class="line">    KAFKA_GC_LOG_OPTS=<span class="string">"-Xlog:gc*:file=<span class="variable">$LOG_DIR</span>/<span class="variable">$GC_LOG_FILE_NAME</span>:time,tags:filecount=10,filesize=100M"</span></span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    KAFKA_GC_LOG_OPTS=<span class="string">"-Xloggc:<span class="variable">$LOG_DIR</span>/<span class="variable">$GC_LOG_FILE_NAME</span> -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=100M"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Remove a possible colon prefix from the classpath (happens at lines like `CLASSPATH="$CLASSPATH:$file"` when CLASSPATH is blank)</span></span><br><span class="line"><span class="comment"># Syntax used on the right side is native Bash string manipulation; for more details see</span></span><br><span class="line"><span class="comment"># http://tldp.org/LDP/abs/html/string-manipulation.html, specifically the section titled "Substring Removal"</span></span><br><span class="line">CLASSPATH=<span class="variable">$&#123;CLASSPATH#:&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># If Cygwin is detected, classpath is converted to Windows format.</span></span><br><span class="line">(( CYGWIN )) &amp;&amp; CLASSPATH=$(cygpath --path --mixed <span class="string">"<span class="variable">$&#123;CLASSPATH&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Launch mode</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$DAEMON_MODE</span>"</span> = <span class="string">"xtrue"</span> ]; <span class="keyword">then</span></span><br><span class="line">  nohup <span class="string">"<span class="variable">$JAVA</span>"</span> <span class="variable">$KAFKA_HEAP_OPTS</span> <span class="variable">$KAFKA_JVM_PERFORMANCE_OPTS</span> <span class="variable">$KAFKA_GC_LOG_OPTS</span> <span class="variable">$KAFKA_JMX_OPTS</span> <span class="variable">$KAFKA_LOG4J_OPTS</span> -cp <span class="string">"<span class="variable">$CLASSPATH</span>"</span> <span class="variable">$KAFKA_OPTS</span> <span class="string">"<span class="variable">$@</span>"</span> &gt; <span class="string">"<span class="variable">$CONSOLE_OUTPUT_FILE</span>"</span> 2&gt;&amp;1 &lt; /dev/null &amp;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="built_in">exec</span> <span class="string">"<span class="variable">$JAVA</span>"</span> <span class="variable">$KAFKA_HEAP_OPTS</span> <span class="variable">$KAFKA_JVM_PERFORMANCE_OPTS</span> <span class="variable">$KAFKA_GC_LOG_OPTS</span> <span class="variable">$KAFKA_JMX_OPTS</span> <span class="variable">$KAFKA_LOG4J_OPTS</span> -cp <span class="string">"<span class="variable">$CLASSPATH</span>"</span> <span class="variable">$KAFKA_OPTS</span> <span class="string">"<span class="variable">$@</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>脚本内容很长，但是实际上只有最后一部分才是真正在完成启动操作：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Launch mode</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$DAEMON_MODE</span>"</span> = <span class="string">"xtrue"</span> ]; <span class="keyword">then</span></span><br><span class="line">  nohup <span class="string">"<span class="variable">$JAVA</span>"</span> <span class="variable">$KAFKA_HEAP_OPTS</span> <span class="variable">$KAFKA_JVM_PERFORMANCE_OPTS</span> <span class="variable">$KAFKA_GC_LOG_OPTS</span> <span class="variable">$KAFKA_JMX_OPTS</span> <span class="variable">$KAFKA_LOG4J_OPTS</span> -cp <span class="string">"<span class="variable">$CLASSPATH</span>"</span> <span class="variable">$KAFKA_OPTS</span> <span class="string">"<span class="variable">$@</span>"</span> &gt; <span class="string">"<span class="variable">$CONSOLE_OUTPUT_FILE</span>"</span> 2&gt;&amp;1 &lt; /dev/null &amp;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="built_in">exec</span> <span class="string">"<span class="variable">$JAVA</span>"</span> <span class="variable">$KAFKA_HEAP_OPTS</span> <span class="variable">$KAFKA_JVM_PERFORMANCE_OPTS</span> <span class="variable">$KAFKA_GC_LOG_OPTS</span> <span class="variable">$KAFKA_JMX_OPTS</span> <span class="variable">$KAFKA_LOG4J_OPTS</span> -cp <span class="string">"<span class="variable">$CLASSPATH</span>"</span> <span class="variable">$KAFKA_OPTS</span> <span class="string">"<span class="variable">$@</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Launch-modes"><a href="#Launch-modes" class="headerlink" title="Launch modes"></a>Launch modes</h1><p>在脚本最后一段是有关启动方式的提示。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Launch mode</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$DAEMON_MODE</span>"</span> = <span class="string">"xtrue"</span> ]; <span class="keyword">then</span></span><br><span class="line">  nohup <span class="string">"<span class="variable">$JAVA</span>"</span> <span class="variable">$KAFKA_HEAP_OPTS</span> <span class="variable">$KAFKA_JVM_PERFORMANCE_OPTS</span> <span class="variable">$KAFKA_GC_LOG_OPTS</span> <span class="variable">$KAFKA_JMX_OPTS</span> <span class="variable">$KAFKA_LOG4J_OPTS</span> -cp <span class="string">"<span class="variable">$CLASSPATH</span>"</span> <span class="variable">$KAFKA_OPTS</span> <span class="string">"<span class="variable">$@</span>"</span> &gt; <span class="string">"<span class="variable">$CONSOLE_OUTPUT_FILE</span>"</span> 2&gt;&amp;1 &lt; /dev/null &amp;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="built_in">exec</span> <span class="string">"<span class="variable">$JAVA</span>"</span> <span class="variable">$KAFKA_HEAP_OPTS</span> <span class="variable">$KAFKA_JVM_PERFORMANCE_OPTS</span> <span class="variable">$KAFKA_GC_LOG_OPTS</span> <span class="variable">$KAFKA_JMX_OPTS</span> <span class="variable">$KAFKA_LOG4J_OPTS</span> -cp <span class="string">"<span class="variable">$CLASSPATH</span>"</span> <span class="variable">$KAFKA_OPTS</span> <span class="string">"<span class="variable">$@</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>这段脚本说明了之前的一大堆脚本都是为了这里启动赋值进行的一系列操作，这里根据传递参数判断是否守护进程的方式启动。这里以使用比较多的 <strong>守护进程</strong>启动方式进行参数介绍（实际上两者差别不算很大）。</p>
+<h2 id="KAFKA-HEAP-OPTS"><a href="#KAFKA-HEAP-OPTS" class="headerlink" title="KAFKA_HEAP_OPTS"></a>KAFKA_HEAP_OPTS</h2><p><strong>KAFKA_HEAP_OPTS</strong> 出自最开头，判断堆参数 <strong>KAFKA_HEAP_OPTS</strong>是否为空，为空就默认给它赋值为 “-Xmx1G -Xms1G”。</p>
+<h2 id="KAFKA-JVM-PERFORMANCE-OPTS"><a href="#KAFKA-JVM-PERFORMANCE-OPTS" class="headerlink" title="KAFKA_JVM_PERFORMANCE_OPTS"></a>KAFKA_JVM_PERFORMANCE_OPTS</h2><p>这个值代表了JVM的启动参数。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># JVM performance options</span></span><br><span class="line"><span class="comment"># MaxInlineLevel=15 is the default since JDK 14 and can be removed once older JDKs are no longer supported</span></span><br><span class="line"><span class="comment"># MaxInlineLevel=15 是自JDK 14以来的默认值，一旦旧的JDK不再支持，就可以删除。</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_JVM_PERFORMANCE_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  KAFKA_JVM_PERFORMANCE_OPTS=<span class="string">"-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent -XX:MaxInlineLevel=15 -Djava.awt.headless=true"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> [ <span class="variable">$#</span> -gt 0 ]; <span class="keyword">do</span></span><br><span class="line">  COMMAND=<span class="variable">$1</span></span><br><span class="line">  <span class="keyword">case</span> <span class="variable">$COMMAND</span> <span class="keyword">in</span></span><br><span class="line">    -name)</span><br><span class="line">      DAEMON_NAME=<span class="variable">$2</span></span><br><span class="line">      CONSOLE_OUTPUT_FILE=<span class="variable">$LOG_DIR</span>/<span class="variable">$DAEMON_NAME</span>.out</span><br><span class="line">      <span class="built_in">shift</span> 2</span><br><span class="line">      ;;</span><br><span class="line">    -loggc)</span><br><span class="line">      <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_GC_LOG_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">        GC_LOG_ENABLED=<span class="string">"true"</span></span><br><span class="line">      <span class="keyword">fi</span></span><br><span class="line">      <span class="built_in">shift</span></span><br><span class="line">      ;;</span><br><span class="line">    -daemon)</span><br><span class="line">      DAEMON_MODE=<span class="string">"true"</span></span><br><span class="line">      <span class="built_in">shift</span></span><br><span class="line">      ;;</span><br><span class="line">    *)</span><br><span class="line">      <span class="built_in">break</span></span><br><span class="line">      ;;</span><br><span class="line">  <span class="keyword">esac</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="G1垃圾收集器"><a href="#G1垃圾收集器" class="headerlink" title="G1垃圾收集器"></a>G1垃圾收集器</h2><p>Kafka默认使用G1的垃圾收集器，本身最低JDK版本要求就是JDK1.8。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent -XX:MaxInlineLevel=15 -Djava.awt.headless=<span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="MaxGCPauseMillis"><a href="#MaxGCPauseMillis" class="headerlink" title="MaxGCPauseMillis"></a>MaxGCPauseMillis</h3><p><code>-XX:MaxGCPauseMillis</code>：GC最大的停顿毫秒数，暂停时间默认值200ms，如果设置比这个小的值，G1收集器会尽可能的达到这个预期设置。</p>
+<p>因为Kafka是非常激进的高并发分布式消息队列，为了获取更高的并发，使用20ms的极限值值尽可能的减少GC时间，最后用极短GC的代价换取高吞吐，当然结果会导致垃圾回收不干净。</p>
+<p>但Kafka对于JVM本身的堆内存占用并不是很多，默认20ms的停顿时间其实是可以放心使用的。</p>
+<p>此外从Kafka的设计来看，更频繁的GC是为了尽可能的触发Full Gc，因为Full Gc是回收Direct Memory的条件，而Kafka大量使用了页缓存提高数据的Log的读写速度，底层用的也是Java的Direct Memory。</p>
+<h3 id="InitiatingHeapOccupancyPercent"><a href="#InitiatingHeapOccupancyPercent" class="headerlink" title="InitiatingHeapOccupancyPercent"></a>InitiatingHeapOccupancyPercent</h3><p>这个参数实际上出入比较大，根据源码分析在<strong>JDK8b12</strong>版本之后，以及<strong>JDK11</strong> 之前这个参数和官方的文档描述，这个值的含义是符合“整堆”来计算是否触发Mixed Gc，但是<strong>JDK8b12</strong>版本之后更高的补丁，以及<strong>JDK11</strong>之后就变了，它变成根据<strong>老年代占整堆的比重</strong>。</p>
+<p>这样的出入问题源自此参数的<strong>源码BUG</strong>，这部分涉及源码的探讨就不讨论了，具体可以看<span class="exturl" data-url="aHR0cHM6Ly9kb3VkYXhpYS5jbHViL2luZGV4LnBocC9hcmNoaXZlcy8yMTIv" title="https://doudaxia.club/index.php/archives/212/">关于G1收集器参数InitiatingHeapOccupancyPercent的正确认知 - 豆大侠的菜地 (doudaxia.club)<i class="fa fa-external-link"></i></span>这篇大佬的文章分析。</p>
+<p>这里直接给出结论：</p>
+<ul>
+<li>如果你使用的JDK版本在8b12之前，XX:InitiatingHeapOccupancyPercent是<strong>整个堆</strong>使用量与<strong>堆总体容量的</strong>比值；</li>
+<li>如果你使用的JDK版本在8b12之后（包括大版本9、10、11….），那么<code>XX:InitiatingHeapOccupancyPercent</code>是<strong>老年代大小与堆总体容量的比值</strong>这种说法和修改之后的JVM源码符合。</li>
+</ul>
+<p>整体算是一个隐藏已久的BUG，因为G1的垃圾收集器设计角度看，它更关心的是<code>Old Region</code>占满整个堆空间之前提前尽可能的进行回收，而不是简单的看看剩余空间在整个堆空间的占比，因为剩余空间不是一个十分可靠的衡量值。</p>
+<p>为了验证上文大佬的说法，个人也去参阅JDK8的Oracle文档：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vamF2YXNlLzgvZG9jcy90ZWNobm90ZXMvdG9vbHMvdW5peC9qYXZhLmh0bWw=" title="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html">java (oracle.com)<i class="fa fa-external-link"></i></span></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-XX:c=percent</span><br><span class="line">    <span class="function">Sets the percentage of the heap <span class="title">occupancy</span> <span class="params">(<span class="number">0</span> to <span class="number">100</span>)</span> at which to start a concurrent GC cycle. It is used by garbage collectors that trigger a concurrent GC cycle based on the occupancy of the entire heap, not just one of the <span class="title">generations</span> <span class="params">(<span class="keyword">for</span> example, the G1 garbage collector)</span>.</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    By <span class="keyword">default</span>, the initiating value is set to 45%. A value of 0 implies nonstop GC cycles. The following example shows how to set the initiating heap occupancy to 75%:</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    -XX:InitiatingHeapOccupancyPercent</span>=<span class="number">75</span></span><br></pre></td></tr></table></figure>
+
+<p>关键字 <strong>entire heap</strong>，也就是简单的剩余空间和整堆的占比。这里同样接着翻阅了一下，直到<strong>JDK12</strong>版本，这个描述还是和JDK8的版本一致的。直到阅读长期支持的<strong>JDK17</strong>的文档，发现里面的说法终于变了：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vZW4vamF2YS9qYXZhc2UvMTcvZ2N0dW5pbmcvZ2FyYmFnZS1maXJzdC1nMS1nYXJiYWdlLWNvbGxlY3RvcjEuaHRtbCNHVUlELURBNjI5NkRELTlBQUItNDk1NS04QjVCLTY4MzY1MTkzNjE1NQ==" title="https://docs.oracle.com/en/java/javase/17/gctuning/garbage-first-g1-garbage-collector1.html#GUID-DA6296DD-9AAB-4955-8B5B-683651936155">Garbage-First (G1) Garbage Collector (oracle.com<i class="fa fa-external-link"></i></span></p>
+<blockquote>
+<p><code>XX:InitiatingHeapOccupancyPercent</code> determines the initial value as a percentage of the size of the current old generation as long as there aren’t enough observations to make a good prediction of the Initiating Heap Occupancy threshold. Turn off this behavior of G1 using the option<code>-XX:-G1UseAdaptiveIHOP</code>. In this case, the value of <code>-XX:InitiatingHeapOccupancyPercent</code> always determines this threshold.。<br>“XX：启动堆占用百分比”将初始值确定为<strong>当前老一代大小的百分比</strong>，只要没有足够的观测值来很好地预测起始堆占用阈值。<br>使用选项’<code>-XX:-G1UseAdaptiveIHOP</code>‘关闭G1的此行为。在这种情况下<code>-XX:InitiatingHeapOccupancyPercent</code>  启动堆占用百分比’的值始终确定此阈值。</p>
+</blockquote>
+<p>所以这个值的真实含义和使用的JDK版本有关，并且JDK8的后续补丁版本也修复了这个问题，所以最终建议是升级JDK8的补丁版本，或者使用JDK11之后的版本。</p>
+<h3 id="XX-ExplicitGCInvokesConcurrent"><a href="#XX-ExplicitGCInvokesConcurrent" class="headerlink" title="-XX:+ExplicitGCInvokesConcurrent"></a>-XX:+ExplicitGCInvokesConcurrent</h3><p>看似简单的参数，实际上又是隐藏这非常多的“坑”和细节，这里我们划分更多的小节慢慢细品。</p>
+<h4 id="简单理解"><a href="#简单理解" class="headerlink" title="简单理解"></a>简单理解</h4><p>这个参数是指通过使用<code>System.gc()</code>请求<strong>启用并发 GC 的调用</strong>，<strong>默认禁用</strong>。如果没有特殊的应用场景，大部分情况下这个参数都是被建议禁用的，而并发GC实际上就是CMS的并发回收处理。</p>
+<p>个人在官方文档中搜到类似的参数描述：<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vamF2YXNlLzkvZ2N0dW5pbmcvZ2FyYmFnZS1maXJzdC1nYXJiYWdlLWNvbGxlY3Rvci10dW5pbmcuaHRtI0pTR0NULUdVSUQtMEJCM0I3NDItQTk4NS00RDVFLUE5QzUtNDMzQTEyN0ZFMEY2" title="https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector-tuning.htm#JSGCT-GUID-0BB3B742-A985-4D5E-A9C5-433A127FE0F6">Garbage-First Garbage Collector Tuning (oracle.com)<i class="fa fa-external-link"></i></span>。</p>
+<blockquote>
+<p>Other causes than Allocation Failure for a Full GC typically indicate that either the application or some external tool causes a full heap collection. If the cause is , and there is no way to modify the application sources, the effect of Full GCs can be mitigated by using or let the VM completely ignore them by setting . <strong>External tools may still force Full GCs; they can be removed only by not requesting them.System.gc()-XX:+ExplicitGCInvokesConcurrent -XX:+DisableExplicitGC</strong></p>
+</blockquote>
+<p>上面一大段的话大意指的是：阻止外部调用Full GC（也就是<code>System.gc()</code>）要么直接设置<code>-XX:+DisableExplicitGC</code>，要么设置<code>-XX:+ExplicitGCInvokesConcurrent</code>提高强制Full Gc的效率，阅读源码发现这两个参<strong>数不能一起开启</strong>，因为<code>-XX:+ExplicitGCInvokesConcurrent</code>需要关闭<code>-XX:+DisableExplicitGC</code>参数才能生效。</p>
+<blockquote>
+<p>部分文章也解释仅仅建议在G1的垃圾收集器中可以使用<code>-XX:+ExplicitGCInvokesConcurrent</code>。其他垃圾收集器不建议使用。</p>
+</blockquote>
+<h4 id="Kafka官方修复BUG：-XX-DisableExplicitGC-改为-XX-ExplicitGCInvokesConcurrent"><a href="#Kafka官方修复BUG：-XX-DisableExplicitGC-改为-XX-ExplicitGCInvokesConcurrent" class="headerlink" title="Kafka官方修复BUG：-XX:+DisableExplicitGC 改为 -XX:+ExplicitGCInvokesConcurrent"></a>Kafka官方修复BUG：-XX:+DisableExplicitGC 改为 -XX:+ExplicitGCInvokesConcurrent</h4><p>为什么两者只能选其一使用，JDK 8 的JVM中存在类似的代码可以给予解释。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">GenCollectedHeap::should_do_concurrent_full_gc</span><span class="params">(GCCause::Cause cause)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查参数 -XX:+DisableExplicitGC 和 -XX:+ExplicitGCInvokesConcurrent</span></span><br><span class="line">  <span class="keyword">return</span> UseConcMarkSweepGC &amp;&amp;</span><br><span class="line">         ((cause == GCCause::_gc_locker &amp;&amp; GCLockerInvokesConcurrent) ||</span><br><span class="line">         <span class="comment">// -XX:+ExplicitGCInvokesConcurrent 需要满足不配置-XX:+DisableExplicitGC的条件，才能判定为true</span></span><br><span class="line">          (cause == GCCause::_java_lang_system_gc &amp;&amp; ExplicitGCInvokesConcurrent));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">GenCollectedHeap::collect</span><span class="params">(GCCause::Cause cause)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查参数 -XX:+DisableExplicitGC 和 -XX:+ExplicitGCInvokesConcurrent</span></span><br><span class="line">  <span class="keyword">if</span> (should_do_concurrent_full_gc(cause)) &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> SERIALGC</span></span><br><span class="line">    <span class="comment">// mostly concurrent full collection</span></span><br><span class="line">    collect_mostly_concurrent(cause);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span>  <span class="comment">// SERIALGC</span></span></span><br><span class="line">    ShouldNotReachHere();</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// SERIALGC</span></span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">#ifdef ASSERT</span><br><span class="line">    <span class="keyword">if</span> (cause == GCCause::_scavenge_alot) &#123;</span><br><span class="line">      <span class="comment">// minor collection only</span></span><br><span class="line">      collect(cause, <span class="number">0</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// Stop-the-world full collection</span></span><br><span class="line">      <span class="comment">// STW 进行Full Gc</span></span><br><span class="line">      collect(cause, n_gens() - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="comment">// Stop-the-world full collection</span></span><br><span class="line">    collect(cause, n_gens() - <span class="number">1</span>);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>collect里一开头就有个判断，如果<code>should_do_concurrent_full_gc</code>返回true，那会执行collect_mostly_concurrent做并行的回收。</p>
+<p>回到Kafka的服务端参数，KafKa最初的服务端启动脚本中，此参数实际为<code>-XX:+DisableExplicitGC</code>，但是后续被指出会影响直接内存的回收性能，并且很可能会导致<strong>直接内存无法被回收！</strong> </p>
+<p>为什么会有这么严重 ? 这里先不急着分析，而是先看看作者的这个issue的提交：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FwYWNoZS9rYWZrYS9wdWxsLzMzNzE=" title="https://github.com/apache/kafka/pull/3371">KAFKA-5470: Replace -XX:+DisableExplicitGC with -XX:+ExplicitGCInvokesConcurrent in kafka-run-class by ijuma · Pull Request #3371 · apache/kafka (github.com)<i class="fa fa-external-link"></i></span></p>
+<p>提交者的原话是：</p>
+<blockquote>
+<p>This is important because <strong>Bits.reserveMemory calls System.gc()</strong> hoping to free native<br>memory in order to avoid throwing an OutOfMemoryException. This call is currently<br>a no-op due to -XX:+DisableExplicitGC.</p>
+<p>It’s worth mentioning that -XX:MaxDirectMemorySize can be used to increase the<br>amount of native memory available for allocation of direct byte buffers.</p>
+</blockquote>
+<p>简单来说就是<strong>Bits.reserveMemory</strong>里面会有<code>System.gc()</code>调用，通过程序强制调用Full Gc来回收掉native内存，所以建议在JVM参数中删掉<code>-XX:+DisableExplicitGC</code>，开启<code>System.gc();</code>并且通过添加<code>-XX:+ExplicitGCInvokesConcurrent</code>让<code>System.gc()</code>调用效率更高一些。</p>
+<blockquote>
+<p> 另外大佬这里还提了一嘴<code>-XX:MaxDirectMemorySize</code>可以用来提高可用于分配直接字节缓冲区的本地内存的数量。<br> 大佬一句话就是一个知识点，牛呀。</p>
+</blockquote>
+<h4 id="Bits-reserveMemory"><a href="#Bits-reserveMemory" class="headerlink" title="Bits#reserveMemory"></a>Bits#reserveMemory</h4><p>既然提交者提到了<code>Bits#reserveMemory</code>，这里就顺带贴一下官方jdk8的<strong>java.nio.Bits#reserveMemory</strong>源码方便理解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// These methods should be called whenever direct memory is allocated or</span></span><br><span class="line"><span class="comment">// freed.  They allow the user to control the amount of direct memory</span></span><br><span class="line"><span class="comment">// which a process may access.  All sizes are specified in bytes.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//每当分配直接内存或释放。 它们允许用户控制直接内存的数量进程可以访问的内容。 所有大小均以字节为单位指定。</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reserveMemory</span><span class="params">(<span class="keyword">long</span> size, <span class="keyword">int</span> cap)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!memoryLimitSet &amp;&amp; VM.isBooted()) &#123;</span><br><span class="line">        maxMemory = VM.maxDirectMemory();</span><br><span class="line">        memoryLimitSet = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// optimist!</span></span><br><span class="line">    <span class="keyword">if</span> (tryReserveMemory(size, cap)) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> JavaLangRefAccess jlra = SharedSecrets.getJavaLangRefAccess();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// retry while helping enqueue pending Reference objects</span></span><br><span class="line">    <span class="comment">// which includes executing pending Cleaner(s) which includes</span></span><br><span class="line">    <span class="comment">// Cleaner(s) that free direct buffer memory</span></span><br><span class="line">    <span class="keyword">while</span> (jlra.tryHandlePendingReference()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (tryReserveMemory(size, cap)) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// trigger VM's Reference processing</span></span><br><span class="line">    System.gc();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// a retry loop with exponential back-off delays</span></span><br><span class="line">    <span class="comment">// (this gives VM some time to do it's job)</span></span><br><span class="line">    <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">long</span> sleepTime = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> sleeps = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (tryReserveMemory(size, cap)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (sleeps &gt;= MAX_SLEEPS) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!jlra.tryHandlePendingReference()) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(sleepTime);</span><br><span class="line">                    sleepTime &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">                    sleeps++;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    interrupted = <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// no luck</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError(<span class="string">"Direct buffer memory"</span>);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (interrupted) &#123;</span><br><span class="line">            <span class="comment">// don't swallow interrupts</span></span><br><span class="line">            Thread.currentThread().interrupt();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们通过阅读JDK8的Nio包的这部分用于分配DirectMememory的一段代码，发现<strong>每次</strong>Direct Mememory进行实际的分配动作之前，都会调用这个方法检测是否有足够空间分配时都被调用，不过里面的逻辑奇奇怪怪的，初看确实有点摸不着头脑。</p>
+<p>国外有网友直接痛骂了这一段代码是一坨Shit：<span class="exturl" data-url="aHR0cHM6Ly9ncm91cHMuZ29vZ2xlLmNvbS9nL21lY2hhbmljYWwtc3ltcGF0aHkvYy8yMGFqamItWVVMdz9wbGk9MQ==" title="https://groups.google.com/g/mechanical-sympathy/c/20ajjb-YULw?pli=1">java.nio.Bits.reserveMemory uses a lock, calls System.gc, and is generally bad code… (google.com)<i class="fa fa-external-link"></i></span></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>.  ALL memory access <span class="keyword">requires</span> a lock.  That<span class="string">'s evil if you'</span>re allocating small chunks.</span><br><span class="line"></span><br><span class="line"><span class="number">2</span>.  The code to change the reserved memory counters is duplicated twice.  This is a great way to introduce bugs.  (how did <span class="keyword">this</span> even get approved? <span class="keyword">do</span> they not <span class="keyword">do</span> code audits or require that commits be approved?)</span><br><span class="line"></span><br><span class="line"><span class="number">3</span>.  If you are out of memory we call System.gc... EVIL.  The entire way direct memory is reclaimed via GC is a horrible design.</span><br><span class="line"></span><br><span class="line"><span class="number">4</span>.  After GC they sleep <span class="number">100</span>ms.  What<span class="string">'s that about?  Why 100ms?  Why not 1ms?</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>所有的内存访问都需要一个锁。 如果你分配的是小块的内存简直就是噩梦。</li>
+<li>改变保留内存计数器的代码重复了两次。 这是个引入错误的好方法。 (难道他们不进行代码审计或要求提交的代码必须得到批准吗？）</li>
+<li>如果你没有内存了，我们就调用System.gc…  通过GC回收直接内存的整个方式是一个可怕的设计。</li>
+<li>在GC之后，他们会休眠100ms。 那是什么意思？ 为什么是100ms？ 为什么不是1ms？ </li>
+</ol>
+<p>个人并不感冒这些评论，这里拎出<code>System.gc()</code>这行代码来分析具体意图。要看懂这一行代码的意图，我们需要了解DirectMemory关联的本机内存是如何清理的，这里就直接给出答案了。</p>
+<p>JVM实际上是管不到DirectMemory的，需要依靠特殊的方式回收掉DirectMemory：</p>
+<ul>
+<li>手动调用<code>unsafe.freeMemory()</code>进行释放，<strong>netty</strong>中<code>ByteBuf.release()</code>就是这种方式实现的；</li>
+<li>利用<strong>GC机制</strong>在GC的过程中自动调用<code>unsafe.freeMemory()</code>释放被引用的直接内存；</li>
+</ul>
+<p>这段代码作者的意图明显是显示调用<code>System.gc()</code>，尽可能回收不可达的<code>DirectByteBuffer</code>对象，也只有通过GC才会自动触发<code>unsafe.freeMemory()</code>的调用，释放直接内存。</p>
+<p>至于其他代码…..这里不做过多评论。</p>
+<h4 id="Fix-XX-DisableExplicitGC"><a href="#Fix-XX-DisableExplicitGC" class="headerlink" title="Fix -XX:+DisableExplicitGC"></a>Fix -XX:+DisableExplicitGC</h4><p>基于以上种种原因，Kafka官方最终提交了一个Commit修复这个问题：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2NvbmZsdWVudGluYy9rc3FsL3B1bGwvMTMyOQ==" title="https://github.com/confluentinc/ksql/pull/1329">Fix run class to work with Java 10 and use ExplicitGCInvokesConcurrent by ijuma · Pull Request #1329 · confluentinc/ksql (github.com)<i class="fa fa-external-link"></i></span></p>
+<p>具体的调整细节可以看下面的连接，读者可以通过对比自己的下载Kafka启动脚本查看是否修复这个问题：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FwYWNoZS9rYWZrYS9wdWxsLzMzNzEvY29tbWl0cy9hY2RkNmU5NzhjOWJlMTIzY2ZmYWZjMTZkMWU4NDk0MmQ2Y2Q0NDc3" title="https://github.com/apache/kafka/pull/3371/commits/acdd6e978c9be123cffafc16d1e84942d6cd4477">KAFKA-5470: Replace -XX:+DisableExplicitGC with -XX:+ExplicitGCInvokesConcurrent in kafka-run-class by ijuma · Pull Request #3371 · apache/kafka (github.com)<i class="fa fa-external-link"></i></span></p>
+<h4 id="其他参考资料"><a href="#其他参考资料" class="headerlink" title="其他参考资料"></a>其他参考资料</h4><p>下面的这些参考资料可以帮助我们更深入的理解<code>-XX:+ExplicitGCInvokesConcurrent</code>参数附带的知识点：</p>
+<p>-XX:+ExplicitGCInvokesConcurrent的含义：<span class="exturl" data-url="aHR0cHM6Ly9hbnN3ZXJzLnljcmFzaC5pby9xdWVzdGlvbi93aGF0LWlzLWp2bS1zdGFydHVwLXBhcmFtZXRlci0teHhleHBsaWNpdGdjaW52b2tlc2NvbmN1cnJlbnQ/cT03OTU=" title="https://answers.ycrash.io/question/what-is-jvm-startup-parameter--xxexplicitgcinvokesconcurrent?q=795">What is JVM startup parameter: -XX:+ExplicitGCInvokesConcurrent? - yCrash Answers<i class="fa fa-external-link"></i></span></p>
+<p>官方的G1文档：<span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS9qYXZhL3RlY2hub2xvZ2llcy9qYXZhc2UvaG90c3BvdC1nYXJiYWdlLWNvbGxlY3Rpb24uaHRtbA==" title="https://www.oracle.com/java/technologies/javase/hotspot-garbage-collection.html">Java HotSpot Garbage Collection (oracle.com)<i class="fa fa-external-link"></i></span></p>
+<p>为什么仅限G1可以开启此参数来进行健康检查，其他垃圾收集器建议关闭此参数：<span class="exturl" data-url="aHR0cHM6Ly9jb25mbHVlbmNlLmF0bGFzc2lhbi5jb20vamlyYWtiL2hlYWx0aC1jaGVjay1leHBsaWNpdC1nYXJiYWdlLWNvbGxlY3Rpb24tOTc2Nzc4MTAwLmh0bWw=" title="https://confluence.atlassian.com/jirakb/health-check-explicit-garbage-collection-976778100.html">Health Check: Explicit Garbage Collection | Jira | Atlassian Documentation<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9oZWFwZHVtcC5jbi9hcnRpY2xlLzE1NDIzNQ==" title="https://heapdump.cn/article/154235">JVM源码分析之SystemGC完全解读 | HeapDump性能社区<i class="fa fa-external-link"></i></span></p>
+<ul>
+<li>为什么不能同时设置<code>-XX:+DisableExplicitGC</code>以及<code>-XX:+ExplicitGCInvokesConcurrent</code></li>
+<li>为什么CMS GC下-XX:+ExplicitGCInvokesConcurrent这个参数加了之后会比真正的Full GC好？</li>
+<li>它如何做到暂停整个进程？</li>
+<li>堆外内存分配为什么有时候要配合System.gc？</li>
+<li>Netty回收堆外内存的策略又是如何？</li>
+</ul>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>笔者也没有想到一个简单的参数能牵扯出这么多内容，这里做一个大概的总结：</p>
+<ul>
+<li>Kafka官方曾经禁用过<code>System.gc()</code>。</li>
+<li>后面有大神分析了脚本和JDK的NIO源码，发现禁用<code>System.gc()</code>这不是有问题嘛，你Kafka大量使用Java的直接内存，直接内存靠一般的Gc是回收不掉的，只能靠Ful Gc顺带回收，JDK官方代码又是靠频繁调用<code>System.gc()</code>强制腾出直接内存空间的，你<code>System.gc()</code>禁用了不是“找死”么，于是赶紧解释了一波<code>Bits#reserveMemory</code>写的“垃圾代码”来证实自己的观点，然后建议启用<code>System.gc()</code>，并且为了提高Full Gc效率使用<code>-XX:+ExplicitGCInvokesConcurrent</code>。</li>
+<li>官方发现这个问题赶紧修复了一版并且提交了issue。</li>
+</ul>
+<h3 id="MaxInlineLevel"><a href="#MaxInlineLevel" class="headerlink" title="MaxInlineLevel"></a>MaxInlineLevel</h3><p><code>java</code> 有一个参数 <code>-XX:MaxInlineLevel</code>(JDK14之前默认值为 9)，这个值在JDK14之后默认值改为15。这个值的修改可以参考JDK官方的声明 <span class="exturl" data-url="aHR0cHM6Ly9idWdzLm9wZW5qZGsub3JnL2Jyb3dzZS9KREstODIzNDg2Mw==" title="https://bugs.openjdk.org/browse/JDK-8234863">https://bugs.openjdk.org/browse/JDK-8234863<i class="fa fa-external-link"></i></span>。</p>
+<blockquote>
+<p>下面的图Oracle官方对于JDK14版本之后修改<code>MaxInlineLevel=15</code>的Push。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230223221451.png" alt="调整MaxInlineLevel为15"></p>
+<p>下面长篇大论源自网上收集的资料和个人理解，其实简单理解为现代硬件资源足以支持 <code>-XX:MaxInlineLevel</code>设置为15，更大的内联深度可以让JIT编译出更多的本地代码从而提高Java代码的运行效率即可。</p>
+<blockquote>
+<p>如果你的服务器还是古旧的四五年前的机器，或者生产机器确实渣的可以，那么还是建议把这个参数 <code>-XX:MaxInlineLevel</code>改回 9 比较妥当。</p>
+</blockquote>
+<p>长篇大论的部分：</p>
+<p>链接<span class="exturl" data-url="aHR0cHM6Ly9idWdzLm9wZW5qZGsub3JnL2Jyb3dzZS9KREstODIzNDg2Mw==" title="https://bugs.openjdk.org/browse/JDK-8234863">https://bugs.openjdk.org/browse/JDK-8234863<i class="fa fa-external-link"></i></span>的声明指出，15这个值在scala上的性能测试是被认为最优结果。这个值在现代处理器速度以及性能优化较好的今天最为合适，默认值9这个数字显得非常<strong>过时</strong>。</p>
+<p>Kafka作为激进压榨机器性能的典范，也遵从JDK官方的改动默认所有版本的JDK统一使用15这个默认值。</p>
+<blockquote>
+<p>这里额外插一嘴，个人认为实际上这个值Oracle官方在JDK11就可以修改为15。</p>
+</blockquote>
+<p>MaxInlineLevel本身的判断逻辑似乎更引起广大程序员的关注，StackFlow上有一篇关于这个参数的讨论：<span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMzI1MDM2Njkvd2h5LWRvZXMtdGhlLWp2bS1oYXZlLWEtbWF4aW11bS1pbmxpbmUtZGVwdGg=" title="https://stackoverflow.com/questions/32503669/why-does-the-jvm-have-a-maximum-inline-depth">https://stackoverflow.com/questions/32503669/why-does-the-jvm-have-a-maximum-inline-depth<i class="fa fa-external-link"></i></span> 比较有意思。</p>
+<p>在评论中有网友指出在比较低的JDK8版本当中，MaxRecursiveInlineLevel对<strong>直接</strong>和<strong>间接</strong>的递归调用都进行计数，编译后的代码应该在运行时保持对整个内联树的跟踪（以便能够解压和去优化）。紧接着是其他人的一些个人观点，没人接这个人话茬=-=，尴尬。</p>
+<p>继续翻阅，下面的评论有一位大佬解释了为什么会出现MaxInlineLevel这个参数，简单易懂这里就直接贴过来了：</p>
+<blockquote>
+<p>One reason is also that the inlining itself in the HotSpot JVM is implemented with recursion. Every time inlining of a method is started a new context is created on the native stack. Allowing an unlimited depth would eventually make the JIT-compiler crash when it runs out of stack. </p>
+</blockquote>
+<p><strong>（旧版保守的限制方法内联深度），其中一个原因是HotSpot JVM的内联本身是用递归实现的。每次对一个方法进行内联时，都会在本地堆栈中创建一个新的上下文。如果允许无限的深度，最终会使JIT-编译器在堆栈耗尽时崩溃。</strong></p>
+<p>在过去硬件资源紧张的情况下，过度的方法内联有可能会出现比较深的堆栈调用，十分消耗程序内存，但是现代内存动不动就是32，64，128G 的今天，加上处理器的核心数量上来了之后，扩大默认的方法内联深度参数值确实非常有必要。</p>
+<blockquote>
+<p> 方法内联是JVM比较底层的优化，可以通过周大神的《深入理解JVM虚拟机第三版》了解。</p>
+</blockquote>
+<p>如果不懂方法内联直接无脑设置<code>MaxInlineLevel=15</code>即可，没有为什么，官方都已经在高版本JDK修改了默认值，JDK8忠实粉丝自然也可以这么干。</p>
+<p>jdk14 hotspot 依赖的调整日志：<span class="exturl" data-url="aHR0cHM6Ly9oZy5vcGVuamRrLm9yZy9qZGs4dS9qZGs4dS9ob3RzcG90Lw==" title="https://hg.openjdk.org/jdk8u/jdk8u/hotspot/">https://hg.openjdk.org/jdk8u/jdk8u/hotspot/<i class="fa fa-external-link"></i></span></p>
+<h3 id="Djava-awt-headless-true"><a href="#Djava-awt-headless-true" class="headerlink" title="-Djava.awt.headless=true"></a>-Djava.awt.headless=true</h3><p>这个参数比较奇怪，但是实际上在SpringBoot源码中也有同样的写法。</p>
+<p>这算是一个不太被关注的优化参数，简单理解是<code>-Djava.awt.headless=true</code>可以屏蔽掉一些不必要的外置设备影响，告知程序当前没有外置设备，尽可能的让程序底层自己模拟，比如打印从图形显示变为控制台打印。</p>
+<p>又是牵扯内容很多的一个点，具体解释可以看这篇文章：[[【Java】The Java Headless Mode]]，篇幅有限，这里就不多解释了。</p>
+<h2 id="KAFKA-GC-LOG-OPTS"><a href="#KAFKA-GC-LOG-OPTS" class="headerlink" title="KAFKA_GC_LOG_OPTS"></a>KAFKA_GC_LOG_OPTS</h2><p>见名知意，就是JVM的日志参数配置，Kafka最终的日志格式为：<code>XXX-gc.log</code>，日志配置这一块和大部分以JAVA为底层的开源组件大差不差，简单的扫一眼差不多了。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Log directory to use</span></span><br><span class="line"><span class="comment"># 获取log_dir，如果没配置就那 $base_dir 环境变量</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$LOG_DIR</span>"</span> = <span class="string">"x"</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="comment"># base_dir=$(dirname $0)/..</span></span><br><span class="line">  LOG_DIR=<span class="string">"<span class="variable">$base_dir</span>/logs"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># GC options	</span></span><br><span class="line">GC_FILE_SUFFIX=<span class="string">'-gc.log'</span></span><br><span class="line">GC_LOG_FILE_NAME=<span class="string">''</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$GC_LOG_ENABLED</span>"</span> = <span class="string">"xtrue"</span> ]; <span class="keyword">then</span></span><br><span class="line">  GC_LOG_FILE_NAME=<span class="variable">$DAEMON_NAME</span><span class="variable">$GC_FILE_SUFFIX</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># The first segment of the version number, which is '1' for releases before Java 9</span></span><br><span class="line">  <span class="comment"># it then becomes '9', '10', ...</span></span><br><span class="line">  <span class="comment"># Some examples of the first line of `java --version`:</span></span><br><span class="line">  <span class="comment"># 8 -&gt; java version "1.8.0_152"</span></span><br><span class="line">  <span class="comment"># 9.0.4 -&gt; java version "9.0.4"</span></span><br><span class="line">  <span class="comment"># 10 -&gt; java version "10" 2018-03-20</span></span><br><span class="line">  <span class="comment"># 10.0.1 -&gt; java version "10.0.1" 2018-04-17</span></span><br><span class="line">  <span class="comment"># We need to match to the end of the line to prevent sed from printing the characters that do not match</span></span><br><span class="line">  JAVA_MAJOR_VERSION=$(<span class="string">"<span class="variable">$JAVA</span>"</span> -version 2&gt;&amp;1 | sed -E -n <span class="string">'s/.* version "([0-9]*).*$/\1/p'</span>)</span><br><span class="line">  <span class="keyword">if</span> [[ <span class="string">"<span class="variable">$JAVA_MAJOR_VERSION</span>"</span> -ge <span class="string">"9"</span> ]] ; <span class="keyword">then</span></span><br><span class="line">    KAFKA_GC_LOG_OPTS=<span class="string">"-Xlog:gc*:file=<span class="variable">$LOG_DIR</span>/<span class="variable">$GC_LOG_FILE_NAME</span>:time,tags:filecount=10,filesize=100M"</span></span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    KAFKA_GC_LOG_OPTS=<span class="string">"-Xloggc:<span class="variable">$LOG_DIR</span>/<span class="variable">$GC_LOG_FILE_NAME</span> -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=100M"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>JAVA_MAJOR_VERSION</strong>就是通过正则去除JDK的主版本号。</p>
+<ul>
+<li>如果主版本号大于或者等于JDK9，就使用JDK9新增的 <code>-xlog:gc*</code> 统一的日志参数作为启动参数，</li>
+<li>如果是JDK8之前的版本，就需要用一大堆旧版的日志参数，学习和使用成本比较大：<ul>
+<li>GCLogFileSize=100M，限制GC日志文件大小为100M。</li>
+<li>NumberOfGCLogFiles=10，允许存在的GC日志文件数量为10个。</li>
+<li>UseGCLogFileRotation，让GC日志不断循环，如果最后一个GC日志写满，将会从第一个文件重新开始写入</li>
+<li><code>-verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps</code> 是旧版本混乱的GC参数配置诞生的恶果，这些参数在JDK9之后被统统被<code>-xlog:gc*</code> 替代。<ul>
+<li><code>-verbose:gc -XX:+PrintGCDetails</code>这两个参数经常在低版本JDK一起出现，最大的区别是前者是稳定版本，后者则是被认为是不稳定的日志启动参数（强制和其他GC参数配合出现显得不稳定）。</li>
+<li><code>-XX:+PrintGCDateStamps</code>：每行开头显示当前绝对的日期及时间，打印GC发生时的时间戳，搭配 -XX:+PrintGCDetails 使用，不可以独立使用。</li>
+<li><code>-XX:+PrintGCTimeStamps</code> <strong>自从JVM启动</strong>以来的时间。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><code>-XX:+PrintGCDateStamps</code>和<code>-XX:+PrintGCTimeStamps</code>可以直接看下面的例子对比：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintGCDateStamps</span><br><span class="line">日志输出示例：</span><br><span class="line"><span class="number">2014</span>-<span class="number">01</span>-<span class="number">03</span>T12:<span class="number">08</span>:<span class="number">38.102</span>-<span class="number">0100</span>: [GC <span class="number">66048</span>K-&gt;<span class="number">53077</span>K(<span class="number">251392</span>K), <span class="number">0</span>,<span class="number">0959470</span> secs]</span><br><span class="line"><span class="number">2014</span>-<span class="number">01</span>-<span class="number">03</span>T12:<span class="number">08</span>:<span class="number">38.239</span>-<span class="number">0100</span>: [GC <span class="number">119125</span>K-&gt;<span class="number">114661</span>K(<span class="number">317440</span>K), <span class="number">0</span>,<span class="number">1421720</span> secs]</span><br><span class="line"></span><br><span class="line">-XX:+PrintGCTimeStamps</span><br><span class="line">日志输出示例：</span><br><span class="line"><span class="number">0</span>,<span class="number">185</span>: [GC <span class="number">66048</span>K-&gt;<span class="number">53077</span>K(<span class="number">251392</span>K), <span class="number">0</span>,<span class="number">0977580</span> secs]</span><br><span class="line"><span class="number">0</span>,<span class="number">323</span>: [GC <span class="number">119125</span>K-&gt;<span class="number">114661</span>K(<span class="number">317440</span>K), <span class="number">0</span>,<span class="number">1448850</span> secs]</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>因为<code>-XX:+PrintGCDetails</code>被标记为manageable，所以可以通过如下三种方式修改：<br>1、com.sun.management.HotSpotDiagnosticMXBean API<br>2、JConsole<br>3、jinfo -flag</p>
+</blockquote>
+<p>最后再把英文注释部分简单翻译一下：</p>
+<ol>
+<li>第一个参数如果是1开头，代表是JDK9之后的版本。</li>
+<li><code>java --version</code>产生的结果如下：<ul>
+<li>8 -&gt; java version “1.8.0_152”</li>
+<li>9.0.4 -&gt; java version “9.0.4”</li>
+<li>10 -&gt; java version “10” 2018-03-20</li>
+<li>10.0.1 -&gt; java version “10.0.1” 2018-04-17</li>
+</ul>
+</li>
+<li>通过正则表达式匹配到行尾，以防止sed打印出不匹配的字符</li>
+</ol>
+<h2 id="KAFKA-JMX-OPTS"><a href="#KAFKA-JMX-OPTS" class="headerlink" title="KAFKA_JMX_OPTS"></a>KAFKA_JMX_OPTS</h2><p>JMX全称Java Management Extensions, 为Java应用提供管理扩展功能。在JDK 5的时候引入，Kafka设置启动参数让Kafka应用程序获得JMX远程调用的支持。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># JMX settings</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_JMX_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  KAFKA_JMX_OPTS=<span class="string">"-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false "</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>KAFKA_JMX_OPTS对应的value的含义参考自：<span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC80MTQ2NDdjMTE3OWU=" title="https://www.jianshu.com/p/414647c1179e">https://www.jianshu.com/p/414647c1179e<i class="fa fa-external-link"></i></span>,此处列举一些有关JMX的相关参数：<br>| 参数名                                        | 类型 | 描述                                                         |<br>| :——————————————– | :— | :———————————————————– |<br>| -Dcom.sun.management.jmxremote                | 布尔 | 是否支持远程JMX访问，默认true                                |<br>| -Dcom.sun.management.jmxremote.port           | 数值 | 监听端口号，方便远程访问                                     |<br>| -Dcom.sun.management.jmxremote.authenticate   | 布尔 | 是否需要开启用户认证,默认开启                                |<br>| -Dcom.sun.management.jmxremote.ssl            | 布尔 | 是否对连接开启SSL加密，默认开启                              |<br>| -Dcom.sun.management.jmxremote.access.file    | 路径 | 对访问用户的权限授权的文件的路径，默认路径<code>JRE_HOME/lib/management/jmxremote.access</code> |<br>| -Dcom.sun.management.jmxremote. password.file | 路径 | 设置访问用户的用户名和密码，默认路径<code>JRE_HOME/lib/management/ jmxremote.password</code> |</p>
+<h2 id="KAFKA-LOG4J-OPTS"><a href="#KAFKA-LOG4J-OPTS" class="headerlink" title="KAFKA_LOG4J_OPTS"></a>KAFKA_LOG4J_OPTS</h2><p>log4j的日志配置地址。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ <span class="string">"x$KAFKA_LOG4J_OPTS"</span> = <span class="string">"x"</span> ]; then  </span><br><span class="line">    export KAFKA_LOG4J_OPTS=<span class="string">"-Dlog4j.configuration=file:$base_dir/../config/log4j.properties"</span>  </span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p> 配置含义不需要记忆，在阅读的时候查阅相关资料即可：<span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC9jY2FmZGE0NWJjZWE=" title="https://www.jianshu.com/p/ccafda45bcea">https://www.jianshu.com/p/ccafda45bcea<i class="fa fa-external-link"></i></span>，这里直接贴过来作为注释部分供读者参考。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"># 根Log</span><br><span class="line"># 默认日志等级为INFO级别</span><br><span class="line"># NFO、WARN、ERROR和FATAL级别的日志信息都会输出</span><br><span class="line"># 日志最终输出到kafkaAppender</span><br><span class="line">log4j.rootLogger=INFO, stdout, kafkaAppender  </span><br><span class="line"># 控制台配置</span><br><span class="line">log4j.appender.stdout=org.apache.log4j.ConsoleAppender  </span><br><span class="line"># 布局模式使用可以灵活模式</span><br><span class="line">log4j.appender.stdout.layout=org.apache.log4j.PatternLayout  </span><br><span class="line"># 日志打印格式</span><br><span class="line"># [%d] 输出日志时间点的日期或时间，默认格式为ISO8601，也可以在其后指定格式，如：%d&#123;yyyy/MM/dd HH:mm:ss,SSS&#125;。</span><br><span class="line"># %m:：输出代码中指定的具体日志信息。</span><br><span class="line"># %p：输出日志信息的优先级，即DEBUG，INFO，WARN，ERROR，FATAL。</span><br><span class="line"># %c：输出日志信息所属的类目，通常就是所在类的全名。</span><br><span class="line"># %n：输出一个回车换行符，Windows平台为"\r\n"，Unix平台为"\n"。</span><br><span class="line">log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n  </span><br><span class="line"></span><br><span class="line"># DailyRollingFileAppender Kafka默认服务端日志</span><br><span class="line">log4j.appender.kafkaAppender=org.apache.log4j.DailyRollingFileAppender  </span><br><span class="line">log4j.appender.kafkaAppender.DatePattern=<span class="string">'.'</span>yyyy-MM-dd-HH  </span><br><span class="line"># server.log 存储位置</span><br><span class="line">log4j.appender.kafkaAppender.File=$&#123;kafka.logs.dir&#125;/server.log  </span><br><span class="line">log4j.appender.kafkaAppender.layout=org.apache.log4j.PatternLayout  </span><br><span class="line">log4j.appender.kafkaAppender.layout.ConversionPattern=[%d] %p %m (%c)%n  </span><br><span class="line"></span><br><span class="line"># DailyRollingFileAppender 状态机变更日志</span><br><span class="line">log4j.appender.stateChangeAppender=org.apache.log4j.DailyRollingFileAppender  </span><br><span class="line"># 按照每小时产生一个日志的方式</span><br><span class="line">log4j.appender.stateChangeAppender.DatePattern=<span class="string">'.'</span>yyyy-MM-dd-HH   </span><br><span class="line">log4j.appender.stateChangeAppender.File=$&#123;kafka.logs.dir&#125;/state-change.log  </span><br><span class="line">log4j.appender.stateChangeAppender.layout=org.apache.log4j.PatternLayout  </span><br><span class="line">log4j.appender.stateChangeAppender.layout.ConversionPattern=[%d] %p %m (%c)%n  </span><br><span class="line"></span><br><span class="line"># 请求日志</span><br><span class="line">log4j.appender.requestAppender=org.apache.log4j.DailyRollingFileAppender  </span><br><span class="line">log4j.appender.requestAppender.DatePattern=<span class="string">'.'</span>yyyy-MM-dd-HH  </span><br><span class="line">log4j.appender.requestAppender.File=$&#123;kafka.logs.dir&#125;/kafka-request.log  </span><br><span class="line">log4j.appender.requestAppender.layout=org.apache.log4j.PatternLayout  </span><br><span class="line">log4j.appender.requestAppender.layout.ConversionPattern=[%d] %p %m (%c)%n  </span><br><span class="line"></span><br><span class="line"># Log清理日志</span><br><span class="line">log4j.appender.cleanerAppender=org.apache.log4j.DailyRollingFileAppender  </span><br><span class="line">log4j.appender.cleanerAppender.DatePattern=<span class="string">'.'</span>yyyy-MM-dd-HH  </span><br><span class="line">log4j.appender.cleanerAppender.File=$&#123;kafka.logs.dir&#125;/log-cleaner.log  </span><br><span class="line">log4j.appender.cleanerAppender.layout=org.apache.log4j.PatternLayout  </span><br><span class="line">log4j.appender.cleanerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n  </span><br><span class="line"></span><br><span class="line"># Controller 日志</span><br><span class="line">log4j.appender.controllerAppender=org.apache.log4j.DailyRollingFileAppender  </span><br><span class="line">log4j.appender.controllerAppender.DatePattern=<span class="string">'.'</span>yyyy-MM-dd-HH  </span><br><span class="line">log4j.appender.controllerAppender.File=$&#123;kafka.logs.dir&#125;/controller.log  </span><br><span class="line">log4j.appender.controllerAppender.layout=org.apache.log4j.PatternLayout  </span><br><span class="line">log4j.appender.controllerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n  </span><br><span class="line"></span><br><span class="line"># 验证日志</span><br><span class="line">log4j.appender.authorizerAppender=org.apache.log4j.DailyRollingFileAppender  </span><br><span class="line">log4j.appender.authorizerAppender.DatePattern=<span class="string">'.'</span>yyyy-MM-dd-HH  </span><br><span class="line">log4j.appender.authorizerAppender.File=$&#123;kafka.logs.dir&#125;/kafka-authorizer.log  </span><br><span class="line">log4j.appender.authorizerAppender.layout=org.apache.log4j.PatternLayout  </span><br><span class="line">log4j.appender.authorizerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n  </span><br><span class="line">  </span><br><span class="line"># Change the line below to adjust ZK client logging  </span><br><span class="line"># 修改下面的日志控制ZK的日志输出</span><br><span class="line">log4j.logger.org.apache.zookeeper=INFO  </span><br><span class="line">  </span><br><span class="line"># Change the two lines below to adjust the general broker logging level (output to server.log and stdout)  </span><br><span class="line"># 更改下面两行以调整一般代理日志记录级别（输出到 server.log 和 stdout）</span><br><span class="line">log4j.logger.kafka=INFO  </span><br><span class="line">log4j.logger.org.apache.kafka=INFO  </span><br><span class="line">  </span><br><span class="line"># Change to DEBUG or TRACE to enable request logging  </span><br><span class="line"># 修改日志级别为 DEBUG和TRACE获取请求日志</span><br><span class="line">log4j.logger.kafka.request.logger=WARN, requestAppender  </span><br><span class="line">log4j.additivity.kafka.request.logger=<span class="keyword">false</span>  </span><br><span class="line">  </span><br><span class="line"># Uncomment the lines below and change log4j.logger.kafka.network.RequestChannel$ to TRACE for additional output  </span><br><span class="line"># 取消注释下面的行并将 log4j.logger.kafka.network.RequestChannel$ 更改为 TRACE 以获得额外的输出</span><br><span class="line"># related to the handling of requests  </span><br><span class="line"># 与请求的处理相关</span><br><span class="line">#log4j.logger.kafka.network.Processor=TRACE, requestAppender  </span><br><span class="line">#log4j.logger.kafka.server.KafkaApis=TRACE, requestAppender  </span><br><span class="line">#log4j.additivity.kafka.server.KafkaApis=false  </span><br><span class="line"></span><br><span class="line">log4j.logger.kafka.network.RequestChannel$=WARN, requestAppender  </span><br><span class="line">log4j.additivity.kafka.network.RequestChannel$=<span class="keyword">false</span>  </span><br><span class="line">  </span><br><span class="line">log4j.logger.kafka.controller=TRACE, controllerAppender  </span><br><span class="line">log4j.additivity.kafka.controller=<span class="keyword">false</span>  </span><br><span class="line">  </span><br><span class="line">log4j.logger.kafka.log.LogCleaner=INFO, cleanerAppender  </span><br><span class="line">log4j.additivity.kafka.log.LogCleaner=<span class="keyword">false</span>  </span><br><span class="line">  </span><br><span class="line">log4j.logger.state.change.logger=INFO, stateChangeAppender  </span><br><span class="line">log4j.additivity.state.change.logger=<span class="keyword">false</span>  </span><br><span class="line">  </span><br><span class="line"># Access denials are logged at INFO level, change to DEBUG to also log allowed accesses </span><br><span class="line"># 拒绝访问记录在 INFO 级别，更改为 DEBUG 以记录允许的访问</span><br><span class="line">log4j.logger.kafka.authorizer.logger=INFO, authorizerAppender  </span><br><span class="line">log4j.additivity.kafka.authorizer.logger=<span class="keyword">false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="KAFKA-OPTS"><a href="#KAFKA-OPTS" class="headerlink" title="KAFKA_OPTS"></a>KAFKA_OPTS</h2><p>KAFKA_OPTS 可以在这里设置自己的想要的通用配置：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Generic jvm settings you want to add</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  KAFKA_OPTS=<span class="string">""</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="UPGRADE-KAFKA-STREAMS-TEST-VERSION"><a href="#UPGRADE-KAFKA-STREAMS-TEST-VERSION" class="headerlink" title="UPGRADE_KAFKA_STREAMS_TEST_VERSION"></a>UPGRADE_KAFKA_STREAMS_TEST_VERSION</h2><p>变量名称翻译过来是“升级kafka流的测试版本”，这里大致的意思是取出版本号进行一些判断之后设置到ClassPath当中。</p>
+<p>说实话这部分内容看不太懂，但是不算是十分重要的东西，可以以后深入之后回来了解，这里直接忘记这个设置即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/streams/examples/build/libs/kafka-streams-examples*.jar;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">      CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  VERSION_NO_DOTS=`<span class="built_in">echo</span> <span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span> | sed <span class="string">'s/\.//g'</span>`</span><br><span class="line">  SHORT_VERSION_NO_DOTS=<span class="variable">$&#123;VERSION_NO_DOTS:0:(($&#123;#VERSION_NO_DOTS&#125;</span> - 1))&#125; <span class="comment"># remove last char, ie, bug-fix number</span></span><br><span class="line">  <span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/streams/upgrade-system-tests-<span class="variable">$SHORT_VERSION_NO_DOTS</span>/build/libs/kafka-streams-upgrade-system-tests*.jar;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">      CLASSPATH=<span class="string">"<span class="variable">$file</span>"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line">  <span class="keyword">if</span> [ <span class="string">"<span class="variable">$SHORT_VERSION_NO_DOTS</span>"</span> = <span class="string">"0100"</span> ]; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"/opt/kafka-<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>/libs/zkclient-0.8.jar"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">    CLASSPATH=<span class="string">"/opt/kafka-<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>/libs/zookeeper-3.4.6.jar"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">if</span> [ <span class="string">"<span class="variable">$SHORT_VERSION_NO_DOTS</span>"</span> = <span class="string">"0101"</span> ]; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"/opt/kafka-<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>/libs/zkclient-0.9.jar"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">    CLASSPATH=<span class="string">"/opt/kafka-<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>/libs/zookeeper-3.4.8.jar"</span>:<span class="string">"<span class="variable">$CLASSPATH</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="CLASSPATH"><a href="#CLASSPATH" class="headerlink" title="CLASSPATH"></a>CLASSPATH</h2><p>运行 <code>./gradlew copyDependantLibs</code> 来获取本地目录下的所有依赖性jar。</p>
+<p>注意这里划分了很多个子模块，所以使用了for循环加载到<strong>CLASSPATH</strong>当中，这会导致最终产生的命令会非常长。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># run ./gradlew copyDependantLibs to get all dependant jars in a local dir</span></span><br><span class="line"><span class="built_in">shopt</span> -s nullglob</span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$UPGRADE_KAFKA_STREAMS_TEST_VERSION</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="keyword">for</span> dir <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/core/build/dependant-libs-<span class="variable">$&#123;SCALA_VERSION&#125;</span>*;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>:<span class="variable">$dir</span>/*"</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/examples/build/libs/kafka-examples*.jar;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>个人尝试了一下注释介绍的<code>gradle copyDependantLibs</code>命令，本地执行结果如下，这个命令会在对应的模块构建依赖jar包：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ gradle copyDependantLibs</span><br><span class="line"></span><br><span class="line">&gt; Configure project :</span><br><span class="line">Building project <span class="string">'core'</span> with Scala version 2.13.3</span><br><span class="line">Building project <span class="string">'streams-scala'</span> with Scala version 2.13.3</span><br><span class="line"></span><br><span class="line">Deprecated Gradle features were used <span class="keyword">in</span> this build, making it incompatible with Gradle 7.0.</span><br><span class="line">Use <span class="string">'--warning-mode all'</span> to show the individual deprecation warnings.</span><br><span class="line">See https://docs.gradle.org/6.6.1/userguide/command_line_interface.html<span class="comment">#sec:command_line_warnings</span></span><br><span class="line"></span><br><span class="line">BUILD SUCCESSFUL <span class="keyword">in</span> 2s</span><br><span class="line">55 actionable tasks: 3 executed, 52 up-to-date</span><br></pre></td></tr></table></figure>
+
+<p>个人是win11的电脑，通过wox查找<code>dependant-libs</code>结果如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/image-20230224133728509.png" alt="image-20230224133728509"></p>
+<p>对应的一堆依赖jar包</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/image-20230224133744539.png" alt="image-20230224133744539"></p>
+<h2 id="CONSOLE-OUTPUT-FILE"><a href="#CONSOLE-OUTPUT-FILE" class="headerlink" title="CONSOLE_OUTPUT_FILE"></a>CONSOLE_OUTPUT_FILE</h2><p>日志的打印输出地址文件地址设置，注意不是GC的日志。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="variable">$COMMAND</span> <span class="keyword">in</span></span><br><span class="line">  -name)</span><br><span class="line">    DAEMON_NAME=<span class="variable">$2</span></span><br><span class="line">    CONSOLE_OUTPUT_FILE=<span class="variable">$LOG_DIR</span>/<span class="variable">$DAEMON_NAME</span>.out</span><br><span class="line">    <span class="built_in">shift</span> 2</span><br><span class="line">    ;;</span><br></pre></td></tr></table></figure>
+
+<p>这里翻阅了一些有关<code>shift</code>的资料：</p>
+<blockquote>
+<p>关于Shift的作用可以参考：<span class="exturl" data-url="aHR0cHM6Ly9zczY0LmNvbS9iYXNoL3NoaWZ0Lmh0bWw=" title="https://ss64.com/bash/shift.html">https://ss64.com/bash/shift.html<i class="fa fa-external-link"></i></span>。Linux中通过<code>help shift</code>查看使用手册，但是会发现写的比较潦草和抽象。</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">shift</span>: <span class="built_in">shift</span> [n]</span><br><span class="line">    Shift positional parameters.</span><br><span class="line">    </span><br><span class="line">    Rename the positional parameters <span class="variable">$N</span>+1,<span class="variable">$N</span>+2 ... to <span class="variable">$1</span>,<span class="variable">$2</span> ...  If N is</span><br><span class="line">    not given, it is assumed to be 1.</span><br><span class="line">    </span><br><span class="line">    Exit Status:</span><br><span class="line">    Returns success unless N is negative or greater than <span class="variable">$#</span></span><br></pre></td></tr></table></figure>
+
+<p>比如下面的程序：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#! /bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$1</span> </span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$2</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">shift</span> 1</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$1</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line">[zxd@localhost ~]$ ./test.sh 1 2 3 5 6</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line"></span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+
+<p><strong>shift 1 执行之后会弹出第一个参数</strong>，之后的运行参数会往前“推动”，$1变为$2的值，$2变为$3的值，以此类推。</p>
+<h2 id="amp-后台启动和nohup挂起进程"><a href="#amp-后台启动和nohup挂起进程" class="headerlink" title="&amp; 后台启动和nohup挂起进程"></a>&amp; 后台启动和nohup挂起进程</h2><p>末尾部分是设置ClaassPath，用户自己自定义参数以及把标准输入和输出重定向到同一个位置，最后就是以后台模式启动并且最终通过nohup挂起整个进程。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-cp <span class="string">"<span class="variable">$CLASSPATH</span>"</span> <span class="variable">$KAFKA_OPTS</span> <span class="string">"<span class="variable">$@</span>"</span> &gt; <span class="string">"<span class="variable">$CONSOLE_OUTPUT_FILE</span>"</span> 2&gt;&amp;1 &lt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>这段脚本最前面把替代参数意义进行了替换。<code>-cp</code>是nohup命令的参数，接着是把输出的结果全部重定向到标准输出当中，这个地址对应<strong>CONSOLE_OUTPUT_FILE</strong>。</p>
+<p>下面理解最后部分的<code>nohup和&amp;</code>、<code>2&gt;&amp;1</code>和<code>/dev/null</code>这几个常见的服务端脚本启动参数的含义。</p>
+<h3 id="nohup和-amp"><a href="#nohup和-amp" class="headerlink" title="nohup和&amp;"></a>nohup和&amp;</h3><p>nohup：nohup指令会忽略所有挂断（SIGHUP）信号不挂断的运行。注意nohup命令本身并没有后台运行的功能，需要配合<code>&amp;</code>使用。它的实现原理是让命令不间断的运行实现挂机的效果。</p>
+<p>&amp; 是指在后台运行，但当用户退出（解除挂起）的时候，命令自动也跟着退出，<code>nohup</code>和<code>&amp;</code>这两个指令通常会放到一起使用。</p>
+<h3 id="dev-null"><a href="#dev-null" class="headerlink" title="/dev/null"></a>/dev/null</h3><p>这个空间属于Linux的一块特殊空间，UNIX系统中，它被称为空设备。以下内容摘自维基百科：</p>
+<blockquote>
+<p> /dev/null（或称空设备）在类Unix系统中是一个特殊的设备文件，它丢弃一切写入其中的数据（但报告写入操作成功），读取它则会立即得到一个EOF[1]。</p>
+<p>在程序员行话，尤其是Unix行话中，/dev/null被称为比特桶或者<strong>黑洞</strong>。</p>
+</blockquote>
+<h3 id="2-gt-amp-1的问题"><a href="#2-gt-amp-1的问题" class="headerlink" title="2&gt;&amp;1的问题"></a>2&gt;&amp;1的问题</h3><p>前面的第一个数字2通常对应下面几种含义：</p>
+<ul>
+<li>0 – stdin (standard input) 标准输入</li>
+<li>1 – stdout (standard output) 标准输出</li>
+<li>2 – stderr (standard error) 标准错误输出</li>
+</ul>
+<p>&gt; 是重定向符号，而数字2的含义是标准错误输出，<code>&amp;1</code>指的就是标准输出，三个符号组合到一起就是把标准错误输出输入重定向到标准输出当中，这里可以理解为“合流”。</p>
+<blockquote>
+<p>注意命令<code>2&gt;&amp;1</code> 和<code>2&gt;1</code>是存在区别的，这里<code>&amp;</code>不能丢，后者的1代表输出代表错误重定向到一个<strong>文件1</strong>，不代表标准输出，只有<code>&amp;1</code>才代表标准输出。</p>
+</blockquote>
+<p>如果想要丢弃所有的标准错误输出和标准输出结果，下面是一个不错的例子：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup python3 getfile.py &gt; /dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<p>如果想要写入到指定的位置，下面是又一个不错的例子：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup python3 getfile.py &gt; test.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<p>最后是实际一点的例子：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 9 \* \* \* /usr/bin/python3 /opt/getFile.py &gt; /opt/file.log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>上面的命令含义是放在crontab中的定时任务，每天9:00启动这个python的脚本，并把执行结果写入日志文件file.log中</p>
+</blockquote>
+<h2 id="exec-运行"><a href="#exec-运行" class="headerlink" title="exec 运行"></a>exec 运行</h2><p>如果不是守护进程的执行，则是使用<code>exec</code>在当前的shell中进行正常模式启动，此时整个shell会挂起运行kafka服务端。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> <span class="string">"<span class="variable">$JAVA</span>"</span> <span class="variable">$KAFKA_HEAP_OPTS</span> <span class="variable">$KAFKA_JVM_PERFORMANCE_OPTS</span> <span class="variable">$KAFKA_GC_LOG_OPTS</span> <span class="variable">$KAFKA_JMX_OPTS</span> <span class="variable">$KAFKA_LOG4J_OPTS</span> -cp <span class="string">"<span class="variable">$CLASSPATH</span>"</span> <span class="variable">$KAFKA_OPTS</span> <span class="string">"<span class="variable">$@</span>"</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="其他内容"><a href="#其他内容" class="headerlink" title="其他内容"></a>其他内容</h1><p>Lauch modes 使用到的变量设置包含了启动整个Kafka服务端的核心部分，下面再列觉其他的依赖配置以及“辅助”内容。</p>
+<h2 id="Scala-版本选择"><a href="#Scala-版本选择" class="headerlink" title="Scala 版本选择"></a>Scala 版本选择</h2><p>Kafka是使用Java和Scala混合编写的，根据不同的Kafka版本需要不同版本的Scala版本支持，这里官方做了一个版本选择强制判断选择出最合适的Scala。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$SCALA_VERSION</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  SCALA_VERSION=2.13.3</span><br><span class="line">  <span class="keyword">if</span> [[ -f <span class="string">"<span class="variable">$base_dir</span>/gradle.properties"</span> ]]; <span class="keyword">then</span></span><br><span class="line">    SCALA_VERSION=`grep <span class="string">"^scalaVersion="</span> <span class="string">"<span class="variable">$base_dir</span>/gradle.properties"</span> | cut -d= -f 2`</span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="gradle-properties"><a href="#gradle-properties" class="headerlink" title="gradle.properties"></a>gradle.properties</h3><p>Kafka 项目是基于gradle构建的，gradle 个人平时基本没啥接触机会，这里做一个大致配置了解。</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">group</span>=<span class="string">org.apache.kafka  </span></span><br><span class="line"><span class="comment"># <span class="doctag">NOTE:</span> When you change this version number, you should also make sure to update  </span></span><br><span class="line"><span class="comment"># the version numbers in  </span></span><br><span class="line"><span class="comment">#  - docs/js/templateData.js  </span></span><br><span class="line"><span class="comment">#  - tests/kafkatest/__init__.py  </span></span><br><span class="line"><span class="comment">#  - tests/kafkatest/version.py (variable DEV_VERSION)  </span></span><br><span class="line"><span class="comment">#  - kafka-merge-pr.py  </span></span><br><span class="line"><span class="attr">version</span>=<span class="string">2.7.2  </span></span><br><span class="line"><span class="attr">scalaVersion</span>=<span class="string">2.13.3  </span></span><br><span class="line"><span class="attr">task</span>=<span class="string">build  </span></span><br><span class="line"><span class="meta">org.gradle.jvmargs</span>=<span class="string">-Xmx2g -Xss4m -XX:+UseParallelGC</span></span><br></pre></td></tr></table></figure>
+
+<p>gradle这里分配的是2g的堆内存，Xss4m每个线程的堆栈大小为4M，最后是使用<code>ParallelGC</code>垃圾收集器，也是JDK8的默认垃圾收集器。</p>
+<h2 id="DEBUG模式"><a href="#DEBUG模式" class="headerlink" title="DEBUG模式"></a>DEBUG模式</h2><p>如果在启动参数里面设置了<code>KAFKA_DEBUG</code>，就可以开启DEBUG模式。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Set Debug options if enabled</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"x<span class="variable">$KAFKA_DEBUG</span>"</span> != <span class="string">"x"</span> ]; <span class="keyword">then</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Use default ports</span></span><br><span class="line">    DEFAULT_JAVA_DEBUG_PORT=<span class="string">"5005"</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$JAVA_DEBUG_PORT</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">        JAVA_DEBUG_PORT=<span class="string">"<span class="variable">$DEFAULT_JAVA_DEBUG_PORT</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Use the defaults if JAVA_DEBUG_OPTS was not set</span></span><br><span class="line">    DEFAULT_JAVA_DEBUG_OPTS=<span class="string">"-agentlib:jdwp=transport=dt_socket,server=y,suspend=<span class="variable">$&#123;DEBUG_SUSPEND_FLAG:-n&#125;</span>,address=<span class="variable">$JAVA_DEBUG_PORT</span>"</span></span><br><span class="line">    <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$JAVA_DEBUG_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">        JAVA_DEBUG_OPTS=<span class="string">"<span class="variable">$DEFAULT_JAVA_DEBUG_OPTS</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Enabling Java debug options: <span class="variable">$JAVA_DEBUG_OPTS</span>"</span></span><br><span class="line">    KAFKA_OPTS=<span class="string">"<span class="variable">$JAVA_DEBUG_OPTS</span> <span class="variable">$KAFKA_OPTS</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>我们需要了解的是 JAVA_DEBUG_OPTS 命令的含义。起初虽然不是很懂下面的参数含义，但是可以知道是JAVA调试应用程序用的。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-agentlib:jdwp=transport=dt_socket,server=y,<span class="built_in">suspend</span>=<span class="variable">$&#123;DEBUG_SUSPEND_FLAG:-n&#125;</span>,address=<span class="variable">$JAVA_DEBUG_PORT</span></span><br></pre></td></tr></table></figure>
+
+<p>我们调试程序更多是在IDE里面，下面的内容来自网络资料整合参考和理解：</p>
+<p>[Debugging Java applications](<span class="exturl" data-url="aHR0cHM6Ly93d3cuaWJtLmNvbS9kb2NzL2VuL3Nkay1qYXZhLXRlY2hub2xvZ3kvOD90b3BpYz1hcHBsaWNhdGlvbnMtZGVidWdnaW5nLWphdmE=" title="https://www.ibm.com/docs/en/sdk-java-technology/8?topic=applications-debugging-java">Debugging Java applications - IBM Documentation<i class="fa fa-external-link"></i></span>) 这篇文章大概介绍了如何在JVM启动之后调试JAVA程序，以及如何在使用JDK调试应用程序。</p>
+<p>若要调试 Java 进程，可以使用 Java 调试器 （JDB） 应用进程或其他调试器，这些调试器通过使用 SDK 为操作系统提供的 Java™ 平台调试器体系结构 （JPDA） 进行通信。</p>
+<p>在Linux系统当中进行JAVA进程调试可以使用下面的命令。对于我们来说这些写法照着写就行，不需要过分追究具体的含义。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -agentlib:jdwp=transport=dt_socket,server=y,address=_&lt;port&gt;_ &lt;class&gt;</span><br></pre></td></tr></table></figure>
+
+<p>调试远程服务器运行的JAVA应用程序，在Window中和Linux中调试方式如下：</p>
+<ul>
+<li>On Windows systems:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jdb -connect com.sun.jdi.SocketAttach:hostname&#x3D;&lt;host&gt;,port&#x3D;&lt;port&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>On other systems:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jdb -attach &lt;host&gt;:&lt;port&gt;</span><br></pre></td></tr></table></figure>
+
+<p>此外Stack-Flow上还有一个写的更棒的帖子，这篇帖子的参数和Kafka的脚本部分基本一致了。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMTM4NTExL3doYXQtYXJlLWphdmEtY29tbWFuZC1saW5lLW9wdGlvbnMtdG8tc2V0LXRvLWFsbG93LWp2bS10by1iZS1yZW1vdGVseS1kZWJ1Z2dlZA==" title="https://stackoverflow.com/questions/138511/what-are-java-command-line-options-to-set-to-allow-jvm-to-be-remotely-debugged">debugging - What are Java command line options to set to allow JVM to be remotely debugged? - Stack Overflow<i class="fa fa-external-link"></i></span></p>
+<p>Before Java 5.0, use <code>-Xdebug</code> and <code>-Xrunjdwp</code> arguments. These options will still work in later versions, but it will run in interpreted mode instead of JIT, which will be slower.</p>
+<p>JDK5之前的版本这里可以直接忽略。（知道了也没啥用处）</p>
+<p>From Java 5.0, it is better to use the <code>-agentlib:jdwp</code> single option:</p>
+<p>JDK5之后使用下面的命令格式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=<span class="number">1044</span></span><br></pre></td></tr></table></figure>
+
+<p>Options on <code>-Xrunjdwp</code> or <code>agentlib:jdwp</code> arguments are :</p>
+<ul>
+<li><p><code>transport=dt_socket</code> : means the way used to connect to JVM (socket is a good choice, it can be used to debug a distant computer)</p>
+</li>
+<li><p><code>address=8000</code> : TCP/IP port exposed, to connect from the debugger,</p>
+</li>
+<li><p><code>suspend=y</code> : if ‘y’, tell the JVM to wait until debugger is attached to begin execution, otherwise (if ‘n’), starts execution right away.</p>
+</li>
+<li><p><code>transport=dt_socket</code> ：表示用于连接JVM的方式（socket是一个不错的选择，它可以用来调试远程计算机）</p>
+</li>
+<li><p><code>address=8000</code> ： TCP / IP端口公开，从调试器连接。</p>
+</li>
+<li><p><code>suspend=y</code> ：如果为“y”，则告诉 JVM 等到连接调试器后再开始执行，否则（如果为“n”），立即开始执行。</p>
+</li>
+</ul>
+<p>最后对比一下Kafka的参数，豁然开朗。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-agentlib:jdwp=transport=dt_socket,server=y,<span class="built_in">suspend</span>=<span class="variable">$&#123;DEBUG_SUSPEND_FLAG:-n&#125;</span>,address=<span class="variable">$JAVA_DEBUG_PORT</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Which-java-to-use"><a href="#Which-java-to-use" class="headerlink" title="Which java to use"></a>Which java to use</h2><p>如注释所言查找java命令在哪。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$JAVA_HOME</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  JAVA=<span class="string">"java"</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  JAVA=<span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Memory-options"><a href="#Memory-options" class="headerlink" title="Memory options"></a>Memory options</h2><p>内存配置选项如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$KAFKA_HEAP_OPTS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  KAFKA_HEAP_OPTS=<span class="string">"-Xmx256M"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>-Xmxn：指定内存分配池的最大大小（以字节为单位）。此值的倍数必须大于 2MB，1024 的倍数。</p>
+</blockquote>
+<p>这里设置最大的HEAP大小为256M。</p>
+<h2 id="cc-pkg"><a href="#cc-pkg" class="headerlink" title="cc_pkg"></a>cc_pkg</h2><p>同样是jar包依赖的查找和引入到ClassPath当中，这里同样不知道干啥用的，简单理解是获取必要依赖项即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> cc_pkg <span class="keyword">in</span> <span class="string">"api"</span> <span class="string">"transforms"</span> <span class="string">"runtime"</span> <span class="string">"file"</span> <span class="string">"mirror"</span> <span class="string">"mirror-client"</span> <span class="string">"json"</span> <span class="string">"tools"</span> <span class="string">"basic-auth-extension"</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">"<span class="variable">$base_dir</span>"</span>/connect/<span class="variable">$&#123;cc_pkg&#125;</span>/build/libs/connect-<span class="variable">$&#123;cc_pkg&#125;</span>*.jar;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">if</span> should_include_file <span class="string">"<span class="variable">$file</span>"</span>; <span class="keyword">then</span></span><br><span class="line">      CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>"</span>:<span class="string">"<span class="variable">$file</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line">  <span class="keyword">if</span> [ -d <span class="string">"<span class="variable">$base_dir</span>/connect/<span class="variable">$&#123;cc_pkg&#125;</span>/build/dependant-libs"</span> ] ; <span class="keyword">then</span></span><br><span class="line">    CLASSPATH=<span class="string">"<span class="variable">$CLASSPATH</span>:<span class="variable">$base_dir</span>/connect/<span class="variable">$&#123;cc_pkg&#125;</span>/build/dependant-libs/*"</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Exclude-jars-not-necessary-for-running-commands"><a href="#Exclude-jars-not-necessary-for-running-commands" class="headerlink" title="Exclude jars not necessary for running commands."></a>Exclude jars not necessary for running commands.</h2><p>排除命令不需要的jar包，比如test和javadoc等。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">regex=<span class="string">"(-(test|test-sources|src|scaladoc|javadoc)\.jar|jar.asc)$"</span></span><br><span class="line"><span class="function"><span class="title">should_include_file</span></span>() &#123;</span><br><span class="line">  <span class="keyword">if</span> [ <span class="string">"<span class="variable">$INCLUDE_TEST_JARS</span>"</span> = <span class="literal">true</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">  file=<span class="variable">$1</span></span><br><span class="line">  <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$(echo "$file" | egrep "$regex")</span>"</span> ] ; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="built_in">return</span> 1</span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="INCLUDE-TEST-JARS"><a href="#INCLUDE-TEST-JARS" class="headerlink" title="INCLUDE_TEST_JARS"></a>INCLUDE_TEST_JARS</h2><p>判断是否开启了包含测试的jar包。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$INCLUDE_TEST_JARS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  INCLUDE_TEST_JARS=<span class="literal">false</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>不得不感叹学无止境，知道的越多不知道的也就更多，一个脚本里面居然有这么多学问，本部分的核心毫无疑问是<strong>JVM的启动参数</strong>，其他的参数或者配置以及奇怪的脚本写法看不懂 也没啥关系，这里仅仅对于一些个人关注的核心部分进行介绍，对于一些细枝末节不做过多的追究和钻牛角尖，读者感兴趣可以对比参考资料做更多了解。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Xander
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/02/27/kafkastart/" title="【Kafka】Kafka-Server-start.sh 启动脚本分析（Ver 2.7.2）">https://whitestore.top/2023/02/27/kafkastart/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/27/headlessmode/" rel="prev" title="【Java】The Java Headless Mode">
+      <i class="fa fa-chevron-left"></i> 【Java】The Java Headless Mode
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/awkstudy/" rel="next" title="【Linux】awk命令介绍">
+      【Linux】awk命令介绍 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-Server-start-sh"><span class="nav-number">1.</span> <span class="nav-text">Kafka-Server-start.sh</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kafka-run-class-sh"><span class="nav-number">2.</span> <span class="nav-text">kafka-run-class.sh</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Launch-modes"><span class="nav-number">3.</span> <span class="nav-text">Launch modes</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#KAFKA-HEAP-OPTS"><span class="nav-number">3.1.</span> <span class="nav-text">KAFKA_HEAP_OPTS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KAFKA-JVM-PERFORMANCE-OPTS"><span class="nav-number">3.2.</span> <span class="nav-text">KAFKA_JVM_PERFORMANCE_OPTS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1垃圾收集器"><span class="nav-number">3.3.</span> <span class="nav-text">G1垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MaxGCPauseMillis"><span class="nav-number">3.3.1.</span> <span class="nav-text">MaxGCPauseMillis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InitiatingHeapOccupancyPercent"><span class="nav-number">3.3.2.</span> <span class="nav-text">InitiatingHeapOccupancyPercent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-ExplicitGCInvokesConcurrent"><span class="nav-number">3.3.3.</span> <span class="nav-text">-XX:+ExplicitGCInvokesConcurrent</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单理解"><span class="nav-number">3.3.3.1.</span> <span class="nav-text">简单理解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Kafka官方修复BUG：-XX-DisableExplicitGC-改为-XX-ExplicitGCInvokesConcurrent"><span class="nav-number">3.3.3.2.</span> <span class="nav-text">Kafka官方修复BUG：-XX:+DisableExplicitGC 改为 -XX:+ExplicitGCInvokesConcurrent</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Bits-reserveMemory"><span class="nav-number">3.3.3.3.</span> <span class="nav-text">Bits#reserveMemory</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Fix-XX-DisableExplicitGC"><span class="nav-number">3.3.3.4.</span> <span class="nav-text">Fix -XX:+DisableExplicitGC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他参考资料"><span class="nav-number">3.3.3.5.</span> <span class="nav-text">其他参考资料</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#小结"><span class="nav-number">3.3.3.6.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MaxInlineLevel"><span class="nav-number">3.3.4.</span> <span class="nav-text">MaxInlineLevel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Djava-awt-headless-true"><span class="nav-number">3.3.5.</span> <span class="nav-text">-Djava.awt.headless&#x3D;true</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KAFKA-GC-LOG-OPTS"><span class="nav-number">3.4.</span> <span class="nav-text">KAFKA_GC_LOG_OPTS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KAFKA-JMX-OPTS"><span class="nav-number">3.5.</span> <span class="nav-text">KAFKA_JMX_OPTS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KAFKA-LOG4J-OPTS"><span class="nav-number">3.6.</span> <span class="nav-text">KAFKA_LOG4J_OPTS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KAFKA-OPTS"><span class="nav-number">3.7.</span> <span class="nav-text">KAFKA_OPTS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UPGRADE-KAFKA-STREAMS-TEST-VERSION"><span class="nav-number">3.8.</span> <span class="nav-text">UPGRADE_KAFKA_STREAMS_TEST_VERSION</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CLASSPATH"><span class="nav-number">3.9.</span> <span class="nav-text">CLASSPATH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CONSOLE-OUTPUT-FILE"><span class="nav-number">3.10.</span> <span class="nav-text">CONSOLE_OUTPUT_FILE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#amp-后台启动和nohup挂起进程"><span class="nav-number">3.11.</span> <span class="nav-text">&amp; 后台启动和nohup挂起进程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nohup和-amp"><span class="nav-number">3.11.1.</span> <span class="nav-text">nohup和&amp;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dev-null"><span class="nav-number">3.11.2.</span> <span class="nav-text">&#x2F;dev&#x2F;null</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-gt-amp-1的问题"><span class="nav-number">3.11.3.</span> <span class="nav-text">2&gt;&amp;1的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#exec-运行"><span class="nav-number">3.12.</span> <span class="nav-text">exec 运行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他内容"><span class="nav-number">4.</span> <span class="nav-text">其他内容</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Scala-版本选择"><span class="nav-number">4.1.</span> <span class="nav-text">Scala 版本选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#gradle-properties"><span class="nav-number">4.1.1.</span> <span class="nav-text">gradle.properties</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DEBUG模式"><span class="nav-number">4.2.</span> <span class="nav-text">DEBUG模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Which-java-to-use"><span class="nav-number">4.3.</span> <span class="nav-text">Which java to use</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Memory-options"><span class="nav-number">4.4.</span> <span class="nav-text">Memory options</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cc-pkg"><span class="nav-number">4.5.</span> <span class="nav-text">cc_pkg</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Exclude-jars-not-necessary-for-running-commands"><span class="nav-number">4.6.</span> <span class="nav-text">Exclude jars not necessary for running commands.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#INCLUDE-TEST-JARS"><span class="nav-number">4.7.</span> <span class="nav-text">INCLUDE_TEST_JARS</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">5.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">199</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.4m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">21:19</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

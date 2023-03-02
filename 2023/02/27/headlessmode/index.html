@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Java被忽略的参数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Java】The Java Headless Mode">
+<meta property="og:url" content="https://whitestore.top/2023/02/27/headlessmode/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Java被忽略的参数">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230223072911.png">
+<meta property="article:published_time" content="2023-02-26T23:37:31.000Z">
+<meta property="article:modified_time" content="2023-03-02T01:34:33.622Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Java被忽略的参数">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230223072911.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/02/27/headlessmode/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Java】The Java Headless Mode | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/02/27/headlessmode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Java】The Java Headless Mode
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-02-27 07:37:31" itemprop="dateCreated datePublished" datetime="2023-02-27T07:37:31+08:00">2023-02-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-02 09:34:33" itemprop="dateModified" datetime="2023-03-02T09:34:33+08:00">2023-03-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/02/27/headlessmode/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/02/27/headlessmode/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+            <div class="post-description">Java被忽略的参数</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaGVhZGxlc3MtbW9kZQ==" title="https://www.baeldung.com/java-headless-mode">https://www.baeldung.com/java-headless-mode<i class="fa fa-external-link"></i></span></p>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>这篇文章源自个人看到了Kafka的启动脚本中一个“奇怪”的参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Djava.awt.headless=<span class="keyword">true</span></span><br></pre></td></tr></table></figure>
+
+<p>拿去谷歌一下发现网上的描述都大差不差，这里找了baeldung（类似国外的菜鸟教程）中的一篇文章，本文内容来自于英文博客原文。</p>
+<p>这篇文章介绍了 <strong>-Djava.awt.headless</strong> 参数的作用，网上大部分的资料都是说“为了<strong>提高计算效率和适配性</strong>我们可以使用这种模式，关闭图形显示等功能可以大大节省设备的计算能力，而且对一些本身没有相关显示设备的机器也能适配，程序也可以正常运行。”，个人认为这些理论内容不太能理解。</p>
+<p>当然也有诸如<strong>服务器没有显示屏什么的，你得告诉程序一声，你工作的地方没有这些设备</strong>这种说法 ，为此找了一篇国外的博客介绍。</p>
+<a id="more"></a>
+
+<h1 id="如何设置？"><a href="#如何设置？" class="headerlink" title="如何设置？"></a>如何设置？</h1><p>设置方式如下：</p>
+<ul>
+<li>在system property中设置 <em>java.awt.headless</em> 为 _true_。</li>
+</ul>
+<p>SpringBoot的源码中可以找到类似的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">configureHeadlessProperty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.setProperty(<span class="string">"java.awt.headless"</span>, System.getProperty(<span class="string">"java.awt.headless"</span>, Boolean.toString(<span class="keyword">this</span>.headless)));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动脚本中进行设置<code>-Djava.awt.headless=true</code>：在Kafka的脚本当中存在类似的启动脚本。</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">KAFKA_JVM_PERFORMANCE_OPTS=<span class="string">"-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent -XX:MaxInlineLevel=15 -Djava.awt.headless=true"</span></span><br></pre></td></tr></table></figure>
+
+<p>最后一个参数显示它使用headless模式。</p>
+<ul>
+<li>在执行命令的时候动态添加<code>-Djava.awt.headless=true</code>，这种方式和脚本设置启动的方式类似。</li>
+</ul>
+<h1 id="Headless-绕过重量级组件"><a href="#Headless-绕过重量级组件" class="headerlink" title="Headless 绕过重量级组件"></a>Headless 绕过重量级组件</h1><p>如果一个带有GUI组件的代码在开和关Headless模式下运行分别会有什么不同的效果？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">FlexibleApp</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (GraphicsEnvironment.isHeadless()) &#123;  </span><br><span class="line">        System.out.println(<span class="string">"Hello World"</span>);  </span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">        JOptionPane.showMessageDialog(<span class="keyword">null</span>, <span class="string">" showMessageDialog Hello World"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码如果关闭了Headless模式，则打印Hello World会变为图形化界面。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230223072911.png" alt=""></p>
+<p>如果开启Headless，则会打印在控制台。</p>
+<h1 id="Headless-Mode-在UI组件的应用案例"><a href="#Headless-Mode-在UI组件的应用案例" class="headerlink" title="Headless Mode 在UI组件的应用案例"></a>Headless Mode 在UI组件的应用案例</h1><p>Java Headless Mode 的典型案例可能是使用图形转化器，我们有时候可能需要图形数据进行图像处理，但是不一定需要实际显示。</p>
+<p>下面通过一个单元测试来模拟这些情况：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">  <span class="meta">@Before</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUpHeadlessMode</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 通过注释掉下面的代码测试不同的效果  </span></span><br><span class="line"><span class="comment">//        System.setProperty("java.awt.headless", "true");  </span></span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Test</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">whenSetUpSuccessful_thenHeadlessIsTrue</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">boolean</span> headless = GraphicsEnvironment.isHeadless();  </span><br><span class="line">        Assert.assertTrue(headless);  </span><br><span class="line">    &#125;<span class="comment">/*  </span></span><br><span class="line"><span class="comment">    测试通过  </span></span><br><span class="line"><span class="comment">    注释下面的代码之后，单元测试不通过  </span></span><br><span class="line"><span class="comment">    //        System.setProperty("java.awt.headless", "true");    */</span></span><br></pre></td></tr></table></figure>
+
+<p>使用awt的组件<code>java.awt.GraphicsEnvironment#isHeadless</code>，注意较高版本的JDK（例如 JDK11）中awk被直接干掉了，需要下载外部依赖导入才可以使用，建议选择JDK8以及以下的版本测试上面的程序。</p>
+<p>上面的代码如果注释掉 headless模式，单元测试会直接不通过。下面简单构建了一个图形转化器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">whenHeadlessMode_thenImagesWork</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">boolean</span> result = <span class="keyword">false</span>;  </span><br><span class="line">    <span class="keyword">try</span> (InputStream inStream = HeadlessModeUnitTest<span class="class">.<span class="keyword">class</span>.<span class="title">getResourceAsStream</span>(<span class="title">IN_FILE</span>)</span>;  </span><br><span class="line">         FileOutputStream outStream = <span class="keyword">new</span> FileOutputStream(OUT_FILE)) &#123;  </span><br><span class="line">        BufferedImage inputImage = ImageIO.read(inStream);  </span><br><span class="line">        result = ImageIO.write(inputImage, FORMAT, outStream);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    assertThat(result).isTrue();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在接下来的这个例子中，我们可以看到所有字体的信息，包括字体的度量，也可以让我们使用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">  <span class="meta">@Test</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">whenHeadless_thenFontsWork</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();  </span><br><span class="line">        String fonts[] = ge.getAvailableFontFamilyNames();  </span><br><span class="line">  </span><br><span class="line"><span class="comment">//        assertThat(fonts).isNotEmpty();  </span></span><br><span class="line">  </span><br><span class="line">        Font font = <span class="keyword">new</span> Font(fonts[<span class="number">0</span>], Font.BOLD, <span class="number">14</span>);  </span><br><span class="line">        FontMetrics fm = (<span class="keyword">new</span> Canvas()).getFontMetrics(font);  </span><br><span class="line">  </span><br><span class="line"><span class="comment">//        assertThat(fm.getHeight()).isGreaterThan(0);  </span></span><br><span class="line"><span class="comment">//        assertThat(fm.getAscent()).isGreaterThan(0);  </span></span><br><span class="line"><span class="comment">//        assertThat(fm.getDescent()).isGreaterThan(0);  </span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="HeadlessException"><a href="#HeadlessException" class="headerlink" title="HeadlessException"></a>HeadlessException</h1><p>有些设备是需要外部设备支持的，否则会抛出下面的异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">"main"</span> java.awt.HeadlessException</span><br><span class="line">	at java.awt.GraphicsEnvironment.checkHeadless(GraphicsEnvironment.java:<span class="number">204</span>)</span><br><span class="line">	at java.awt.Window.&lt;init&gt;(Window.java:<span class="number">536</span>)</span><br><span class="line">	at java.awt.Frame.&lt;init&gt;(Frame.java:<span class="number">420</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可以使用Frame来进行验证：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line">   <span class="meta">@Test</span>  </span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">whenHeadlessmode_thenFrameThrowsHeadlessException</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">       Frame frame = <span class="keyword">new</span> Frame();  </span><br><span class="line">       frame.setVisible(<span class="keyword">true</span>);  </span><br><span class="line">       frame.setSize(<span class="number">120</span>, <span class="number">120</span>);  </span><br><span class="line">   &#125;<span class="comment">/*  </span></span><br><span class="line"><span class="comment">   在开关Headless模式后会有不同的结果  </span></span><br><span class="line"><span class="comment">   开启：通过      </span></span><br><span class="line"><span class="comment">   </span></span><br><span class="line"><span class="comment">   关闭  </span></span><br><span class="line"><span class="comment">   ava.awt.HeadlessExceptionat java.awt.GraphicsEnvironment.checkHeadless(GraphicsEnvironment.java:204)  </span></span><br><span class="line"><span class="comment">at java.awt.Window.&lt;init&gt;(Window.java:536)  </span></span><br><span class="line"><span class="comment">at java.awt.Frame.&lt;init&gt;(Frame.java:420)  </span></span><br><span class="line"><span class="comment">at java.awt.Frame.&lt;init&gt;(Frame.java:385)  </span></span><br><span class="line"><span class="comment">  </span></span><br><span class="line"><span class="comment">   */</span></span><br></pre></td></tr></table></figure>
+
+<p>作为一个经验法则，请记住，像Frame和Button这样的顶级组件总是需要一个交互式的环境，并且会抛出这个异常。然而，如果没有明确设置无头模式，它将被抛出，成为一个不可恢复的错误。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过代码和案例分析，我们大致了解Java Headless Mode模式是怎么一回事，说白了就是屏蔽掉外置设备比如GUI的额外开销，转而用程序自己去进行模拟。</p>
+<p>Kafka设置这样的参数就是把性能发挥到机制，摈弃一切外部设备干扰，让服务器尽可能的通过自身程序模拟外部设备。</p>
+<p>比如重量级组件控制台打印，在外部设计可以通过<code>JOptionPane</code>的GUI组件实现可视化效果，而Headless则是利用我们熟知的<code>System.out</code>控制台输入输出流完成打印功能的模拟。</p>
+<p>以上就是关于 Java Headless Mode 的理解。</p>
+<h1 id="程序demo"><a href="#程序demo" class="headerlink" title="程序demo"></a>程序demo</h1><p>本文的个人实验代码放到下面部分，文章提到的部分代码可能会无法编译通过（图形转化器的代码），个人理解代码意图之后就没有深究了，读者碰到报错问题忽略删除即可。</p>
+<blockquote>
+<p>PS：建议使用JDK8之前的版本，可以直接引入awt和swing的相关组件。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="keyword">import</span> jdk.nashorn.internal.ir.LiteralNode;  </span><br><span class="line"><span class="keyword">import</span> org.junit.Assert;  </span><br><span class="line"><span class="keyword">import</span> org.junit.Before;  </span><br><span class="line"><span class="keyword">import</span> org.junit.Test;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> javax.imageio.ImageIO;  </span><br><span class="line"><span class="keyword">import</span> javax.swing.*;  </span><br><span class="line"><span class="keyword">import</span> java.awt.*;  </span><br><span class="line"><span class="keyword">import</span> java.awt.image.BufferedImage;  </span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;  </span><br><span class="line"><span class="keyword">import</span> java.io.IOException;  </span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.junit.Assert.assertThat;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HandlessTest</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Before</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUpHeadlessMode</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 通过注释掉下面的代码测试不同的效果  </span></span><br><span class="line">        System.setProperty(<span class="string">"java.awt.headless"</span>, <span class="string">"true"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Test</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">whenSetUpSuccessful_thenHeadlessIsTrue</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">boolean</span> headless = GraphicsEnvironment.isHeadless();  </span><br><span class="line">        Assert.assertTrue(headless);  </span><br><span class="line">    &#125;<span class="comment">/*  </span></span><br><span class="line"><span class="comment">    测试通过  </span></span><br><span class="line"><span class="comment">    注释下面的代码之后，单元测试不通过  </span></span><br><span class="line"><span class="comment">    //        System.setProperty("java.awt.headless", "true");    */</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">//@Test  </span></span><br><span class="line">    <span class="comment">//public void whenHeadlessMode_thenImagesWork() throws IOException &#123;  </span></span><br><span class="line">  </span><br><span class="line">    <span class="comment">//    boolean result = false;  </span></span><br><span class="line">    <span class="comment">//    try (InputStream inStream = HandlessTest.class.getResourceAsStream(IN_FILE);  </span></span><br><span class="line">    <span class="comment">//         FileOutputStream outStream = new FileOutputStream(OUT_FILE)) &#123;  </span></span><br><span class="line">    <span class="comment">//        BufferedImage inputImage = ImageIO.read(inStream);  </span></span><br><span class="line">    <span class="comment">//        result = ImageIO.write(inputImage, FORMAT, outStream);  </span></span><br><span class="line">    <span class="comment">//   &#125;  </span></span><br><span class="line">    <span class="comment">//    Assert.assertTrue(result);  </span></span><br><span class="line">    <span class="comment">//&#125;  </span></span><br><span class="line">  </span><br><span class="line"><span class="comment">//    @Test  </span></span><br><span class="line"><span class="comment">//    public void whenHeadlessMode_thenImagesWork() &#123;  </span></span><br><span class="line"><span class="comment">//        boolean result = false;  </span></span><br><span class="line"><span class="comment">//        try (InputStream inStream = HeadlessModeUnitTest.class.getResourceAsStream(IN_FILE);  </span></span><br><span class="line"><span class="comment">//             FileOutputStream outStream = new FileOutputStream(OUT_FILE)) &#123;  </span></span><br><span class="line"><span class="comment">//            BufferedImage inputImage = ImageIO.read(inStream);  </span></span><br><span class="line"><span class="comment">//            result = ImageIO.write(inputImage, FORMAT, outStream);  </span></span><br><span class="line"><span class="comment">//        &#125;  </span></span><br><span class="line"><span class="comment">//  </span></span><br><span class="line"><span class="comment">//        assertThat(result).isTrue();  </span></span><br><span class="line"><span class="comment">//    &#125;  </span></span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Test</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">whenHeadless_thenFontsWork</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();  </span><br><span class="line">        String fonts[] = ge.getAvailableFontFamilyNames();  </span><br><span class="line">  </span><br><span class="line"><span class="comment">//        assertThat(fonts).isNotEmpty();  </span></span><br><span class="line">  </span><br><span class="line">        Font font = <span class="keyword">new</span> Font(fonts[<span class="number">0</span>], Font.BOLD, <span class="number">14</span>);  </span><br><span class="line">        FontMetrics fm = (<span class="keyword">new</span> Canvas()).getFontMetrics(font);  </span><br><span class="line">  </span><br><span class="line"><span class="comment">//        assertThat(fm.getHeight()).isGreaterThan(0);  </span></span><br><span class="line"><span class="comment">//        assertThat(fm.getAscent()).isGreaterThan(0);  </span></span><br><span class="line"><span class="comment">//        assertThat(fm.getDescent()).isGreaterThan(0);  </span></span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Test</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">whenHeadlessmode_thenFrameThrowsHeadlessException</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        Frame frame = <span class="keyword">new</span> Frame();  </span><br><span class="line">        frame.setVisible(<span class="keyword">true</span>);  </span><br><span class="line">        frame.setSize(<span class="number">120</span>, <span class="number">120</span>);  </span><br><span class="line">    &#125;<span class="comment">/*  </span></span><br><span class="line"><span class="comment">    在开关Headless模式后会有不同的结果  </span></span><br><span class="line"><span class="comment">    开启：通过  </span></span><br><span class="line"><span class="comment">    关闭  </span></span><br><span class="line"><span class="comment">    ava.awt.HeadlessException   at java.awt.GraphicsEnvironment.checkHeadless(GraphicsEnvironment.java:204)   at java.awt.Window.&lt;init&gt;(Window.java:536)   at java.awt.Frame.&lt;init&gt;(Frame.java:420)   at java.awt.Frame.&lt;init&gt;(Frame.java:385)  </span></span><br><span class="line"><span class="comment">    */</span>  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Test</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">FlexibleApp</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">if</span> (GraphicsEnvironment.isHeadless()) &#123;  </span><br><span class="line">            System.out.println(<span class="string">"Hello World"</span>);  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            JOptionPane.showMessageDialog(<span class="keyword">null</span>, <span class="string">"showMessageDialog Hello World"</span>);  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC83MjQ4YjNmZjVjYTc=" title="https://www.jianshu.com/p/7248b3ff5ca7">https://www.jianshu.com/p/7248b3ff5ca7<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaGVhZGxlc3MtbW9kZQ==" title="https://www.baeldung.com/java-headless-mode">https://www.baeldung.com/java-headless-mode<i class="fa fa-external-link"></i></span>](<span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaGVhZGxlc3MtbW9kZV0oaHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaGVhZGxlc3MtbW9kZSk=" title="https://www.baeldung.com/java-headless-mode](https://www.baeldung.com/java-headless-mode)">https://www.baeldung.com/java-headless-mode](https://www.baeldung.com/java-headless-mode)<i class="fa fa-external-link"></i></span>)</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/02/27/headlessmode/" title="【Java】The Java Headless Mode">https://whitestore.top/2023/02/27/headlessmode/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/27/devnull/" rel="prev" title="What is /dev/null and How to Use It">
+      <i class="fa fa-chevron-left"></i> What is /dev/null and How to Use It
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/27/kafkastart/" rel="next" title="【Kafka】Kafka-Server-start.sh 启动脚本分析（Ver 2.7.2）">
+      【Kafka】Kafka-Server-start.sh 启动脚本分析（Ver 2.7.2） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原文"><span class="nav-number">1.</span> <span class="nav-text">原文</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何设置？"><span class="nav-number">3.</span> <span class="nav-text">如何设置？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Headless-绕过重量级组件"><span class="nav-number">4.</span> <span class="nav-text">Headless 绕过重量级组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Headless-Mode-在UI组件的应用案例"><span class="nav-number">5.</span> <span class="nav-text">Headless Mode 在UI组件的应用案例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HeadlessException"><span class="nav-number">6.</span> <span class="nav-text">HeadlessException</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#程序demo"><span class="nav-number">8.</span> <span class="nav-text">程序demo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">9.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">199</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.4m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">21:19</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
