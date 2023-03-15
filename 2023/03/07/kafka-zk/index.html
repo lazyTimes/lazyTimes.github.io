@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Kafka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Kafka】编译 Kafka2.7 源码并搭建源码环境（Ver 2.7.2）">
+<meta property="og:url" content="https://whitestore.top/2023/03/07/kafka-zk/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Kafka">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230304143229.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212201119.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212201419.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212203101.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212212305.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212213914.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212213934.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214041.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214002.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214219.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214419.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214501.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212221849.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212223300.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212225657.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212225903.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212230210.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212230345.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212223700.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230213070600.png">
+<meta property="article:published_time" content="2023-03-07T13:17:48.000Z">
+<meta property="article:modified_time" content="2023-03-15T06:58:45.026Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Kafka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230304143229.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/03/07/kafka-zk/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Kafka】编译 Kafka2.7 源码并搭建源码环境（Ver 2.7.2） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/03/07/kafka-zk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Kafka】编译 Kafka2.7 源码并搭建源码环境（Ver 2.7.2）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-03-07 21:17:48" itemprop="dateCreated datePublished" datetime="2023-03-07T21:17:48+08:00">2023-03-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-15 14:58:45" itemprop="dateModified" datetime="2023-03-15T14:58:45+08:00">2023-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka/" itemprop="url" rel="index"><span itemprop="name">Kafka</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/03/07/kafka-zk/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/03/07/kafka-zk/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+            <div class="post-description">Kafka</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Kafka 是通过 Scala 和 Java共同编写的语言，之所以选择<strong>2.7.2</strong>的版本是因为这个版本的Kafka是最后一版本保留ZK的版本。</p>
+<blockquote>
+<p>为什么不直接部署最新版代码？</p>
+<p>因为过去很长一段时间Kafka都是和ZK配合的，并且有很多成熟项目都使用了带ZK的Kafka，去ZK的Kafka还有不少的路要走。</p>
+</blockquote>
+<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ul>
+<li>JDK：1.8.0_351</li>
+<li>Scala：2.12.8</li>
+<li>Gradle：6.6</li>
+<li>Zookeeper：3.4.14</li>
+</ul>
+<h1 id="Kafka-2-7-2"><a href="#Kafka-2-7-2" class="headerlink" title="Kafka 2.7.2"></a>Kafka 2.7.2</h1><p>建议fork一个官方的分支到自己的仓库，方便自己学习的时候添加注释等内容。</p>
+<p>地址：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FwYWNoZS9rYWZrYQ==" title="https://github.com/apache/kafka">https://github.com/apache/kafka<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230304143229.png" alt=""></p>
+<h2 id="安装JDK-1-8"><a href="#安装JDK-1-8" class="headerlink" title="安装JDK 1.8"></a>安装JDK 1.8</h2><p>JDK的教程玩网上有非常多，寻找合适的JDK8的版本即可。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS9qYXZhL3RlY2hub2xvZ2llcy9qYXZhc2UvamF2YXNlOC1hcmNoaXZlLWRvd25sb2Fkcy5odG1s" title="https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html">https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html<i class="fa fa-external-link"></i></span></p>
+<a id="more"></a>
+
+<h2 id="安装-Scala-2-12-8"><a href="#安装-Scala-2-12-8" class="headerlink" title="安装 Scala 2.12.8"></a>安装 Scala 2.12.8</h2><h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><p>下载地址为：<span class="exturl" data-url="aHR0cHM6Ly93d3cuc2NhbGEtbGFuZy5vcmcvZG93bmxvYWQvMi4xMi44Lmh0bWw=" title="https://www.scala-lang.org/download/2.12.8.html">https://www.scala-lang.org/download/2.12.8.html<i class="fa fa-external-link"></i></span></p>
+<p>个人为Win 11，直接下载Windows 安装版本：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212201119.png" alt=""></p>
+<p>个人是window系统，直接点击下一步即可，安装过程这里省略了。</p>
+<h3 id="配置-SCALA-HOME"><a href="#配置-SCALA-HOME" class="headerlink" title="配置 SCALA_HOME"></a>配置 SCALA_HOME</h3><p>安装完成之后是在对应的操作系统配置环境变量，个人在Path变量中增加<strong>SCALA_HOME</strong>，并且指定地址即可。因为个人是Windows 安装版本安装，已经自动配置了环境变量。安装完成之后结果如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\adong&gt;scala -version</span><br><span class="line">Scala code runner version 2.12.8 -- Copyright 2002-2018, LAMP/EPFL and Lightbend, Inc.</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212201419.png" alt=""></p>
+<h2 id="安装-gradle-6-6"><a href="#安装-gradle-6-6" class="headerlink" title="安装 gradle 6.6"></a>安装 gradle 6.6</h2><p>下载地址：<span class="exturl" data-url="aHR0cHM6Ly9zZXJ2aWNlcy5ncmFkbGUub3JnL2Rpc3RyaWJ1dGlvbnMv" title="https://services.gradle.org/distributions/">https://services.gradle.org/distributions/<i class="fa fa-external-link"></i></span></p>
+<p>我们选择想要安装的发布版本，<strong>gradle-x.x-bin.zip</strong> 是需要下载的安装发布版，<strong>gradle-x.x-src.zip</strong> 是源码，<strong>gradle-x.x-all.zip</strong> 则是下载全部的文件。这里我选择的是<code>gradle-6.6.1-bin.zip</code>。</p>
+<h3 id="配置-Gradle-环境变量"><a href="#配置-Gradle-环境变量" class="headerlink" title="配置 Gradle 环境变量"></a>配置 Gradle 环境变量</h3><p>直接把gradle 的安装目录bin地址贴到环境变量的Path当中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\adongstack\mysoft\gradle-6.6.1\bin</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212203101.png" alt=""></p>
+<p>然后是在<code>cmd</code>当中验证即可：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\adong&gt;gradle -v</span><br><span class="line"></span><br><span class="line">Welcome to Gradle 6.6.1!</span><br><span class="line"></span><br><span class="line">Here are the highlights of this release:</span><br><span class="line"> - Experimental build configuration caching</span><br><span class="line"> - Built-in conventions <span class="keyword">for</span> handling credentials</span><br><span class="line"> - Java compilation supports --release flag</span><br><span class="line"></span><br><span class="line">For more details see https://docs.gradle.org/6.6.1/release-notes.html</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">------------------------------------------------------------</span><br><span class="line">Gradle 6.6.1</span><br><span class="line">------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">Build time:   2020-08-25 16:29:12 UTC</span><br><span class="line">Revision:     f2d1fb54a951d8b11d25748e4711bec8d128d7e3</span><br><span class="line"></span><br><span class="line">Kotlin:       1.3.72</span><br><span class="line">Groovy:       2.5.12</span><br><span class="line">Ant:          Apache Ant(TM) version 1.10.8 compiled on May 10 2020</span><br><span class="line">JVM:          1.8.0_333 (Oracle Corporation 25.333-b02)</span><br><span class="line">OS:           Windows 11 10.0 amd64</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装-Zookeeper-3-4-14"><a href="#安装-Zookeeper-3-4-14" class="headerlink" title="安装 Zookeeper 3.4.14"></a>安装 Zookeeper 3.4.14</h2><p>个人建议安装到虚拟机的Linux系统，安装的操作如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p>国内的访问速度比较慢，这里直接上外网拖了一个安装包放到网盘，读者根据网盘下载即可：</p>
+<blockquote>
+<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMVI2eno1cGZmdXdWOEQ3Qi1ONlBWN1E/cHdkPXdvcG4=" title="https://pan.baidu.com/s/1R6zz5pffuwV8D7B-N6PV7Q?pwd=wopn">https://pan.baidu.com/s/1R6zz5pffuwV8D7B-N6PV7Q?pwd=wopn<i class="fa fa-external-link"></i></span><br>    提取码：wopn </p>
+</blockquote>
+<h3 id="创建-data-文件夹"><a href="#创建-data-文件夹" class="headerlink" title="创建 data 文件夹"></a>创建 data 文件夹</h3><p>在Zookeeper 3.4.14的目录当中准备<code>data</code>文件夹。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[zxd@localhost zookeeper-3.4.14]$ mkdir data</span><br><span class="line">mkdir: cannot create directory ‘data’: Permission denied</span><br><span class="line">[zxd@localhost zookeeper-3.4.14]$ sudo mkdir data</span><br><span class="line">[sudo] password <span class="keyword">for</span> zxd: </span><br><span class="line">[zxd@localhost zookeeper-3.4.14]$ ls</span><br><span class="line">bin  conf  data  dist-maven</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改-zoo-cfg-中的-data-属性"><a href="#修改-zoo-cfg-中的-data-属性" class="headerlink" title="修改 zoo.cfg 中的 data 属性"></a>修改 zoo.cfg 中的 data 属性</h3><p>我们将Zookeeper的数据目录执行刚刚新建的data文件夹。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> conf</span><br><span class="line">vim zoo_sample.cfg zoo.cfg</span><br></pre></td></tr></table></figure>
+
+<p><code>vim zoo_sample.cfg zoo.cfg</code>，我们修改相关的配置，默认目录在<code>/tmp/zookeeper</code>，这里个人改为<code>/opt/zookeeper/zookeeper-3.4.14/data</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># the directory where the snapshot is stored.</span></span><br><span class="line"><span class="comment"># do not use /tmp for storage, /tmp here is just </span></span><br><span class="line"><span class="comment"># example sakes.</span></span><br><span class="line"><span class="comment">#dataDir=/tmp/zookeeper</span></span><br><span class="line">dataDir=/opt/zookeeper/zookeeper-3.4.14/data</span><br><span class="line"><span class="comment"># the port at which the clients will connect</span></span><br><span class="line">clientPort=2181</span><br></pre></td></tr></table></figure>
+
+<p>修改之后我们使用<code>-x</code> 应用修改。</p>
+<h2 id="启动Zookeeper"><a href="#启动Zookeeper" class="headerlink" title="启动Zookeeper"></a>启动Zookeeper</h2><p>编辑完成之后，进入到安装目录的bin目录当中启动Zookeeper。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[zxd@localhost zookeeper-3.4.14]$ <span class="built_in">cd</span> bin/</span><br><span class="line">[zxd@localhost bin]$ sudo ./zkServer.sh start </span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: /opt/zookeeper/zookeeper-3.4.14/bin/../conf/zoo.cfg</span><br><span class="line">grep: /opt/zookeeper/zookeeper-3.4.14/bin/../conf/zoo.cfg: No such file or directory</span><br><span class="line">mkdir: cannot create directory ‘’: No such file or directory</span><br><span class="line">Starting zookeeper ... STARTED</span><br></pre></td></tr></table></figure>
+
+<p>发现没有启动成功，根据提示我们需要zoo.cfg的配置，这部分为Zk的内容，这里就直接跳过了。</p>
+<h2 id="Kafka-2-7-2-源码下载"><a href="#Kafka-2-7-2-源码下载" class="headerlink" title="Kafka 2.7.2 源码下载"></a>Kafka 2.7.2 源码下载</h2><p>下载<code>kafka-2.7.2-src.tgz</code>包之后，解压到对应的目录，接下来需要导入到Idea当中。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212212305.png" alt=""></p>
+<h2 id="导入Idea"><a href="#导入Idea" class="headerlink" title="导入Idea"></a>导入Idea</h2><p>下载源码之后在Idea当中导入Kafka项目。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212213914.png" alt=""></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212213934.png" alt=""></p>
+<p>导入项目之后，我们进入到Setting， 设置Gradle的Home地址。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214041.png" alt=""></p>
+<p>这里把Gradle的Home地址设置为自己本机安装的，不使用Iead自带的。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214002.png" alt=""></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214219.png" alt=""></p>
+<h3 id="修改-build-gradle"><a href="#修改-build-gradle" class="headerlink" title="修改 build.gradle"></a>修改 build.gradle</h3><p>接下来还不能导 jar 包，需要把镜像文件下载服务器更换为国内的私服，否则会相当慢，直接导致 “time out” 报错。进入 kafka 源码包，修改 <strong>build.gradle</strong> 文件，在原来配置上，添加阿里的私服配置。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214419.png" alt=""></p>
+<p>下面的内容复制到 <strong>build.gradle</strong> 文件的对应位置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">maven &#123;</span><br><span class="line">	url 'http://maven.aliyun.com/nexus/content/groups/public/'</span><br><span class="line">&#125;</span><br><span class="line">maven &#123;</span><br><span class="line">	url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>文件当中查找<code>buildscript</code>可以快速定位。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212214501.png" alt=""></p>
+<p>注意最后需要 <strong>调整一下位置</strong>，优先从阿里云的库获取：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;  </span><br><span class="line">  repositories &#123;  </span><br><span class="line">    maven &#123;  </span><br><span class="line">      url <span class="string">'http://maven.aliyun.com/nexus/content/groups/public/'</span>  </span><br><span class="line">    &#125;  </span><br><span class="line">    maven &#123;  </span><br><span class="line">      url <span class="string">'http://maven.aliyun.com/nexus/content/repositories/jcenter'</span>  </span><br><span class="line">    &#125;  </span><br><span class="line">    mavenCentral()  </span><br><span class="line">    jcenter()  </span><br><span class="line">    maven &#123;  </span><br><span class="line">      url <span class="string">"https://plugins.gradle.org/m2/"</span>  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">  &#125;</span><br><span class="line">  ......</span><br></pre></td></tr></table></figure>
+
+<p>接着还需要复制到<code>allproject</code>当中：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">maven &#123;</span><br><span class="line">	url <span class="string">'http://maven.aliyun.com/nexus/content/groups/public/'</span></span><br><span class="line">&#125;</span><br><span class="line">maven &#123;</span><br><span class="line">	url <span class="string">'http://maven.aliyun.com/nexus/content/repositories/jcenter'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>复制到的位置大概如下：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">allprojects</span> &#123;  </span><br><span class="line">  </span><br><span class="line">  <span class="keyword">repositories</span> &#123;  </span><br><span class="line">    maven &#123;  </span><br><span class="line">      url <span class="string">'http://maven.aliyun.com/nexus/content/groups/public/'</span>  </span><br><span class="line">    &#125;  </span><br><span class="line">    maven &#123;  </span><br><span class="line">      url <span class="string">'http://maven.aliyun.com/nexus/content/repositories/jcenter'</span>  </span><br><span class="line">    &#125;  </span><br><span class="line">    mavenCentral()  </span><br><span class="line">  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>替换之后耐心等待依赖下载完成：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212221849.png" alt=""></p>
+<p>在依赖安装完成之后，我们可以点一下Idea顶部的小锤子，最后的提示编译成功：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212223300.png" alt=""></p>
+<h3 id="安装-Idea-scala-插件"><a href="#安装-Idea-scala-插件" class="headerlink" title="安装 Idea scala 插件"></a>安装 Idea scala 插件</h3><p>Idea导入源码之后的<code>.scala</code>文件是没有语法提示的，我们安装插件之后可以正常阅读scala的源码：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212225657.png" alt=""></p>
+<p>插件安装完成之后需要重启。访问<code>kafka.scala</code>，如果相关的代码出现颜色和语法提示说明插件安装成功：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212225903.png" alt=""></p>
+<h2 id="选择-scala-jdk"><a href="#选择-scala-jdk" class="headerlink" title="选择 scala jdk"></a>选择 scala jdk</h2><p>如果读者是第一次搭建Kafka和使用scala，大概率会出现下面的提示：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212230210.png" alt=""></p>
+<p>根据提示设置<code>scala jdk</code>的安装目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Program Files (x86)\scala\bin</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212230345.png" alt=""></p>
+<p>设置完成之后一切就大功告成了。</p>
+<h2 id="编译和构建-Kafka-源码"><a href="#编译和构建-Kafka-源码" class="headerlink" title="编译和构建 Kafka 源码"></a>编译和构建 Kafka 源码</h2><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230212223700.png" alt=""></p>
+<p>这里个人不太熟悉Idea对于gradle的使用，最后用了gradle的命令进行构建，构建之后出现下面的内容表示正确：</p>
+<p><code>gradle</code>命令是用来下载和更新 Gradle 套件（Gradle Wrapper）的，<code>gradle jar</code>是用 Gradle 套件构建 Kafka 工程，生成 Jar 文件。</p>
+<p>下面是使用<code>gradle</code> 命令的结果：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">adong@Adong-pc MINGW64 /e/adongstack/project/selfUp/kafka-2.7/kafka-2.7.2-src</span><br><span class="line">$ gradle</span><br><span class="line">Starting a Gradle Daemon, 1 busy Daemon could not be reused, use --status <span class="keyword">for</span> details</span><br><span class="line"></span><br><span class="line">&gt; Configure project :</span><br><span class="line">Building project <span class="string">'core'</span> with Scala version 2.13.3</span><br><span class="line">Building project <span class="string">'streams-scala'</span> with Scala version 2.13.3</span><br><span class="line"></span><br><span class="line">&gt; Task :<span class="built_in">help</span></span><br><span class="line"></span><br><span class="line">Welcome to Gradle 6.6.1.</span><br><span class="line"></span><br><span class="line">To run a build, run gradle &lt;task&gt; ...</span><br><span class="line"></span><br><span class="line">To see a list of available tasks, run gradle tasks</span><br><span class="line"></span><br><span class="line">To see a list of <span class="built_in">command</span>-line options, run gradle --<span class="built_in">help</span></span><br><span class="line"></span><br><span class="line">To see more detail about a task, run gradle <span class="built_in">help</span> --task &lt;task&gt;</span><br><span class="line"></span><br><span class="line">For troubleshooting, visit https://help.gradle.org</span><br><span class="line"></span><br><span class="line">Deprecated Gradle features were used <span class="keyword">in</span> this build, making it incompatible with Gradle 7.0.</span><br><span class="line">Use <span class="string">'--warning-mode all'</span> to show the individual deprecation warnings.</span><br><span class="line">See https://docs.gradle.org/6.6.1/userguide/command_line_interface.html<span class="comment">#sec:command_line_warnings</span></span><br><span class="line"></span><br><span class="line">BUILD SUCCESSFUL <span class="keyword">in</span> 44s</span><br><span class="line">1 actionable task: 1 executed</span><br></pre></td></tr></table></figure>
+
+<p>下面使用<code>gradle jar</code>的编译结果：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">adong@Adong-pc MINGW64 /e/adongstack/project/selfUp/kafka-2.7/kafka-2.7.2-src</span><br><span class="line">$ gradle jar</span><br><span class="line"></span><br><span class="line">&gt; Configure project :</span><br><span class="line">Building project <span class="string">'core'</span> with Scala version 2.13.3</span><br><span class="line">Building project <span class="string">'streams-scala'</span> with Scala version 2.13.3</span><br><span class="line"></span><br><span class="line">&gt; Task :clients:processMessages</span><br><span class="line">MessageGenerator: processed 121 Kafka message JSON files(s).</span><br><span class="line"></span><br><span class="line">&gt; Task :raft:processMessages</span><br><span class="line">MessageGenerator: processed 1 Kafka message JSON files(s).</span><br><span class="line">&lt;=------------&gt; 12% EXECUTING [2m 6s]</span><br><span class="line"></span><br><span class="line">&gt; Task :clients:processTestMessages</span><br><span class="line">MessageGenerator: processed 2 Kafka message JSON files(s).</span><br><span class="line">&lt;==-----------&gt; 21% EXECUTING [3m 10s]</span><br><span class="line"></span><br><span class="line">&gt; Task :streams:processMessages</span><br><span class="line">MessageGenerator: processed 1 Kafka message JSON files(s).</span><br><span class="line"></span><br><span class="line">Deprecated Gradle features were used <span class="keyword">in</span> this build, making it incompatible with Gradle 7.0.</span><br><span class="line">Use <span class="string">'--warning-mode all'</span> to show the individual deprecation warnings.</span><br><span class="line">See https://docs.gradle.org/6.6.1/userguide/command_line_interface.html<span class="comment">#sec:command_line_warnings</span></span><br><span class="line"></span><br><span class="line">BUILD SUCCESSFUL <span class="keyword">in</span> 3m 58s</span><br><span class="line">87 actionable tasks: 87 executed</span><br></pre></td></tr></table></figure>
+
+<p>最后使用下面的命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle clean build -x <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<p>但是这种命令构建过程会出现一些报错，可以把报错所需要的依赖jar包放到下面：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\adongstack\project\selfUp\kafka-2.7\kafka-2.7.2-src\gradle\wrapper</span><br></pre></td></tr></table></figure>
+
+<p>要构建整个 Kafka 工程并打包出一个可运行的二进制环境命令如下</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle clean releaseTarGz</span><br></pre></td></tr></table></figure>
+
+<h3 id="其他构建命令"><a href="#其他构建命令" class="headerlink" title="其他构建命令"></a>其他构建命令</h3><p>还有其他gradle的构建命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">构建 jar包并运行</span><br><span class="line">.&#x2F;gradle jar</span><br><span class="line"></span><br><span class="line">构建项目，看你是idea工具还是eclipse</span><br><span class="line">.&#x2F;gradle idea</span><br><span class="line">.&#x2F;gradle eclipse</span><br><span class="line"></span><br><span class="line">构建源码包</span><br><span class="line">.&#x2F;gradle srcJar</span><br><span class="line"></span><br><span class="line">构建javadoc文档</span><br><span class="line">.&#x2F;gradle aggregatedJavadoc</span><br><span class="line"></span><br><span class="line">清理并构建</span><br><span class="line">.&#x2F;gradle clean</span><br></pre></td></tr></table></figure>
+
+<h3 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h3><p>Kafka当中同样存在很多单元测试，下面是一些核心模块的单元测试命令。</p>
+<p>core 模块单元测试：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle core:test</span><br></pre></td></tr></table></figure>
+
+<p>client 模块单元测试：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle clients:test</span><br></pre></td></tr></table></figure>
+
+<p>模块当中的某个子模块单元测试：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle connect:[submodule]:test</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Connect 工程下细分了多个子模块，比如 api、runtime 等，需要显式地指定要 测试的子模块名才能进行测试。</p>
+</blockquote>
+<p>stream 模块单元测试。</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle connect:[submodule]:test</span><br></pre></td></tr></table></figure>
+
+<p>个人实际使用之后会发现有部分报错信息：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230213070600.png" alt=""></p>
+<p>除了上面的整个模块的单元测试，如果只想要测试某个模块下的某个类，可以使用下面的方法：</p>
+<p>单独对某一个具体的测试用例进行测试，比如测试 <strong>LogTest</strong> 类：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle core:test --tests kafka.log.LogTest</span><br></pre></td></tr></table></figure>
+
+<p>个人的执行结果如下：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ gradle core:test --tests kafka.log.LogTest</span><br><span class="line"></span><br><span class="line">&gt; Configure <span class="keyword">project</span> :</span><br><span class="line">Building <span class="keyword">project</span> <span class="string">'core'</span> with Scala version <span class="number">2.13</span>.<span class="number">3</span></span><br><span class="line">Building <span class="keyword">project</span> <span class="string">'streams-scala'</span> with Scala version <span class="number">2.13</span>.<span class="number">3</span></span><br><span class="line"></span><br><span class="line">&gt; <span class="keyword">Task</span> :core:test</span><br><span class="line">kafka.log.LogTest.testLogDelete failed, log available in E:\adongstack\<span class="keyword">project</span>\selfUp\kafka-<span class="number">2.7</span>\kafka-<span class="number">2.7</span>.<span class="number">2</span>-src\core\build\reports\testOutput\kafka.log.LogTest.testLogDelete.test.stdout</span><br><span class="line"></span><br><span class="line">kafka.log.LogTest &gt; testLogDelete FAILED</span><br><span class="line">    org.apache.kafka.common.errors.KafkaStorageException: Error <span class="keyword">while</span> deleting log <span class="keyword">for</span> kafka-<span class="number">936488</span> in dir C:\Users\adong\AppData\Local\Temp\kafka-<span class="number">7162272829353105740</span></span><br><span class="line"></span><br><span class="line">        Caused by:</span><br><span class="line">        java.nio.<span class="keyword">file</span>.FileSystemException: C:\Users\adong\AppData\Local\Temp\kafka-<span class="number">7162272829353105740</span>\kafka-<span class="number">936488</span>\<span class="number">00000000000000000000</span>.timeindex -&gt; C:\Users\adong\AppData\Local\Temp\kafka-<span class="number">7162272829353105740</span>\kafka-<span class="number">936488</span>\<span class="number">00000000000000000000</span>.timeindex.deleted: ▒▒һ▒▒▒▒▒▒▒▒▒▒ʹ▒ô▒▒ļ▒▒▒▒▒▒▒▒޷▒▒▒▒ʡ▒</span><br></pre></td></tr></table></figure>
+
+<h1 id="Kafka目录结构"><a href="#Kafka目录结构" class="headerlink" title="Kafka目录结构"></a>Kafka目录结构</h1><p><strong>bin 目录</strong>：保存 Kafka 工具行脚本，我们熟知的 kafka-server-start 和 kafka-consoleproducer 等脚本都存放在这。</p>
+<p><strong>clients 目录</strong>：保存 Kafka 客户端代码，比如生产者和消费者的代码都在该目录下。 </p>
+<p><strong>config 目录</strong>：保存 Kafka 的配置文件，其中比较重要的配置文件是 server.properties。 </p>
+<p><strong>connect 目录</strong>：保存 Connect 组件的源代码。Kafka Connect 组件是用来实现 Kafka 与外部系统之间的<strong>实时数据传输</strong>的。 </p>
+<p><strong>core 目录</strong>：保存 Broker 端代码。Kafka 服务器端代码全部保存在该目录下。</p>
+<p><strong>streams 目录</strong>：保存 Streams 组件的源代码。Kafka Streams 是实现 Kafka <strong>实时流处理</strong>的组件。</p>
+<p><strong>server 目录</strong>：顾名思义，它是 Kafka 的服务器端主代码，里面的类非常多，很多关键的 Kafka 组件都存放在这里，比如状态机、Purgatory 延时机制等。</p>
+<blockquote>
+<p>Kafka Streams is a client library for building applications and microservices, where the input and output data are stored in Kafka clusters.</p>
+</blockquote>
+<p>提供一个基于 Kafka 的流式处理类库，直接提供具体的类给开发者调用，整个应用的运行方式主要由开发者控制，方便使用和调试。</p>
+<p>Kafka Streams 是一个用来构建流处理程序的库，特别是其输入是一个 Kafka topic，输出是另一个 Kafka topic 的程序（或者是调用外部服务，或者是更新数据库，或者其它）。它使得你以一种分布式以及容错的方式来做这件事情。</p>
+<p><strong>coordinator 包</strong>：保存了消费者端的 GroupCoordinator 代码和用于事务的 TransactionCoordinator 代码。对 coordinator 包进行分析，特别是对消费者端的 GroupCoordinator 代码进行分析，是我们弄明白 Broker 端协调者组件设计原理的关 键。</p>
+<h1 id="其他目录结构"><a href="#其他目录结构" class="headerlink" title="其他目录结构"></a>其他目录结构</h1><p>除了上面的核心目录之外，我们还可以在项目根路径看到一些其他模块：</p>
+<p><strong>network 包</strong>：封装了 Kafka 服务器端网络层的代码，特别是 SocketServer.scala 这个文件，是 Kafka 实现 Reactor 模式的具体操作类，非常值得一读。</p>
+<p><strong>consumer 包</strong>：后面会丢弃该包，用 clients 包下 consumer 相关类代替。</p>
+<p><strong>tools 包</strong>：工具类。</p>
+<p><strong>log 包</strong>：保存了 Kafka 最核心的日志结构代码，包括日志、日志段、索引文件等, 另外，该包下还封装了 Log Compaction 的实现机制，是非常重要的源码包。</p>
+<p><strong>checkstyle 目录</strong>：代码规范，自动化检测。</p>
+<blockquote>
+<p>Checkstyle 是什么，类似于代码规范的自动化检测插件，国内最为经典的是阿里巴巴的规约插件，而最出名的检查插件为 <code>google style guide</code>，Checkstyle 就是以类似这种风格开发出的一个自动化插件，来辅助判断代码格式是否满足规范。</p>
+</blockquote>
+<p>该目录下的文件定义了工程代码格式的规范，我们可以在 build.gradle 中看到相关 checkstyle 的配置和自动化代码格式化配置：</p>
+<p><strong>checkstyle 配置（build.gradle）</strong></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">checkstyleConfigProperties</span></span>(configFileName) &#123;  </span><br><span class="line">  [importControlFile: <span class="string">"$rootDir/checkstyle/$configFileName"</span>,  </span><br><span class="line">   suppressionsFile: <span class="string">"$rootDir/checkstyle/suppressions.xml"</span>,  </span><br><span class="line">   headerFile: <span class="string">"$rootDir/checkstyle/java.header"</span>]  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">checkstyle &#123;  </span><br><span class="line">  configProperties = checkstyleConfigProperties(<span class="string">"import-control-core.xml"</span>)  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>connect 目录</strong>：保存 Connect 组件的源代码。 Kafka Connect 组件是用来实现 Kafka 与外部系统之间的实时数据传输的。</p>
+<p><strong>docs 目录</strong>：Kafka 设计文档以及组件相关结构图。</p>
+<p><strong>examples 目录</strong>：Kafka 样例相关目录。</p>
+<p><strong>gradle 目录</strong>：gradle 的脚本和依赖包定义等相关文件。</p>
+<p><strong>jmh-benchmarks 目录</strong>：Kafka 代码微基准测试相关类。</p>
+<blockquote>
+<p>JMH，即 Java Microbenchmark Harness，是<strong>专门用于代码微基准测试的工具套件</strong>。Micro Benchmark 是什么意思？简单的来说就是<strong>基于方法层面的基准测试</strong>，精度可以达到微秒级。当你定位到热点方法，希望进一步优化方法性能的时候，就可以使用 JMH 对优化的结果进行量化的分析。</p>
+</blockquote>
+<p>JMH 比较典型的应用场景有：</p>
+<ul>
+<li>准确的知道某个方法需要执行多长时间，以及执行时间和输入之间的相关性；</li>
+<li>对比接口不同实现在给定条件下的吞吐量，找到最优实现。</li>
+</ul>
+<p><strong>kafka-logs 目录</strong>：server.properties 文件中配置 log.dirs 生成的目录。</p>
+<p><strong>log4j-appender 目录</strong>：</p>
+<blockquote>
+<p>A log4j appender that produces log messages to Kafka</p>
+</blockquote>
+<p>这个目录里面就一个 KafkaLog4jAppender 类。</p>
+<p><strong>raft 目录</strong>：raft 一致性协议相关模块。</p>
+<p><strong>tests 目录</strong>：此目录的内容介绍如何进行 Kafka 系统集成和性能测试。</p>
+<p><strong>tools 目录</strong>：工具类模块。</p>
+<p><strong>vagrant 目录</strong>：介绍如何在 Vagrant 虚拟环境中运行 Kafka，提供了相关的脚本文件和说明文档。</p>
+<blockquote>
+<p>Vagrant 是一个基于 Ruby 的工具，用于创建和部署虚拟化开发环境。它使用 Oracle 的开源 VirtualBox 虚拟化系统，使用 Chef 创建自动化虚拟环境。</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL2EvMTE5MDAwMDA0MDc5MDUyNA==" title="https://segmentfault.com/a/1190000040790524">https://segmentfault.com/a/1190000040790524<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/03/07/kafka-zk/" title="【Kafka】编译 Kafka2.7 源码并搭建源码环境（Ver 2.7.2）">https://whitestore.top/2023/03/07/kafka-zk/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/getlines/" rel="prev" title="【Linux】getline解释">
+      <i class="fa fa-chevron-left"></i> 【Linux】getline解释
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/15/stdinouterr/" rel="next" title="【Linux】How to Use the Stdin, Stderr, and Stdout Streams in Bash">
+      【Linux】How to Use the Stdin, Stderr, and Stdout Streams in Bash <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#环境准备"><span class="nav-number">2.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-2-7-2"><span class="nav-number">3.</span> <span class="nav-text">Kafka 2.7.2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装JDK-1-8"><span class="nav-number">3.1.</span> <span class="nav-text">安装JDK 1.8</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-Scala-2-12-8"><span class="nav-number">3.2.</span> <span class="nav-text">安装 Scala 2.12.8</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载"><span class="nav-number">3.2.1.</span> <span class="nav-text">下载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置-SCALA-HOME"><span class="nav-number">3.2.2.</span> <span class="nav-text">配置 SCALA_HOME</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-gradle-6-6"><span class="nav-number">3.3.</span> <span class="nav-text">安装 gradle 6.6</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置-Gradle-环境变量"><span class="nav-number">3.3.1.</span> <span class="nav-text">配置 Gradle 环境变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-Zookeeper-3-4-14"><span class="nav-number">3.4.</span> <span class="nav-text">安装 Zookeeper 3.4.14</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建-data-文件夹"><span class="nav-number">3.4.1.</span> <span class="nav-text">创建 data 文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改-zoo-cfg-中的-data-属性"><span class="nav-number">3.4.2.</span> <span class="nav-text">修改 zoo.cfg 中的 data 属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动Zookeeper"><span class="nav-number">3.5.</span> <span class="nav-text">启动Zookeeper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-2-7-2-源码下载"><span class="nav-number">3.6.</span> <span class="nav-text">Kafka 2.7.2 源码下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导入Idea"><span class="nav-number">3.7.</span> <span class="nav-text">导入Idea</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#修改-build-gradle"><span class="nav-number">3.7.1.</span> <span class="nav-text">修改 build.gradle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-Idea-scala-插件"><span class="nav-number">3.7.2.</span> <span class="nav-text">安装 Idea scala 插件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选择-scala-jdk"><span class="nav-number">3.8.</span> <span class="nav-text">选择 scala jdk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译和构建-Kafka-源码"><span class="nav-number">3.9.</span> <span class="nav-text">编译和构建 Kafka 源码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#其他构建命令"><span class="nav-number">3.9.1.</span> <span class="nav-text">其他构建命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单元测试"><span class="nav-number">3.9.2.</span> <span class="nav-text">单元测试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka目录结构"><span class="nav-number">4.</span> <span class="nav-text">Kafka目录结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他目录结构"><span class="nav-number">5.</span> <span class="nav-text">其他目录结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">202</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.4m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">21:43</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
