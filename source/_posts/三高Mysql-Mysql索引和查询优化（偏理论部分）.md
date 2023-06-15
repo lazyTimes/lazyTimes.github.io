@@ -4,7 +4,6 @@ subtitle: 本文拆分为上下两个部分
 author: 阿东
 url_suffix: suoyinlilun
 tags:
-  - 数据库
   - Mysql
 categories:
   - 数据库-mysql

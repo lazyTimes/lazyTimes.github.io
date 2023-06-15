@@ -1,8 +1,8 @@
 ---
 title: 【Mysql】How to Increase Max Connections in MySQL
-subtitle: 这个人很懒，不想写副标题
+subtitle: 如何扩大Max Connections
 author: lazytime
-url_suffix: /mysqlconnection
+url_suffix: mysqlconnection
 tags:
   - Mysql
 categories:
