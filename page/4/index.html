@@ -197,6 +197,929 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/google-bigtable/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/21/google-bigtable/" class="post-title-link" itemprop="url">谷歌三件套 - Bigtable</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 19:16:54" itemprop="dateCreated datePublished" datetime="2022-05-21T19:16:54+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%B0%B7%E6%AD%8C%E4%B8%89%E4%BB%B6%E5%A5%97/" itemprop="url" rel="index"><span itemprop="name">谷歌三件套</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/google-bigtable/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/google-bigtable/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">bigtable数据结构解析</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="谷歌三件套-Bigtable"><a href="#谷歌三件套-Bigtable" class="headerlink" title="谷歌三件套 - Bigtable"></a>谷歌三件套 - Bigtable</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>如标题所言，这一篇文章简单介绍BigTable，其实个人更建议看LevelDB这款开源数据库，因为这数据库也是Bigtable的作者 <strong>JeffreyDean</strong> 设计的，很多内容不能说像简直就是一模一样。</p>
+<p>值得注意的是，看Bigtable的内容<strong>千万不要带着关系型数据库的思维</strong>，建议看之前看看《数据密集型应用系统设计》的第三章，里面提到了LSM-Tree以及大数据系统设计思想，或者看看个人之前写的文章 [[《数据密集型型系统设计》LSM-Tree VS BTree]]</p>
+<h1 id="三件套论文资料"><a href="#三件套论文资料" class="headerlink" title="三件套论文资料"></a>三件套论文资料</h1><p>Bigtable 原始在线论文： <strong><span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvYmlndGFibGUtb3NkaTA2LnBkZg==" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/bigtable-osdi06.pdf">Bigtable: A Distributed Storage System for Structured Data<i class="fa fa-external-link"></i></span></strong></p>
+<p>MapReduct 原始在线论文：<span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvbWFwcmVkdWNlLW9zZGkwNC5wZGY=" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/mapreduce-osdi04.pdf">MapReduce: Simplified Data Processing on Large Clusters<i class="fa fa-external-link"></i></span></p>
+<p>GFS 原始在线论文：<span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvZ2ZzLXNvc3AyMDAzLnBkZg==" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/gfs-sosp2003.pdf">The Google File System<i class="fa fa-external-link"></i></span></p>
+<p>如果看不懂英文或者想要线下阅读，个人从某全是广告的技术网站买了一份中文翻译以及原始英文论文PDF，合并到一起免费分享给大家（虽然掏钱买也没几个钱）：</p>
+<p>链接: <span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMTVaMjRhcTYydTI1WV9MckhTYU5DQ3c=" title="https://pan.baidu.com/s/15Z24aq62u25Y_LrHSaNCCw">Google-GFS,Bigtable,Mapreduce三大论文英文原版+中文翻译<i class="fa fa-external-link"></i></span> 提取码: 82ok </p>
+<blockquote>
+<p>（如果链接失效可以关注公众号“懒时小窝” 回复“谷歌三件套”或者“谷歌”获取这些内容）</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/21/google-bigtable/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/szygw/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/21/szygw/" class="post-title-link" itemprop="url">《生之欲》观影感悟</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 19:15:11" itemprop="dateCreated datePublished" datetime="2022-05-21T19:15:11+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/szygw/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/szygw/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">乘着假期的尾巴看了这一部电影</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>乘着假期的尾巴看了这一部电影，不得不说虽然豆瓣的高分不一定是好电影，但是这一部上世纪五十年代的电影还是值得观看。</p>
+<p>本文内容<strong>包含剧透</strong>。</p>
+<blockquote>
+<p>兑现前两天立得看电影的Flag，个人认为不管是好的电影还是书籍都是值得记录和回忆的， 为了让自己不忘记电影留下点东西也为不白白浪费两个小时的 宝贵人生。</p>
+</blockquote>
+<h1 id="故事内容"><a href="#故事内容" class="headerlink" title="故事内容"></a><strong>故事内容</strong></h1><p>一句话概括：《生之欲》讲述了一位官僚在发现自己患了晚期癌症后，试图在他的生活中找到意义。</p>
+<blockquote>
+<p>A bureaucrat tries to find a meaning in his life after he discovers he has terminal cancer.</p>
+</blockquote>
+<p>《<strong>生之欲</strong>》（日语：生きる）在<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUE2JTk5JUU2JUI4JUFG" title="https://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF">香港<i class="fa fa-external-link"></i></span>译作《<strong>流芳颂</strong>》，乃是1952年由<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTk3JUE1JUU2JTlDJUFD" title="https://zh.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC">日本<i class="fa fa-external-link"></i></span>知名<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUIwJThFJUU2JUJDJTk0" title="https://zh.wikipedia.org/wiki/%E5%B0%8E%E6%BC%94">导演<i class="fa fa-external-link"></i></span><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUJCJTkxJUU2JUJFJUE0JUU2JTk4JThF" title="https://zh.wikipedia.org/wiki/%E9%BB%91%E6%BE%A4%E6%98%8E">黑泽明<i class="fa fa-external-link"></i></span>执导的<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1">电影<i class="fa fa-external-link"></i></span>，曾获得日本<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JUFGJThGJUU2JTk3JUE1JUU5JTlCJUJCJUU1JUJEJUIxJUU3JThEJThF" title="https://zh.wikipedia.org/wiki/%E6%AF%8F%E6%97%A5%E9%9B%BB%E5%BD%B1%E7%8D%8E">每日电影最佳影片奖<i class="fa fa-external-link"></i></span>、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIxJUU2JTk3JUFDJUU1JUEwJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1%E6%97%AC%E5%A0%B1">电影旬报<i class="fa fa-external-link"></i></span>年度最佳影片奖、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTlGJThGJUU2JTlFJTk3JUU1JUJEJUIxJUU1JUIxJTk1" title="https://zh.wikipedia.org/wiki/%E6%9F%8F%E6%9E%97%E5%BD%B1%E5%B1%95">柏林影展<i class="fa fa-external-link"></i></span>特别奖等奖项。</p>
+<p>在市公所工作30年的市民课课长渡边勘治每天过着盖章、签公文的乏味生活，某日因身体不适前往<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTg2JUFCJUU5JTk5JUEy" title="https://zh.wikipedia.org/wiki/%E9%86%AB%E9%99%A2">医院<i class="fa fa-external-link"></i></span>检查，结果竟被告知罹患<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU4JTgzJTgzJUU3JTk5JThD" title="https://zh.wikipedia.org/wiki/%E8%83%83%E7%99%8C">胃癌<i class="fa fa-external-link"></i></span>末期，只剩下约半年的生命。回到家中，<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg1JTkyJUU1JUFEJTkw" title="https://zh.wikipedia.org/wiki/%E5%85%92%E5%AD%90">儿子<i class="fa fa-external-link"></i></span>与<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUFBJUIzJUU1JUE5JUE2" title="https://zh.wikipedia.org/wiki/%E5%AA%B3%E5%A9%A6">媳妇<i class="fa fa-external-link"></i></span>对他并不友善，甚至可谓不孝。感到悲伤的渡边，带了毕生积蓄离家出走，也不去上班了。他在外头遇见一位<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUIwJThGJUU4JUFBJUFB" title="https://zh.wikipedia.org/wiki/%E5%B0%8F%E8%AA%AA">小说<i class="fa fa-external-link"></i></span><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU0JUJEJTlDJUU1JUFFJUI2" title="https://zh.wikipedia.org/wiki/%E4%BD%9C%E5%AE%B6">作家<i class="fa fa-external-link"></i></span>，告之自己将不久于人世，他认为从未替自己好好活过。小说家同情其遭遇，带他去打<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUJEJTg4JUU3JThGJUEwJUU2JUE5JTlG" title="https://zh.wikipedia.org/wiki/%E5%BD%88%E7%8F%A0%E6%A9%9F">小钢珠<i class="fa fa-external-link"></i></span>，甚至去<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUE2JTkzJUU5JTk5JUEy" title="https://zh.wikipedia.org/wiki/%E5%A6%93%E9%99%A2">声色场所<i class="fa fa-external-link"></i></span>。对渡边来说，虽然这些事很新鲜，但到头来却觉得空虚落寞。第二天他就告别了小说家，一个人孤独的走在街上。</p>
+<p>他遇见了市公所的一位年轻女职员小田切丰，后者表示她厌倦公务员无聊的工作，已觅得新职，却因课长没来上班，没人批准<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU4JUJFJUFEJUU4JTgxJUI3" title="https://zh.wikipedia.org/wiki/%E8%BE%AD%E8%81%B7">辞呈<i class="fa fa-external-link"></i></span>。渡边便将小田切带回家中，为她盖离职同意书；见她丝袜破掉，想为她买双新的。这天他要求小田切带他去玩，两人也度过快乐的一天。但回家后却遭到儿子辱骂，认为他之前带走的存款算是家用的一部分；儿子同时误会小田切是他的年轻<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTg0JTlCJUU0JUJBJUJB" title="https://zh.wikipedia.org/wiki/%E6%84%9B%E4%BA%BA">情人<i class="fa fa-external-link"></i></span>，要求父亲自重。</p>
+<p>过了几天后，渡边前往小田切新任职的<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU3JThFJUE5JUU1JTg1JUI3" title="https://zh.wikipedia.org/wiki/%E7%8E%A9%E5%85%B7">玩具<i class="fa fa-external-link"></i></span>工厂，希望她再陪着出去玩。小田切原本不想答应，但渡边苦苦哀求，她只好同意。晚上来到一家<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU4JUE1JUJGJUU5JUE0JTkwJUU1JUJCJUIz" title="https://zh.wikipedia.org/wiki/%E8%A5%BF%E9%A4%90%E5%BB%B3">西餐厅<i class="fa fa-external-link"></i></span>，渡边的举动让小田切以为他要对她不轨，十分害怕。没想到渡边告诉她自己得了不治之症，来日无多，但是见到小田切如此年轻有活力，希望小田切告诉他究竟活着是为了什么。小田切只好战战兢兢的拿出一只玩具<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg1JTk0" title="https://zh.wikipedia.org/wiki/%E5%85%94">兔<i class="fa fa-external-link"></i></span>子告诉他，她平常在工厂工作就是做这种东西；只要想到自己做出的东西是为别人带来欢乐，自己也就很开心。渡边突然想到自己想要什么了，向小田切道谢后便离开餐厅。此时碰巧有群年轻人替一位少女庆生，众人唱起<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU3JUE1JTlEJUU0JUJEJUEwJUU3JTk0JTlGJUU2JTk3JUE1JUU1JUJGJUFCJUU0JUI5JTkw" title="https://zh.wikipedia.org/wiki/%E7%A5%9D%E4%BD%A0%E7%94%9F%E6%97%A5%E5%BF%AB%E4%B9%90">生日快乐歌<i class="fa fa-external-link"></i></span>，仿佛在庆祝渡边的重生。</p>
+<p>翌日渡边再度回到市公所上班，将他请假这些日子的公文全数拿出来，发觉有件案子是许多妇女前来陈情，希望将某条臭水沟改建为<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg1JUFDJUU1JTlDJTky" title="https://zh.wikipedia.org/wiki/%E5%85%AC%E5%9C%92">公园<i class="fa fa-external-link"></i></span>，却屡屡遭到各单位互踢皮球不愿处理。他决定要处理这件事，带着下属开始各处奔走。5个月后，渡边过世，在灵堂上大家开始回忆他生命最后5个月的过程，发觉他非常努力奔走以建立公园，最后甚至选择在大<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUFB" title="https://zh.wikipedia.org/wiki/%E9%9B%AA">雪<i class="fa fa-external-link"></i></span>的夜里独自快乐的唱着歌，死于自己亲手建立的公园里。虽然在守灵的酒会上，大家如此怀念渡边所做的一切，但等到第二天上班时市公所 依就弥漫着官僚之气。尽管有职员看不过去，心中认为应该要继承渡边的精神，但也仅止于缅怀而已。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/21/szygw/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/leveldb-source/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/21/leveldb-source/" class="post-title-link" itemprop="url">LSM-Tree - LevelDb 源码解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 19:13:33" itemprop="dateCreated datePublished" datetime="2022-05-21T19:13:33+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93-LevelDB/" itemprop="url" rel="index"><span itemprop="name">数据库-LevelDB</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/leveldb-source/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/leveldb-source/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>24k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>22 分钟</span>
+            </span>
+            <div class="post-description">源码解析</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="LSM-Tree-LevelDb-源码解析"><a href="#LSM-Tree-LevelDb-源码解析" class="headerlink" title="LSM-Tree - LevelDb 源码解析"></a>LSM-Tree - LevelDb 源码解析</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>在上一篇文章[[LSM-Tree - LevelDb了解和实现]]中介绍了LevelDb相关的数据结构和核心组件，LevelDB的核心读写部分，以及为什么在这个数据库中写入的速度要比读取的速度快上好几倍。 </p>
+<p>LevelDB的源代码还是比较好懂的，好懂到我只学过学JAVA只有定点基础C语言入门知识的人也能看懂，另一方面作者在关键的地方都给了注释，甚至告诉你为什么要这么设计<s>（写的很好很棒让人落泪为什么自己没这样的同事）</s>。</p>
+<p>如果还是看不懂，作者也写了很多数据结构介绍的md文档（在doc目录中）告诉你核心组件的作用。</p>
+<p>总之，不要惧怕这个数据库，无论是作为优秀代码和设计模式还是各种主流数据结构算法应用都非常值得学习和参考。</p>
+<blockquote>
+<p>Tip：这一节代码内容非常多，所以不建议在手机或者移动设备阅读，更适合在PC上观看。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/21/leveldb-source/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/level-skiplist/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/21/level-skiplist/" class="post-title-link" itemprop="url">LSM-Tree - LevelDb Skiplist跳表</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 19:10:02" itemprop="dateCreated datePublished" datetime="2022-05-21T19:10:02+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-09-08 10:18:34" itemprop="dateModified" datetime="2022-09-08T10:18:34+08:00">2022-09-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93-LevelDB/" itemprop="url" rel="index"><span itemprop="name">数据库-LevelDB</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/level-skiplist/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/level-skiplist/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+            <div class="post-description">Skiplist跳表</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="LSM-Tree-LevelDb-Skiplist跳表"><a href="#LSM-Tree-LevelDb-Skiplist跳表" class="headerlink" title="LSM-Tree - LevelDb Skiplist跳表"></a>LSM-Tree - LevelDb Skiplist跳表</h1><h1 id="跳表介绍"><a href="#跳表介绍" class="headerlink" title="跳表介绍"></a>跳表介绍</h1><p>跳表（SkipList）是由William Pugh提出的。他在论文<Skip lists: a probabilistic alternative to balanced trees>中详细地介绍了有关跳表结构、插入删除操作的细节。</p>
+<blockquote>
+<p>文档：Skiplist跳表原始论文 - pugh-skiplists-cacm1990.pdf<br>链接：<span class="exturl" data-url="aHR0cDovL25vdGUueW91ZGFvLmNvbS9ub3Rlc2hhcmU/aWQ9NjY3YWVkOTZmMDEyZWRjYWRhMDQ3YmFmNzVhYTE3NjkmYW1wO3N1Yj1CNDI3RTAwQzgxOEI0MjhBQkQzOEE4MTMxODBBRjlBOA==" title="http://note.youdao.com/noteshare?id=667aed96f012edcada047baf75aa1769&amp;sub=B427E00C818B428ABD38A813180AF9A8">http://note.youdao.com/noteshare?id=667aed96f012edcada047baf75aa1769&amp;sub=B427E00C818B428ABD38A813180AF9A8<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在线性的数据数据结构中我们经常可以想到数组和链表，数组是插入慢查询快，而链表是插入快，查询要稍微慢一些，而跳表主要是针对链表<strong>查询速度</strong>进行优化的一种数据结构，多层级的跳表实际上是对底层链表的索引，非常典型的空间换时间，把链表的查询时间尽量控制在O(logN)。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/21/level-skiplist/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/leveled-bloom/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/21/leveled-bloom/" class="post-title-link" itemprop="url">LSM-Tree - LevelDb 布隆过滤器</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 19:07:44" itemprop="dateCreated datePublished" datetime="2022-05-21T19:07:44+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93-LevelDB/" itemprop="url" rel="index"><span itemprop="name">数据库-LevelDB</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/leveled-bloom/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/leveled-bloom/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>17k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+            <div class="post-description">有问题找布隆</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="LSM-Tree-LevelDb布隆过滤器"><a href="#LSM-Tree-LevelDb布隆过滤器" class="headerlink" title="LSM-Tree - LevelDb布隆过滤器"></a>LSM-Tree - LevelDb布隆过滤器</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>布隆过滤器有点类似哈希表，但是比哈希表的效率要更高，因为使用了位来判断Key是否存在，布隆过滤器在完成高效搜索key是否存在的同时带来一定的副作用– <strong>不保证Key一定存在</strong>，所以它只适用于允许一定容错率的系统。</p>
+<p>一句话概括：<code>Bloom Filter</code> 是一个<strong>基于概率的数据结构</strong>，它只能告诉我们一个元素绝对不在集合内或<strong>可能</strong>在集合内。</p>
+<p>布隆过滤器比较悬浮的东西是它不保证元素百分百在一个集合内，所以适用于具备一定容错的业务，关于它的理论和实践很多内容都是参考或者直接摘自网上的资料加上自己的理解，如有错误欢迎指正。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/21/leveled-bloom/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/bntydkcm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/21/bntydkcm/" class="post-title-link" itemprop="url">14岁懂社会-《被你讨厌的昆虫们》读书笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 18:57:38" itemprop="dateCreated datePublished" datetime="2022-05-21T18:57:38+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/bntydkcm/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/bntydkcm/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">曾经为之讨厌的东西，实际接触才发现如此喜欢</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="14岁懂社会-《被你讨厌的昆虫们》读书笔记"><a href="#14岁懂社会-《被你讨厌的昆虫们》读书笔记" class="headerlink" title="14岁懂社会-《被你讨厌的昆虫们》读书笔记"></a>14岁懂社会-《被你讨厌的昆虫们》读书笔记</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p><strong>曾经为之讨厌的东西，实际接触之后才发现那么多喜爱</strong>，这是看完这本书之后感触最深的一句话。对于作者来说昆虫们因为不被人接受逐渐淡出视野惋惜，真正喜爱的人才能发现昆虫的魅力。个人观察过最多的动物大概是蚂蚁的，不知道为什么特别喜欢蚂蚁搬东西的场景，每次看到这样的画面都会忍不住看上几眼或者放空电脑盯上很久。</p>
+<p>最后作者提到的《生之欲》这部电影倒是意外收获，打算后续无聊打发时间的时候看看。</p>
+<p>《<strong>生之欲</strong>》（日语：生きる）在<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUE2JTk5JUU2JUI4JUFG" title="https://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF">香港<i class="fa fa-external-link"></i></span>译作《<strong>流芳颂</strong>》，乃是1952年由<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTk3JUE1JUU2JTlDJUFD" title="https://zh.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC">日本<i class="fa fa-external-link"></i></span>知名<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUIwJThFJUU2JUJDJTk0" title="https://zh.wikipedia.org/wiki/%E5%B0%8E%E6%BC%94">导演<i class="fa fa-external-link"></i></span><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUJCJTkxJUU2JUJFJUE0JUU2JTk4JThF" title="https://zh.wikipedia.org/wiki/%E9%BB%91%E6%BE%A4%E6%98%8E">黑泽明<i class="fa fa-external-link"></i></span>执导的<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1">电影<i class="fa fa-external-link"></i></span>，曾获得日本<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JUFGJThGJUU2JTk3JUE1JUU5JTlCJUJCJUU1JUJEJUIxJUU3JThEJThF" title="https://zh.wikipedia.org/wiki/%E6%AF%8F%E6%97%A5%E9%9B%BB%E5%BD%B1%E7%8D%8E">每日电影最佳影片奖<i class="fa fa-external-link"></i></span>、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIxJUU2JTk3JUFDJUU1JUEwJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1%E6%97%AC%E5%A0%B1">电影旬报<i class="fa fa-external-link"></i></span>年度最佳影片奖、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTlGJThGJUU2JTlFJTk3JUU1JUJEJUIxJUU1JUIxJTk1" title="https://zh.wikipedia.org/wiki/%E6%9F%8F%E6%9E%97%E5%BD%B1%E5%B1%95">柏林影展<i class="fa fa-external-link"></i></span>特别奖等奖项。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/21/bntydkcm/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/abioss/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/21/abioss/" class="post-title-link" itemprop="url">阿里云OSS图床搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 18:50:06" itemprop="dateCreated datePublished" datetime="2022-05-21T18:50:06+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/abioss/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/abioss/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">图床处理</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="阿里云OSS图床搭建"><a href="#阿里云OSS图床搭建" class="headerlink" title="阿里云OSS图床搭建"></a>阿里云OSS图床搭建</h1><h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>过去介绍过Gitee的图床搭建，用了一年多都挺稳定了，访问速度尚可，但是2022年开始发现不是很稳定，并且部分网站会发现“图片消失”的情况，F12看一下发现是很多外国网站给直接<strong>302临时重定向</strong>了。</p>
+<p>所以为了保证数据安全，这里无奈只能掏钱买阿里云的 OSS做图床了，查了下价钱也还能接受，标准LRS存储一年也就10块钱。</p>
+<p>本文就根据OSS配置再结合个人常用的几个软件来总结阿里云OSS相关配置和应用。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/21/abioss/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/05/gxycwysdn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/05/gxycwysdn/" class="post-title-link" itemprop="url">14岁懂社会-《给想要成为医生的你》读书笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-05 14:36:15" itemprop="dateCreated datePublished" datetime="2022-05-05T14:36:15+08:00">2022-05-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/05/gxycwysdn/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/05/gxycwysdn/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">医生,护士，未来</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="14岁懂社会-《给想要成为医生的你》读书笔记"><a href="#14岁懂社会-《给想要成为医生的你》读书笔记" class="headerlink" title="14岁懂社会-《给想要成为医生的你》读书笔记"></a>14岁懂社会-《给想要成为医生的你》读书笔记</h1><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202204232131277.png" alt=""></p>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>看到这样的书名难免让人止步，但是即使是不想成为医生我看完之后依然认为十分有收获的一本书，而对于渴望成为医生的人来说这本书大概是在“浇冷水”，因为挽救生命的职业既是天使也有可能是魔鬼。</p>
+<p>这本书也是比较著名的医生写的，也确实看得出是医生写的出来的书，但是行文却和医生严肃的面容大相径庭。</p>
+<blockquote>
+<p>不过日本人给作者取了一个“上帝之手”的称号属实没绷住</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/05/gxycwysdn/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/05/leveldblj/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -415,1313 +1338,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/04/06/suoyinlilun/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/06/suoyinlilun/" class="post-title-link" itemprop="url">三高Mysql - Mysql索引和查询优化（偏理论部分）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-06 14:05:30" itemprop="dateCreated datePublished" datetime="2022-04-06T14:05:30+08:00">2022-04-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93-mysql/" itemprop="url" rel="index"><span itemprop="name">数据库-mysql</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/04/06/suoyinlilun/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/06/suoyinlilun/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>11k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>10 分钟</span>
-            </span>
-            <div class="post-description">Mysql索引和查询优化</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="三高Mysql-Mysql索引和查询优化（偏理论部分）"><a href="#三高Mysql-Mysql索引和查询优化（偏理论部分）" class="headerlink" title="三高Mysql - Mysql索引和查询优化（偏理论部分）"></a>三高Mysql - Mysql索引和查询优化（偏理论部分）</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>​    内容为慕课网的”高并发 高性能 高可用 MySQL 实战”视频的学习笔记内容和个人整理扩展之后的笔记，本节内容讲述的索引优化的内容，另外本部分内容涉及很多优化的内容，所以学习的时候建议翻开《高性能Mysql》第六章进行回顾和了解，对于Mysql数据的开发同学来说大致了解内部工作机制是有必要的。</p>
-<p>​    由于文章内容过长，所以这里拆分为两部分，上下部分的内容均使用<strong>sakila-db</strong>，也就是mysql的官方案例。第一部分讲述优化的理论和Mysql过去的优化器设计的缺陷，同时会介绍更高的版本中如何修复完善这些问题的（但是从个人看来新版本那些优化根本算不上优化，甚至有的优化还是照抄的Mysql原作者的实现的，发展了这么多年才这么一点成绩还是要归功于Oracle这种极致商业化公司的功劳）。</p>
-<blockquote>
-<p>如果内容比较难，可以跟随《Mysql是怎么样运行》个人读书笔记专栏补补课，个人也在学习和同步更新中。</p>
-<p>地址如下：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vY29sdW1uLzcwMjQzNjM0NzY2NjM3MzAyMDfjgII=" title="https://juejin.cn/column/7024363476663730207。">https://juejin.cn/column/7024363476663730207。<i class="fa fa-external-link"></i></span></p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/04/06/suoyinlilun/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/04/03/touzibubian/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/03/touzibubian/" class="post-title-link" itemprop="url">《投资中最简单的事》读书笔记 - 寻找不变性</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-03 12:47:59" itemprop="dateCreated datePublished" datetime="2022-04-03T12:47:59+08:00">2022-04-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/04/03/touzibubian/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/03/touzibubian/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-            <div class="post-description">请输入描述信息</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《投资中最简单的事》读书笔记-寻找不变性"><a href="#《投资中最简单的事》读书笔记-寻找不变性" class="headerlink" title="《投资中最简单的事》读书笔记 - 寻找不变性"></a>《投资中最简单的事》读书笔记 - 寻找不变性</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20220317220808.png" alt=""></p>
-<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>真正的价值投资应该乘着是越早用钱换经验，用尽可能少的钱换来“前瞻性”，而不是锻炼自己后视镜的眼光，用历史套用现在终究会血本无归，人人都可以事后诸葛亮，但是真正想要价值投资需要是<strong>培养向后看的眼光</strong>，培养寻找不变性的眼光。</p>
-<h1 id="资源地址"><a href="#资源地址" class="headerlink" title="资源地址"></a>资源地址</h1><p>  《投资中最简单的事》pdf和mobi资源</p>
-<p>链接: <span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMUhBVUQxTEFqckZQeHQ1cTNSUk9OSXc=" title="https://pan.baidu.com/s/1HAUD1LAjrFPxt5q3RRONIw">https://pan.baidu.com/s/1HAUD1LAjrFPxt5q3RRONIw<i class="fa fa-external-link"></i></span> 提取码: 2oii</p>
-<h2 id="个人评价"><a href="#个人评价" class="headerlink" title="个人评价"></a>个人评价</h2><p>投资是不可能简单的，这本书的争议也十分大，原因是这本书非常散，很像是东拼西凑的书不成体系，不过确实如果股市有规律可循那么早就被资本周转运作消耗完了，所以投资最终学习的是学习<strong>不变性</strong>，而不是去分析市场的规律，规律是不可寻的，新冠和金融危机都是很好的启示，但是<strong>不变性</strong>是可寻的，比如<strong>瘦死的骆驼比马大</strong>，比如<strong>拥有定价权拥有一切</strong>，比如做“中间商”是一门好生意，因为现在所有的行业基本都离不开B2B，B2C，C2C这三个概念，再比如没有人除了战争可以炒的动黄金，所以在战争的前夕买黄金是稳赚不赔的生意，因为人类总是会在灾难的时候寻找最能保值的东西，再比如……等等。</p>
-<p>寻找投资中的不变性是我读这本书的最大意义，所以我把这本书拆分为了三个部分：<strong>选赛道，选骑手（如果买的是基金）</strong>，<strong>稳心态</strong>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/04/03/touzibubian/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/04/03/obsidian/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/03/obsidian/" class="post-title-link" itemprop="url">Obsidian使用初体验</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-03 12:46:17" itemprop="dateCreated datePublished" datetime="2022-04-03T12:46:17+08:00">2022-04-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/04/03/obsidian/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/03/obsidian/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-            <div class="post-description">思想革命性的一款软件</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Obsidian使用初体验"><a href="#Obsidian使用初体验" class="headerlink" title="Obsidian使用初体验"></a>Obsidian使用初体验</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>这篇文章算是半个安利但是绝不是广告，个人也很少针对一款软件或者单独写一篇文章讨论某一款软件，但是在公众号私信的推荐下，个人使用了一周之后来好好说说这款软件。</p>
-<blockquote>
-<p>软件目前还是免费软件，当然不清楚是否以后做大了是否会商业化，但是个人认为免费软件商业化如果价钱不是太离谱只要软件好用支持支持未尝不可。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/04/03/obsidian/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/04/03/lsmtreebtree/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/03/lsmtreebtree/" class="post-title-link" itemprop="url">《数据密集型型系统设计》LSM-Tree VS BTree</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-03 12:41:31" itemprop="dateCreated datePublished" datetime="2022-04-03T12:41:31+08:00">2022-04-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/04/03/lsmtreebtree/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/03/lsmtreebtree/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>11k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>10 分钟</span>
-            </span>
-            <div class="post-description">采用日志型存储结构高速读写的LSM-Tree和面向OLTP的事务数据库BTree两种数据结构对比</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本文为《数据密集型应用系统设计》的读书笔记第一部分第三章的笔记整理，也是个人认为的这本书第一部分最重要的内容。本文将会针对目前数据库系统两个主要阵营进行展开，分别是采用日志型存储结构高速读写的LSM-Tree和面向OLTP的事务数据库BTree两种数据结构对比。</p>
-<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>本文的主要内容介绍如下：</p>
-<ul>
-<li>最简单key/value数据库考量和拓展，从零开始了解日志型存储结构。</li>
-<li>索引对于数据库的重要性，哈希索引如何优化key/value数据库。</li>
-<li>Btree 数据结构的简单介绍，数据结构和特点等。</li>
-<li>LSM-Tree日志存储结构 VS Btree存储引擎，两大阵营的优劣对比。</li>
-<li>OLTP到OLAP的对比，行存储到列式存储结构演进，以及数据仓库出现和数据分析的演进。</li>
-</ul>
-<h1 id="数据库底层设计考量"><a href="#数据库底层设计考量" class="headerlink" title="数据库底层设计考量"></a>数据库底层设计考量</h1><ul>
-<li>底层存储形式：记录存储的基本设计格式，虽然格式会有不同的设计，但是最终都是以文件的形式存储。</li>
-<li>查询/新增/读取/修改方式：在外部来看也就是在数据库概念中的DML操作，这种操作面对的是客户端，属于对外接口的部分。而从内部来看则是存储数据结构，操作数据结构和并发性能的考量。</li>
-<li>操作日志：出于持久性的考量，操作日志是不可或缺的因素，也是意外之后数据修复的保证。</li>
-<li>数据类型：比如Key/value存储还是针对行列的存储结构。</li>
-</ul>
-<h2 id="key-value存储结构和哈希索引"><a href="#key-value存储结构和哈希索引" class="headerlink" title="key/value存储结构和哈希索引"></a>key/value存储结构和哈希索引</h2><p>关键：#key/value存储结构处理 #哈希索引优化</p>
-<p>从零开始设计一个数据库的存储形式，可以从下面的几个点考虑，从存储结构出发我们看日志存储结构数据库是如何出现的。</p>
-<p>首先是key/value数据库数据结构设计第一版，从最简单的k/v存储数据库开始了解由此引申出哈希索引的结构：</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204021750438.png" alt=""></p>
-<p>上面结构有如下的特点：</p>
-<p> <strong>存储形式</strong>：主要以key/value存储形式，key/value可以是任何内容。底层使用<strong>纯文本</strong>的形式存储，使用追加方式更新数据，相同key使用最后一次读到的key为基准。</p>
-<p> <strong>读写方式</strong>：<code>db_set xx</code>设置数据，<code>db_get xx</code>读取数据，修改一个key通过最后一行追加形式，意味着更新和删除操作没有任何的开销，无需关注并发的问题。</p>
-<p> <strong>查询性能</strong>：查找数据的开销为O(n)，新增和修改的性能都是O(1)。</p>
-<blockquote>
-<p>追加式处理优点</p>
-<ul>
-<li>顺序写比随机写好很多</li>
-<li>段文件是追加不可变的，意味着并发访问和崩溃恢复比较容易</li>
-<li>压缩和合并分段可以防止数据文件碎片化问题</li>
-</ul>
-</blockquote>
-<p>最简单的k/v形式的数据库形成有哪些缺点？</p>
-<ul>
-<li>追加对于存储空间的浪费，虽然追加对于更新和新增十分方面并且维护成本较低，但是有个明显的问题是存储空间的浪费，同时我们发现其实并不需要存储原始文本的形式，同时数据本身可以通过压缩更加紧凑。</li>
-<li>查询效率随着数据的膨胀而降低，所以需要对于查询速度进行优化，对于查询最简单的方式是引入索引，而对于key/value存储形式设计索引最为常见的是哈希索引</li>
-</ul>
-<p>对于Key/value存储引擎来说哈希是常用的索引类型，哈希索引使用内存中的哈希表进行实现，键值对的键存储数据需要索引的数值，而值存储偏移量，偏移量通过计算获取存储位置，在原始数据中直接找到相关位置的数据直接读取。</p>
-<p>下面是哈希索引对于key/value结构数据进行索引优化。</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204022257014.png" alt="哈希索引结构"></p>
-<p>纯文本存储数据膨胀如何防止性能变差？</p>
-<ul>
-<li><p>分段数据：当追加到一定程度之后则写入一个新的文件。 </p>
-</li>
-<li><p>压缩段：将最新的数据进行压缩存储，由于使用追加新增方式，可以直接丢弃旧数据。</p>
-</li>
-<li><p>段压缩和多段合并：压缩与合并的过程没有特定规划，取决于数据结构和存储结构的抉择。</p>
-</li>
-</ul>
-<p>如何防止性能变差：</p>
-<p>哈希表和段进行绑定，一个段对应一个哈希表，同时执行段压缩和多端合并，保证脏数据及时清理，最后一定在内存中引入哈希表进行维护。</p>
-<p>了解了大致思路之后，如何进行具体优化？</p>
-<ol>
-<li>压缩合并存储：为了让存储数据更加紧凑同时没有浪费，定期对于追加数据进行合并压缩是必要的，同时数据分段也可以提高线程并发读写性能。</li>
-<li>数据分段：注意数据分段是结合压缩合并一同处理的，当压缩合并存储的数据到达一定量的时候需要对于数据进行分段处理，目的是防止单文件过大同时可以提高索引的搜索效率。</li>
-<li>哈希表：引入哈希表结构，在数据行上加一层索引目录，可以加快查询性能，索引的key存储的是键需要保证唯一，而value则存储了<strong>行记录的指针</strong>，这适用于分段的数据结构找到数据存储的位置，通过一次遍历分段直接通过偏移指针查指定数据是否符合要求即可。</li>
-</ol>
-<p>上面讨论的存储结构其实存在实际的实现方式，此数据库存储引擎便是：<strong>Bitcast</strong>。</p>
-<p><strong>哈希索引</strong>：</p>
-<p>哈希索引设计特点</p>
-<ul>
-<li>文件格式：并没有使用纯文本存储而是使用二进制，使用字节来记录字符串长度，后面存储真实数据。（二进制也有利于压缩）<ul>
-<li>崩溃恢复：最大的问题是重启之后<strong>哈希表会被释放</strong>，如果需要重新建立哈希表需要重新读取段，所以最大的性能开销在扫描段上，有一种优化方式是将哈希表的快照存储磁盘上直接读取。</li>
-<li>部分写入记录：使用SHA盐值和操作日志对于部分写入记录进行恢复，操作日志相对于数据存储日志更为简单，只需要做增量操作，因为目的仅仅用于存储引擎崩溃之后可以保证数据的持久性。</li>
-<li>并发控制：Bitcast实际上是一个写线程和多个读线程，数据使用追加方式可以保证多个线程读取，但是只能保证一个线程写入，但是由于数据分段，可以多线程同时改写不同数据段。</li>
-</ul>
-</li>
-</ul>
-<p>通过上面哈希结构的介绍，我们可以总结出<strong>哈希索引</strong>的几个特点：</p>
-<ul>
-<li>哈希索引适用于<strong>查询多，增删少</strong>的情况，虽然压缩和分段合并可以解决数据存储效率低的问题，但是对于频繁的增删需要额外的开销重新维护改动哈希表。</li>
-<li>哈希表<strong>需要在内存</strong>中进行使用，所以受限于内存的大小，当然并不是说磁盘无法存储哈希表，而是哈希表在磁盘中难以维护和存储。</li>
-</ul>
-<p>哈希的索引形式也存在<strong>局限性</strong>：</p>
-<ul>
-<li>虽然哈希表不一定必须放入内存，理论可以在磁盘上维护哈希表，但是这样做需要大量的IO，同时哈希冲突需要更复杂的处理逻辑。</li>
-<li>区间查询效率不高，对于范围查询的处理能力较弱，此时时间复杂度会退化为O(n)。</li>
-</ul>
-<p>以上是哈希结构对于key/value存储的结构的优化。</p>
-<p>哈希索引通常的适用场景：</p>
-<ul>
-<li>点击数：对于数据的准确性要求并不是十分高，但是对于效率要求十分高</li>
-<li>少量数据的唯一记录查找，注意是少量数据，因为哈希表空间有限。</li>
-</ul>
-<p><strong>小结：</strong></p>
-<p>我们可以看到，从一个最简单的k/v数据库到哈希索引的结构引入，数据的存储和读取结构逐渐变复杂，可以看到哈希索引非常适合key/value的存储引擎，但是显然它存在比较明显的缺陷，比如只能维护哈希表到内存，并且频繁的更新插入key/value对于索引的维护开销也不小，最后最为致命的是范围查询对于哈希索引是硬伤。</p>
-<blockquote>
-<p>总结：索引特点</p>
-<ul>
-<li>加快原始数据的查询速度</li>
-<li>空间换时间，需要更多的存储空间以及更长写数据时间</li>
-<li>索引很多时候被视为和原始数据分开的结构</li>
-</ul>
-</blockquote>
-<p>通过上面的设计有缺点，针对哈希索引有了第一层进化，那就是 SSTable和LSM-Tree。</p>
-<h1 id="SSTable和LSM-Tree结构"><a href="#SSTable和LSM-Tree结构" class="headerlink" title="SSTable和LSM-Tree结构"></a>SSTable和LSM-Tree结构</h1><p>#SSTable #LSM-Tree</p>
-<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>在具体的内容介绍之前，我们需要弄清楚SSTable和LSM-Tree有什么区别，简单来说LSM-Tree是对SSTable概念和思想的一个继承。另外需要注意这个结构特点正好解决了<strong>哈希索引局限性</strong>问题，同时SSTable并没有抛弃key/value这样的存储结构，而是在索引结构上进一步升级。</p>
-<h2 id="SSTable概念"><a href="#SSTable概念" class="headerlink" title="SSTable概念"></a>SSTable概念</h2><p>SSTable起源自谷歌在2006年发布的一篇轰动世界的论文，里面的BigTable就是SSTable和LSM-Tree的前身：<strong>Bigtable: A Distributed Storage System for Structured Data</strong>。如果觉得论文难以理解，可以参考这篇文章理解：</p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L09wZW5OYWl2ZS9hcnRpY2xlL2RldGFpbHMvNzUzMjU4OQ==" title="https://blog.csdn.net/OpenNaive/article/details/7532589">https://blog.csdn.net/OpenNaive/article/details/7532589<i class="fa fa-external-link"></i></span></p>
-<p>这里挑了其中一些和SSTable有关的内容，可惜的是这篇论文并没有详细的介绍SSTable的内部数据结构，在论文第六个小节中介绍了SSTable的作用：</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204010930848.png" alt=""></p>
-<p>BigTable和GFS 是什么关系呢？在论文中我们可以看到一个类似树的结构，其中根节点为主服务器，主服务器负责接受请求，通过管理分片服务器将请求分片到不同的片服务器中，所以从外层看最终干活的是片服务器，实际上片服务器本身只是负责管理自己分片SSTable，通过特殊索引知道数据在那个SSTable分片中，然后从GFS中读取SSTable文件的数据，而GFS则可能要从多个chuncker server里面搜索数据。</p>
-<p>而图中的metatable原数据表可以看作是和SSTable绑定的类似索引的关系，元数据表的数据是不能被外界访问的，外界访问的是元数据对应的SSTable分片，这和后面介绍的LSM-Tree有着十分熟悉的契合关系。</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204010931615.png" alt=""></p>
-<h2 id="改进与对比"><a href="#改进与对比" class="headerlink" title="改进与对比"></a>改进与对比</h2><p>关键点： 数据存储方式，索引查找方式改进</p>
-<h3 id="SSTable通常如何工作？"><a href="#SSTable通常如何工作？" class="headerlink" title="SSTable通常如何工作？"></a>SSTable通常如何工作？</h3><ul>
-<li>写入的时候不写入磁盘而是先写入内存表的数据结构，同时在内存将数据进行排序。</li>
-<li>当数据结构内存占用超过一定的阈值就可以直接写入到磁盘文件由于已经是排好序的状态，所以可以对于旧结构覆盖，写入效率比较高。并且写入和数据结构改动可以同时进行。</li>
-<li>读写顺序按照 内存 -&gt; 磁盘 -&gt; 上一次写入文件 -&gt; 未找到这样的顺序进行查找和搜索。</li>
-<li>后台定时线程定时合并和压缩排序分段，将废弃值给覆盖或者丢弃。</li>
-</ul>
-<h3 id="SStable的改进点"><a href="#SStable的改进点" class="headerlink" title="SStable的改进点"></a>SStable的改进点</h3><p>下面是SSTable相对于哈希结构的特点：</p>
-<ul>
-<li>高效合并：合并段的过程更加高效，每一个段都是按照特定顺序排序，当出现多个重复数值的时候可以合并到最新的段，对于旧数据则可以直接舍弃前面的内容。</li>
-<li><strong>范围索引优化</strong>：内存中哈希表也是有序存储，可以将多个kv对应的数据条目一同压缩存储，这样索引条目只需要开头部分的键值即可，因为后续所有的记录都是有序的。</li>
-<li>索引优化：比起哈希较为松散随意的结构，这样的处理牺牲一定的读写开销换来更加高效的存储和索引结构，并且可以支持范围索引扫描。</li>
-<li><strong>顺序读写</strong>：数据顺序存储的好处是可以顺序读写，避免磁盘的随机读写可以大幅度提升读写性能</li>
-</ul>
-<p>下面是改进过后的压缩过程图：</p>
-<p>最大的改动点：压缩合并的基础上对于SSTable基础内容进行合并操作。</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204022247935.png" alt=""></p>
-<blockquote>
-<p>如何维护sstable?<br>首先是数据如何在内存中排序，可以使用红黑树和AVL树的结构也可以是任意结构，重点是在内存中完成数据压缩合并和排序的操作。</p>
-<p>为什么数据集远远大于内存依然可以高效？<br>因为使用排序以及分段合并压缩分段的数据，所以一次加在到内存的数据不需要太多，其实只需要把内存索引表查找某个区间段的数据，然后进行顺序查找，由于是按照排序的方式顺序存储的，在段上查找数据集通常可以根据键直接偏移或者按照特定规则二分查找的方式搜索。</p>
-</blockquote>
-<h3 id="SSTable和哈希索引的对比："><a href="#SSTable和哈希索引的对比：" class="headerlink" title="SSTable和哈希索引的对比："></a>SSTable和哈希索引的对比：</h3><p>可以看到SSTable在哈希索引的基础上进行优化，使用排序的手段虽然会损耗一定的写入消耗，但是换来的是更高效率的范围查询以及更高效率的压缩存储形式。</p>
-<p>哈希索引：</p>
-<ul>
-<li>索引查询效率十分高</li>
-<li>内存中维护，磁盘IO开销很小</li>
-<li>非常适用于Key频繁更新的场景</li>
-</ul>
-<p>SSTable：</p>
-<ul>
-<li>利于磁盘维护索引和顺序读写，</li>
-<li>优化范围查询。</li>
-<li>将范围搜索的查询效率优化至O(logN)的水平</li>
-</ul>
-<h2 id="实际案例和应用"><a href="#实际案例和应用" class="headerlink" title="实际案例和应用"></a>实际案例和应用</h2><p>全文索引：</p>
-<p>全文索引虽然比key/value复杂很多，但是本质都是类似的，某些数据维护依然基于key/value方式存储，比如词条的映射关系使用的SS Table进行存储，在内存中排好序存储，并且需要的时候进行合并。</p>
-<p>LevelDB和RockDB：</p>
-<p>LevelDB和RockDB是最为典型的LSM-Tree实践案例，尤其是LSM-Tree作者刚好又是谷歌的工程师，深入了解这两款经典LSM-Tree实现案例可以对于SSTable的设计和应用有更深的了解。</p>
-<blockquote>
-<p>LSM-Tree 的代码非常简单易懂，难懂的地方作者也给了注释，对于我这种JAVA开发者也能了解大概。</p>
-</blockquote>
-<h2 id="SSTable的弊端"><a href="#SSTable的弊端" class="headerlink" title="SSTable的弊端"></a>SSTable的弊端</h2><ul>
-<li>最大的隐患是在压缩合并分段的时候不能进行数据的读写，否则数据一致性会存在问题，这对于吞吐量要求高的系统很难接受。</li>
-<li>压缩另一个问题是对于带宽的占用非常高，压缩数据量越大，带宽消耗越高，容易阻塞大量的读写请求。</li>
-<li>如果压缩速度跟不上写入数据，那么就会出现大量未压缩数据堆积情况，长期累计容易造成磁盘空间不足，但是sstable的数据结构决定了追加写入是不受控制的，需要外部力量监控。</li>
-</ul>
-<h1 id="Btree存储结构"><a href="#Btree存储结构" class="headerlink" title="Btree存储结构"></a>Btree存储结构</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Btree数据结构自1970年被提出之后，被广大的数据库使用者接受BTree目前不太可能被新技术淘汰，而日志索引结构的Lsm-Tree未来前景十分可观。</p>
-<h2 id="Btree特点"><a href="#Btree特点" class="headerlink" title="Btree特点"></a>Btree特点</h2><p>和SSTable仅仅只有一点类似：B-tree保留按键排序的 key/value对，这样可以实现高效的 key-value查找和区间查询，除此之外没有其他的相似点。</p>
-<p>下面是Btree的特点：</p>
-<ul>
-<li>和日志存储结构不同的是，Btree将数据分为固定的数据页，每一个数据页固定大小，通常为4KB，InnoDB一个数据页固定设置为16KB。</li>
-<li>更新数据在原结构上进行更新，也就是使用新数据页覆盖旧的数据页，所以更新的代价相对于日志结构要大很多的。</li>
-<li>数据页存在和磁盘对应的唯一标识，同时数据页之间通过链表指针串联，但是指针存储的不是内存上的地址，而是磁盘的地址，</li>
-<li>新增数据如果数据页内容不足需要进行页分裂，同时父节点需要包含新分裂的页，而页分裂很容易造成磁盘碎片和数据的排序，同时因为内部需要维持数据排序开销不小。</li>
-</ul>
-<blockquote>
-<p>为什么数据页要固定大小？<br>这和磁盘的读写有关，传统机械硬盘为512b最小单位，而SSD通常为4KB最小单位读写，所以数据页设计为和磁盘兼容的形式存储有利于<strong>顺序读写</strong>，同时可以最大化利用磁盘空间。</p>
-</blockquote>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204022303218.png" alt=""></p>
-<h2 id="Btree优化和可改进点"><a href="#Btree优化和可改进点" class="headerlink" title="Btree优化和可改进点"></a>Btree优化和可改进点</h2><ul>
-<li>压缩存储：使用缩略的键信息，因为对于树中间一个数据行来说只要提供开始和结束的位置即可，这样可以在有限的数据页存储更多的数据。</li>
-<li>数据页排序：虽然数据页可以存储在不同的磁盘空间，但是对于某些需要范围查询的情况下需要对于磁盘进行顺序查找，而此时数据页的随机查询就会出现问题</li>
-<li>BTree到B+树的优化，优化的方式也十分简单易懂，在各层都加链表加快索引查找，这种甚至不能叫优化只能说是改进。</li>
-<li>使用<strong>写时复制</strong>替代覆盖页的方式，在修改页的时候不对原数据改动，将写入新的父页并且更新旧引用。</li>
-</ul>
-<h2 id="Btree和LSM-Tree对比"><a href="#Btree和LSM-Tree对比" class="headerlink" title="Btree和LSM-Tree对比"></a>Btree和LSM-Tree对比</h2><p>Btree的读写速度快于LSM-Tree，因为一次IO读写可以索引到大量的数据页，而LSM-Tree需要跨越多个压缩段才可能找到数据。但是LSM-Tree的读写速度要快于Btree，同时存储效率要比Btree要高，因为压缩和合并分段之后数据间隙之间基本不存在数据间隙碎片。</p>
-<p>所以LSM-Tree适用于读写多的场景，而Btree因为需要高效查询设计上要复杂非常多所以为了服务查询性能可以容忍写入和删除的额外开销。</p>
-<p>单纯对比数据结构可能比较枯燥，这里从老外的网站上找了一份<strong>Mysql</strong>和<strong>LevelDB</strong>的对比，这两款基本可以代言Btree和LSM-Tree这两种数据结构了。可以看到LevelDB要比Mysql的出现晚上不少，这和BigTable有着密切关系，也和网络时代的发展和互联网的用户量指数上升有关系。</p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>LevelDB <span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9zeXN0ZW0vTXlTUUw=" title="https://db-engines.com/en/system/MySQL">X<i class="fa fa-external-link"></i></span></th>
-<th>MySQL <span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9zeXN0ZW0vTGV2ZWxEQg==" title="https://db-engines.com/en/system/LevelDB">X<i class="fa fa-external-link"></i></span></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Description</td>
-<td>Embeddable fast <span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9hcnRpY2xlL0tleS12YWx1ZStTdG9yZXM=" title="https://db-engines.com/en/article/Key-value+Stores">key-value storage<i class="fa fa-external-link"></i></span> library that provides an ordered mapping from string keys to string values</td>
-<td>Widely used open source <span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9hcnRpY2xlL1JEQk1T" title="https://db-engines.com/en/article/RDBMS">RDBMS<i class="fa fa-external-link"></i></span></td>
-</tr>
-<tr>
-<td>Primary database model</td>
-<td><span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9hcnRpY2xlL0tleS12YWx1ZStTdG9yZXM=" title="https://db-engines.com/en/article/Key-value+Stores">Key-value store<i class="fa fa-external-link"></i></span></td>
-<td><span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9hcnRpY2xlL1JEQk1T" title="https://db-engines.com/en/article/RDBMS">Relational DBMS<i class="fa fa-external-link"></i></span> <img src="https://db-engines.com/info.png" alt="info"></td>
-</tr>
-<tr>
-<td>Secondary database models</td>
-<td></td>
-<td><span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9hcnRpY2xlL0RvY3VtZW50K1N0b3Jlcw==" title="https://db-engines.com/en/article/Document+Stores">Document store<i class="fa fa-external-link"></i></span> <span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9hcnRpY2xlL1NwYXRpYWwrREJNUw==" title="https://db-engines.com/en/article/Spatial+DBMS">Spatial DBMS<i class="fa fa-external-link"></i></span></td>
-</tr>
-<tr>
-<td><span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9yYW5raW5n" title="https://db-engines.com/en/ranking">DB-Engines Ranking<i class="fa fa-external-link"></i></span> <img src="https://db-engines.com/info.png" alt="info"><a href="https://db-engines.com/en/ranking_trend/system/LevelDB%3BMySQL" target="_blank" rel="noopener"><img src="https://db-engines.com/ranking_trend_s.png" alt="ranking trend"></a><span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9yYW5raW5nX3RyZW5kL3N5c3RlbS9MZXZlbERCJTNCTXlTUUw=" title="https://db-engines.com/en/ranking_trend/system/LevelDB%3BMySQL">Trend Chart<i class="fa fa-external-link"></i></span></td>
-<td>Score3.19Rank#97 <span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9yYW5raW5n" title="https://db-engines.com/en/ranking">Overall<i class="fa fa-external-link"></i></span>#18 <span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9yYW5raW5nL2tleS12YWx1ZStzdG9yZQ==" title="https://db-engines.com/en/ranking/key-value+store">Key-value stores<i class="fa fa-external-link"></i></span></td>
-<td>Score1204.16Rank#2 <span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9yYW5raW5n" title="https://db-engines.com/en/ranking">Overall<i class="fa fa-external-link"></i></span>#2 <span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9yYW5raW5nL3JlbGF0aW9uYWwrZGJtcw==" title="https://db-engines.com/en/ranking/relational+dbms">Relational DBMS<i class="fa fa-external-link"></i></span></td>
-</tr>
-<tr>
-<td>Website</td>
-<td><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2dvb2dsZS9sZXZlbGRi" title="https://github.com/google/leveldb">github.com/­google/­leveldb<i class="fa fa-external-link"></i></span></td>
-<td><span class="exturl" data-url="aHR0cHM6Ly93d3cubXlzcWwuY29tLw==" title="https://www.mysql.com/">www.mysql.com<i class="fa fa-external-link"></i></span></td>
-</tr>
-<tr>
-<td>Technical documentation</td>
-<td><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2dvb2dsZS9sZXZlbGRiL2Jsb2IvbWFzdGVyL2RvYy9pbmRleC5tZA==" title="https://github.com/google/leveldb/blob/master/doc/index.md">github.com/­google/­leveldb/­blob/­master/­doc/­index.md<i class="fa fa-external-link"></i></span></td>
-<td><span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy8=" title="https://dev.mysql.com/doc/">dev.mysql.com/­doc<i class="fa fa-external-link"></i></span></td>
-</tr>
-<tr>
-<td>Developer</td>
-<td>Google</td>
-<td>Oracle <img src="https://db-engines.com/info.png" alt="info"></td>
-</tr>
-<tr>
-<td>Initial release</td>
-<td>2011</td>
-<td>1995</td>
-</tr>
-<tr>
-<td>Current release</td>
-<td>1.23, February 2021</td>
-<td>8.0.28, January 2022</td>
-</tr>
-<tr>
-<td>License <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>Open Source <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>Open Source <img src="https://db-engines.com/info.png" alt="info"></td>
-</tr>
-<tr>
-<td>Cloud-based only <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>no</td>
-<td>no</td>
-</tr>
-<tr>
-<td>DBaaS offerings (sponsored links) <img src="https://db-engines.com/info.png" alt="info"></td>
-<td></td>
-<td><span class="exturl" data-url="aHR0cHM6Ly90LnNpZGVraWNrb3Blbjc5LmNvbS9zMXQvYy81L2YxOGRRaGIwU2RZajhiR2NoMFcybjB4NmwyQjluTUpXN3Q2OXY2OHBUYkI0VzYzQmMxZDE2Z0dDTWYzREpwMTkwMT90ZT1XM1I1aEZqNGNtMnp3VzRjSGJydjNLNGROWlczR0dacmsxTEJmMzVGNDdQTmNZUzZUVzEmc2k9MzcwODg1MDA3JnBpPWE2ODYzMmUyLWU4NGMtNGNmZi04NTQxLTRhMGZkMjcwMmFiYQ==" title="https://t.sidekickopen79.com/s1t/c/5/f18dQhb0SdYj8bGch0W2n0x6l2B9nMJW7t69v68pTbB4W63Bc1d16gGCMf3DJp1901?te=W3R5hFj4cm2zwW4cHbrv3K4dNZW3GGZrk1LBf35F47PNcYS6TW1&si=370885007&pi=a68632e2-e84c-4cff-8541-4a0fd2702aba">ScaleGrid for MySQL<i class="fa fa-external-link"></i></span>: Fully managed MySQL hosting on AWS, Azure and DigitalOcean with high availability and SSH access on the #1 multi-cloud DBaaS.</td>
-</tr>
-<tr>
-<td>Implementation language</td>
-<td>C++</td>
-<td>C and C++</td>
-</tr>
-<tr>
-<td>Server operating systems</td>
-<td>Illumos Linux OS X Windows</td>
-<td>FreeBSD Linux OS X Solaris Windows</td>
-</tr>
-<tr>
-<td>Data scheme</td>
-<td>schema-free</td>
-<td>yes</td>
-</tr>
-<tr>
-<td>Typing <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>no</td>
-<td>yes</td>
-</tr>
-<tr>
-<td>XML support <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>no</td>
-<td>yes</td>
-</tr>
-<tr>
-<td>Secondary indexes</td>
-<td>no</td>
-<td>yes</td>
-</tr>
-<tr>
-<td>SQL <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>no</td>
-<td>yes <img src="https://db-engines.com/info.png" alt="info"></td>
-</tr>
-<tr>
-<td>APIs and other access methods</td>
-<td></td>
-<td>ADO.NET JDBC ODBC Proprietary native API</td>
-</tr>
-<tr>
-<td>Supported programming languages</td>
-<td>C++ Go Java <img src="https://db-engines.com/info.png" alt="info"> JavaScript (Node.js) <img src="https://db-engines.com/info.png" alt="info"> Python <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>Ada C C# C++ D Delphi Eiffel Erlang Haskell Java JavaScript (Node.js) Objective-C OCaml Perl PHP Python Ruby Scheme Tcl</td>
-</tr>
-<tr>
-<td>Server-side scripts <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>no</td>
-<td>yes <img src="https://db-engines.com/info.png" alt="info"></td>
-</tr>
-<tr>
-<td>Triggers</td>
-<td>no</td>
-<td>yes</td>
-</tr>
-<tr>
-<td>Partitioning methods <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>none</td>
-<td>horizontal partitioning, sharding with MySQL Cluster or MySQL Fabric</td>
-</tr>
-<tr>
-<td>Replication methods <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>none</td>
-<td>Multi-source replication Source-replica replication</td>
-</tr>
-<tr>
-<td>MapReduce <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>no</td>
-<td>no</td>
-</tr>
-<tr>
-<td>Consistency concepts <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>Immediate Consistency</td>
-<td>Immediate Consistency</td>
-</tr>
-<tr>
-<td>Foreign keys <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>no</td>
-<td>yes <img src="https://db-engines.com/info.png" alt="info"></td>
-</tr>
-<tr>
-<td>Transaction concepts <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>no</td>
-<td>ACID <img src="https://db-engines.com/info.png" alt="info"></td>
-</tr>
-<tr>
-<td>Concurrency <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>yes</td>
-<td>yes <img src="https://db-engines.com/info.png" alt="info"></td>
-</tr>
-<tr>
-<td>Durability <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>yes <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>yes</td>
-</tr>
-<tr>
-<td>In-memory capabilities <img src="https://db-engines.com/info.png" alt="info"></td>
-<td></td>
-<td>yes</td>
-</tr>
-<tr>
-<td>User concepts <img src="https://db-engines.com/info.png" alt="info"></td>
-<td>no</td>
-<td>Users with fine-grained authorization concept <img src="https://db-engines.com/info.png" alt="info"></td>
-</tr>
-</tbody></table>
-<h1 id="OLTP和OLAP"><a href="#OLTP和OLAP" class="headerlink" title="OLTP和OLAP"></a>OLTP和OLAP</h1><h2 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h2><p>单从名字的区分，这两个类型分别针对<strong>事务</strong>和针对<strong>分析</strong>，由此引发了不同的完全不同的数据结构和存储形式，同时侧重点和服务范围不同，注意这两者并不能说谁优势谁劣势，因为OLAP说白了是在OLTP上演化而出现的。</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204031054303.png" alt=""><br>如果看不清，可以看看甲骨文提供的一个表格：<br><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204021830049.png" alt=""></p>
-<p>OLTP：在线<strong>事务</strong>处理。用于处理数据量较小的事务为主的业务，要求的是高吞吐高响应，一般为web应用程序，主要面向广大用户群体，适用于解决生活中80%左右的业务和系统问题。</p>
-<p>OLAP：在线<strong>分析</strong>处理。主要基于大数据量的数据搜索和汇总，随着时间变化而进行数据分析进行数据支撑。一般出现在中大型公司的较大型项目中。</p>
-<h1 id="数据仓库"><a href="#数据仓库" class="headerlink" title="数据仓库"></a>数据仓库</h1><p>事务型号数据库这里不再赘述了，相信大家也很熟悉，这里说说数据仓库是什么？</p>
-<p>数据仓库是上世纪90年代被提出的放弃基于传统事务 OLTP结构的数据库分析，转为使用单个数据仓库进行数据分析的方式，简单理解就是讲数据和业务剥离，只保留数据部分进行存储，通常为了方便分析会使用[[《数据密集型系统设计》列式存储]]引擎和前面提到的[[《数据密集型型系统设计》SSTable和LSM-Tree]]数据结构。</p>
-<h2 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h2><p>数据仓库有下面的优势。</p>
-<ul>
-<li>面向主题：数据仓库可以高效分析关于特定主题或职能领域（例如销售）的数据。</li>
-<li>集成：数据仓库可在不同来源的不同数据类型之间建立一致性。</li>
-<li>相对稳定：进入数据仓库后，数据将保持稳定，不会发生改变。</li>
-<li>反映历史变化：数据仓库分析着眼于反映历史变化。</li>
-</ul>
-<h2 id="存储形式"><a href="#存储形式" class="headerlink" title="存储形式"></a>存储形式</h2><p>数据仓库一般不存在于小公司，因为根本没有那个资金支撑也没有，而是面对较大公司多达10几个系统数据规模的存在形式，所以对于很多人来说可能就是围观看造火箭，看懂了好像也没啥价值。</p>
-<p>结构图</p>
-<p>下面是整个数仓系统的结构</p>
-<h2 id="进化"><a href="#进化" class="headerlink" title="进化"></a>进化</h2><p>数据仓库到了现在又出现了进一步的转变，大数据也被分为了很多个方向，这些都是战未来的东西，这里简单提炼一下概念：</p>
-<ul>
-<li>数据挖掘</li>
-<li>预测和统计</li>
-<li>人工智能和机器学习</li>
-</ul>
-<h2 id="数据湖"><a href="#数据湖" class="headerlink" title="数据湖"></a>数据湖</h2><p>注意数据库并不是指比数据仓库大很多倍的数据仓库或者数据库集群，他是完全不同的概念，数据仓库是已经被整理<br>数据湖主要用于存储大量迥然不同并且没有进行分类筛选的数据，数据湖对于分析人员来说是最为自由的一种，可以形象看作垃圾池掏金子，收益和代价并存，更多时候是把数据湖转为数据仓库。</p>
-<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><ul>
-<li>数据库 比较流行的有：MySQL, Oracle, SqlServer等。</li>
-<li>数据仓库 比较流行的有：AWS Redshift, Greenplum, Hive等。</li>
-</ul>
-<h2 id="分析模式"><a href="#分析模式" class="headerlink" title="分析模式"></a>分析模式</h2><p>对于数据仓库的分析模型，现今通常有两种方式：星型模型和雪花模型。</p>
-<h3 id="星型模型"><a href="#星型模型" class="headerlink" title="星型模型"></a>星型模型</h3><p>星型模型也别叫做纬度模型，这个模型针对的是非强依赖的数据关系分析，比较典型的如电商系统和购物网站，虽然商品，订单，库存，广告等等看似没有什么关系，然而这些数据就像是星星一样分散，有着千丝万缕的直接依赖或者间接依赖关系。<br>星型模型的数据更像是星星和月亮的关系，核心通常位于中间， 而四周散布关系模型。</p>
-<h3 id="雪花模型"><a href="#雪花模型" class="headerlink" title="雪花模型"></a>雪花模型</h3><p>雪花模型要比星型模型设计上规范很多，也是对于维度模型的进一步拆分，比如对于商品表引入更加细分的品牌和分类进行更进一步的细分，也类似超市的商品分类。</p>
-<p><strong>小结</strong></p>
-<p>这一节点从OLAP讲到数据仓库，再讲到两种主流的分析方式，星型模型和雪花模型。<br>当然这些内容都是简单介绍，读者可以根据自己感兴趣的点进行深入和熟悉。</p>
-<h1 id="列式存储"><a href="#列式存储" class="headerlink" title="列式存储"></a>列式存储</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>对于传统的业务数据库并且用户量较小的公司来说，通常使用关系型数据库，而关系型数据库基本以Btree数据结构作为核心，这些数据库基本都是行存储，行存储比较符合理解思维，然而实际上对于数据分析而言，行数据往往会造成长时间的时间等待，并且如果需要对于数据进行实施分析作为业务决策，使用行存储分析显然系统开销是无法接受的，由此引入了[[OLTP和OLAP]]。</p>
-<p>之前提到的内容都是行式存储，有些情况下列存储更利于数据管理，特别是对于事务关系数据库行存储结构不利于单一列分析，比如我们想要存储某一分类的价格趋势，行存储需要扫描所有行求和，而列存储直接把一整列拿出来求和即可，两者效率自然不用多说。</p>
-<h2 id="列存储结构特点"><a href="#列存储结构特点" class="headerlink" title="列存储结构特点"></a>列存储结构特点</h2><ul>
-<li>所有列值紧凑存储在一起</li>
-<li>通常比行存储更有利于理解</li>
-<li>可用于非关系型数据库，当然也可以用于关系型数据库。（反过来行存储就不适用这条规则了）</li>
-</ul>
-<h2 id="列压缩"><a href="#列压缩" class="headerlink" title="列压缩"></a>列压缩</h2><p>列式存储意味着把同类数据压缩到不同的段，这对于存储结构来说是有利的，通常列压缩在数据仓库使用位图的形式存储。</p>
-<p>因为列存储的都是同一个数据类型的数据，所以可以针对不同的数据类型进行优化存储，这样也意味着比行存储更少的空间压缩更多的数据，比如对于一些整型数据在压缩存储的时候可以使用位模式存储。也就是直接存数字的二进制位编码，列查询的时候进行位操作即可。</p>
-<p>下面是一个典型的列存储和压缩的例子：<br><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204021858384.png" alt="列存储模型"></p>
-<p>存储位图可能人不是很好理解和计算，但是计算器来说就不一样了，位元算操作远远高于数学运算。</p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204021859002.png" alt="列压缩模型"></p>
-<p>另外除开列压缩以外，列的存储还以一个<strong>列族</strong>的概念，列族存在于Cassandra和HBase这两个数据库，而列族这个概念继承自BigTable。<br>但是我们之前介绍[[《数据密集型型系统设计》SSTable和LSM-Tree]]讲述基本还是行存储方式和实现。</p>
-<p>列族：其实指的是<strong>把一行中的所有列和行主键保存到一起</strong>，并且不使用列压缩的形式存储。其实这种用行转列基本就可以实现，所以列族严格意义上依然是行存储的变体，和真正的列存储还是存在差异的。</p>
-<h2 id="列排序"><a href="#列排序" class="headerlink" title="列排序"></a>列排序</h2><p>相对于行存储，列的排序其实并没有多重要，因为他不关心数据归属而是数据的整理，和[[SSTable]]一样，列排序最好的方式也是通过追加压缩合并的方式，然后利用索引和一些天然的有序数据结构完成存储。</p>
-<p>注意列排序一般不会针对单列进行排序，因为没有多少意义，至于原因这里依然强调单列没有办法知道数据的归属。</p>
-<p>列排序的第一个优势是可以对列的重复值进行压缩，比如性别通常只有男和女，这时候重复的列存储是没有必要的。</p>
-<p>列排序的另一个优点是多列排序可以快速的定位某一列的极值情况和方便快速的分组或者过滤查询。</p>
-<p>C-Store最早引入了 一 种改进想蓓，井被商业数据仓库 Vertica。</p>
-<p>最后，面相列存储通常会具备多个排序顺序，但是多列排序很难维护，所以更常见的情况是引入二级索引维护，和行存储的索引维护不同，行存储的二级索引通常指向数据行（或者像InnoDB一样指向主键，不过这种处理比较特殊），<strong>列存储二级索引通常指向值</strong>。</p>
-<h2 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h2><p>列存储中一个十分重要的优化特性是引入试图对于临时查询进行加速，数据仓库中的SQL中经常会碰到聚合函数的查询通常会想到使用缓存进行存储。<br>列存储的缓存被叫做标准视图，注意这个视图并不是逻辑临时结构，而是真实物理视图，列存储相比行存储对于物理存储的数据有效和可用性高很多，OLTP系统不适用物理视图主要原因是缓存失效很快并且需要应对低延迟高响应的查询，而数据仓库由于主要做数据分析数据静态情况更多。<br>视图的特殊情况叫做数据立方体，数据立方体的概念类似于列存储的“行聚合”和“列聚合”交叉查询的方式：<br><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/202204021939696.png" alt=""></p>
-<p>从上面的图可以看到，数据分为多个维度进行分析和查询，通过多维度角度可以把多个分类模型的数据放到一起进行交叉统计，这对于数据分析人员来说无疑省去大量的准备工作，将这种数据立方物化之后的查询效率也十分高。</p>
-<p>物化数据毫无疑问让数据查询更快，因为数据已经预先准备，但是数据立方的缺点和缓存的缺点一样是不能频繁改动，否则失去其本身意义。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>主要的内容集中在Key/value的数据库发展和哈希索引，以及后续的Btree和LSM-Tree上，可以看到BTree出现最早但是经历了30多年依然长盛不衰，一时半会应该还没有更优秀的数据结构替代，而LSM-Tree则比较符合未来和现代的发展潮流，因为他存储形式更自由，并且非常适合用于列式存储和列压缩以及数据分析，总之这篇笔记更多的是让读者了解更广阔的数据视野。</p>
-<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>这篇除开书本的内容之外，个人对于其他内容做了一些补充，如果有不同的看法欢迎讨论，如果文中有错误欢迎批评指正。</p>
-<h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L09wZW5OYWl2ZS9hcnRpY2xlL2RldGFpbHMvNzUzMjU4OQ==" title="https://blog.csdn.net/OpenNaive/article/details/7532589">https://blog.csdn.net/OpenNaive/article/details/7532589<i class="fa fa-external-link"></i></span> BigTable翻译和解读，讲的不错</li>
-<li><span class="exturl" data-url="aHR0cHM6Ly9kYi1lbmdpbmVzLmNvbS9lbi9zeXN0ZW0vTGV2ZWxEQiUzQk15U1FM" title="https://db-engines.com/en/system/LevelDB%3BMySQL">https://db-engines.com/en/system/LevelDB%3BMySQL<i class="fa fa-external-link"></i></span> 文中图表来源</li>
-</ul>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/03/16/yexu/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/16/yexu/" class="post-title-link" itemprop="url">《也许你该找个人聊聊》读书笔记 - 直面的勇气</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-03-16 09:02:34" itemprop="dateCreated datePublished" datetime="2022-03-16T09:02:34+08:00">2022-03-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/03/16/yexu/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/16/yexu/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-            <div class="post-description">确实该找个人聊聊</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《也许你该找个人聊聊》读书笔记-直面的勇气"><a href="#《也许你该找个人聊聊》读书笔记-直面的勇气" class="headerlink" title="《也许你该找个人聊聊》读书笔记 - 直面的勇气"></a>《也许你该找个人聊聊》读书笔记 - 直面的勇气</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本书的核心是：<strong>拯救我们的不再是任何道理或技巧，只有直面的勇气</strong>。这本书的奇妙之处在于，每一个人或多或少会看到一些自己的影子，每个人都隐藏着难以言说的痛苦，当痛苦无法承受的时候，我们很难也很少去寻找自己熟悉的人进行和解，这时候需要一个客观的镜子来审视自己，这就是心理咨询师的作用。</p>
-<p>然而国内对于心理咨询这一块一直是不温不火的，也很少有人去寻找专业的心理医生，因为或许心理医生甚至可能要比来访者的压力还要大，或许对于中国人疗伤的方式是来源于网络逃避，然而网络虽然可以帮助我们逃避痛苦，但是是无法帮我们解决痛苦，当言语无法传达的时候，就需要用文字传达，或许我们或多或少都需要像书名一样：该找个人聊聊。</p>
-<h1 id="资源地址"><a href="#资源地址" class="headerlink" title="资源地址"></a>资源地址</h1><p>链接: <span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMUFlRVFhdXh3YS1QZlZYc0JQRnFHSmc=" title="https://pan.baidu.com/s/1AeEQauxwa-PfVXsBPFqGJg">https://pan.baidu.com/s/1AeEQauxwa-PfVXsBPFqGJg<i class="fa fa-external-link"></i></span> 提取码: bnol</p>
-<blockquote>
-<p>如果链接失效，可以公众号“懒时小窝”回复“也许你该找个人聊聊”获取链接，感兴趣也可以关注我，不定时发布个人的读书笔记和技术文，希望给各位带来更多好书。 </p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/03/16/yexu/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/03/16/random/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/16/random/" class="post-title-link" itemprop="url">《蛤蟆先生去看心理医生》 - 人生状态与人生坐标</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-03-16 08:59:26" itemprop="dateCreated datePublished" datetime="2022-03-16T08:59:26+08:00">2022-03-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/03/16/random/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/16/random/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-            <div class="post-description">蛤蟆先生的身世在旁人看来算是“生在罗马的蛤蟆”</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《蛤蟆先生去看心理医生》-人生状态与人生坐标"><a href="#《蛤蟆先生去看心理医生》-人生状态与人生坐标" class="headerlink" title="《蛤蟆先生去看心理医生》 - 人生状态与人生坐标"></a>《蛤蟆先生去看心理医生》 - 人生状态与人生坐标</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20220315183443.png" alt=""></p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
-<p>提示：在看本文前事先声明，本读书笔记涉及故事内容剧透，所以如果对于故事感兴趣建议直接从资源链接下载下来阅读。</p>
-</blockquote>
-<p>​    这本书是看了<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC83MDYxNTk2NzY4MTMxMDg4Mzk4" title="https://juejin.cn/post/7061596768131088398">《也许你该找个人聊聊》<i class="fa fa-external-link"></i></span>之后找到的同作者这本书，我一直觉得能把自己所学专业用故事来介绍有需要十分深厚的经验和写作本领，这本书封面挺有意思一只颓废的绿蛤蟆，看到垂头丧气的样子像极了焦虑时候的自己，在粗略了扫了部分页数之后，我对于蛤蟆先生的经历产生了兴趣。</p>
-<p>​    蛤蟆先生的身世在旁人看来算是“生在罗马的蛤蟆”，家族产业能确保一生无忧，过的也是令人羡慕的生活，为啥这样的“人”会抑郁呢？作者又想通过这个故事告诉我们什么呢？整体故事看下来虽然有点艺术加工但是并不是完全脱离实际，当然普通人难免和鼹鼠一样难以理解这种“凡尔赛的烦恼”吧。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/03/16/random/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/haigui/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/20/haigui/" class="post-title-link" itemprop="url">《海龟交易法则》读书笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-02-20 23:01:08" itemprop="dateCreated datePublished" datetime="2022-02-20T23:01:08+08:00">2022-02-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/02/20/haigui/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/haigui/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-            <div class="post-description">海龟交易法则</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《海龟交易法则》读书笔记"><a href="#《海龟交易法则》读书笔记" class="headerlink" title="《海龟交易法则》读书笔记"></a>《海龟交易法则》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>  同样是评论推荐的一本书，实际看了一下确实挺不错的，作者讲述了如何用系统分析进行投资，以及投资当中如何设置止损线，如何止盈等等，当然对于作者的图表法粗略看看就行，美丽国的股票和市场都是十分成熟，我们只需要学习如何应用“海龟交易法”以及如何培养投资属于自己的投资从策略则即可。</p>
-<p>  另外，让作者走上投机道路的第一本书就是《股票作手回忆录》，由于十分崇拜利弗莫尔所以对于投机有了兴趣。这里也推荐读者看看这本书。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/02/20/haigui/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/howtomcat/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/20/howtomcat/" class="post-title-link" itemprop="url">《HowTomcatWork》笔记总结（一）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-02-20 22:49:55" itemprop="dateCreated datePublished" datetime="2022-02-20T22:49:55+08:00">2022-02-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/02/20/howtomcat/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/howtomcat/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>7.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>7 分钟</span>
-            </span>
-            <div class="post-description">笔记总结</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《HowTomcatWork》笔记总结（一）"><a href="#《HowTomcatWork》笔记总结（一）" class="headerlink" title="《HowTomcatWork》笔记总结（一）"></a>《HowTomcatWork》笔记总结（一）</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这一篇是howTomcatWork的书籍笔记内容。下面是根据书中的内容做的一部分个人笔记。</p>
-<h1 id="书籍地址："><a href="#书籍地址：" class="headerlink" title="书籍地址："></a>书籍地址：</h1><blockquote>
-<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMWphem81NXNBX2hDUDlfMlFfMk5CclE=" title="https://pan.baidu.com/s/1jazo55sA_hCP9_2Q_2NBrQ">https://pan.baidu.com/s/1jazo55sA_hCP9_2Q_2NBrQ<i class="fa fa-external-link"></i></span><br>提取码：lp96<br>–来自百度网盘超级会员V6的分享</p>
-</blockquote>
-<h1 id="个人评价"><a href="#个人评价" class="headerlink" title="个人评价"></a>个人评价</h1><p>​    没啥好说的，tomcat作者写的书，看了下海淘居然要500多确实吓到了。虽然代码使用的是tomcat5的版本，但是可以基本理解tomcat的内部工作机制。也可以看到作者是如何用一个十多行的肉鸡服务器代码不断升级成为现在的tomcat的模样。</p>
-<p>​    本文是个人根据看书记录的一些笔记，中间逻辑不一定连贯，因为有些内容过于基础没有记录的价值，所以挑了一些个人关注的点。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/02/20/howtomcat/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1791,14 +1407,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">202</span>
+          <span class="site-state-item-count">210</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-count">31</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -1870,13 +1486,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1.4m</span>
+    <span title="站点总字数">1.5m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:43</span>
+    <span title="站点阅读时长">23:01</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>

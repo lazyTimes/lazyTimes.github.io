@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="rocketmq使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【RocketMq】Rocket 生产者相关知识点 - 消息发送者参数详解">
+<meta property="og:url" content="https://whitestore.top/2023/03/11/rocketshengchanzhe/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="rocketmq使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202209280724815.png">
+<meta property="article:published_time" content="2023-03-10T23:27:49.000Z">
+<meta property="article:modified_time" content="2023-06-15T13:10:39.212Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="RocketMq">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202209280724815.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/03/11/rocketshengchanzhe/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【RocketMq】Rocket 生产者相关知识点 - 消息发送者参数详解 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/03/11/rocketshengchanzhe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【RocketMq】Rocket 生产者相关知识点 - 消息发送者参数详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-03-11 07:27:49" itemprop="dateCreated datePublished" datetime="2023-03-11T07:27:49+08:00">2023-03-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-06-15 21:10:39" itemprop="dateModified" datetime="2023-06-15T21:10:39+08:00">2023-06-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/RocketMq/" itemprop="url" rel="index"><span itemprop="name">RocketMq</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/03/11/rocketshengchanzhe/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/03/11/rocketshengchanzhe/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+            <div class="post-description">rocketmq使用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>#rocketmq</p>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>首先注意本次讨论的RokcetMq源码版本为 <strong>4.9.4</strong>，距离5.0发布 的没有多久。</p>
+<p>这一节针对RocketMq的生产者请求发送的部分细节进行阐述，主要包含了下面的内容：DefaultMQProducer 为生产者默认对象，这个对象继承自 ClientConfig，里面包含了请求者的通用配置，所以可以拆分为两个部分进行理解，第一部分为ClientConfig，第二部分为DefaultMQProducer。</p>
+<h1 id="ClientConfig-部分"><a href="#ClientConfig-部分" class="headerlink" title="ClientConfig 部分"></a>ClientConfig 部分</h1><p>ClientConfig 定义了一些配置的获取方法，定义了命名空间等参数。无论是消息的发送者还是消费者都是通用的。</p>
+<p>下面根据本次的版本的源代码介绍相关参数。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+<th>参数类型</th>
+<th>默认值</th>
+<th>有效值</th>
+<th>重要性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>namesrvAddr</td>
+<td>NameServer的地址列表</td>
+<td>String</td>
+<td>从-D系统参数rocketmq.namesrv.addr或环境变量。NAMESRV_ADDR</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>instanceName</td>
+<td>客户端实例名称</td>
+<td>String</td>
+<td>从-D系统参数rocketmq.client.name获取，否则就是DEFAULT</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>clientIP</td>
+<td>客户端IP</td>
+<td>String</td>
+<td>RemotingUtil.getLocalAddress()</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>namespace</td>
+<td>客户端命名空间</td>
+<td>String</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>accessChannel</td>
+<td>设置访问通道</td>
+<td>AccessChannel</td>
+<td>LOCAL</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>clientCallbackExecutorThreads</td>
+<td>客户端通信层接收到网络请求的时候，处理器的核数</td>
+<td>int</td>
+<td>Runtime.getRuntime().availableProcessors()</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>pollNameServerInterval</td>
+<td>轮询从NameServer获取路由信息的时间间隔</td>
+<td>int</td>
+<td>30000，单位毫秒</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>heartbeatBrokerInterval</td>
+<td>定期发送注册心跳到broker的间隔</td>
+<td>int</td>
+<td>30000，单位毫秒</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>persistConsumerOffsetInterval</td>
+<td>作用于Consumer，持久化消费进度的间隔</td>
+<td>int</td>
+<td>默认值5000，单位毫秒</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>pullTimeDelayMillsWhenException</td>
+<td>拉取消息出现异常的延迟时间设置</td>
+<td>long</td>
+<td>1000，单位毫秒</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>unitName</td>
+<td>单位名称</td>
+<td>String</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>unitMode</td>
+<td>单位模式</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vipChannelEnabled</td>
+<td>是否启用vip netty通道以发送消息</td>
+<td>boolean</td>
+<td>从-D com.rocketmq.sendMessageWithVIPChannel参数的值，若无则是true</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>useTLS</td>
+<td>是否使用安全传输。</td>
+<td>boolean</td>
+<td>从-D系统参数tls.enable获取，否则就是false</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>mqClientApiTimeout</td>
+<td>mq客户端api超时设置</td>
+<td>int</td>
+<td>3000，单位毫秒</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>language</td>
+<td>客户端实现语言</td>
+<td>LanguageCode</td>
+<td>LanguageCode.<em>JAVA</em></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<a id="more"></a>
+
+<h2 id="namesrvAddr"><a href="#namesrvAddr" class="headerlink" title="namesrvAddr"></a>namesrvAddr</h2><p>NameServer 的地址列表。</p>
+<h2 id="clientIp"><a href="#clientIp" class="headerlink" title="clientIp"></a>clientIp</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> String clientIP = RemotingUtil.getLocalAddress();</span><br></pre></td></tr></table></figure>
+
+<p>从代码中可以看到，使用<code>RemotingUtil#getLocalAddress</code> 获取IP信息，在当前版本中默认返回不是<code>127.0</code>或者<code>192.168</code>开头的 IPV4地址，否则尝试获取IPV6的地址，如果都找不到就用LocalHost地址。</p>
+<h2 id="instanceName"><a href="#instanceName" class="headerlink" title="instanceName"></a>instanceName</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> String instanceName = System.getProperty(<span class="string">"rocketmq.client.name"</span>, <span class="string">"DEFAULT"</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>instanceName</code>主要获取当前默认的系统参数客户端实例名称，它是客户端标识 CID 的组成部分</p>
+<h2 id="unitName-单元名称"><a href="#unitName-单元名称" class="headerlink" title="unitName 单元名称"></a>unitName 单元名称</h2><p>也是CID的组成部分之一，如果获取 NameServer 的地址是通过 URL 进行动态更新的话，会通过这个单元名称进行附加，用来区分不同的NameServer地址服务。</p>
+<h2 id="clientCallbackExecutorThreads-回调线程池数量"><a href="#clientCallbackExecutorThreads-回调线程池数量" class="headerlink" title="clientCallbackExecutorThreads 回调线程池数量"></a>clientCallbackExecutorThreads 回调线程池数量</h2><p>表示public回调线程池的数量，默认为CPU的核数，通常这个值直接根据JVM获取的结果为基准即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> clientCallbackExecutorThreads = Runtime.getRuntime().availableProcessors();</span><br></pre></td></tr></table></figure>
+<h2 id="namespace-命名空间"><a href="#namespace-命名空间" class="headerlink" title="namespace 命名空间"></a>namespace 命名空间</h2><p>4.5.1 之后才加入的新机制。主要适用场景为全链路压测的时候可以利用不同的命名空间划分出真实消息和压测消息，使得线上业务正常执行的情况下同步处理测试流程。</p>
+<h2 id="pollNameServerInterval-NameServer同步间隔"><a href="#pollNameServerInterval-NameServer同步间隔" class="headerlink" title="pollNameServerInterval NameServer同步间隔"></a>pollNameServerInterval NameServer同步间隔</h2><p>生产者客户端默认每隔出30S向NameServer 更新Topic的相关信息，注意这个参数在消费端同样存在相同的配置，这个配置通常不建议修改。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Pulling topic information interval from the named server */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">int</span> pollNameServerInterval = <span class="number">1000</span> * <span class="number">30</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="heartbeatBrokerInterval-Broker心跳间隔"><a href="#heartbeatBrokerInterval-Broker心跳间隔" class="headerlink" title="heartbeatBrokerInterval Broker心跳间隔"></a>heartbeatBrokerInterval Broker心跳间隔</h2><p>客户端向 Broker 发送心跳包的时间间隔，默认为 30s，不建议修改该值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Heartbeat interval in microseconds with message broker */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">int</span> heartbeatBrokerInterval = <span class="number">1000</span> * <span class="number">30</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="persistConsumerOffsetInterval"><a href="#persistConsumerOffsetInterval" class="headerlink" title="persistConsumerOffsetInterval"></a>persistConsumerOffsetInterval</h2><p>客户端持久化消息消费进度的间隔，默认为 5s，该值不建议修改。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Offset persistent interval for consumer */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">int</span> persistConsumerOffsetInterval = <span class="number">1000</span> * <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="DefaultMQProducer-部分"><a href="#DefaultMQProducer-部分" class="headerlink" title="DefaultMQProducer 部分"></a>DefaultMQProducer 部分</h1><p>这部分定义了日志和常见的使用消息队列方法，注意在类的开头定义了一个 <strong>transient</strong> 变量执行内部的保护方法。</p>
+<p>官方文档中极少DefaultMQProducer配置如下：</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+<th>参数类型</th>
+<th>默认值</th>
+<th>有效值</th>
+<th>重要性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>producerGroup</td>
+<td>生产组的名称，一类Producer的标识</td>
+<td>String</td>
+<td>DEFAULT_PRODUCER</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>createTopicKey</td>
+<td>发送消息的时候，如果没有找到topic，若想自动创建该topic，需要一个key topic，这个值即是key topic的值</td>
+<td>String</td>
+<td>TopicValidator.AUTO_CREATE_TOPIC_KEY_TOPIC</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>defaultTopicQueueNums</td>
+<td>自动创建topic的话，默认queue数量是多少</td>
+<td>int</td>
+<td>4</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>sendMsgTimeout</td>
+<td>默认的发送超时时间</td>
+<td>int</td>
+<td>3000，单位毫秒</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>compressMsgBodyOverHowmuc</td>
+<td>消息body需要压缩的阈值</td>
+<td>int</td>
+<td>1024 * 4，4K</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>retryTimesWhenSendFailed</td>
+<td>同步发送失败的话，rocketmq内部重试多少次</td>
+<td>int</td>
+<td>2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>retryTimesWhenSendAsyncFailed</td>
+<td>异步发送失败的话，rocketmq内部重试多少次</td>
+<td>int</td>
+<td>2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>retryAnotherBrokerWhenNotStoreOK</td>
+<td>发送的结果如果不是SEND_OK状态，是否当作失败处理而尝试重发</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>maxMessageSize</td>
+<td>客户端验证，允许发送的最大消息体大小</td>
+<td>int</td>
+<td>1024 <em>1024</em> 4，4M</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>traceDispatcher</td>
+<td>异步传输数据接口</td>
+<td>TraceDispatcher</td>
+<td>null</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="DefaultMQProducerImpl-内部对象"><a href="#DefaultMQProducerImpl-内部对象" class="headerlink" title="DefaultMQProducerImpl 内部对象"></a>DefaultMQProducerImpl 内部对象</h2><p><code>defaultMQProducerImpl</code> 比较意思，因为此对象是 <code>DefaultMQProducerImpl</code> 整个实现类的实际调用者，这里用了受保护的内部对象完成所有方法调用，用final是规避旧版本多个线程初始化对象非原子性的问题，同时保证持有的内部对象不可变。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Wrapping internal implementations for virtually all methods presented in this class. */</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">transient</span> DefaultMQProducerImpl defaultMQProducerImpl;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>为什么这里要用 transient？<br>transient 关键字确保对象被序列化之后不会泄漏 DefaultMQProducerImpl 对象。</p>
+</blockquote>
+<h2 id="InternalLogger-日志对象"><a href="#InternalLogger-日志对象" class="headerlink" title="InternalLogger 日志对象"></a>InternalLogger 日志对象</h2><p>接着是日志对象，日志对象 InternalLogger 如下定义，内部实现比较简单，基本是一些info和debug日志打印。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InternalLogger log = ClientLogger.getLog()</span><br></pre></td></tr></table></figure>
+
+<p>客户端日志的实现类存储路径时是：<code>${user.home}/logs/rocketmqlogs/rocketmq_client.log</code>，这个路径的获取细节在<code>org.apache.rocketmq.client.log.ClientLogger#createClientAppender</code>可以看到有关细节。使用<code>System.getProperty(&quot;user.home&quot;)</code>获取的路径在Unix系统中相当于用户的主目录。</p>
+<blockquote>
+<p>user.home 如果是 xxx 则是 /usr/home/xxx 为开始，比如个人的Mac电脑最终的存放地址为：<code>/Users/zxd/logs/rocketmqlogs/rocketmq_client.log</code>。</p>
+</blockquote>
+<h2 id="producerGroup-消息组"><a href="#producerGroup-消息组" class="headerlink" title="producerGroup 消息组"></a>producerGroup 消息组</h2><p>表示发送者所属组定义如下，根据注释可以得知，gropu 可以实现生产者实例的聚合，主要用在事务的的时候需要使用到，而如果是非事务的消息，每一个进程都是唯一的，彼此没有关联。</p>
+<p>有关事务的内容涉及需要用到Broker反查机制，这里不做过多牵扯，继续介绍。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Producer group conceptually aggregates all producer instances of exactly same role, which is particularly * important when transactional messages are involved. &lt;/p&gt;  </span></span><br><span class="line"><span class="comment"> *  </span></span><br><span class="line"><span class="comment"> * For non-transactional messages, it does not matter as long as it's unique per process. &lt;/p&gt;  </span></span><br><span class="line"><span class="comment"> *  </span></span><br><span class="line"><span class="comment"> * See &lt;a href="http://rocketmq.apache.org/docs/core-concept/"&gt;core concepts&lt;/a&gt; for more discussion.  </span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"> <span class="keyword">private</span> String producerGroup;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以通过相关命令或者可视化工具查看发送者所属组的状态。注意默认的主题队列数量，RocketMq默认设置为4。</p>
+<p>这里用了volatile保证多线程对于主题队列的数量时可见的，多个生产者实例观察的数量是一致的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Number of queues to create per default topic. */</span><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> defaultTopicQueueNums = <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="sendMsgTimeout-消息发送默认超时时间"><a href="#sendMsgTimeout-消息发送默认超时时间" class="headerlink" title="sendMsgTimeout 消息发送默认超时时间"></a>sendMsgTimeout 消息发送默认超时时间</h2><p>消息默认发送的超时时间为3秒，</p>
+<p>注意的是在 RocketMQ 4.3.0 版本之前由于存在重试机制，程序设置的设计为单次重试的超时时间，即如果设置重试次数为 3 次，则 <code>DefaultMQProducer#send</code> 方法可能会超过 9s 才返回。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Timeout for sending messages. */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">int</span> sendMsgTimeout = <span class="number">3000</span>;</span><br></pre></td></tr></table></figure>
+
+<p>主要的改动点在<code>org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl</code> 这个对象里面</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/202209280724815.png" alt=""></p>
+<p>修复的方式比较简单粗暴，是增加一个纳秒值进行计算 ，如果请求时间超过发送请求的时间太久就抛出异常。下一次请求对应的扣除掉本次耗费的时间再进行重试，如果重试超过的总时间超过超时时间也同样抛出异常。</p>
+<p>这就意味着如果超时次数设置10次，可能不到10次就会因为超时时间的判断抛出异常信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> costTimeAsync = System.currentTimeMillis() - beginStartTime;  </span><br><span class="line"><span class="keyword">if</span> (timeout &lt; costTimeAsync) &#123;  </span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RemotingTooMuchRequestException(<span class="string">"sendKernelImpl call timeout"</span>);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="compressMsgBodyOverHowmuch-压缩阈值"><a href="#compressMsgBodyOverHowmuch-压缩阈值" class="headerlink" title="compressMsgBodyOverHowmuch 压缩阈值"></a>compressMsgBodyOverHowmuch 压缩阈值</h2><p>默认情况下，如果消息的长度超过4K，那么RocketMq默认会对于消息开启压缩，虽然会增加CPU的性能损耗，但是可以有效减少网络方便的开销。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Compress message body threshold, namely, message body larger than 4k will be compressed on default. */</span></span><br><span class="line"> <span class="comment">// 压缩消息体阈值，即默认压缩大于4k的消息体。</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">int</span> compressMsgBodyOverHowmuch = <span class="number">1024</span> * <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">tryToCompressMessage</span><span class="params">(<span class="keyword">final</span> Message msg)</span> </span>&#123;  </span><br><span class="line">	<span class="comment">// 批量数据目前不支持压缩</span></span><br><span class="line">    <span class="keyword">if</span> (msg <span class="keyword">instanceof</span> MessageBatch) &#123;  </span><br><span class="line">        <span class="comment">//batch does not support compressing right now  </span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">byte</span>[] body = msg.getBody();  </span><br><span class="line">    <span class="keyword">if</span> (body != <span class="keyword">null</span>) &#123;  </span><br><span class="line">        <span class="keyword">if</span> (body.length &gt;= <span class="keyword">this</span>.defaultMQProducer.getCompressMsgBodyOverHowmuch()) &#123;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">	            <span class="comment">// 压缩之后的数据</span></span><br><span class="line">                <span class="keyword">byte</span>[] data = compressor.compress(body, compressLevel);  </span><br><span class="line">                <span class="keyword">if</span> (data != <span class="keyword">null</span>) &#123;  </span><br><span class="line">                    msg.setBody(data);  </span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;                &#125;  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                log.error(<span class="string">"tryToCompressMessage exception"</span>, e);  </span><br><span class="line">                log.warn(msg.toString());  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="retryTimesWhenSendFailed-同步失败重试"><a href="#retryTimesWhenSendFailed-同步失败重试" class="headerlink" title="retryTimesWhenSendFailed 同步失败重试"></a>retryTimesWhenSendFailed 同步失败重试</h2><p>同步消息发送重试次数。RocketMQ 客户端内部在消息发送失败时默认会重试 2 次。该参数与 <code>sendMsgTimeout</code> 联合生效，但是需要注意这个参数在SYNC模式下才会重试2次，如果是其他模式则默认是一次失败不再进行重试。</p>
+<p>在SYNC模式只重试一次可以看下面代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> timesTotal = communicationMode == CommunicationMode.SYNC ? <span class="number">1</span> + <span class="keyword">this</span>.defaultMQProducer.getRetryTimesWhenSendFailed() : <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="retryTimesWhenSendAsyncFailed-异步消息重试"><a href="#retryTimesWhenSendAsyncFailed-异步消息重试" class="headerlink" title="retryTimesWhenSendAsyncFailed 异步消息重试"></a>retryTimesWhenSendAsyncFailed 异步消息重试</h2><p>见名知意，发送重试次数，如果是同步则默认为 2，即重试 2 次，一共有 3 次机会，如果是异步则只有一次机会，但是是写死1在判断处。</p>
+<p>关键的代码在<code>org.apache.rocketmq.client.impl.MQClientAPIImpl#onExceptionImpl</code> 这个参数巨多的方法当中，简单判断当前的异步消息总的重试次数，如果重试多次超过次数则通过sendCallback回调发送异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Maximum number of retry to perform internally before claiming sending failure in synchronous mode. &lt;/p&gt;  </span></span><br><span class="line"><span class="comment"> *  </span></span><br><span class="line"><span class="comment"> * This may potentially cause message duplication which is up to application developers to resolve. */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">int</span> retryTimesWhenSendFailed = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="retryAnotherBrokerWhenNotStoreOK-失败向其他Broker重试"><a href="#retryAnotherBrokerWhenNotStoreOK-失败向其他Broker重试" class="headerlink" title="retryAnotherBrokerWhenNotStoreOK 失败向其他Broker重试"></a>retryAnotherBrokerWhenNotStoreOK 失败向其他Broker重试</h2><p>根据方法的本意按照道理来说如果客户端收到的结果不是 SEND_OK，应该直接向另外一个 Broker 重试，但根据代码分析目前这个参数并不能按预期运作，官方一致也没有关注过这个问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Maximum number of retry to perform internally before claiming sending failure in asynchronous mode. &lt;/p&gt;  </span></span><br><span class="line"><span class="comment"> *  </span></span><br><span class="line"><span class="comment"> * This may potentially cause message duplication which is up to application developers to resolve. */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">int</span> retryTimesWhenSendAsyncFailed = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="maxMessageSize-最大消息体"><a href="#maxMessageSize-最大消息体" class="headerlink" title="maxMessageSize 最大消息体"></a>maxMessageSize 最大消息体</h2><p>允许发送的最大消息体，默认为 4M，具体可以看下面的判断，注意Broker也有 maxMessageSize 这个参数的设置，故客户端的设置不能超过服务端的配置：</p>
+<p>客户端的发送限制如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * Maximum allowed message body size in bytes. */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">int</span> maxMessageSize = <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">4</span>; <span class="comment">// 4M</span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (msg.getBody().length &gt; defaultMQProducer.getMaxMessageSize()) &#123;  </span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> MQClientException(ResponseCode.MESSAGE_ILLEGAL,  </span><br><span class="line">        <span class="string">"the message body size over max value, MAX: "</span> + defaultMQProducer.getMaxMessageSize());  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>maxMessageSize 另一个使用地点是在RocketMq的轨迹消息长度判断中，不过这一块的代码在2022年的上半年被某位大神大改优化过，里面的优化代码比较值得学习，但是因为这一块牵扯的内容比较大部头需要先放放，我们看其他参数内容。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 轨迹消息中累计到3/4左右的时候就进行合并提交</span></span><br><span class="line"><span class="keyword">if</span> (currentMsgSize &gt;= traceProducer.getMaxMessageSize() - <span class="number">10</span> * <span class="number">1000</span>) &#123;  </span><br><span class="line">    List&lt;TraceTransferBean&gt; dataToSend = <span class="keyword">new</span> ArrayList(traceTransferBeanList);  </span><br><span class="line">    AsyncDataSendTask asyncDataSendTask = <span class="keyword">new</span> AsyncDataSendTask(traceTopicName, regionId, dataToSend);  </span><br><span class="line">    traceExecutor.submit(asyncDataSendTask);  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">this</span>.clear();  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="sendLatencyFaultEnable-失败延迟规避"><a href="#sendLatencyFaultEnable-失败延迟规避" class="headerlink" title="sendLatencyFaultEnable 失败延迟规避"></a>sendLatencyFaultEnable 失败延迟规避</h2><p>失败规避机制默认为false，它的含义是当Product向Broker发送消息失败之后，客户端的在内部重试的时候会规避掉上一次发送失败的Broker，并且一段时间内不会再向该Broker进行发送。</p>
+<h2 id="notAvailableDuration-不可用延迟数组"><a href="#notAvailableDuration-不可用延迟数组" class="headerlink" title="notAvailableDuration 不可用延迟数组"></a>notAvailableDuration 不可用延迟数组</h2><p>不可用延迟数组，利用等比数列的时间发送消息，根据数组的设置在多少时间内不向Broker发送消息。从默认值可以看到这里是按照阶层的方式进行增长的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">long</span>[] notAvailableDuration = &#123;<span class="number">0L</span>, <span class="number">0L</span>, <span class="number">30000L</span>, <span class="number">60000L</span>, <span class="number">120000L</span>, <span class="number">180000L</span>, <span class="number">600000L</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="latencyMax-延迟最大值"><a href="#latencyMax-延迟最大值" class="headerlink" title="latencyMax  延迟最大值"></a>latencyMax  延迟最大值</h2><p>设置消息发送的最大延迟级别，同样涉及了延迟推送机制。这里暂时略过。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">long</span>[] latencyMax = &#123;<span class="number">50L</span>, <span class="number">100L</span>, <span class="number">550L</span>, <span class="number">1000L</span>, <span class="number">2000L</span>, <span class="number">3000L</span>, <span class="number">15000L</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="MqAdmin"><a href="#MqAdmin" class="headerlink" title="MqAdmin"></a>MqAdmin</h1><p>定义了一些基础的规范接口，由于和我们平时写业务代码的Service Interface类似，这里不在过多展开介绍，而是简单罗列一些比较常用的接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">-   String key：根据 key 查找 Broker，即新主题创建在哪些 Broker 上</span></span><br><span class="line"><span class="comment">-   String newTopic：主题名称</span></span><br><span class="line"><span class="comment">-   int queueNum：主题队列个数</span></span><br><span class="line"><span class="comment">-   int topicSysFlag：主题的系统参数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createTopic</span><span class="params">(String key, String newTopic, <span class="keyword">int</span> queueNum, <span class="keyword">int</span> topicSysFlag)</span></span></span><br><span class="line"><span class="function"> </span></span><br><span class="line"><span class="function"><span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment">	根据队列与时间戳，从消息消费队列中查找消息，返回消息的物理偏移量（在 commitlog 文件中的偏移量）。</span></span></span><br><span class="line"><span class="function"><span class="comment">	MessageQueue mq：消息消费队列</span></span></span><br><span class="line"><span class="function"><span class="comment">	long timestamp：时间戳</span></span></span><br><span class="line"><span class="function"><span class="comment">*/</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">searchOffset</span><span class="params">(MessageQueue mq, <span class="keyword">long</span> timestamp)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"> <span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment"> 查询消息消费队列当前最大的逻辑偏移量，在 consumequeue 文件中的偏移量。</span></span></span><br><span class="line"><span class="function"><span class="comment"> */</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">maxOffset</span><span class="params">(<span class="keyword">final</span> MessageQueue mq)</span></span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function"> <span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment"> 查询消息消费队列当前最小的逻辑偏移量。</span></span></span><br><span class="line"><span class="function"><span class="comment"> */</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">minOffset</span><span class="params">(<span class="keyword">final</span> MessageQueue mq)</span> </span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function"><span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment">返回消息消费队列中第一条消息的存储时间戳。</span></span></span><br><span class="line"><span class="function"><span class="comment">*/</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">earliestMsgStoreTime</span><span class="params">(MessageQueue mq)</span></span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function"><span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment">根据消息的物理偏移量查找消息</span></span></span><br><span class="line"><span class="function"><span class="comment">*/</span></span></span><br><span class="line"><span class="function">MessageExt <span class="title">viewMessage</span><span class="params">(String offsetMsgId)</span></span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function"><span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment">根据主题与消息的全局唯一 ID 查找消息。</span></span></span><br><span class="line"><span class="function"><span class="comment">*/</span>    </span></span><br><span class="line"><span class="function">MessageExt <span class="title">viewMessage</span><span class="params">(String topic, String msgId)</span></span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function"><span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment">批量查询消息，其参数列表如下：</span></span></span><br><span class="line"><span class="function"><span class="comment"></span></span></span><br><span class="line"><span class="function"><span class="comment">String topic：主题名称</span></span></span><br><span class="line"><span class="function"><span class="comment">String key：消息索引 Key</span></span></span><br><span class="line"><span class="function"><span class="comment">int maxNum：本次查询最大返回消息条数</span></span></span><br><span class="line"><span class="function"><span class="comment">long begin：开始时间戳</span></span></span><br><span class="line"><span class="function"><span class="comment">long end：结束时间戳</span></span></span><br><span class="line"><span class="function"><span class="comment">*/</span></span></span><br><span class="line"><span class="function">QueryResult <span class="title">queryMessage</span><span class="params">(String topic, String key, <span class="keyword">int</span> maxNum, <span class="keyword">long</span> begin,<span class="keyword">long</span> end)</span></span></span><br></pre></td></tr></table></figure>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>简单的进行一些API讲解，我们可以下具体使用到之后再来本文查阅会更有实际意义。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/03/11/rocketshengchanzhe/" title="【RocketMq】Rocket 生产者相关知识点 - 消息发送者参数详解">https://whitestore.top/2023/03/11/rocketshengchanzhe/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RocketMq/" rel="tag"># RocketMq</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/11/rocketjianhua/" rel="prev" title="【RocketMq】使用Idea部署RocketMq 源代码（4.9.4）">
+      <i class="fa fa-chevron-left"></i> 【RocketMq】使用Idea部署RocketMq 源代码（4.9.4）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/15/stdinouterr/" rel="next" title="【Linux】How to Use the Stdin, Stderr, and Stdout Streams in Bash">
+      【Linux】How to Use the Stdin, Stderr, and Stdout Streams in Bash <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ClientConfig-部分"><span class="nav-number">2.</span> <span class="nav-text">ClientConfig 部分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#namesrvAddr"><span class="nav-number">2.1.</span> <span class="nav-text">namesrvAddr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clientIp"><span class="nav-number">2.2.</span> <span class="nav-text">clientIp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#instanceName"><span class="nav-number">2.3.</span> <span class="nav-text">instanceName</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unitName-单元名称"><span class="nav-number">2.4.</span> <span class="nav-text">unitName 单元名称</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clientCallbackExecutorThreads-回调线程池数量"><span class="nav-number">2.5.</span> <span class="nav-text">clientCallbackExecutorThreads 回调线程池数量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#namespace-命名空间"><span class="nav-number">2.6.</span> <span class="nav-text">namespace 命名空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pollNameServerInterval-NameServer同步间隔"><span class="nav-number">2.7.</span> <span class="nav-text">pollNameServerInterval NameServer同步间隔</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#heartbeatBrokerInterval-Broker心跳间隔"><span class="nav-number">2.8.</span> <span class="nav-text">heartbeatBrokerInterval Broker心跳间隔</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#persistConsumerOffsetInterval"><span class="nav-number">2.9.</span> <span class="nav-text">persistConsumerOffsetInterval</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DefaultMQProducer-部分"><span class="nav-number">3.</span> <span class="nav-text">DefaultMQProducer 部分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DefaultMQProducerImpl-内部对象"><span class="nav-number">3.1.</span> <span class="nav-text">DefaultMQProducerImpl 内部对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InternalLogger-日志对象"><span class="nav-number">3.2.</span> <span class="nav-text">InternalLogger 日志对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#producerGroup-消息组"><span class="nav-number">3.3.</span> <span class="nav-text">producerGroup 消息组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sendMsgTimeout-消息发送默认超时时间"><span class="nav-number">3.4.</span> <span class="nav-text">sendMsgTimeout 消息发送默认超时时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#compressMsgBodyOverHowmuch-压缩阈值"><span class="nav-number">3.5.</span> <span class="nav-text">compressMsgBodyOverHowmuch 压缩阈值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#retryTimesWhenSendFailed-同步失败重试"><span class="nav-number">3.6.</span> <span class="nav-text">retryTimesWhenSendFailed 同步失败重试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#retryTimesWhenSendAsyncFailed-异步消息重试"><span class="nav-number">3.7.</span> <span class="nav-text">retryTimesWhenSendAsyncFailed 异步消息重试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#retryAnotherBrokerWhenNotStoreOK-失败向其他Broker重试"><span class="nav-number">3.8.</span> <span class="nav-text">retryAnotherBrokerWhenNotStoreOK 失败向其他Broker重试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#maxMessageSize-最大消息体"><span class="nav-number">3.9.</span> <span class="nav-text">maxMessageSize 最大消息体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sendLatencyFaultEnable-失败延迟规避"><span class="nav-number">3.10.</span> <span class="nav-text">sendLatencyFaultEnable 失败延迟规避</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#notAvailableDuration-不可用延迟数组"><span class="nav-number">3.11.</span> <span class="nav-text">notAvailableDuration 不可用延迟数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#latencyMax-延迟最大值"><span class="nav-number">3.12.</span> <span class="nav-text">latencyMax  延迟最大值</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MqAdmin"><span class="nav-number">4.</span> <span class="nav-text">MqAdmin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">5.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">210</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">23:01</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

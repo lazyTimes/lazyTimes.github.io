@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Best coding practices every java developer should follow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Java】Best coding practices every java developer should">
+<meta property="og:url" content="https://whitestore.top/2023/03/11/codingparctice/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Best coding practices every java developer should follow">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-10T23:13:34.000Z">
+<meta property="article:modified_time" content="2023-06-15T13:10:39.211Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Best coding practices every java developer should follow">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://whitestore.top/2023/03/11/codingparctice/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Java】Best coding practices every java developer should | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/03/11/codingparctice/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Java】Best coding practices every java developer should
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-03-11 07:13:34" itemprop="dateCreated datePublished" datetime="2023-03-11T07:13:34+08:00">2023-03-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-06-15 21:10:39" itemprop="dateModified" datetime="2023-06-15T21:10:39+08:00">2023-06-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java-java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">java-java基础</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/03/11/codingparctice/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/03/11/codingparctice/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+            <div class="post-description">Best coding practices every java developer should follow</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL0BhYmhpc2hla3NpbmdoamF2YS9iZXN0LWNvZGluZy1wcmFjdGljZXMtZXZlcnktamF2YS1kZXZlbG9wZXItc2hvdWxkLWZvbGxvdy03Yjc3NTI3YTcwNDgjaWRfdG9rZW49ZXlKaGJHY2lPaUpTVXpJMU5pSXNJbXRwWkNJNklqSTFOV05qWVRabFl6STRNVEEyTURKa09EQmlaV000T1dVME5UWmpORFE1TldRM05ERTRZbUlpTENKMGVYQWlPaUpLVjFRaWZRLmV5SnBjM01pT2lKb2RIUndjem92TDJGalkyOTFiblJ6TG1kdmIyZHNaUzVqYjIwaUxDSnVZbVlpT2pFMk56Z3pOekEzTkRVc0ltRjFaQ0k2SWpJeE5qSTVOakF6TlRnek5DMXJNV3MyY1dVd05qQnpNblJ3TW1FeWFtRnROR3hxWkdOdGN6QXdjM1IwWnk1aGNIQnpMbWR2YjJkc1pYVnpaWEpqYjI1MFpXNTBMbU52YlNJc0luTjFZaUk2SWpFd01qVXpOakF3TmpZMU1UQTVORFF4TnpNNE15SXNJbVZ0WVdsc0lqb2llbmhrYzJJMk5qWkFaMjFoYVd3dVkyOXRJaXdpWlcxaGFXeGZkbVZ5YVdacFpXUWlPblJ5ZFdVc0ltRjZjQ0k2SWpJeE5qSTVOakF6TlRnek5DMXJNV3MyY1dVd05qQnpNblJ3TW1FeWFtRnROR3hxWkdOdGN6QXdjM1IwWnk1aGNIQnpMbWR2YjJkc1pYVnpaWEpqYjI1MFpXNTBMbU52YlNJc0ltNWhiV1VpT2lKQmJHVjRJSGhoYm1SbGNpSXNJbkJwWTNSMWNtVWlPaUpvZEhSd2N6b3ZMMnhvTXk1bmIyOW5iR1YxYzJWeVkyOXVkR1Z1ZEM1amIyMHZZUzlCUjA1dGVYaFpaR0ZqVkhrM05rcFJOVEJNVDJWRFJXTlpSVWg2ZHpsc2RVUnBSblpmVmpaVE1XVm9hajF6T1RZdFl5SXNJbWRwZG1WdVgyNWhiV1VpT2lKQmJHVjRJaXdpWm1GdGFXeDVYMjVoYldVaU9pSjRZVzVrWlhJaUxDSnBZWFFpT2pFMk56Z3pOekV3TkRVc0ltVjRjQ0k2TVRZM09ETTNORFkwTlN3aWFuUnBJam9pTTJJNU4ySTBPRFEzWXpkbU9UUXhORGcyTkdZeU4yRXpOVGhoWTJRMU1ESTNZall6WVRReE1pSjkuSTMzRnlfYjBlUUFDSTRLV01qejBSc1d2YUZoMVgzLUk2MjU4dW92Mk82QjF4NHZxbjNQV0xBLU5kaXlUNzh0b0pVTklZR0oyUUxSenEwd3ozMzZFNHRfbmhyZmZ5N3FwN2E0S1VPS3FzOEl1UExEd2dXS3RxQXBOU2tweTlUV0I2MXJobFo4Q25yN3NnYlpvRzJ4dXhxMERqSlVtVmFZWi0tR1VVRmZ0Vkl6VHY5RHlMRVZORzcxeEZoWDlTNzNxWFNhSnR5YmJwMUpwam1NNTI2REFmLTYxS01yc29DQl9ZWjlETjJENFc0QzBCZEFNWlEyY1duWnZ2Rzd5SE1BSDBSNTFsN3huLW5VTWxNbktaTjEyd2ItVlpDU2J3ODZkNC1rS2dycjliMThkUDdSM0pEbE5oVW8zQ0VMNWx3WnBQV2RNajNnSHpSdzBaQnI5NEhXTFNn" title="https://medium.com/@abhisheksinghjava/best-coding-practices-every-java-developer-should-follow-7b77527a7048#id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6IjI1NWNjYTZlYzI4MTA2MDJkODBiZWM4OWU0NTZjNDQ5NWQ3NDE4YmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYmYiOjE2NzgzNzA3NDUsImF1ZCI6IjIxNjI5NjAzNTgzNC1rMWs2cWUwNjBzMnRwMmEyamFtNGxqZGNtczAwc3R0Zy5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjEwMjUzNjAwNjY1MTA5NDQxNzM4MyIsImVtYWlsIjoienhkc2I2NjZAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF6cCI6IjIxNjI5NjAzNTgzNC1rMWs2cWUwNjBzMnRwMmEyamFtNGxqZGNtczAwc3R0Zy5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsIm5hbWUiOiJBbGV4IHhhbmRlciIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BR05teXhZZGFjVHk3NkpRNTBMT2VDRWNZRUh6dzlsdURpRnZfVjZTMWVoaj1zOTYtYyIsImdpdmVuX25hbWUiOiJBbGV4IiwiZmFtaWx5X25hbWUiOiJ4YW5kZXIiLCJpYXQiOjE2NzgzNzEwNDUsImV4cCI6MTY3ODM3NDY0NSwianRpIjoiM2I5N2I0ODQ3YzdmOTQxNDg2NGYyN2EzNThhY2Q1MDI3YjYzYTQxMiJ9.I33Fy_b0eQACI4KWMjz0RsWvaFh1X3-I6258uov2O6B1x4vqn3PWLA-NdiyT78toJUNIYGJ2QLRzq0wz336E4t_nhrffy7qp7a4KUOKqs8IuPLDwgWKtqApNSkpy9TWB61rhlZ8Cnr7sgbZoG2xuxq0DjJUmVaYZ--GUUFftVIzTv9DyLEVNG71xFhX9S73qXSaJtybbp1JpjmM526DAf-61KMrsoCB_YZ9DN2D4W4C0BdAMZQ2cWnZvvG7yHMAH0R51l7xn-nUMlMnKZN12wb-VZCSbw86d4-kKgrr9b18dP7R3JDlNhUo3CEL5lwZpPWdMj3gHzRw0ZBr94HWLSg">Best coding practices every java developer should follow<i class="fa fa-external-link"></i></span></p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li><a href="#引言">引言</a></li>
+<li><a href="#4-尽可能让变量私有化">4. 尽可能让变量私有化</a></li>
+<li><a href="#6-警惕冗余初始化">6. 警惕冗余初始化</a></li>
+<li><a href="#5-Stringbuilder替换字符串拼接争议">5. Stringbuilder替换字符串拼接【争议】</a></li>
+<li><a href="#15-dry和kiss">15. dry和kiss</a></li>
+<li><a href="#14-Solid">14. Solid</a></li>
+<li><a href="#7-尽可能使用增强for循环或者foreach">7. 尽可能使用增强for循环或者foreach</a></li>
+<li><a href="#13-日志打印规则">13. 日志打印规则</a></li>
+<li><a href="#12-Hardcoding硬编码">12. Hardcoding硬编码</a></li>
+<li><a href="#11-注释">11. 注释</a></li>
+<li><a href="#10-避免创建不必要对象">10. 避免创建不必要对象</a></li>
+<li><a href="#9-返回空集合而不是null">9. 返回空集合而不是null</a></li>
+<li><a href="#8-精度选择">8. 精度选择</a></li>
+<li><a href="#1-项目结构">1. 项目结构</a></li>
+<li><a href="#2-遵循命名规范">2. 遵循命名规范</a></li>
+<li><a href="#3-不要吞异常">3. 不要吞异常</a></li>
+<li><a href="#16-使用枚举替代静态常量建议">16. 使用枚举替代静态常量【建议】</a></li>
+<li><a href="#17-按作用域划分成员变量">17. 按作用域划分成员变量</a></li>
+<li><a href="#18-在数字字段中使用下划线建议">18. 在数字字段中使用下划线【建议】</a></li>
+<li><a href="#总结">总结</a></li>
+<li><a href="#参考">参考</a></li>
+</ul>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>把标题翻译成中文在国内也是一个老生常谈的问题：编程习惯和编码规范。</p>
+<p>这篇文章大部分观点和国内的规范习惯类似，令我好奇的是外国人是如何理解这些内容的？</p>
+<p>注意本文的Tips排序是打乱的，个人把感兴趣放到了前面来了。这篇文章的评论区非常精彩，这里一并整合了评论区的读者观点。</p>
+<p>不管是学习还是习老外的思考方式，或是大在评论区当中看读者的讨论和纠正错误，阅读本文都是值得推荐的。</p>
+<p>抱着半信半疑的态度学习这些内容，你会得到比单纯的了解和接受建议更多的收获。</p>
+<a id="more"></a>
+
+<h1 id="4-尽可能让变量私有化"><a href="#4-尽可能让变量私有化" class="headerlink" title="4. 尽可能让变量私有化"></a>4. 尽可能让变量私有化</h1><p>如果变量不需要意对外访问，那就建议使用私有描述对于参数进行描述。</p>
+<p>评论区的读者对于这一个小节做了补充：</p>
+<ul>
+<li>如果是dto并且是final的，拥有公用数据的时候<strong>可以不私有化</strong>.。</li>
+<li>比大量的setter更好建议是更合理的利用设计模式构建对象（比如建造者），或者利用委托第三方对象生产合适的对象（静态工厂替代构造器）。</li>
+<li>尽可能让对象不可变。</li>
+</ul>
+<h1 id="6-警惕冗余初始化"><a href="#6-警惕冗余初始化" class="headerlink" title="6. 警惕冗余初始化"></a>6. 警惕冗余初始化</h1><blockquote>
+<p>Therefore, a java best practice is to be aware of the default initialization values of member variables and avoid initializing the variables explicitly.</p>
+</blockquote>
+<p>Java 最佳实践是了解成员变量的默认初始化值并避免显式初始化变量，Java语言很多变量存在默认值，在自己编写初始化的时候不建议使用Java的默认值。</p>
+<p>另一方面，有时候可以利用Java的初始化做数据库字段的优化，比如开关状态建议把0设置为开放1设置为关闭。</p>
+<p>下面的代码的的对象初始化代码是毫无意义的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String name = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">int</span> age = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">boolean</span> isGenius = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Although it is very common practice, it is not encouraged to initialize member variables with the values: like 0, false and null. These values are already the default initialization values of member variables in Java. Therefore, a java best practice is to be aware of the default initialization values of member variables and avoid initializing the variables explicitly.</p>
+</blockquote>
+<p>尽管这是非常常见的做法，但不鼓励使用以下值初始化成员变量：如 0、false 和 null。这些值已经是 Java 中成员变量的默认初始化值。因此，Java 最佳实践是了解成员变量的缺省初始化值，并避免显式初始化变量。</p>
+<p>See more here: <span class="exturl" data-url="aHR0cHM6Ly93d3cuY29kZWphdmEubmV0L2phdmEtY29yZS90aGUtamF2YS1sYW5ndWFnZS9qYXZhLWRlZmF1bHQtaW5pdGlhbGl6YXRpb24tb2YtaW5zdGFuY2UtdmFyaWFibGVzLWFuZC1pbml0aWFsaXphdGlvbi1ibG9ja3M=" title="https://www.codejava.net/java-core/the-java-language/java-default-initialization-of-instance-variables-and-initialization-blocks">Java default Initialization of Instance Variables and Initialization Blocks<i class="fa fa-external-link"></i></span>。</p>
+<h1 id="5-Stringbuilder-替换字符串拼接【争议】"><a href="#5-Stringbuilder-替换字符串拼接【争议】" class="headerlink" title="5. Stringbuilder 替换字符串拼接【争议】"></a>5. Stringbuilder 替换字符串拼接【争议】</h1><p>实际上多数情况下“大可不必”，只有for循环的情况才考虑是否使用Stringbuilder替换。日常情况下字符拼接操作是完全没有问问题的，javac编译之后会把字符串自动用StringBuilder替换，真正应该手动创建该对象的场景是在<strong>for循环当中的大量的字符串拼接</strong>，内部会每次迭代新建Stringbuilder。</p>
+<p>随着JDK版本的升级，到<strong>JDK9</strong>版本for循环新建StringBuilder的情况已经被改善了（但个人未从OpenJDK中找到对应源码验证）。</p>
+<p>JDK13 从Python那边把多行文本的语法搬过来了，定义多行文本可以类似下面这样：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String htmlContent = “““&lt;html&gt;</span><br><span class="line">                           &lt;head&gt;</span><br><span class="line">                           &lt;/head&gt;</span><br><span class="line">                           &lt;body&gt;</span><br><span class="line">                              &lt;p&gt;Hello world!&lt;/p&gt;</span><br><span class="line">                           &lt;/body&gt;</span><br><span class="line">                         &lt;/html&gt;""";</span><br></pre></td></tr></table></figure>
+
+<p>最后需要注意的是使用<strong>Stringbuilder</strong>，仅仅应该用在多线程循环操作字符串当中，如果在同步方法里面效率会非常低并且很慢。</p>
+<p>介绍</p>
+<blockquote>
+<p>As a general rule, optimize at an architectural level, and write code for readability. Later on it’s easier to optimize a neat function, than to look for bugs in an optimized one.</p>
+</blockquote>
+<p>上面意思大致是说通用规则是优先写出具备高可读性的代码，然后再去进行优化这些简单的可优化点，这比在优化代码找错误要简单很多。</p>
+<h1 id="15-dry和kiss"><a href="#15-dry和kiss" class="headerlink" title="15. dry和kiss"></a>15. dry和kiss</h1><blockquote>
+<p>DRY stands for “Don’s Repeat Yourself</p>
+</blockquote>
+<p>如果代码可以公用就尽量公用，不要复制粘贴代码。</p>
+<blockquote>
+<p>kiss：KISS stands for “Keep It Simple, Stupid”.</p>
+</blockquote>
+<p>KISS就是保持简单，愚蠢。这个愚蠢指的是方法最好只知道干一件事情。这两点和Unix最初的设计的理念是一样的，简单好用即是美。</p>
+<h1 id="14-Solid"><a href="#14-Solid" class="headerlink" title="14. Solid"></a>14. Solid</h1><p><strong>Single Responsibility Principle</strong> 单一职责：每个类和接口有明确目标。</p>
+<p><strong>Open-Closed Principle</strong> 开闭原则：开放扩展，封闭修改。</p>
+<p><strong>Liskov Substitution Principle</strong> 里式替代：尽可能让代码多态。</p>
+<p><strong>Interface Segregation Principle</strong> 接口隔离：实现接口替代类继承。</p>
+<p><strong>Dependency Inversion Principle</strong> 依赖倒转原则：依赖抽象而不是依赖实现。</p>
+<h1 id="7-尽可能使用增强for循环或者foreach"><a href="#7-尽可能使用增强for循环或者foreach" class="headerlink" title="7. 尽可能使用增强for循环或者foreach"></a>7. 尽可能使用增强for循环或者foreach</h1><p>建议使用增强for循环（JDK5）和JDK8的foreach，当然最好的建议是活学活用stream的API。为什么会有这样的建议？好像for-index也不是啥坏写法。</p>
+<blockquote>
+<p>It’s because the index variable is error-prone, as we may alter it incidentally in the loop’s body, or we may starts the index from 1 instead of 0.</p>
+</blockquote>
+<p>这是因为索引变量容易出错，因为我们可能会在循环的主体中偶然改变它，或者我们可能从1而不是0开始索引。下面是Stream API带来便利的简单例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Integer <span class="title">findSmallesPositiveNumber</span><span class="params">(List&lt;Integer&gt; numbers)</span> </span>&#123;</span><br><span class="line">   Integer smallestPositiveNumber= <span class="keyword">null</span>;</span><br><span class="line">   <span class="keyword">for</span> (Integer number: numbers) &#123;</span><br><span class="line">      <span class="keyword">if</span> (number &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (smallestPositiveNumber == <span class="keyword">null</span></span><br><span class="line">            || number &lt; smallestPositiveNumber) &#123;</span><br><span class="line">         smallestPositiveNumber = number;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> smallestPositiveNumber;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用Stream APi精简之后：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Optional&lt;Integer&gt; <span class="title">findSmallesPositiveNumber</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">      List&lt;Integer&gt; numbers)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> numbers.stream()</span><br><span class="line">      .filter(number -&gt; number &gt; <span class="number">0</span>)</span><br><span class="line">      .min(Integer::compare);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="13-日志打印规则"><a href="#13-日志打印规则" class="headerlink" title="13. 日志打印规则"></a>13. 日志打印规则</h1><p>作者的下面几条规则<strong>有待商榷</strong>，我个人建议是<strong>避免</strong>下面的做法：</p>
+<blockquote>
+<p>Developer should add logger on method entry and exit.</p>
+</blockquote>
+<p>在进出重要方法打印入参和出参。</p>
+<blockquote>
+<p>谨慎使用，建议涉及金额的操作情况打印。</p>
+</blockquote>
+<blockquote>
+<p>Developer should add logger in “if” and “else” case to track which condition is true in case of any error.</p>
+</blockquote>
+<p>在if和else的条件判断处打印参数。</p>
+<blockquote>
+<p>Developer should also log exception to track the issue</p>
+</blockquote>
+<p>对于异常信息必须打印。</p>
+<p>更为合理的做法是像下面这样：</p>
+<blockquote>
+<p>Definitely don’t log every if-else statement!</p>
+</blockquote>
+<p>不要在if/else分支中打印，更为合理的建议是记录响应以及错误。</p>
+<blockquote>
+<p><strong>Don’t log every method entry and exit!</strong></p>
+</blockquote>
+<p>不要在每个方法的入参和出参打印。当然这并不是铁律，比如三方接口调用就必须要在“入口”和“出口”中打印以便快速定位问题<del>和甩锅</del>。</p>
+<blockquote>
+<p>**Log exceptions that are unexpected. **</p>
+</blockquote>
+<p>记录“意外”的异常。比如多线程有可能的interrupt处理，文件读写有可能的IO异常。</p>
+<p>从褒义和贬义两个层面看，日志都是非常具备“价值”的，好的日志可以帮你快速定位问题，不好的日志就像是垃圾一样迅速占用服务器的磁盘。只有非常核心的日志才需要跟踪每一步的行为，绝大多数情况下日志只需要在影响业务的位置进行打印。在打印日志段时候多思考一下<strong>日志等级</strong>的选择，这意味着你生产能否快速定位问题。</p>
+<h1 id="12-Hardcoding硬编码"><a href="#12-Hardcoding硬编码" class="headerlink" title="12. Hardcoding硬编码"></a>12. Hardcoding硬编码</h1><p>硬编码回会导致程序难以理解。使用硬编码会增加理解难度，通常使用枚举替代是不错建议。根据dry的原则，在定义硬编码的时候，如果魔法值在JDK中存在类似定义或者存在现实意义，应该果断通过下面的方式进行纠正，比如下面的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> storeClosureDay = <span class="number">7</span>;</span><br></pre></td></tr></table></figure>
+
+<p>应该被替换为下面这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SUNDAY = <span class="number">7</span>;  </span><br><span class="line">[…]  </span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> storeClosureDay = SUNDAY;</span><br></pre></td></tr></table></figure>
+
+<p><strong>不要</strong>这样使用，更为合适的处理方式是使用<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vamF2YXNlLzgvZG9jcy9hcGkvamF2YS90aW1lL0RheU9mV2Vlay5odG1s" title="https://docs.oracle.com/javase/8/docs/api/java/time/DayOfWeek.html">DayOfWeek<i class="fa fa-external-link"></i></span> 的API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> DayOfWeek storeClosureDay = DayOfWeek.SUNDAY;</span><br></pre></td></tr></table></figure>
+
+<p>避免硬编码是非常好的编程习惯，更好的习惯是使用易懂的硬编码。</p>
+<h1 id="11-注释"><a href="#11-注释" class="headerlink" title="11. 注释"></a>11. 注释</h1><p>关键：<strong>注释只有在可读性较差并且需要注释描述关键意图的时候才使用</strong>。</p>
+<blockquote>
+<p>As your code will be read by various people with varying knowledge of Java, Proper comments should be used to give overviews of your code and provide additional information that cannot be perceived from the code itself. Comments are supposed to describe the working of your code to be read by Quality assurance engineer, reviewer, or maintenance staff .</p>
+</blockquote>
+<p>由于代码将被具有不同 Java 知识的各种人阅读，因此应该使用适当的注释来概述代码，并提供无法从代码本身感知的其他信息。注释应该描述代码的工作方式，以供质量保证工程师、审阅者或维护人员阅读。</p>
+<p>注释关键点应该具备<strong>可读性</strong>，有时候没有任何注释的代码确实让人痛苦，更可怕的是因为代码更新但是注释不更新，这样的事情也时有发生=-=。最好的注释应该是代码本身会告知作者意图。</p>
+<blockquote>
+<p>PS：个人看过的没啥注释也能完全看懂，并且看完觉得写的非常美的代码目前只有Redission和Spring。</p>
+</blockquote>
+<h1 id="10-避免创建不必要对象"><a href="#10-避免创建不必要对象" class="headerlink" title="10. 避免创建不必要对象"></a>10. 避免创建不必要对象</h1><p>对象创建是最消耗内存的操作之一，这就是为什么最好的 Java 实践是避免创建任何不必要的对象，并且只应在需要时创建它们。</p>
+<h1 id="9-返回空集合而不是null"><a href="#9-返回空集合而不是null" class="headerlink" title="9. 返回空集合而不是null"></a>9. 返回空集合而不是null</h1><blockquote>
+<p>NPE is the most frequent exception in production with absolute leadership, do not give it a chance.</p>
+</blockquote>
+<p>更进一步说是让整个系统不要出现空指针异常，不应该因为项目代码妥协老旧的编程风格。一定不要让空指针有可乘之机。除了返回空集合以外，还可以利用Optional的工具类包装有可能为Null的对象，显式的告诉调用者对象有可能为Null。</p>
+<blockquote>
+<p>An empty collection might have a different meaning than no collection at all.&#x20;</p>
+</blockquote>
+<p>有时候null 也可能是“有意义”的，使用的时候也需要考虑具体情况，当然返回空集合肯定是没有任何问题的。</p>
+<h2 id="Collections"><a href="#Collections" class="headerlink" title="Collections"></a>Collections</h2><p>空集合相关的轮子在Collections可以找到答案，但是需要注意需要合理使用，JDK5之后出现了emptyXXX等集合类，但是这些类“暗藏杀机”，因为它们的效果和<strong>List.subList()</strong> 一样是<strong>immutable</strong> 的。</p>
+<p>虽然JDK的工具类可以减少不必要的对象创建，但是假设接收方需要在收到空集合之后却还要往里面设置数据，这时候毫无疑问就会抛异常了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * Returns an empty list (immutable).  This list is serializable.</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * &lt;p&gt;This example illustrates the type-safe way to obtain an empty list:</span></span><br><span class="line"><span class="comment">  * &lt;pre&gt;</span></span><br><span class="line"><span class="comment">  *     List&amp;lt;String&amp;gt; s = Collections.emptyList();</span></span><br><span class="line"><span class="comment">  * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@implNote</span></span></span><br><span class="line"><span class="comment">  * Implementations of this method need not create a separate &lt;tt&gt;List&lt;/tt&gt;</span></span><br><span class="line"><span class="comment">  * object for each call.   Using this method is likely to have comparable</span></span><br><span class="line"><span class="comment">  * cost to using the like-named field.  (Unlike this method, the field does</span></span><br><span class="line"><span class="comment">  * not provide type safety.)</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> &lt;T&gt; type of elements, if there were any, in the list</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span> an empty immutable list</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@see</span> #EMPTY_LIST</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> &lt;T&gt; <span class="function">List&lt;T&gt; <span class="title">emptyList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">return</span> (List&lt;T&gt;) EMPTY_LIST;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>我认为<code>emptyList()</code>更为合理的方法名称是 <code>immutableEmptyList()</code> 和 <code>mutableEmptyList()</code>，当然<code>mutableEmptyList()</code>就是new新的<code>ArrayList()</code>这样的方法，看起来是毫无意义的，也许JDK设计的时候也是考虑这种情况？</p>
+<h1 id="8-精度选择"><a href="#8-精度选择" class="headerlink" title="8. 精度选择"></a>8. 精度选择</h1><blockquote>
+<p>Most processors take almost same time in processing the operations on float and double but double offers way more precision then float that is why it is best practice to use double when precision is important otherwise you can go with float as it requires half space than double.。</p>
+</blockquote>
+<p>大型处理器在处理double和float的时候计算速度是类似的。但是在Java中大部分情况只要是涉及浮点数计算都是闭着眼睛用BigDecimal。如果精度很重要直接无脑使用BigDecimal，double和float都会骗人。</p>
+<blockquote>
+<p>When precision is important, use BigDecimal. Double and Float aren’t accurate. They will betray you when you least expect it. 1 + 1 can be 1.99999999999.</p>
+</blockquote>
+<p>当精度很重要时请使用BigDecimal，Double和Float并不精确。它们会在你最不期望的时候背叛你。1+1可能是1.99999999999。</p>
+<h1 id="1-项目结构"><a href="#1-项目结构" class="headerlink" title="1. 项目结构"></a>1. 项目结构</h1><p>有点过于基础了。下面是Maven的经典结构，如果是Maven新手可以看看项目的基本布局</p>
+<ul>
+<li><em>src/main/java</em>: <strong>For source files</strong></li>
+<li><em>src/main/resources</em>: <strong>For resource files, like properties</strong></li>
+<li><em>src/test/java</em>: <strong>For test source files</strong></li>
+<li><em>src/test/resources</em>: <strong>For test resource files, like properties</strong></li>
+</ul>
+<h1 id="2-遵循命名规范"><a href="#2-遵循命名规范" class="headerlink" title="2. 遵循命名规范"></a>2. 遵循命名规范</h1><p>没啥好讲的，程序员的基础素质。最好的命名规范不是参考某一个标准，而是能统一风格布局代码。</p>
+<h1 id="3-不要吞异常"><a href="#3-不要吞异常" class="headerlink" title="3. 不要吞异常"></a>3. 不要吞异常</h1><p>在异常处理时在 catch 块中编写适当且有意义的消息是精英 java 开发人员首选的 java 最佳实践。<strong>新手常常会把异常捕获之后不做任何处理，吞异常是非常危险的行为</strong>。</p>
+<p>得益于IDE的帮助，catch之后不打印任何信息的情况不是很多见，但是打印堆栈其实也是非常消耗资源的操作，同时因为是打印在控制台，如果不调用日志保存关键信息也有可能导致关键信息丢失。</p>
+<h1 id="16-使用枚举替代静态常量【建议】"><a href="#16-使用枚举替代静态常量【建议】" class="headerlink" title="16. 使用枚举替代静态常量【建议】"></a>16. 使用枚举替代静态常量【建议】</h1><p>在Java推出枚举之前，定义一个常量基本只能使用下面的接口方式。在很多优秀框架的最早期版本中经常能看到这样的写法，并且到现在使用这种写法的不在少数 。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Color</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RED = <span class="number">0xff0000</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BLACK = <span class="number">0x000000</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> WHITE = <span class="number">0xffffff</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>It’s because the purpose of interfaces is for inheritance and polymorphism, not for static stuffs like that. So the best practice recommends us to use an enum instead.&#x20;</p>
+</blockquote>
+<p>这是因为接口的目的是用于继承和多态性，而不是用于类似的静态东西。所以最佳实践建议我们使用枚举来代替。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Color &#123;</span><br><span class="line"> </span><br><span class="line">    BLACK(<span class="number">0x000000</span>),</span><br><span class="line">    WHITE(<span class="number">0xffffff</span>),</span><br><span class="line">    RED(<span class="number">0xff0000</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> code;</span><br><span class="line"> </span><br><span class="line">    Color(<span class="keyword">int</span> code) &#123;</span><br><span class="line">        <span class="keyword">this</span>.code = code;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.code;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用枚举和静态常量的对比：</p>
+<ul>
+<li>枚举更具备描述性</li>
+<li>Keep It Simple, Stupid。接口可以用于继承和多态，枚举能干的事情基本是常量定义。</li>
+<li>接口的静态常量往往有其他的用途。</li>
+</ul>
+<blockquote>
+<p>很少有人会在枚举设计复杂的逻辑，因为枚举的可扩展性很差并且理解和学习成本较高</p>
+</blockquote>
+<h1 id="17-按作用域划分成员变量"><a href="#17-按作用域划分成员变量" class="headerlink" title="17. 按作用域划分成员变量"></a>17. 按作用域划分成员变量</h1><blockquote>
+<p>The best practice to organize member variables of a class by their scopes from most restrictive to least restrictive.&#x20;</p>
+</blockquote>
+<p>最好的做法是按其作用域从最严格到最不严格来组织一个类的成员变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StudentManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> List&lt;Student&gt; listStudents;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> numberOfStudents;</span><br><span class="line">    <span class="keyword">private</span> String errorMessage;</span><br><span class="line">    <span class="keyword">float</span> rowHeight;</span><br><span class="line">    <span class="keyword">float</span> columnWidth;</span><br><span class="line">    <span class="keyword">protected</span> String[] columnNames;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> numberOfRows;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> numberOfColumns;</span><br><span class="line">    <span class="keyword">public</span> String title;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的成员变量定义眼花缭乱，通过作用域划分如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StudentManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String errorMessage;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> numberOfColumns;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> numberOfRows;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    <span class="keyword">float</span> columnWidth;</span><br><span class="line">    <span class="keyword">float</span> rowHeight;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">protected</span> String[] columnNames;</span><br><span class="line">    <span class="keyword">protected</span> List&lt;Student&gt; listStudents;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> numberOfStudents;</span><br><span class="line">    <span class="keyword">public</span> String title;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="18-在数字字段中使用下划线【建议】"><a href="#18-在数字字段中使用下划线【建议】" class="headerlink" title="18. 在数字字段中使用下划线【建议】"></a>18. 在数字字段中使用下划线【建议】</h1><p>来自Java 7的小更新可以帮助我们把冗长的数字字段写得更易读。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> maxUploadSize = <span class="number">20971520</span>;</span><br><span class="line"><span class="keyword">long</span> accountBalance = <span class="number">1000000000000L</span>;</span><br><span class="line"><span class="keyword">float</span> pi = <span class="number">3.141592653589F</span>;</span><br></pre></td></tr></table></figure>
+
+<p>和下面的代码作比较：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> maxUploadSize = <span class="number">20_971_520</span>;</span><br><span class="line"><span class="keyword">long</span> accountBalance = <span class="number">1_000_000_000_000L</span>;</span><br><span class="line"><span class="keyword">float</span> pi = <span class="number">3.141_592_653_589F</span>。</span><br></pre></td></tr></table></figure>
+
+<p>哪一个更易懂？记得在数字字面中使用下划线，以提高代码的可读性。</p>
+<blockquote>
+<p><del>个人：尴尬，学了这么多年Java居然不知道有这种写法…..</del></p>
+</blockquote>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这里罗列一下存在争议以及印象比较深的部分：</p>
+<ul>
+<li>StringBuilder替换字符串拼接。如果单纯拼接几个变量或者方法的结果，”+”号是完全没有问题的。<ul>
+<li>虽然JDK 9 对于每次for循环new StringBuilder的BUG做了修复，但国内广泛使用JDK8的场景下依然需要避免for循环大量的字符串拼接。</li>
+<li>这种优化不是关键，请更加关注合理的架构设计，因为这一点性能损耗对于现代处理器影响真的不大。</li>
+<li>如果不需要考虑多线程的情况，更建议使用StringBuffer。</li>
+</ul>
+</li>
+<li>精度选择，实际上不管有没有精度要求，碰到需要小数的运算建议使用BigDecimal，因为double和float的数学运算真的很容易出问题。</li>
+<li>注释<ul>
+<li>训练写出易懂的代码而不是易懂的注释</li>
+<li>注释应该遵从KISS。“愚蠢”的代码最好理解。</li>
+</ul>
+</li>
+<li>在大型的数字参数值中使用下划线，这是一个很容易忽略的Java小技巧，对于和金额有关的处理，这种写法非常有帮助。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>另一位读者：<span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL0BsYWp0aGFiYWxhenMvYmVzdC1jb2RpbmctcHJhY3RpY2VzLWV2ZXJ5LWphdmEtZGV2ZWxvcGVyLXNob3VsZC1mb2xsb3ctNDVkZmJiYzk3NzRm" title="https://medium.com/@lajthabalazs/best-coding-practices-every-java-developer-should-follow-45dfbbc9774f">Best coding practices every Java developer should follow?<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY29kZWphdmEubmV0L2NvZGluZy8xMC1qYXZhLWNvcmUtYmVzdC1wcmFjdGljZXMtZXZlcnktamF2YS1wcm9ncmFtbWVyLXNob3VsZC1rbm93I05hbWluZ0NvbnZlbnRpb24=" title="https://www.codejava.net/coding/10-java-core-best-practices-every-java-programmer-should-know#NamingConvention">10 Java Core Best Practices Every Java Programmer Should Know<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/03/11/codingparctice/" title="【Java】Best coding practices every java developer should">https://whitestore.top/2023/03/11/codingparctice/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/07/kafka-zk/" rel="prev" title="【Kafka】编译 Kafka2.7 源码并搭建源码环境（Ver 2.7.2）">
+      <i class="fa fa-chevron-left"></i> 【Kafka】编译 Kafka2.7 源码并搭建源码环境（Ver 2.7.2）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/11/shangyong/" rel="next" title="【RocketMq】商用RocketMq和开源RocketMq的兼容问题解决方案">
+      【RocketMq】商用RocketMq和开源RocketMq的兼容问题解决方案 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原文"><span class="nav-number">1.</span> <span class="nav-text">原文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.1.</span> <span class="nav-text">目录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-尽可能让变量私有化"><span class="nav-number">3.</span> <span class="nav-text">4. 尽可能让变量私有化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-警惕冗余初始化"><span class="nav-number">4.</span> <span class="nav-text">6. 警惕冗余初始化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Stringbuilder-替换字符串拼接【争议】"><span class="nav-number">5.</span> <span class="nav-text">5. Stringbuilder 替换字符串拼接【争议】</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#15-dry和kiss"><span class="nav-number">6.</span> <span class="nav-text">15. dry和kiss</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-Solid"><span class="nav-number">7.</span> <span class="nav-text">14. Solid</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-尽可能使用增强for循环或者foreach"><span class="nav-number">8.</span> <span class="nav-text">7. 尽可能使用增强for循环或者foreach</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-日志打印规则"><span class="nav-number">9.</span> <span class="nav-text">13. 日志打印规则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-Hardcoding硬编码"><span class="nav-number">10.</span> <span class="nav-text">12. Hardcoding硬编码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-注释"><span class="nav-number">11.</span> <span class="nav-text">11. 注释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-避免创建不必要对象"><span class="nav-number">12.</span> <span class="nav-text">10. 避免创建不必要对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-返回空集合而不是null"><span class="nav-number">13.</span> <span class="nav-text">9. 返回空集合而不是null</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Collections"><span class="nav-number">13.1.</span> <span class="nav-text">Collections</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-精度选择"><span class="nav-number">14.</span> <span class="nav-text">8. 精度选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-项目结构"><span class="nav-number">15.</span> <span class="nav-text">1. 项目结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-遵循命名规范"><span class="nav-number">16.</span> <span class="nav-text">2. 遵循命名规范</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-不要吞异常"><span class="nav-number">17.</span> <span class="nav-text">3. 不要吞异常</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#16-使用枚举替代静态常量【建议】"><span class="nav-number">18.</span> <span class="nav-text">16. 使用枚举替代静态常量【建议】</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#17-按作用域划分成员变量"><span class="nav-number">19.</span> <span class="nav-text">17. 按作用域划分成员变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#18-在数字字段中使用下划线【建议】"><span class="nav-number">20.</span> <span class="nav-text">18. 在数字字段中使用下划线【建议】</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">21.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">22.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">210</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">23:01</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
