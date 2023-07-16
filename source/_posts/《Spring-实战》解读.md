@@ -4,7 +4,7 @@ subtitle: 《Spring 实战》解读
 author: lazytime
 url_suffix: note2
 tags:
-  - java
+  - 读书笔记
 categories:
   - 读书笔记
 keywords: 《Spring 实战》解读

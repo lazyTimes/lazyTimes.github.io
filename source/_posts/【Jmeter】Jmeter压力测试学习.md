@@ -1,23 +1,23 @@
 ---
-title: jmeter压力测试学习
-subtitle: 实战jmeter 压力测试
+title: Jmeter压力测试学习
+subtitle: 实战  压力Jmeter测试
 author: lazytime
 url_suffix: note20
 tags:
-  - java
+  - Java
 categories:
-  - java-java基础
+  - Java
 keywords: jmeter 压力测试
 description: 学习如何使用jmeter压力测试
 copyright: true
 date: 2020-08-29 22:44:19前言：
 ---
 
+
+
 ## 前言：
 
-jmeter 作为实操性的软件，更注重练习，理论作为参考掌握即可，不需要去具体的纠结
-
-<!-- more -->
+Jmeter 作为实操性的软件，更注重练习，理论作为参考掌握即可，不需要去具体的纠结
 
 
 
@@ -36,6 +36,10 @@ jmeter 作为实操性的软件，更注重练习，理论作为参考掌握即�
 ## 3、webbench
 
 ​	webbench首先fork出多个子进程，每个子进程都循环做web访问测试。子进程把访问的结果通过pipe告诉父进程，父进程做最终的统计结果。
+
+
+
+<!-- more -->
 
 # 2. Jmeter基本介绍和使用场景
 

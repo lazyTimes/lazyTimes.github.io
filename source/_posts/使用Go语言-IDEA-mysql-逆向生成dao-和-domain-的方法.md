@@ -4,9 +4,9 @@ subtitle: 学习数据结构的内容-韩顺平
 author: lazytime
 url_suffix: goidea
 tags:
-  - java
+  - 其他
 categories:
-  - java-java基础
+  - 其他
 keywords: 数据结构的一些遗留笔记
 description: 学习数据结构的内容-韩顺平
 copyright: true

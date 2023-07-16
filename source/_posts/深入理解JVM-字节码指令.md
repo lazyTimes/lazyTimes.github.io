@@ -4,10 +4,9 @@ subtitle: 字节码指令解读
 author: 阿东
 url_suffix: jvmzijiema
 tags:
-  - jvm
-  - java
+  - JVM
 categories:
-  - java-jvm
+  - JVM
 keywords: jvm,字节码
 description: 字节码指令如何记忆和处理
 copyright: true

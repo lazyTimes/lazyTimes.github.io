@@ -4,9 +4,9 @@ subtitle: 使用rpm进行mysql安装
 url_suffix: note
 author: lazytime
 tags:
-  - mysql
+  - Mysql
 categories:
-  - 数据库-其他
+  - Mysql
 keywords: mysql
 description: 使用rpm进行mysql安装
 copyright: true

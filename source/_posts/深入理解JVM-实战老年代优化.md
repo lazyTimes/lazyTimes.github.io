@@ -4,10 +4,9 @@ subtitle: 通过前面的文章可以了解到JVM优化中老年代的FULL GC对
 url_suffix: laoniandai
 author: lazytime
 tags:
-  - java
-  - jvm
+  - JVM
 categories:
-  - java-jvm
+  - JVM
 keywords: 老年代,优化
 description: VM优化中老年代的FULL GC
 copyright: true

@@ -4,7 +4,7 @@ subtitle: okr工作法的介绍
 url_suffix: outwork
 author: lazytime
 tags:
-  - 书籍
+  - 读书笔记
 categories:
   - 读书笔记
 keywords: 读书

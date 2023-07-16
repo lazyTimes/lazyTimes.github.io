@@ -4,10 +4,9 @@ subtitle: 实战实用jvm的工具
 author: lazytime
 url_suffix: shizhanjvm1
 tags:
-  - java
-  - jvm
+  - JVM
 categories:
-  - java-jvm
+  - JVM
 keywords: 请输入关键字（英文逗号分隔多个关键字）
 description: 请输入描述信息
 copyright: true

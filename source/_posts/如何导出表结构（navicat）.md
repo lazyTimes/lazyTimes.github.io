@@ -6,7 +6,7 @@ url_suffix: note18
 tags:
   - 数据库
 categories:
-  - 数据库-其他
+  - 数据库
 keywords: 如何导出表结构（navicat）
 description: 如何导出表结构（navicat）
 copyright: true

@@ -4,9 +4,9 @@ subtitle: Neo4j 学习
 author: lazytime
 url_suffix: note10
 tags:
-  - 其他
+  - 数据库
 categories:
-  - 数据库-图数据库
+  - 数据库
 keywords: Neo4j 学习
 description: Neo4j 学习
 copyright: true

@@ -1,17 +1,19 @@
 ---
-title: Java collection of high-frequency interview questions
+title: 【Java 】Java collection of high-frequency interview questions
 subtitle: 有关JAVA的面试题
 author: Xander
 url_suffix: interviewcollection
 tags:
-  - 面试
+  - English
 categories:
-  - 面试
+  - English
 keywords: 面试题,interview
 description: 有关JAVA的面试题
 copyright: true
 date: 2022-12-01 17:37:41
 ---
+# 【Java 】Java collection of high-frequency interview questions
+
 # Source
 
 [java - Java collection of high-frequency interview questions_个人文章 - SegmentFault 思否](https://segmentfault.com/a/1190000041101930/en)
@@ -59,7 +61,7 @@ date: 2022-12-01 17:37:41
         -   Blocking queue provided by JDK
         -   principle
 
-<!-- more -->
+
 
 # What are the common collections?
 
@@ -75,7 +77,7 @@ Image source[【集合系列】- 初探 java 集合框架图 | Just Do Java](htt
 
 ![](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20221201164721.png)
 
-
+<!-- more -->
 
 # The difference between List, Set and Map
 

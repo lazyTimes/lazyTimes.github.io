@@ -1,14 +1,14 @@
 ---
 title: 深入理解JVM - 分代的基本概念
-subtitle: 深入理解JVM讲述分代的概念哦
+subtitle: 深入理解JVM讲述分代的概念
 author: 阿东
 url_suffix: 202201282354
 tags:
-  - java
+  - JVM
 categories:
-  - java-jvm 
-keywords: 深入理解JVM 
-description: 深入理解JVM的学习和使用
+  - JVM
+keywords: ['深入理解JVM']
+description: '深入理解JVM的学习和使用'
 copyright: true
 date: 2021-08-17 22:54:19
 ---

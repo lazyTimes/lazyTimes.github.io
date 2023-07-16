@@ -6,9 +6,9 @@ title: JDK源码解读
 url_suffix: jdkymjd
 date: 2020-07-26 12:27:28
 tags:
-  - java
+  - Java
 categories:
-  - java-java基础
+  - Java
 copyright: true
 ---
 

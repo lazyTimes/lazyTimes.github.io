@@ -2,7 +2,7 @@
 title: PicGo和码云实现自建图床
 subtitle: picgo搭建图床
 author: lazytime
-url_suffix: picgo
+url_suffix: picgomayun
 tags:
   - 其他
 categories:

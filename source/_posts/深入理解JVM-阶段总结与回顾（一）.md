@@ -4,10 +4,9 @@ subtitle: 阶段回顾总结-jvm
 author: lazytime
 url_suffix: huigu1
 tags:
-  - java
-  - jvm
+  - JVM
 categories:
-  - java-jvm
+  - JVM
 keywords: 关于jvm的阶段总结处理
 description: jvm阶段总结和处理
 copyright: true

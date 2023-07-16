@@ -4,10 +4,10 @@ subtitle: G1收集器也是JDK9服务端默认的垃圾收集器
 url_suffix: g1garbage
 author: lazytime
 tags:
-  - java
+  - JVM
 categories:
-  - java-jvm
-keywords: g1,收集器
+  - JVM
+keywords: ['G1','收集器']
 description: G1收集器也是JDK9服务端默认的垃圾收集器
 copyright: true
 date: 2021-12-25 12:07:37

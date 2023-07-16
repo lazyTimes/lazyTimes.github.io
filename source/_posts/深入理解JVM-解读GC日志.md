@@ -4,10 +4,10 @@ subtitle: 解读GC日志的方法
 author: lazytime
 url_suffix: jiedugc
 tags:
-  - jvm
+  - JVM
 categories:
-  - java-jvm
-keywords: jvm,gc
+  - JVM
+keywords: ['jvm','gc']
 description: 如何解读gc日志
 copyright: true
 date: 2022-01-28 23:35:18

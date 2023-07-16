@@ -4,9 +4,9 @@ subtitle: LevelDb 源码解析
 author: 阿东
 url_suffix: leveldb-source
 tags:
-  - 数据库
+  - LevelDB
 categories:
-  - 数据库-LevelDB
+  - LevelDB
 keywords: 源码解析，levelDB
 description: 源码解析
 copyright: true

@@ -1,19 +1,19 @@
 ---
-title: ELK技术栈学习-Elasticsearch
+title: ELK技术栈学习-ElasticSearch
 subtitle: Sense 是一个 Kibana 程序，它的交互式控制台可以帮助你直接通过浏览器向 Elasticsearch提交请求
 author: 阿东
 url_suffix: elastic-study
 tags:
-  - elastic
+  - ElasticSearch
 categories:
-  - 中间件-elastic
-keywords: elk, elastic
+  - ElasticSearch
+keywords: ['ElasticSearch']
 description: Sense 是一个 Kibana 程序，它的交互式控制台可以帮助你直接通过浏览器向 Elasticsearch提交请求
 copyright: true
 date: 2022-02-19 23:24:45
 ---
 
-# ElasticSearch
+# ELK技术栈学习-ElasticSearch
 
 参考链接：https://fuxiaopang.gitbooks.io/learnelasticsearch/
 

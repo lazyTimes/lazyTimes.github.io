@@ -1,13 +1,13 @@
 ---
 title: 深入理解JVM - ZGC收集器
-subtitle: zgc垃圾收集器
+subtitle: ZGC收集器
 author: 阿东
 url_suffix: jvmzgc
 tags:
-  - jvm
+  - JVM
 categories:
-  - java-jvm
-keywords: zgc收集器
+  - JVM
+keywords: ['ZGC收集器']
 description: zgc收集器的实现细节
 copyright: true
 date: 2022-02-20 20:43:43

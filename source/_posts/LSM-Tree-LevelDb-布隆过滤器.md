@@ -4,9 +4,9 @@ subtitle: 布隆过滤器不是特别难，但是原始力量要推导的内容�
 author: 阿东
 url_suffix: leveled-bloom
 tags:
-  - 数据库
+  - LevelDB
 categories:
-  - 数据库-LevelDB
+  - LevelDB
 keywords: 布隆过滤器
 description: 有问题找布隆
 copyright: true

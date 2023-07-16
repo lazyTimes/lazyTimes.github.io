@@ -4,9 +4,9 @@ subtitle: 第一次完整的技术书籍的读书笔记
 url_suffix: mysqlbizhi
 author: lazytime
 tags:
-  - 书籍
+  - Mysql
 categories:
-  - 读书笔记
+  - Mysql
 keywords: mysql入门的学习方法
 description: 一次完整的MYSQL学习和读书笔记内容
 copyright: true

@@ -4,9 +4,9 @@ subtitle: Jmeter压力测试回顾最后部分
 url_suffix: jmeter-test4
 author: lazytime
 tags:
-  - java
+  - 测试
 categories:
-  - java-java基础
+  - 测试
 keywords: Jmeter压力测试回顾最后部分
 description: Jmeter压力测试回顾最后部分
 copyright: true
@@ -113,12 +113,12 @@ date: 2021-01-18 23:35:19
 ​		T(Toleration threshold)：可接受阀值
 ​		F(Frustration threshold)：失败阀值
 ​	
-	3）Requests Summary
-		OK:成功率
-		KO:失败率
-	4）Statistics 统计数据
-		lable:sampler采样器名称
-	
+​	3）Requests Summary
+​		OK:成功率
+​		KO:失败率
+​	4）Statistics 统计数据
+​		lable:sampler采样器名称
+​	
 		samples:请求总数，并发数*循环次数
 		KO:失败次数
 		Error%:失败率

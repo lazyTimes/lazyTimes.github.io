@@ -1,14 +1,13 @@
 ---
 title: 深入理解JVM - 分代与垃圾回收
-subtitle: 这一期讲述垃圾回收的算法。我们根据分代的理念讲述一下JVM是使用什么算法对于不同分代的对象进行垃圾回收的的
+subtitle: JVM是使用什么算法对于不同分代的对象进行垃圾回收的的
 url_suffix: lajihuishou
 author: lazytime
 tags:
-  - jvm
-  - java
+  - JVM
 categories:
-  - java-jvm
-keywords: 垃圾回收,算法
+  - JVM
+keywords: ['垃圾回收','算法']
 description: 这一期讲述垃圾回收的算法
 copyright: true
 date: 2021-10-16 20:29:01

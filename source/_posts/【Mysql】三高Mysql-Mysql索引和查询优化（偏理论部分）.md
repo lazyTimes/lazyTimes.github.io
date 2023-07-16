@@ -1,12 +1,12 @@
 ---
-title: 三高Mysql - Mysql索引和查询优化（偏理论部分）
+title: 【Mysql】三高Mysql-Mysql索引和查询优化（偏理论部分）
 subtitle: 本文拆分为上下两个部分
 author: 阿东
 url_suffix: suoyinlilun
 tags:
   - Mysql
 categories:
-  - 数据库-mysql
+  - Mysql
 keywords: 三高mysql
 description: Mysql索引和查询优化
 copyright: true

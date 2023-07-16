@@ -4,11 +4,11 @@ subtitle: G1收集器是一个不太好调优的收集器
 url_suffix: g1tiaoyou
 author: lazytime
 tags:
-  - java
+  - JVM
 categories:
-  - java-jvm
-keywords: g1,调优
-description: g1调优的大致思路
+  - JVM
+keywords: ['G1','调优']
+description: G1调优的大致思路
 copyright: true
 date: 2021-12-25 12:11:01
 ---

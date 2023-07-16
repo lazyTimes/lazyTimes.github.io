@@ -4,9 +4,9 @@ subtitle: 分区事如何溢出的,如何处理
 author: 阿东
 url_suffix: yichu
 tags:
-  - jvm
+  - JVM
 categories:
-  - java-jvm
+  - JVM
 keywords: Jim,溢出
 description: JVM运行时分区溢出学习JVM必须掌握的一块内容
 copyright: true

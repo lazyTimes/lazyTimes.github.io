@@ -2,11 +2,11 @@
 title: 记一次CORS踩坑记录
 subtitle: 记一次CORS踩坑记录
 author: lazytime
-url_suffix: note3
+url_suffix: corscaikeng
 tags:
-  - java
+  - Java
 categories:
-  - java-java基础
+  - Java
 keywords: 记一次CORS踩坑记录）
 description: 记一次CORS踩坑记录
 copyright: true

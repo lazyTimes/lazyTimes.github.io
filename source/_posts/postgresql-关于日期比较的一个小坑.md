@@ -1,19 +1,19 @@
 ---
-title: postgresql 关于日期比较的一个小坑
+title: Postgresql关于日期比较的一个小坑
 subtitle: postgresql关于日期比较的一个坑
 url_suffix: postgresql-date
 author: lazytime
 tags:
-  - postgresql
+  - Postgresql
 categories:
-  - 数据库-其他
+  - Postgresql
 keywords: postgresql踩坑
 description: 关于日期格式化的一个坑
 copyright: true
 date: 2021-05-20 22:41:32
 ---
 
-# postgresql 关于日期比较的一个小坑
+# Postgresql 关于日期比较的一个小坑
 
 关于日期方面的比较方面，由于多年JAVA写法的固定观念，导致卡了一点时间排查这个问题。
 

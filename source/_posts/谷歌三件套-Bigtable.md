@@ -4,8 +4,7 @@ subtitle: 三件套中可能是影响最大的一个组件
 author: 阿东
 url_suffix: google-bigtable
 tags:
-  - LevelDB
-  - 谷歌
+  - 谷歌三件套
 categories:
   - 谷歌三件套
 keywords: 谷歌三件套

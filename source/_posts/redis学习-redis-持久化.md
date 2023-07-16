@@ -4,10 +4,10 @@ subtitle: 关于redis持久化的一些学习了解，以及一些拓展知识�
 url_suffix: redis-chijiu
 author: lazytime
 tags:
-  - redis
+  - Redis
 categories:
-  - nosql-redis
-keywords: redis,持久化
+  - Redis
+keywords: ['Redis','持久化']
 description: 关于redis持久化的一些学习了解，以及一些拓展知识的了解
 copyright: true
 date: 2020-11-21 22:24:47

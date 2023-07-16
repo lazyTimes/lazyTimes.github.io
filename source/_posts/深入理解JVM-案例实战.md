@@ -1,13 +1,12 @@
 ---
 title: 深入理解JVM - 案例实战
-subtitle: jvm的实战
+subtitle: JVM案例实战
 author: 阿东
 url_suffix: jvmshizhan
 tags:
-  - jvm
-  - java
+  - JVM
 categories:
-  - java-jvm
+  - JVM
 keywords: 案例实战
 description: 这一篇文章还是讲实战，但是内容并不是很多，下一篇会出一个阶段总结对于之前的内容进行回顾
 copyright: true

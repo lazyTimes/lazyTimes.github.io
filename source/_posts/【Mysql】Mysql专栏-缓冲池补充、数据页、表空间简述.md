@@ -1,14 +1,14 @@
 ---
-title: Mysql专栏 - 缓冲池补充、数据页、表空间简述
-subtitle: 这个人很懒，不想写副标题
+title: 【Mysql】Mysql专栏 - 缓冲池补充、数据页、表空间简述
+subtitle: 缓冲池补充数据页表空间简述
 author: 阿东
 url_suffix: huanchongchi
 tags:
-  - java
+  - Mysql
 categories:
-  - java-jvm
-keywords: 请输入关键字（英文逗号分隔多个关键字）
-description: 请输入描述信息
+  - Mysql
+keywords: ['缓冲池补充','数据页','表空间简述']
+description: 缓冲池补充数据页表空间简述
 copyright: true
 date: 2022-02-19 23:06:07
 ---

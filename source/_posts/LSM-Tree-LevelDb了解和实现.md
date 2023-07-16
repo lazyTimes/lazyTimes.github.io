@@ -6,7 +6,7 @@ url_suffix: leveldblj
 tags:
   - LevelDB
 categories:
-  - 数据库-LevelDB
+  - LevelDB
 keywords: LevelDB,lsm-tree
 description: 关于LevelDB的拓展
 copyright: true

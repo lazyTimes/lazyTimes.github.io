@@ -4,9 +4,9 @@ subtitle: RestTemplate日常的使用和常见API
 author: lazytime
 url_suffix: note15
 tags:
-  - java
+  - SpringBoot
 categories:
-  - java-java基础
+  - SpringBoot
 keywords: RestTemplate日常使用
 description: RestTemplate
 copyright: true

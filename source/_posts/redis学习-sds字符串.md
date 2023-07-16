@@ -1,13 +1,13 @@
 ---
-title: redis学习 - sds字符串
+title: Redis学习 - sds字符串
 subtitle: 记录sds字符串的研究
 url_suffix: redis-sds
 author: lazytime
 tags:
-  - redis
+  - Redis
 categories:
-  - nosql-redis
-keywords: sds和c,sds字符串
+  - Redis
+keywords: ['sds和c','sds字符串']
 description: redis的sds字符串实现
 copyright: true
 date: 2020-12-16 23:47:42

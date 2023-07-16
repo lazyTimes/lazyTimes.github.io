@@ -1,17 +1,19 @@
 ---
-title: mysql zip包安装指南
+title: 【Mysql 】Mysql zip 包安装指南
 subtitle: zip包安装指南
 author: lazytime
 url_suffix: note12
 tags:
-  - 数据库
+  - Mysql
 categories:
-  - 数据库-mysql
-keywords: mysql
-description: mysqlzip包的安装方式
+  - Mysql
+keywords: Mysql
+description: ['Mysql','Zip']
 copyright: true
 date: 2020-08-02 10:28:05
 ---
+
+# 【Mysql 】Mysql zip 包安装指南
 
 # 1. 下载zip 包
 

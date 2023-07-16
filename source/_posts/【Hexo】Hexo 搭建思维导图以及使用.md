@@ -1,13 +1,13 @@
 ---
-title: Hexo 搭建思维导图以及使用
-subtitle: 这个人很懒，不想写副标题
+title: 【Hexo】Hexo 搭建思维导图以及使用
+subtitle: 搭建思维导图以及使用
 author: lazytime
 url_suffix: hexo-study1
 tags:
   - Hexo
 categories:
-  - 其他
-keywords: Hexo，搭建思维导图以及使用
+  - Hexo
+keywords: ['Hexo','思维导图']
 description: 搭建思维导图以及使用
 copyright: true
 date: 2020-07-26 12:31:59

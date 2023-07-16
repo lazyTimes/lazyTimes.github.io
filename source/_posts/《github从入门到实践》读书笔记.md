@@ -2,9 +2,9 @@
 title: 《github从入门到实践》读书笔记
 subtitle: 这本书适合给完全不知道github是啥到人快速入门使用，其实都是随便百度都可以百度到到东西
 author: 阿东
-url_suffix: gitHub_rumen
+url_suffix: gitHub-rumen
 tags:
-  - 书籍
+  - 读书笔记
 categories:
   - 读书笔记
 keywords: github

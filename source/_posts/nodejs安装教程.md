@@ -1,19 +1,19 @@
 ---
-title: nodejs安装教程
+title: Nodejs安装教程
 subtitle: NodeJS教程
 author: lazytime
 url_suffix: note12
 tags:
-  - 前端
+  - Nodejs
 categories:
-  - 前端-nodejs
+  - Nodejs
 keywords: nodejs安装教程（linux）
 description: nodejs笔记记录
 copyright: true
 date: 2020-07-26 22:37:22
 ---
 
-# nodejs安装教程（linux）
+# Nodejs安装教程（Linux）
 
 ## 1. 下载官方包
 
@@ -110,8 +110,6 @@ make[1]: Leaving directory `/home/imdb/gcc-4.8.2/gcc-build-4.8.2'
 ubuntu： apt-get install gcc g++ 
 CentOS：yum install gcc gcc-c++
 ```
-
-#### 
 
 ## 5. Npm 更换淘宝镜像
 

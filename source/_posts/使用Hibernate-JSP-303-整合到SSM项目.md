@@ -4,9 +4,9 @@ subtitle: 这个人很懒，不想写副标题
 author: lazytime
 url_suffix: note5
 tags:
-  - java
+  - Java
 categories:
-  - java-java基础
+  - Java
 keywords: 请输入关键字（英文逗号分隔多个关键字）
 description: 请输入描述信息
 copyright: true

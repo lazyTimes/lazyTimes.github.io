@@ -6,7 +6,7 @@ url_suffix: mysqlcharacter
 tags:
   - Mysql
 categories:
-  - 数据库-mysql
+  - Mysql
 keywords: 请输入关键字（英文逗号分隔多个关键字）
 description: 请输入描述信息
 copyright: true

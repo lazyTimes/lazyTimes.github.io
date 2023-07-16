@@ -4,11 +4,11 @@ subtitle: 临时笔记摘录
 author: lazytime
 url_suffix: jdkyouhua
 tags:
-  - java
+  - Java
 categories:
-  - java-java基础
-keywords: jdk
-description: jdk一些优化的手段处理
+  - Java
+keywords: ['jdk']
+description: Java JDK 一些优化的手段处理
 copyright: true
 date: 2022-01-28 23:38:26
 ---

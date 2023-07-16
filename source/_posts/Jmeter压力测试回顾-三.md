@@ -4,9 +4,9 @@ subtitle: 压力测试回顾第三部分
 url_suffix: jmeter-test3
 author: lazytime
 tags:
-  - java
+  - 测试
 categories:
-  - java-java基础
+  - 测试
 keywords: 压力测试回顾第三部分
 description: 压力测试回顾第三部分
 copyright: true

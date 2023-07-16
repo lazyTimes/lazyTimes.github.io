@@ -4,9 +4,9 @@ subtitle: 最好的JAVA编码习惯和编码建议
 author: lazytime
 url_suffix: codingparctice
 tags:
-  - java
+  - Java
 categories:
-  - java-java基础
+  - Java
 keywords: Best coding practices every java developer should follow
 description: Best coding practices every java developer should follow
 copyright: true

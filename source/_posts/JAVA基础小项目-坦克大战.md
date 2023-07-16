@@ -1,19 +1,19 @@
 ---
-title: JAVA基础小项目 - 坦克大战
+title: 【Java】JAVA基础小项目 - 坦克大战
 subtitle: 坦克大战的源代码学习使用
 url_suffix: javatank
 author: lazytime
 tags:
-  - 个人项目
+  - Java
 categories:
-  - java-java基础
+  - Java
 keywords: 坦克大战的源代码学习使用,java
 description: 坦克大战的源代码学习使用
 copyright: true
 date: 2021-01-30 15:41:47
 ---
 
-# JAVA基础小项目 - 坦克大战
+# 【Java】JAVA 基础小项目 - 坦克大战
 
 ## 前言：
 

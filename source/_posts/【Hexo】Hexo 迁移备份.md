@@ -1,13 +1,13 @@
 ---
-title: Hexo 迁移备份
+title: 【Hexo】Hexo 迁移备份
 subtitle: 创建Git分支将Hexo博客迁移到其它电脑
 author: lazytime
 url_suffix: hexoback
 tags:
   - Hexo
 categories:
-  - 其他
-keywords: Hexo备份
+  - Hexo
+keywords: ['Hexo备份']
 description: 创建Git分支将Hexo博客迁移到其它电脑
 copyright: true
 date: 2020-07-26 17:26:28

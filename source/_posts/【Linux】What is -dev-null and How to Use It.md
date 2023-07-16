@@ -1,5 +1,5 @@
 ---
-title: What is /dev/null and How to Use It
+title: 【Linux】What is -dev-null and How to Use It
 subtitle: 黑洞的概念了解
 author: lazytime
 url_suffix: devnull
@@ -12,7 +12,7 @@ description: Linux知识点
 copyright: true
 date: 2023-02-27 07:35:24
 ---
-# What is /dev/null and How to Use It
+# 【Linux】What is -dev-null and How to Use It
 
 [What is /dev/null and How to Use It (linuxhint.com)](https://linuxhint.com/what_is_dev_null/)
 

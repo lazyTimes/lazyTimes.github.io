@@ -2,11 +2,11 @@
 title: 如何访问jar包下面的资源文件
 subtitle: jar包的访问一定要知道内容访问机制
 author: lazytime
-url_suffix: jar
+url_suffix: jar-resource
 tags:
-  - java
+  - Java
 categories:
-  - java-java基础
+  - Java
 keywords: 关于内嵌一些通用页面和功能的做法
 description: 内嵌页面的做法
 copyright: true

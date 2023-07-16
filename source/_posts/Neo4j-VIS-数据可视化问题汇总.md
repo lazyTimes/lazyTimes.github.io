@@ -4,9 +4,9 @@ subtitle: Neo4j实际使用
 author: lazytime
 url_suffix: note1
 tags:
-  - 前端
+  - 数据库
 categories:
-  - 数据库-图数据库
+  - 数据库
 keywords: Neo4j,visjs
 description: Neo4j使用
 copyright: true

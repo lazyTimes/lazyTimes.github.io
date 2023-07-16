@@ -6,7 +6,7 @@ url_suffix: mysqlconnection
 tags:
   - Mysql
 categories:
-  - 数据库-mysql
+  - Mysql
 keywords: maxconnection
 description: 最大连接数
 copyright: true

@@ -6,8 +6,8 @@ url_suffix: csapp-start
 tags:
   - CSAPP
 categories:
-  - 计算机基础
-keywords: csapp
+  - CSAPP
+keywords: ['csapp']
 description: 看这本书个人依赖了视频和书本对照学习，学习的进度很慢也比较痛苦
 copyright: true
 date: 2022-02-19 23:29:39

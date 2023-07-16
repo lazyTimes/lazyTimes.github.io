@@ -4,9 +4,9 @@ subtitle: JVM启动参数注意
 url_suffix: usegclogfilerotation
 author: lazytime
 tags:
-  - jvm
+  - JVM
 categories:
-  - java-jvm
+  - JVM
 keywords: UseGCLogFileRotation,jvm
 description: JVM相关参数解释
 copyright: true

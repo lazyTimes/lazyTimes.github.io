@@ -1,15 +1,14 @@
 ---
 title: 深入理解JVM - 类文件结构
-subtitle: 这个人很懒，不想写副标题
+subtitle: 类文件结构
 author: 阿东
 url_suffix: leiwenjian
 tags:
-  - java
-  - jvm
+  - JVM
 categories:
-  - java-jvm
-keywords: 请输入关键字（英文逗号分隔多个关键字）
-description: 请输入描述信息
+  - JVM
+keywords: ['类文件结构']
+description: '类文件结构'
 copyright: true
 date: 2022-02-20 20:52:32
 ---

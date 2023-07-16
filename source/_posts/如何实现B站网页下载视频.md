@@ -1,5 +1,5 @@
 ---
-title: '''如何实现B站网页下载视频'''
+title: 如何实现B站网页下载视频
 subtitle: 切勿随意传播
 url_suffix: bdownload
 author: lazytime

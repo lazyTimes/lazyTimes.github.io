@@ -6,7 +6,7 @@ url_suffix: note31
 tags:
   - 前端
 categories:
-  - 前端-jquery
+  - 前端
 keywords: jquery
 description: 一篇帖子解决window.open中使用jquery操作父元素的问题
 copyright: true

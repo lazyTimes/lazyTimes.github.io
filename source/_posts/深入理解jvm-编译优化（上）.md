@@ -4,10 +4,10 @@ subtitle: 编译优化是jvm优化的重点内容
 author: 阿东
 url_suffix: bianyijvm
 tags:
-  - jvm
+  - JVM
 categories:
-  - java-jvm
-keywords: jvm优化,Jim,优化
+  - JVM
+keywords: ['jvm优化','jvm','优化']
 description: 编译优化
 copyright: true
 date: 2022-02-20 22:25:01

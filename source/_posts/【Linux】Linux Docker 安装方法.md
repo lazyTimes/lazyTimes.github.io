@@ -1,19 +1,21 @@
 ---
-title: linux Docker 安装方法
+title: 【Linux】Linux Docker 安装方法
 subtitle: 如何在Linux上安装docker
 author: lazytime
 url_suffix: note21
 tags:
-  - linux
+  - Linux
 categories:
-  - 服务端-linux
+  - Linux
 keywords: docker,linux
 description: linux安装docker
 copyright: true
 date: 2020-08-29 22:52:18
 ---
 
-# 1. linux Docker 安装方法
+# 【Linux】Linux Docker 安装方法
+
+# 1. Linux Docker 安装方法
 
 ## 前置条件
 

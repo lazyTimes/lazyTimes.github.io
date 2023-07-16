@@ -4,10 +4,10 @@ subtitle: redis复制以及集群部署的方式
 url_suffix: redis_copy
 author: lazytime
 tags:
-  - redis
+  - Redis
 categories:
-  - nosql-redis
-keywords: reids,redis复制
+  - Redis
+keywords: ['reids','redis复制']
 description: redis复制以及集群部署的方式
 copyright: true
 date: 2020-11-29 19:59:01

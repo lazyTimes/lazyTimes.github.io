@@ -4,9 +4,9 @@ subtitle: 学习neo4j的使用和基本语法
 url_suffix: neo4j1
 author: lazytime
 tags:
-  - 其他
+  - 数据库
 categories:
-  - 数据库-图数据库
+  - 数据库
 keywords: neo4j,图数据库
 description: 学习neo4j的使用和基本语法
 copyright: true

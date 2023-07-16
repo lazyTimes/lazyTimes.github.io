@@ -4,7 +4,7 @@ subtitle: LSM-Tree VS BTree并驾齐驱
 author: 阿东
 url_suffix: lsmtreebtree
 tags:
-  - 书籍
+  - 读书笔记
 categories:
   - 读书笔记
 keywords: LSM-Tree VS BTree

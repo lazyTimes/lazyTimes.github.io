@@ -1,19 +1,19 @@
 ---
-title: elasticsearch Linux安装教程
-subtitle: elasticsearch Linux安装教程
+title: 【ElasticSearch】ElasticSearch Linux 安装教程
+subtitle: ElasticSearch Linux 安装教程
 author: lazytime
 url_suffix: note24
 tags:
-  - elastic
+  - ElasticSearch
 categories:
-  - 中间件-elastic
-keywords: elasticsearch,Linux安装教程
-description: 安装教程
+  - ElasticSearch
+keywords: ['ElasticSearch','Linux安装教程']
+description: ElasticSearch Linux 安装教程
 copyright: true
 date: 2020-08-29 23:13:52
 ---
 
-# elasticsearch Linux安装教程
+# 【ElasticSearch】ElasticSearch Linux 安装教程
 
 <!-- more -->
 

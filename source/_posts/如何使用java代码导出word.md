@@ -1,13 +1,13 @@
 ---
 title: 如何使用java代码导出word
-subtitle: 参考了网上的资料，导出word内容
+subtitle: 参考了网上内容了解如何导出word内容
 url_suffix: word-export
 author: lazytime
 tags:
-  - java
+  - Java
 categories:
-  - java-java基础
-keywords: java导出,word导出
+  - Java
+keywords: ['java导出','word导出']
 description: 如何使用java代码导出word
 copyright: true
 date: 2020-11-11 23:03:01

@@ -4,10 +4,10 @@ subtitle: 对象分配内存的底层细节
 author: 阿东
 url_suffix: duixiangfenpei
 tags:
-  - jvm
+  - JVM
 categories:
-  - java-jvm
-keywords: jvm,java
+  - JVM
+keywords: ['jvm','java']
 description: jvm是如何分配内存的
 copyright: true
 date: 2022-02-20 20:28:31

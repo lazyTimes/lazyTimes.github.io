@@ -1,13 +1,13 @@
 ---
-title: JAVA8实战 - 日期API
-subtitle: 日期看似简单,其实很难
+title: 【Java】JAVA8 实战 - 日期API
+subtitle: 日期看似简单其实很难
 author: 阿东
 url_suffix: riqiapi
 tags:
-  - java
+  - Java
 categories:
-  - java
-keywords: 日期,api
+  - Java
+keywords: ['日期','api']
 description: 日期api使用
 copyright: true
 date: 2022-02-20 20:34:21

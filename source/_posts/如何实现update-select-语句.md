@@ -1,13 +1,13 @@
 ---
-title: 如何实现update select 语句
-subtitle: 一个数据库的使用经验技巧
+title: 如何实现 update select 语句
+subtitle: 数据库的使用经验技巧
 url_suffix: updateselect
 author: lazytime
 tags:
   - 数据库
 categories:
-  - 数据库-其他
-keywords: updateselect
+  - 数据库
+keywords: ['update','select']
 description: 一个数据库的使用经验技巧
 copyright: true
 date: 2021-03-28 15:01:30

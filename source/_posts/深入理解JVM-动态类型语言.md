@@ -4,11 +4,10 @@ subtitle: 动态类型语言使用
 author: 阿东
 url_suffix: dongtaileixing
 tags:
-  - jvm
-  - java
+  - JVM
 categories:
-  - java-jvm
-keywords: dynamic,动态语言
+  - JVM
+keywords: ['dynamic','动态语言']
 description: 动态类型语言使用
 copyright: true
 date: 2022-02-20 22:23:18

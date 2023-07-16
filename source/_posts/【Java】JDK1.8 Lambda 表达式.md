@@ -1,19 +1,19 @@
 ---
-title: JDK 1.8 LAMBADA表达式
-subtitle: jdk1.8中对于lambada表达式
+title: 【Java】JDK1.8 Lambda 表达式
+subtitle: JDK1.8 Lambda 表达式
 author: lazytime
 url_suffix: note27
 tags:
-  - java
+  - Java
 categories:
-  - java-java基础
+  - Java
 keywords: lambada
 description: 使用lambada表达式处理
 copyright: true
 date: 2020-09-25 23:57:19
 ---
 
-# Lambada 表达式资料参考
+#  【Java】JDK1.8 Lambda 表达式
 
 ## 简介：
 
@@ -21,7 +21,7 @@ date: 2020-09-25 23:57:19
 
 这里借鉴了几篇博客，对比了之后对于博客到推荐进行了排序，同时也整理了这几篇博客提到的个人觉得比较重要到部分进行了验证
 
-<!-- more -->
+
 
 ## 第一篇
 
@@ -68,6 +68,8 @@ Oracale官方案例
 https://blog.csdn.net/renfufei/article/details/24600507
 
 比较久远到一个文章，更多是批判的角度看待lambada
+
+<!-- more -->
 
 ## 概览
 

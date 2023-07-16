@@ -4,9 +4,9 @@ subtitle: howTomcatWork的书籍笔记内容
 author: 阿东
 url_suffix: howtomcat
 tags:
-  - java
+  - Java
 categories:
-  - java
+  - Java
 keywords: howtomcatwork
 description: 笔记总结
 copyright: true

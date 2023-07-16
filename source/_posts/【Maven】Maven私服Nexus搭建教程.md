@@ -1,13 +1,13 @@
 ---
-title: Maven私服Nexus搭建教程
-subtitle: 这个人很懒，不想写副标题
+title: 【Maven】Maven私服Nexus搭建教程
+subtitle: 了解Nexus搭建基本流程
 author: lazytime
 url_suffix: mavennexus
 tags:
-  - java
+  - Maven
 categories:
-  - java-java基础
-keywords: Maven,java
+  - Maven
+keywords: ['Maven','Java']
 description: 使用maven搭建私服
 copyright: true
 date: 2020-07-26 11:16:10

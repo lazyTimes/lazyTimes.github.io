@@ -2,11 +2,11 @@
 title: 【Linux】拿到一台虚拟机Linux该干什么？
 subtitle: 简单记录一波
 author: 阿东
-url_suffix: linuxshould
+url_suffix: nadaoxuniji
 tags:
-  - 服务端-linux
+  - Linux
 categories:
-  - 服务端-linux
+  - Linux
 keywords: linux,xuniij
 description: 拿到一台虚拟机Linux该干什么？
 copyright: true

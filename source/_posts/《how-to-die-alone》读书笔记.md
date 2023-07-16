@@ -4,7 +4,7 @@ subtitle: 为什么而活，为什么而死
 author: lazytime
 url_suffix: howtodie
 tags:
-  - 书籍
+  - 读书笔记
 categories:
   - 读书笔记
 keywords: 英文书

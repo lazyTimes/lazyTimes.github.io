@@ -1,19 +1,19 @@
 ---
-title: JAVA8实战 - Optional工具类
-subtitle: java一个比较受争议的改进
+title: 【Java】Java 8 实战 - Optional 工具类
+subtitle: Java比较受争议的改进
 author: 阿东
 url_suffix: optional
 tags:
-  - java
+  - Java
 categories:
-  - java
-keywords: optional,java
+  - Java
+keywords: ['optional','java']
 description: JAVA8可以说是JAVA划时代的一个版本
 copyright: true
 date: 2022-02-20 20:26:21
 ---
 
-# JAVA8实战 - Optional工具类
+# 【Java】Java 8 实战 - Optional 工具类
 
 ![](https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210807203312.png)
 

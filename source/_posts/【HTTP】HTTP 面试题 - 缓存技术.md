@@ -1,12 +1,12 @@
 ---
-title: HTTP 缓存技术
+title: 【HTTP】HTTP 面试题 - 缓存技术
 subtitle: 了解关于缓存技术的细节
 author: lazytime
 url_suffix: httphuancun
 tags:
-  - 网络/网络基础
+  - HTTP
 categories:
-  - 网络/网络基础
+  - HTTP
 keywords: 缓存技术
 description: HTTP缓存技术
 copyright: true

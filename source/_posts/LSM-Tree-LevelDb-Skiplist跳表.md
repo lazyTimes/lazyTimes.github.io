@@ -4,9 +4,9 @@ subtitle: 更多内容建议看看原始论文
 author: 阿东
 url_suffix: level-skiplist
 tags:
-  - 数据库
+  - LevelDB
 categories:
-  - 数据库-LevelDB
+  - LevelDB
 keywords: Skiplist跳表
 description: Skiplist跳表
 copyright: true

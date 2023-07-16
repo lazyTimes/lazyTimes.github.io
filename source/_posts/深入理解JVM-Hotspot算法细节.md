@@ -4,10 +4,10 @@ subtitle: hotspot算法细节解释
 author: 阿东
 url_suffix: hotpots
 tags:
-  - jvm
+  - JVM
 categories:
-  - java-jvm
-keywords: hotspot
+  - JVM
+keywords: ['hotspot']
 description: jvm收集器算法细节处理
 copyright: true
 date: 2022-02-20 22:45:30

@@ -4,11 +4,11 @@ subtitle: 被官方搞垮的收集器
 author: 阿东
 url_suffix: shenadoahshoujiqi
 tags:
-  - java
+  - JVM
 categories:
-  - java
-keywords: shenadoah,难读
-description: 收集器
+  - JVM
+keywords: ['shenadoah','难读']
+description: 被官方搞垮的收集器
 copyright: true
 date: 2022-02-20 20:40:57
 ---

@@ -1,13 +1,13 @@
 ---
 title: 深入理解JVM - CMS收集器
-subtitle: 老年代重要的垃圾收集器：cms收集器
+subtitle: 老年代重要的垃圾收集器：CMS收集器
 author: lazytime
 url_suffix: mycms
 tags:
-  - java
+  - JVM
 categories:
-  - java-jvm
-keywords: cms,垃圾收集器
+  - JVM
+keywords: ['CMS','垃圾收集器']
 description: 垃圾收集器的使用
 copyright: true
 date: 2022-01-28 23:24:18

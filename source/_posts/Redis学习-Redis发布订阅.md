@@ -1,13 +1,13 @@
 ---
 title: Redis学习 - Redis发布订阅
-subtitle: redis发布订阅的一些应用以及一些命令的学习
+subtitle: Redis发布订阅的应用以及命令的学习
 url_suffix: note
 author: lazytime
 tags:
-  - redis
+  - Redis
 categories:
-  - nosql-redis
-keywords: redis
+  - Redis
+keywords: Redis
 description: redis发布订阅的一些应用以及一些命令的学习
 copyright: true
 date: 2020-11-21 22:52:22

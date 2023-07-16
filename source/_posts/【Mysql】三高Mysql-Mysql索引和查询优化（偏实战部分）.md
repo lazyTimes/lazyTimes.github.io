@@ -1,20 +1,19 @@
 ---
-title: 三高Mysql - Mysql索引和查询优化（偏实战部分）
+title: 【Mysql】三高Mysql - Mysql索引和查询优化（偏实战部分）
 subtitle: 本文拆分为上下两个部分
 author: 阿东
 url_suffix: suoyinshizhan
 tags:
   - Mysql
-  - 数据库
 categories:
-  - 数据库-mysql
+  - Mysql
 keywords: mysql优化部分
 description: Mysql索引和查询优化
 copyright: true
 date: 2022-04-06 14:08:47
 ---
 
-# 三高Mysql - Mysql索引和查询优化（偏实战部分）
+# 【Mysql】三高Mysql - Mysql索引和查询优化（偏实战部分）
 
 # 引言
 

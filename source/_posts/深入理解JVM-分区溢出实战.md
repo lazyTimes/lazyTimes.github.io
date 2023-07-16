@@ -4,11 +4,10 @@ subtitle: 关于jvm区域溢出的一项实战
 author: 阿东
 url_suffix: jvmyichu
 tags:
-  - jvm
-  - java
+  - JVM
 categories:
-  - java-jvm
-keywords: 分区,排查
+  - JVM
+keywords: ['分区','排查']
 description: 这篇文章会接续上一篇关于分区溢出的案例实战内容再次补充几个OOM的案例
 copyright: true
 date: 2022-02-20 20:24:04

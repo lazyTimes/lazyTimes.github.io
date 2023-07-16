@@ -1,19 +1,19 @@
 ---
-title: maven多模块和依赖冲突问题汇总记录
-subtitle: maven多模块如何在idea中创建，以及maven常见的依赖问题介绍和处理方法
+title: 【Maven】Maven 多模块和依赖冲突问题汇总记录
+subtitle: 多模块和依赖冲突问题汇总记录
 url_suffix: mavenmodules
 author: lazytime
 tags:
-  - java
+  - Maven
 categories:
-  - java-java基础
+  - Maven
 keywords: maven,多模块
 description: maven多模块如何在idea中创建，以及maven常见的依赖问题介绍和处理方法
 copyright: true
 date: 2020-11-22 19:46:50
 ---
 
-# maven多模块和依赖冲突问题汇总记录
+# 【Maven】Maven 多模块和依赖冲突问题汇总记录
 
 # 目录
 
@@ -26,7 +26,7 @@ date: 2020-11-22 19:46:50
 
 今天学习和总结了一下maven的相关知识点，发现一些比较基础的东西居然也会忘记，这里对于一些日常工作中可能会遇到的问题进行了一下汇总。
 
-<!-- more -->
+
 
 # idea怎么创建maven多module的项目
 
@@ -39,7 +39,7 @@ date: 2020-11-22 19:46:50
 1. 按照单模块拆分为多个子模块，比如将MVC三层架构拆分为 xxx-service，xxx-dao，xxx-model，不过这种方式个人感觉比较二，目前以业务模块拆分比较多，迁移到微服务比如用springcloude或者dubbo 的时候非常好用。
 2. 按照业务模块拆分，这种模式使用的比较多，也比较多见。
 
-
+<!-- more -->
 
 ## 创建一个多module项目(idea2019.3.3版本)
 

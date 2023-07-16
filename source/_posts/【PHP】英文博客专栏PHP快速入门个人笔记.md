@@ -1,7 +1,7 @@
 ---
 title: 【PHP】英文博客专栏PHP快速入门个人笔记
 subtitle: 学英文顺带了解PHP技术
-url_suffix: /php_study1
+url_suffix: php_study1
 author: lazytime
 tags:
   - PHP
