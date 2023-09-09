@@ -1,27 +1,38 @@
 ---
 title: 【Java】BIO源码分析和改造（GraalVM JDK 11.0.19）
-subtitle: Java 的传统BIO Socket编程源码分析
-url_suffix: socketjavabio
+subtitle: 网络IO编程的入门部分
 author: lazytime
+url_suffix: biosocketstart
 tags:
   - Java
 categories:
   - Java
-keywords: ['socket','accept']
-description: 网络IO编程的入门部分Java 的传统BIO Socket编程源码分析
+keywords: 本文介绍网络IO编程的入门部分
+description: 网络IO编程
 copyright: true
-date: 2023-07-16 14:28:56
+date: 2023-07-27 11:43:47
 ---
-
 # 引言
 
-本文介绍网络IO编程的入门部分，Java 的传统BIO Socket编程源码分析，之后了解如何将BIO阻塞`accept()` 和 `read()` 改造为非阻塞行为，最后将会介绍Linux文档，其中描述了如何处理`Socket`的`accept`，对比Java的Socket实现代码，基本可以发现和Linux行为基本一致。
+本文介绍网络IO编程的入门部分，Java 的传统BIO Socket编程源码分析，了解如何将BIO阻塞行为`accept()` 和 `read()` 改造为非阻塞行为，并且将结合Linux文档介绍其中的机制，文档中描述了如何处理`Socket`的`accept`，对比Java的Socket实现代码，基本可以发现和Linux行为基本一致。
 
 废话不多说，我们直接开始。
 
+
+# draw.io 文件
+
+本文涉及的个人源码分析绘图均由 `draw.io` 绘制，源文件如下：
+
+链接：[https://pan.baidu.com/s/1FHAYt4AxWh0Dd4qi2JKZLQ?pwd=qsmg ](https://pan.baidu.com/s/1FHAYt4AxWh0Dd4qi2JKZLQ?pwd=qsmg )
+提取码：qsmg 
+
+![image.png](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717073204.png)
+
+<!-- more -->
+
 # 什么是Socket？
 
-Socket起源于Unix的一种通信机制，中文通常叫他“套接字”，通常代表了网络IP和端口，可以看作是通信过程的一个“句柄”。
+Socket起源于Unix的一种通信机制，中文通常叫他“套接字”，代表了网络IP和端口，可以看作是通信过程的一个“句柄”。
 
 Socket 也可以理解为网络编程当中的API，编程语言提供了对应的API实现方式，电脑上的网络应用程序也是通过“套接字”完成网络请求接受与应答。
 
@@ -30,8 +41,6 @@ Socket 也可以理解为网络编程当中的API，编程语言提供了对应�
 ![Socket是应用层与TCP/IP协议族通信的中间软件抽象层](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230705110036.png)
 
 > 图片来源：[socket图解 · Go语言中文文档 (topgoer.com)](https://www.topgoer.com/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/socket%E7%BC%96%E7%A8%8B/socket%E5%9B%BE%E8%A7%A3.html)
-
-<!-- more -->
 
 # 阻塞式IO模型
 
@@ -198,7 +207,9 @@ BIO 阻塞模型中，需要关注的代码主要是这几个：
 
 ![ServerSocket 中 bind 解读](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706174016.png)
 
-由于是`ServerSocket`服务端先启动，这里先对`bind`操作进行解读，`bind`操作是在本机的某个端口和IP地址上进行listen监听，在bind成功之后，服务端通常进入`accept`阻塞等待，此时客户端Socket请求此地址将会进行Socket连接绑定。
+由于是`ServerSocket`服务端先启动，这里先对`bind`操作进行解读，`bind`操作是在本机的某个端口和IP地址上进行listen监听。
+
+在bind成功之后，服务端进入`accept`阻塞等待，此时客户端Socket请求此地址将会进行Socket连接绑定。
 
 我们从`ServerSocket`的初始化代码作为入口进行介绍。
 
@@ -212,7 +223,7 @@ public ServerSocket(int port) throws IOException {
 public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOException {
     setImpl();
     // 检查端口是否越界
-    // 0xFFFF = 15 * 16^3 + 15 * 16^2 + 15 * 16^1 + 15 * 16^0 = **65535**
+    // 0xFFFF = 15 * 16^3 + 15 * 16^2 + 15 * 16^1 + 15 * 16^0 = **65535**
     if (port < 0 || port > 0xFFFF)
         throw new IllegalArgumentException(
                     "Port value out of range: " + port);
@@ -234,7 +245,7 @@ public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOExcept
 
 `setImpl();`这个方法我们先暂时放到一边，我们简单扫一下其他代码。
 
-在上面的模型案例代码当中，我们传入的`ip`和`port`都处在合法的范围内，Socket规定的端口范围是**0 - 65525**，超过这个范围不允许进行`bind`。
+在上面的案例代码当中，我们传入的`ip`和`port`都处在合法的范围内，Socket规定的端口范围是**0 - 65525**，超过这个范围不允许进行`bind`。
 
 上面代码的核心逻辑是`bind(xxx)`这一段操作。
 
@@ -244,13 +255,13 @@ bind(new InetSocketAddress(bindAddr, port), backlog);
 
 ## new InetSocketAddress(bindAddr, port)
 
-在`bind`方法调用之前，`ServerSocket`会先构建 **InetSocketAddress** 对象。**InetSocketAddress**对象构建实际为**InetSocketAddressHolder**包装类。包装类的作用是可以保护`IP`和`Port`等敏感字段的外部篡改。
+在`bind`方法调用之前，`ServerSocket`会先构建 **InetSocketAddress** 对象。**InetSocketAddress**对象构建实际为**InetSocketAddressHolder**包装类。包装类的作用是可以防止`IP`和`Port`等敏感字段的外部篡改。
 
-此外凑够代码可以看到，构建对象会对于`IP`和`Port`进行二次检查，如果IP地址不存在，会给一个默认值（通常是` 0.0.0.0` ）。
+此外从代码可以看到，构建对象会对于`IP`和`Port`进行二次检查，如果IP地址不存在，会给一个默认值（通常是` 0.0.0.0` ）。
 
 > Creates a socket address from an IP address and a port number.
-> A valid port value is between 0 and 65535. A port number of zero will let the system pick up an ephemeral port in a bind operation.|
-> 根据IP地址和端口号创建Socket地址。有效的端口值介于0和65535之间。端口号为0时，系统将在绑定操作中使用短暂端口。
+	A valid port value is between 0 and 65535. A port number of zero will let the system pick up an ephemeral port in a bind operation.|
+	根据IP地址和端口号创建Socket地址。有效的端口值介于0和65535之间。端口号为0时，系统将在绑定操作中使用短暂端口。
 
 **InetSocketAddressHolder** 对象构建完成之后，接着就进入到核心的`bind(SocketAddress endpoint, int backlog)`内部代码。
 
@@ -303,9 +314,9 @@ public void bind(SocketAddress endpoint, int backlog) throws IOException {
     }
 ```
 
-bind 方法是将 **ServerSocket** 绑定到一个特定的地址（IP地址和端口号）。如果地址为空，那么系统会选取一个临时端口和有效的本地地址来绑定 ServerSocket。
+bind 方法是将 **ServerSocket** 绑定到一个特定的地址（IP地址和端口号）， 如果地址为空，那么系统会选取一个临时端口和有效的本地地址来绑定 ServerSocket。
 
-跳过不需要关注的校验代码，在·`try` 中最后有三行比较重要的代码。
+跳过不需要关注的校验代码，在·`try` 中有三行比较重要的代码。
 
 ```java
 getImpl().bind(epoint.getAddress(), epoint.getPort());  
@@ -313,9 +324,9 @@ getImpl().listen(backlog);
 bound = true;
 ```
 
-这里的代码按照初步理解是获取一个impl对象，然后绑定地址和端口，调用listen方法会传递backlog。
+这里的代码初步理解是获取一个`impl`对象，绑定地址和端口，调用`listen`方法传递`backlog`。
 
-backlog这个值的作用可以看下面的地址，这里整理文章内容大致理解：
+`backlog`这个值的作用可以看下面的地址，这里整理文章内容大致理解：
 
 - [Linux Network Programming, Part 1 (linuxjournal.com)](https://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/023/2333/2333s2.html)
 
@@ -333,11 +344,11 @@ listen(sock, backlog);
 
 针对这两个状态，不同的操作系统有不同实现，**在 FressBSD 中 backlog 就是描述状态为 SYN_REVD 和 ESTABLISHED 的所有连接最大数量**。
 
-在 Linux 系统当中，使用两个队列 **syn queue**和 **accept queue**，这两个队列分别存储状态为SYN_REVD和状态为ESTABLISHED的连接，**Llinux2.2及以后，backlog表示accept queue的大小**，而syn queue大小由 `/proc/sys/net/ipv4/tcp_max_syn_backlog`配置。
+在 Linux 系统当中，使用两个队列 **syn queue**和 **accept queue**，这两个队列分别存储状态为**SYN_REVD**和状态为**ESTABLISHED**的连接，**Llinux2.2及以后，backlog表示accept queue的大小**，而syn queue大小由 `/proc/sys/net/ipv4/tcp_max_syn_backlog`配置。
 
-所以可以看到backlog的值直接影响了建立连接的效率。上面代码中`backlog=50`，意味着 accept queue 的容量为50。
+可以看到backlog的值直接影响了建立连接的效率。上面代码中`backlog=50`，可以认为 accept queue 的容量为 50。
 
-`listen`方法执行完成之后，此时会设置`bound = true`，代码执行到此处说明`Socket`绑定成功了。
+`listen`方法执行完成之后，此时将设置`bound = true`，代码执行到此处说明`Socket`绑定成功了。
 
 现在我们回过头看`getImpl().bind(epoint.getAddress(), epoint.getPort()); `这块代码工作。
 
@@ -362,7 +373,7 @@ private void setImpl() {
     }
 ```
 
-注意，在第一次初始化的时候，`SocketImplFactory`是没有被初始化过的，所以走的是else分支，为内部的成员变量 `SocketImpl`进行初始化。
+注意，在第一次初始化的时候，`SocketImplFactory`是没有被初始化过的，所以走的是`else`分支，具体工作是为内部的成员变量 `SocketImpl`进行初始化。
 
 ```java
   
@@ -371,17 +382,22 @@ private void setImpl() {
 private SocketImpl impl;
 ```
 
-`SocksSocketImpl` 被初始化，会将 `SocketImpl` 的 `ServerSocket` 设置为当前正在实例化的 ServerSocket（也就是this 引用）。
+`SocksSocketImpl` 初始化之后，将会设置它的成员变量`ServerSocket`为`this`引用
 
-这里的处理工作很简单，分别是初始化 **SocksSocketImpl** 和 把当前实例引用设置给这个初始化的 **SocksSocketImpl** 的成员变量，这时候自身的引用逸出了。
+```java
+if (impl != null)  
+    impl.setServerSocket(this);
+```
 
-下面这里我们再看看 `getImpl()` 干了啥。
+这里的处理工作很简单，分别是初始化 **SocksSocketImpl** ，把当前对象实例的this引用传递给这个初始化的 **SocksSocketImpl** 的成员变量（这时候自身的引用逸出了）。
+
+了解`setImpl`之后，下面这里我们再看看 `getImpl()` 干了啥。
 
 ## getImpl()
 
 **java.net.ServerSocket#getImpl**
 
-代码内容也比较简单，首先检查`SocketImpl`是否创建，第一次连接这里为false，会进入`createImpl()`方法。
+代码内容也比较简单，首先检查`SocketImpl`是否创建，第一次连接这里为`false`，此时会进入`createImpl()`方法。
 
 ```java
 /**
@@ -395,7 +411,7 @@ SocketImpl getImpl() throws SocketException {
 }
 ```
 
-在`createImpl()`当中，通常**SocketImpl**已经在构造器初始化完成，这里直接更新`created`状态即可。
+在`createImpl()`当中，通常 **SocketImpl** 已经在构造器初始化完成，这里直接更新 `created` 状态即可。
 
 ```java
 void createImpl() throws SocketException {  
@@ -410,24 +426,24 @@ void createImpl() throws SocketException {
 }
 ```
 
-`setImpl()`和`getImpl()`方法配合，可以确定 **SocketImpl** 在使用的时候一定是被初始化完成的。
+`setImpl()` 和 `getImpl()`方法配合，可以确定 **SocketImpl** 在使用的时候一定是被初始化完成的。
 
-下面我们再来看看他是如何进行下面两项关键操作的：
+### SocketImpl.bind(epoint.getAddress(), epoint.getPort())
+
+下面再来看看它是如何进行下面两项关键操作的：
 
 ```java
 getImpl().bind(epoint.getAddress(), epoint.getPort());  
 getImpl().listen(backlog);
 ```
 
-### SocketImpl.bind(epoint.getAddress(), epoint.getPort())
-
-在之前的初始化代码中给InetAddress对象初始化设置了IP和端口等参数，现在委托 **SocketImpl**
+在之前的初始化代码中，`InetAddress`对象初始化设置了`IP`和`Port`等参数，现在委托 **SocketImpl**执行具体`bind`操作。
 
 **java.net.AbstractPlainSocketImpl#bind**
 
-`bind`方法是同步的，一开始需要先获取到`fdLock`锁，然后判断是否满足Socket绑定条件，如果满足则利用钩子(NetHooks) 对象进行前置TCP绑定。
+`bind`方法是同步的，一开始需要先获取到`fdLock`锁，然后判断是否满足`Socket`绑定条件，如果满足则利用钩子(`NetHooks`) 对象进行前置TCP绑定。
 
-注意，此处个人进入代码之后，发现此方法发现在**JDK11**之中是一个**空方法**，而**JDK8**当中会有一段`provider.implBeforeTcpBind(fdObj, address, port);`的调用。
+> 注意，个人发现` NetHooks.beforeTcpBind(fd, address, lport);  `方法发现在**JDK11**之中是一个**空方法**，而**JDK8**当中会有一段`provider.implBeforeTcpBind(fdObj, address, port);`的调用。
 
 ```java
 protected synchronized void bind(InetAddress address, int lport)  
@@ -453,11 +469,9 @@ protected synchronized void bind(InetAddress address, int lport)
 }
 ```
 
-在JDK11版本中，**fdLock**加锁之后的一些操作实际上一个“无用”操作。
+加锁部分和核心逻辑无太多干系，我们跳过细枝末节，看`socketBind(address, lport);  `这部分代码。
 
-不过这些内容和核心逻辑无太多干系，我们跳过细枝末节，看`socketBind(address, lport);  `这部分代码。
-
-> fdLock 锁作用介绍，注释说明它用于在增加/减少**fdUseCount**时锁定。
+> fdLock 锁作用：注释说明它用于在增加/减少**fdUseCount**时锁定。
 
 ```java
 /* lock when increment/decrementing fdUseCount */  
@@ -494,7 +508,7 @@ void socketBind(InetAddress address, int port) throws IOException {
 
 `socketBind(address, lport); `方法调用，最后绑定操作为JVM的底层C++操作`bind0`。
 
-`bind0`属于比较底层的代码，这里我们就不继续考究了，如果读者好奇可以阅读 HotSpot 的开源实现代码。
+`bind0`属于比较底层的代码，这里我们就不继续探究了，如果读者好奇，可以阅读 `HotSpot` 的开源实现代码。
 
 ```java
 static native void bind0(int fd, InetAddress localAddress, int localport,  
@@ -502,25 +516,25 @@ static native void bind0(int fd, InetAddress localAddress, int localport,
     throws IOException;
 ```
 
-从整体上看，上面这一整个`bind`操作都是同步完成的，其中主要是做一系列检查和异常抛出等操作，最后调用底层的JVM方法完成Socket绑定。
+从整体上看，上面这一整个`bind`操作都是同步完成的，主要逻辑是先做一系列检查，之后调用底层的JVM方法完成`Socket`绑定。
 
 ## 画图小结
 
-最后笔者通过个人理解画了一幅图，主要描述了 `bind` 操作大致的逻辑，可以看到很多地方都和JVM的底层C++代码打交道，调试起来也非常麻烦。
+笔者通过个人理解画了一幅图，主要描述了 `bind` 操作大致的逻辑，可以看到很多地方都和`JVM`的底层C++代码打交道。
 
-> <s>毕竟是 Java1.0 出来的玩意，</s>看源码我们要抓大放小，不过后续的JDK提案中，有人提出要收拾这个老古董？
+> 有必要说明一下，BIO毕竟是 Java1.0 出来的玩意，看源码我们要抓大放小，后续的JDK提案中，有人提出要收拾这个老古董=-=。
 
 ![ServerSocket的bind](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707151128.png)
 
-> 根据上面画图图可以看到，整个IO文件描述符也是要走native方法从操作系统底层才可以拿到。
+>  从图中也可以看出，要完成Socket连接构建，必须要获得文件描述符。
 
 # ServerSocket中accept解读
 
-`ServerSocket`的`accpet`是如何阻塞获取连接的？`accept`方法的作用是询问操作系统是否有收到新的`Socket`套接字信息，注意这个操作过程在操作系统底层调用实现上都是 **同步**的。
+`ServerSocket`的`accpet`是如何阻塞获取连接的？
 
-那么如果操作系统从Socket中对应的绑定端口没有连接进来怎么办？根据Linux的`accept`文档描述以及Java注释都有介绍他会在底层操作系统**阻塞** 。
+`accept`方法的作用是询问操作系统是否有收到新的`Socket`套接字信息，操作过程在操作系统底层调用实现上都是 **同步**的。
 
-我们解答为什么 `accept` 方法会阻塞这个问题很简单，因为底层操作系统使用的是**同步IO**，Linux底层就是这么干的，Java Doc上的注释也是这样明明白白写的。
+操作系统从`Socket`中没有`Socket`连接进来怎么办？根据Linux的`accept`文档描述，以及Java注释的JavaDoc文档描述，都明确说明此时会在底层操作系统**阻塞** 。
 
 ## java.net.ServerSocket#accept
 
@@ -545,7 +559,7 @@ public Socket accept() throws IOException {
 }
 ```
 
-Java Doc 说明了`accept()`会进行阻塞，这里疑问比较大的点可能是`Socket s = new Socket((SocketImpl) null); `，这行代码为什么又要新建一个Socket？**带着疑问**我们继续看`implAccept(s);  `方法。
+Java Doc 说明了`accept()`会进行阻塞，这里疑问比较大的点可能是`Socket s = new Socket((SocketImpl) null); `，这行代码为什么又要新建一个`Socket`？带着疑问我们继续看`implAccept(s);  `方法。
 
 ## java.net.ServerSocket#implAccept
 
@@ -603,7 +617,9 @@ protected final void implAccept(Socket s) throws IOException {
 }
 ```
 
-首先代码进入一个`if`判断 `new Socket` 新对象的**Socketimpl**是否设置，如果为空则就设置，如果不为空则`reset()` 重置。毫无疑问，这里是刚刚初始化的Socket，此时**Socketimpl** 肯定是没有设置的。
+代码首先进入一个`if`判断，检查 `new Socket` 新对象的**Socketimpl**是否设置，如果为空则就设置，如果不为空，则`reset()` 重置。
+
+毫无疑问，这里是刚刚初始化的`Socket`，此时**Socket.Socketimpl** 肯定是没有设置的。
 
 ```java
 if (s.impl == null)  
@@ -613,15 +629,15 @@ else {
 }  
 ```
 
-显然首次进入代码通常就是走`if`分支。`setImpl` 这个方法和ServerSocket的`setImpl`非常像，`new Socket` 新对象会为自己的 **SocketImpl** 成员对象进行初始化。
+首次进入代码通常就是走`if`分支。`Socket.setImpl` 这个方法和`ServerSocket`的`setImpl`非常像，`new Socket` 新对象会为自己的 **SocketImpl** 成员对象进行初始化。
 
 ![SocketImpl](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707160516.png)
 
-至此，我们简单画图理解上面的操作干了啥：
+至此，我们画图理解代码操作逻辑：
 
 ![accept 操作分析](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707161437.png)
 
-接下来是一些有点”绕“的操作，建议读者边调试边跟着画图理解：
+接下来是一些有点”绕“的操作，建议读者边调试边跟着图示理解：
 
 ```java
 // 1. si 指向 Socket 对象的 impl 
@@ -652,19 +668,21 @@ s.impl = si;
 
 ![实例对象对比](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707163500.png)
 
-代码最后有一个必定会执行的 `s.impl = si; `操作（因为之前暂时把引用“脱钩”了），如果是异常的`si`还会进行额外的`reset`重置操作。
+代码最后有必定会执行的 `s.impl = si; `操作（因为之前暂时把引用“脱钩”了），如果是异常的`si`还会进行额外的`reset`重置。
 
 ```java
 s.impl = si; 
 ```
 
-这里回答一下之前遗留的问题，**`Socket s = new Socket((SocketImpl) null); `这行代码为什么又要新建一个Socket？**
+这里回答一下之前遗留的问题，`Socket s = new Socket((SocketImpl) null); `这行代码为什么又要新建一个Socket？
 
-我们观察上面绘制的操作图，`s.impl = null; `的执行，此时Socket对象和这个`SocketImpl`暂时”失去关联“，这个时候确保哪怕`new Socket`对象绑定失败，此时对于`SocketImpl`来说根本是无感知的，如果失败了`Socket`会完全重置，好像什么都没有发送过，而过成功了，此时把引用“接回去”，必然得到的可用的Socket。
+我们观察上面绘制的操作图，`s.impl = null; `的执行，此时Socket对象和这个`SocketImpl`暂时”失去关联“，这个时候确保哪怕`new Socket`对象绑定失败，此时对于`SocketImpl`来说根本是无感知的。
 
-> 这里给一个不恰当的比喻，当年诸葛亮草船借箭，如果有碰到没有借箭的船，是不是就可以直接”烧了“不要了，而如果接到箭自然需要回港“卸货‘”，对于吴国来说，它们只看到“成功”借到箭的船只。
+换句话说，如果失败了`Socket`会完全重置，好像什么都没有发送过，而如果成功了，此时把引用“接回去”，必然得到的可用的`Socket`。
 
-执行了`getImpl().accept(si);`方法之后，我们在**AbstractPlainSocketImpl**找到**accept**方法。我们进入方法继续下探。
+> 这里给一个不恰当的比喻，当年诸葛亮草船借箭，如果有碰到没有借箭的船，极端一点是不是就可以直接”烧了“不要了，而如果“接”到箭自然需要回港“卸货‘”，对于吴国来说，它们只看到“成功”借到箭的船只。
+
+执行`getImpl().accept(si);`方法之后，我们在**AbstractPlainSocketImpl**找到**accept**方法。我
 
 ### java.net.AbstractPlainSocketImpl#accept
 
@@ -683,7 +701,7 @@ protected void accept(SocketImpl s) throws IOException {
 }
 ```
 
-首先会获取并且植入文件描述符号，加锁获取之后会把**fdUseCount** 的计数器值+1，表示有一个新增的Socket连接。
+`accept`调用`acquireFD();`获取并且植入文件描述符号，加锁获取之后会把**fdUseCount** 的计数器值+1，表示有一个新增的`Socket`连接。
 
 > 加锁保证 fdUseCount  计数是线程安全的
 
@@ -700,7 +718,7 @@ FileDescriptor acquireFD() {
 
 ### java.net.PlainSocketImpl#socketAccept
 
-因为不同的操作系统实现不同，这里仅以个人看到的**JDK11**版本源码为例。
+不同的操作系统实现不同，这里仅以个人看到的**JDK11**版本源码为例。
 
 ```java
 @Override
@@ -738,9 +756,11 @@ void socketAccept(SocketImpl s) throws IOException {
 }
 ```
 
-这里我们只关心下面这部分代码，方法中首先判断 **timeout** 是否小于等于0（如果没有设置，那么默认就是 0），如果是则走`accept0(nativefd, isaa)`方法。
+我们只关心下面这部分代码，方法中首先判断 **timeout** 是否小于等于**0**（如果没有设置，那么默认就是 0），如果是则走`accept0(nativefd, isaa)`方法。
 
-前面反复提到的`accept`操作关键实现这是个 native 方法，具体操作是**在操作系统层面检查`bind`的端口上是否有客户端数据接入，如果没有则一直阻塞等待**。
+前面反复提到的，`accept`操作核心实现这是下面的 `native accept0` 方法，具体操作是：
+
+**在操作系统层面检查`bind`的端口上是否有客户端数据接入，如果没有则一直阻塞等待**
 
 ```java
 if (timeout <= 0) {
@@ -764,15 +784,15 @@ if (timeout <= 0) {
 static native int accept0(int fd, InetSocketAddress[] isaa) throws IOException;
 ```
 
-因为操作系统层面的阻塞需要影响到应用程序级别阻塞？、
+因为操作系统层面的阻塞需要影响到应用程序级别阻塞？显然`accept0(nativefd, isaa)`的操作系统层面阻塞是无 法避免的。
 
-显然`accept0(nativefd, isaa)`的操作系统层面阻塞这个是无法避免的，但是上面的代码提供了另外一种选择，那就是 **timeout** 的值设置大于0的值，此时**程序会在等到我们设置的时间后返回**，并且只会阻塞设置的这个时间量的值（单位毫秒）。
+仔细观察代码，上面的代码分支提供了另外一种选择， **timeout** 的值设置大于0的值，此时**程序会在等到我们设置的时间后返回**，并且只会阻塞设置的这个时间量的值（单位毫秒）。
 
-注意这里的 **newfd** 如果是 -1表示底层没有任何数据返回，在Linux的文档中同样有对应的介绍。
+> 注意，这里的 **newfd** 如果是 -1，表示底层没有任何数据返回，在Linux的文档中也有对应的介绍。
 
 ### java.net.ServerSocket#setSoTimeout
 
-既然不阻塞的关键参数是**timeout** ， 接下来我们看下 timeout 值要如何设置，先来看下源码部分。
+既然不阻塞的关键参数是**timeout** ， 接下来我们看下 **timeout** 值要如何设置。
 
 ```java
 /**
@@ -788,7 +808,7 @@ public synchronized void setSoTimeout(int timeout) throws SocketException {
 }
 ```
 
-**java.net.SocketOptions#setOption** 方法最终调用的是`java.net.AbstractPlainSocketImpl#setOption`。
+简单明了，**java.net.SocketOptions#setOption** 方法最终调用的是`java.net.AbstractPlainSocketImpl#setOption()`。
 
 ### java.net.AbstractPlainSocketImpl#setOption
 
@@ -822,12 +842,12 @@ public void setOption(int opt, Object val) throws SocketException {
 
 为了方便阅读，这里把其他的代码都删除了，只保留传参部分。
 
-可以看到这里仅仅是将我们`setOption`里面传入的`timeout`值设置到了`AbstractPlainSocketImpl`的全局变量`timeout`里而已。
+可以看到，这里仅仅是将`setOption`里面传入的`timeout`值，设置到了`AbstractPlainSocketImpl`的全局变量`timeout`。
 
 
 ## 画图小结
 
-个人认为整个`accept() `操作比较”恶心“（个人观点）的是几个引用的赋值变化上面，暂时”解绑“的目的是在进行底层Socket连接的时候如果出现异常也没有影响，此时Socket持有的引用也是null。
+个人认为整个`accept() `操作比较”恶心“（个人观点）的是几个引用的赋值变化上面，暂时”解绑“的目的是在进行底层Socket连接的时候，如果`Socket`出现异常也没有影响，此时`Socket`持有的引用也是`null`，可以无阻碍的重新进行下一次Socket连接。
 
 换句话说，**整个Socket要么对接成功，要么就是重置回没对接之前的状态可以进行下一次尝试，保证ServerSocket会收到一个没有任何异常的Socket连接**。
 
@@ -842,11 +862,15 @@ public void setOption(int opt, Object val) throws SocketException {
 
 这个概念在之前的笔记中 [[《跟闪电侠学Netty》阅读笔记 - 开篇入门Netty]] 【洗衣机案例理解阻塞非阻塞，同步异步概念】这一部分提到过，[[【Java】《2小时搞定多线程》个人笔记]] 中又一次对于这几个概念做了个区分。
 
-区分**同步**和**异步**的关键点是**被调用方的行为**，如果没有得到结果之前，服务端不返回任何结果，那么是同步的。如果没有得到结果之前，服务器可以返回结果，比如给一个**句柄**，通过这个句柄可以在未来某个时间点之后获得结果，这个句柄可以对应Java 并发编程的 **Future** 的概念。
+区分**同步**和**异步**的关键点是**被调用方的行为**，没有得到结果之前，服务端不返回任何结果，那么操作就是同步的。
 
-再举个例子，比如说前面的`accept0`是**应用程序调用操作系统**，在Linux中就是访问系统内核，此时这一整块逻辑处理是选择”**永久等待一个客户端连接**“，符合 **如果没有得到结果之前，服务端不返回任何结果** 这种情况，所以它是**同步**的。
+如果没有得到结果之前，服务器可以返回结果，比如给一个**句柄**，通过这个句柄可以在未来某个时间点之后获得结果，那么操作就是**异步**的。
 
-区分阻塞和非阻塞的关键点则是 **对于调用者而言的服务端状态***，如果我们站在线程状态的角度，阻塞对应 **Blocking**，非阻塞则通常对应**Running**（通常情况）。站在**线程发出请求**之后请求方的角度，区别则是**waiting**和**No waiting**。
+> 这个句柄可以对应Java 并发编程的 **Future** 的概念
+
+再举个例子，比如说前面的`accept0`是**应用程序调用操作系统**，在Linux中就是访问系统内核，此时这一整块逻辑处理是选择”**永久等待一个客户端连接**“，符合 **没有得到结果之前，服务端不返回任何结果** 这种情况，所以它是**同步**的。
+
+区分阻塞和非阻塞的关键点则是 **对于调用者而言的服务端状态***，比如我们站在线程状态的角度，阻塞对应 **Blocking**，非阻塞此时应该对应**Running**正常执行。再比如站在**线程发出请求**之后请求方的角度，阻塞和非阻塞分别对应**waiting**和**No waiting**。
 
 理解同步异步阻塞和非阻塞之后，下面来尝试改造相关代码`accept`的阻塞问题，实现方式很简单，那就是设置 ** **timeout** ** ， 然后在异常处理上`continue`重试。
 
@@ -929,7 +953,7 @@ public void initNioServer(int port) {
 
 # Socket 中的 getInputStream() 方法解析
 
-我们实现了非阻塞的`accept`之后，再来看下另一个会产生阻塞的方法，那就是`Socket.getInputStream`，这个方法在Socket连接，服务端在read() 读取数据的时候会进行调用。
+实现了非阻塞的`accept`之后，再来看下另一个会产生阻塞的方法，那就是`Socket.getInputStream`，这个方法在Socket连接，服务端在`read()` 读取数据的时候会进行调用。
 
 **java.net.Socket#getInputStream**
 
@@ -962,7 +986,7 @@ public void initNioServer(int port) {
     }
 ```
 
-这里通过`AccessController`进行授权，`run`方法中调用**java.net.AbstractPlainSocketImpl#getInputStream**方法。
+上面通过`AccessController`进行授权，`run`方法中调用**java.net.AbstractPlainSocketImpl#getInputStream**方法。
 
 ```java
 protected synchronized InputStream getInputStream() throws IOException {  
@@ -980,7 +1004,7 @@ protected synchronized InputStream getInputStream() throws IOException {
 
 可以看到，代码中创建了 **SocketInputStream** 对象，并且会将当前`AbstractPlainSocketImpl`对象传进去（这个对象实际就是 **SocksSocketImpl** ）。
 
-在读数据的时候会调用如下方法：
+`read`读数据的时候，则会调用如下方法：
 
 ```java
 public int read(byte b[], int off, int length) throws IOException {  
@@ -1040,13 +1064,13 @@ int read(byte b[], int off, int length, int timeout) throws IOException {
 }
 ```
 
-重点关注下面这一行代码，可以看到这里在读取的时候同样传递了 **timeout** 参数：
+重点关注下面这一行代码，这里在读取的时候同样传递了 **timeout** 参数：
 
 ```java
 n = socketRead(fd, b, off, length, timeout);
 ```
 
-**socketRead** 方法会调用 **native** 的 `socketRead0` 方法。**timeout** 代表了读取的超时时间。
+**socketRead** 方法会调用 **native** 的 `socketRead0` 方法，**timeout** 代表了读取的超时时间。
 
 ```java
 private native int socketRead0(FileDescriptor fd,  
@@ -1065,7 +1089,7 @@ serverSocket.setSoTimeout(SO_TIMEOUT);
 
 此外，这里经过仔细考虑，判断这部分代码读者很有可能会存在理解误区，误以为此处的 **AbstractPlainSocketImpl** 属于 **ServerSocket**，实际上它属于 **Socket**，也就是说我们设置的 `timeout` 是设置到 **Socket** 的 **AbstractPlainSocketImpl** 。
 
-最为简单的证明方法是先在  **java.net.Socket#setImpl** 中打上断点，在启动BIO的服务端之后立即启动客户端。具体的Debug断点如下：
+最为简单的证明方法是先在  **java.net.Socket#setImpl** 中打上断点，在启动BIO的服务端之后，立即启动客户端，具体的Debug断点如下：
 
 ![Socket 的 setImpl](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712160311.png)
 
@@ -1075,13 +1099,13 @@ serverSocket.setSoTimeout(SO_TIMEOUT);
 
 ![对象对比](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712160628.png)
 
-为什么不一样呢？这里需要回顾前面的【ServerSocket中accept 解读】这一部分的操作。这里把一些重要操作标记了一下：
+为什么不一样呢？这里需要回顾前面的【ServerSocket中accept 解读】这一部分的操作。这里把重要操作标记了一下：
 
 ![ServerSocket中accept解读可能的理解误区1](https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712161314.png)
 
 这里复习之前提到的内容，在**accept();** 中为了确保Socket连接是正确并且可用的，每次都会`new Socket()`，而这里的`SocksSocketImpl` 是属于 **Socket** 的成员变量。
 
-在进行Socket套接字连接之前会先判断是否初始化，如果没有就先进行初始化（具体可以看红框框的位置）。
+在进行Socket套接字连接之前会先判断是否初始化，如果初始化没有就先进行初始化（具体可以看红框框的位置）。
 
 如果还是理解不了，那么只能再次寄出另一张杀手锏图了：
 
@@ -1089,23 +1113,23 @@ serverSocket.setSoTimeout(SO_TIMEOUT);
 
 # 实现 Socket 中的 read 方法非阻塞
 
-前面介绍了服务端的**AbstractPlainSocketImpl**如何实现`socketRead`方法非阻塞的 ，具体做法其实就是使用 **AbstractPlainSocketImpl** 传入了 **timeout** 参数，实现 **SocketInputStream** 非阻塞`read`。
+**AbstractPlainSocketImpl**实现`socketRead`方法非阻塞，具体做法其实就是使用 **AbstractPlainSocketImpl** 传入了 **timeout** 参数，实现 **SocketInputStream** 非阻塞`read`。
 
-这样表面上看上去 **read** 方法是非阻塞的，实际上这里存在一个明显的 **误区**，那就是在`socket = serverSocket.accept();`这一段代码中，服务端构建出 Socket 连接之后，客户端和服务端交互是通过独立的`Socket`对象完成IO读写的。
+表面上看上去 **read** 方法是非阻塞的，实际上这里存在一个明显的 **误区**，那就是在`socket = serverSocket.accept();`这一段代码中，服务端构建出 `Socket` 连接之后，客户端和服务端交互是通过独立的`Socket`对象完成IO读写的。
 
-然而在第一次改造过后，中实际上还有两点不易察觉的问题：
+然而在第一次改造过后，实际上还有两点不易察觉的问题：
 
 （1）服务端`read`的非阻塞轮询效率非常低，基本上是“一核繁忙、多核围观”的情况。
 
-（2）第一次改造设置的是设定的是**ServerSocket级别**的**SocksSocketImpl**的timeout。而每个新的客户端进来都是新的Socket连接，每个Socket又有各自的 **SocksSocketImpl**，这里**客户端连接所产生新的Socket**的**timeout**是没有做设置的，换句话说，服务端针对每个Socket的read依然是完全阻塞。
+（2）第一次改造设置的是设定的是**ServerSocket级别**的**SocksSocketImpl**的timeout。每个新的客户端进来都是新的Socket连接，每个Socket又有各自的 **SocksSocketImpl**，这里**客户端连接所产生新的Socket**的**timeout**是没有做设置的，换句话说，服务端针对每个Socket的`read`依然是完全阻塞。
 
-前文提到，在BIO非阻塞同步模型中，我们虽然没法解决 "同步" 这一点，但是我们可以让“非阻塞”这一块更为优化合理和更为高效一些。
+前文提到，在BIO非阻塞同步模型中，我们虽然没法解决 系统底层"同步" 问题，但是我们可以让“非阻塞”这一块更为优化合理和更为高效。
 
 第一个问题的解决策略是启动**多线程**以非阻塞`read()`方式轮询，这样做的另一点好处是，某个Socket读写压力大并不会影响CPU 切到其他线程的正常工作。
 
-第二点的解决方式在前面已经反复提到了，我们需要为**每个新的Socket**设置 **timeout**，非阻塞 `read`的条件才算是真正成立。
+解决第二点问题，我们需要为**每个新的Socket**设置 **timeout**。
 
-经过上面的层层铺垫，下面我们来看下第二版优化代码实现：
+解决上面两个问题，真正BIO非阻塞实现才算是真正成立，下面我们来看下第二版代码优化：
 
 ```java
  /**
@@ -1230,11 +1254,13 @@ serverSocket.setSoTimeout(SO_TIMEOUT);
     }
 ```
 
-经过上面的改造，我们基本把 BIO 同步阻塞的工作方式更新为 **同步非阻塞**的工作方式，核心是对于 `read()`以及服务端接收新连接的`accept()`设置`timeout`参数，在外部处理上则通过`while(true)` 加上“吞异常”结合`sleep()`的老套路实现“非阻塞”。
+经过上面的改造，我们基本把 BIO 同步阻塞的工作方式更新为 **同步非阻塞**的工作方式，核心是对于 `read()`以及服务端接收新连接的`accept()`设置`timeout`参数。
 
-当然我们也可以看到，通过线程池每次都构建新线程的方式，在连接比较少的时候是比较高效的，但是一旦连接暴增，理论上JVM虽然可以构建非常多线程，实际上CPU肯定是吃不消，多线程“空轮询”判断的方式也十分浪费CPU资源，多线程切换起来更是雪上加霜。
+在外部处理上，通过`while(true)` 加上“吞异常”方式，结合`Thread.sleep()`的套路实现“非阻塞”定期`accept`。
 
-基于BIO的种种弊端，Java 官方在JDK1.4 提供了 NIO 解决上面的几点问题。
+当然，我们也可以看到，通过线程池每次都构建新线程的方式，在连接比较少的时候是比较高效的，但是一旦连接暴增，理论上JVM虽然可以构建非常多线程，实际上CPU肯定是吃不消，多线程“空轮询”判断的方式也十分浪费CPU资源，多线程切换起来更是雪上加霜。
+
+> 基于BIO的种种弊端，Sun 在JDK1.4 提供了 NIO 来解决上面的几点问题。
 
 # native `accept`方法在Linux运作解读
 
@@ -1283,7 +1309,7 @@ int accept(int sockfd,struct sockaddr *addr,socklen_t *addrlen);
 
 本文一开始介绍了Bio Socket的基本代码，接着从`ServerSocket`的`bind`方法解读，通过图文结合的方式介绍了源码如何处理，整个`bind`操作过程中有许多`native`层调用，所以Socket的代码调试是非常麻烦的。
 
-介绍完`bind`之后，我们接着介绍了`ServerSocket`中`accept`方法，并且介绍了`accept` 方法的阻塞问题，实际上和底层的操作系统行为有关，并且通过画图的方式理解`accept`中Socket连接比较“绕”的操作。
+介绍完`bind`之后，我们接着介绍了`ServerSocket`中`accept`方法，并且介绍了`accept` 方法的阻塞问题实际上和底层的操作系统行为有关，并且通过画图的方式理解`accept`中Socket连接比较“绕”的操作。
 
 最后，文章的后半部分介绍了如何改造`accept`以及客户端的`Socket`连接解决非阻塞问题IO，最后我们介绍了  `native accept`方法在Linux运作，主要内容为Linux的相关文档理解。
 

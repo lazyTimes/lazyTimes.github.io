@@ -14,7 +14,7 @@ date: 2023-06-16 15:13:36
 ---
 # 原文
 
-[What's the difference between SoftReference and WeakReference in Java?](https://stackoverflow.com/questions/299659/whats-the-difference-between-softreference-and-weakreference-in-java)
+[Whats the difference between SoftReference and WeakReference in Java?](https://stackoverflow.com/questions/299659/whats-the-difference-between-softreference-and-weakreference-in-java)
 
 From [Understanding Weak References](https://web.archive.org/web/20061130103858/http://weblogs.java.net/blog/enicholas/archive/2006/05/understanding_w.html), by Ethan Nicholas:
 
@@ -30,7 +30,7 @@ From [Understanding Weak References](https://web.archive.org/web/20061130103858
 
 前面一大段说明写这篇文章的缘由是面试的时候发现很多面试者甚至不知道这个东西，相比之下自己不仅聊了作用和一些细节反差很大。
 
-> Now, I'm not suggesting you need to be a weak reference expert to qualify as a decent Java engineer. But I humbly submit that you should at least _know what they are_ -- otherwise how will you know when you should be using them? Since they seem to be a little-known feature, here is a brief overview of what weak references are, how to use them, and when to use them.
+> Now, Im not suggesting you need to be a weak reference expert to qualify as a decent Java engineer. But I humbly submit that you should at least _know what they are_ -- otherwise how will you know when you should be using them? Since they seem to be a little-known feature, here is a brief overview of what weak references are, how to use them, and when to use them.
 
 现在，我并不是说你需要成为一个薄弱的参考资料专家，才有资格成为一个体面的Java工程师。但我谦虚地认为，你至少应该知道它们是什么 -- 否则你怎么会知道什么时候应该使用它们？由于它们似乎是一个鲜为人知的特性，这里简要介绍一下什么是弱引用，如何使用它们，以及何时使用它们。
 
@@ -278,13 +278,13 @@ public void testWeakMap(){
 
 **Weak references**
 
- A _weak reference_, simply put, is a reference that isn't strong enough to force an object to remain in memory. Weak references allow you to leverage the garbage collector's ability to determine reachability for you, so you don't have to do it yourself. You create a weak reference like this
+ A _weak reference_, simply put, is a reference that isnt strong enough to force an object to remain in memory. Weak references allow you to leverage the garbage collectors ability to determine reachability for you, so you dont have to do it yourself. You create a weak reference like this
 
 ```java
 WeakReference weakWidget = new WeakReference(widget);
 ```
 
-and then elsewhere in the code you can use `weakWidget.get()` to get the actual `Widget` object. Of course the weak reference isn't strong enough to prevent garbage collection, so you may find (if there are no strong references to the widget) that `weakWidget.get()` suddenly starts returning `null`.
+and then elsewhere in the code you can use `weakWidget.get()` to get the actual `Widget` object. Of course the weak reference isnt strong enough to prevent garbage collection, so you may find (if there are no strong references to the widget) that `weakWidget.get()` suddenly starts returning `null`.
 
 ...
 
@@ -292,7 +292,7 @@ and then elsewhere in the code you can use `weakWidget.get()` to get the actual 
 
 A _soft reference_ is exactly like a weak reference, except that it is less eager to throw away the object to which it refers. An object which is only weakly reachable (the strongest references to it are `WeakReferences`) will be discarded at the next garbage collection cycle, but an object which is softly reachable will generally stick around for a while.
 
-`SoftReferences` aren't _required_ to behave any differently than `WeakReferences`, but in practice softly reachable objects are generally retained as long as memory is in plentiful supply. This makes them an excellent foundation for a cache, such as the image cache described above, since you can let the garbage collector worry about both how reachable the objects are (a strongly reachable object will _never_ be removed from the cache) and how badly it needs the memory they are consuming.
+`SoftReferences` arent _required_ to behave any differently than `WeakReferences`, but in practice softly reachable objects are generally retained as long as memory is in plentiful supply. This makes them an excellent foundation for a cache, such as the image cache described above, since you can let the garbage collector worry about both how reachable the objects are (a strongly reachable object will _never_ be removed from the cache) and how badly it needs the memory they are consuming.
 
 最后的补充部分简单翻译一下
 
@@ -300,11 +300,11 @@ A _soft reference_ is exactly like a weak reference, except that it is less eage
 
 下面是评论中的一些补充
 
-> The Sun JRE does treat SoftReferences differently from WeakReferences. We attempt to hold on to object referenced by a SoftReference if there isn't pressure on the available memory. 
+> The Sun JRE does treat SoftReferences differently from WeakReferences. We attempt to hold on to object referenced by a SoftReference if there isnt pressure on the available memory. 
 
 Sun JRE对待SoftReferences的方式与WeakReferences不同。如果可用内存并且此时没有使用压力，会尝试保留被SoftReference引用的对象。
 
-> One detail: the policy for the "-client" and "-server" JRE's are different: the -client JRE tries to keep your footprint small by preferring to clear SoftReferences rather than expand the heap, whereas the -server JRE tries to keep your performance high by preferring to expand the heap (if possible) rather than clear SoftReferences. One size does not fit all.
+> One detail: the policy for the "-client" and "-server" JREs are different: the -client JRE tries to keep your footprint small by preferring to clear SoftReferences rather than expand the heap, whereas the -server JRE tries to keep your performance high by preferring to expand the heap (if possible) rather than clear SoftReferences. One size does not fit all.
 
 "-client "和"-server "JRE的策略是不同的：
 - `-client`：JRE试图通过**优先清除SoftReferences**而不是扩展堆来保持你的内存。
