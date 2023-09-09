@@ -197,6 +197,305 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/02/20/rocketjiaoben/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/20/rocketjiaoben/" class="post-title-link" itemprop="url">【RocketMq】NameServ启动脚本分析（Ver4.9.4）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-02-20 07:07:06" itemprop="dateCreated datePublished" datetime="2023-02-20T07:07:06+08:00">2023-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-02 09:34:33" itemprop="dateModified" datetime="2023-03-02T09:34:33+08:00">2023-03-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/RocketMq/" itemprop="url" rel="index"><span itemprop="name">RocketMq</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/02/20/rocketjiaoben/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/02/20/rocketjiaoben/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>19k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>17 分钟</span>
+            </span>
+            <div class="post-description">NameServ启动脚本分析</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="NameServ启动脚本分析"><a href="#NameServ启动脚本分析" class="headerlink" title="NameServ启动脚本分析"></a>NameServ启动脚本分析</h1><h2 id="mqnamesrv-启动命令"><a href="#mqnamesrv-启动命令" class="headerlink" title="mqnamesrv 启动命令"></a>mqnamesrv 启动命令</h2><p>这里直接摘录了官方文档：</p>
+<p><strong>Start NameServer</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">## Start Name Server first</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> nohup sh mqnamesrv &amp;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">## Then verify that the Name Server starts successfully</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> tail -f ~/logs/rocketmqlogs/namesrv.log</span></span><br><span class="line">The Name Server boot success...</span><br></pre></td></tr></table></figure>
+
+<h2 id="mqnamesrv-脚本"><a href="#mqnamesrv-脚本" class="headerlink" title="mqnamesrv 脚本"></a>mqnamesrv 脚本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># 从环境变量当中获取RocketMq环境变量地址</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$ROCKETMQ_HOME</span>"</span> ] ; <span class="keyword">then</span></span><br><span class="line">  <span class="comment">## resolve links - $0 may be a link to maven's home</span></span><br><span class="line">  <span class="comment">## 解决链接问题 - $0 可能是maven的主页链接</span></span><br><span class="line">  <span class="comment"># PS：$0 是脚本的命令本身</span></span><br><span class="line">  PRG=<span class="string">"<span class="variable">$0</span>"</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># need this for relative symlinks</span></span><br><span class="line">  <span class="comment"># 需要相关链接</span></span><br><span class="line">  <span class="keyword">while</span> [ -h <span class="string">"<span class="variable">$PRG</span>"</span> ] ; <span class="keyword">do</span></span><br><span class="line">    ls=`ls -ld <span class="string">"<span class="variable">$PRG</span>"</span>`</span><br><span class="line">    link=`expr <span class="string">"<span class="variable">$ls</span>"</span> : <span class="string">'.*-&gt; \(.*\)$'</span>`</span><br><span class="line">    <span class="keyword">if</span> expr <span class="string">"<span class="variable">$link</span>"</span> : <span class="string">'/.*'</span> &gt; /dev/null; <span class="keyword">then</span></span><br><span class="line">      PRG=<span class="string">"<span class="variable">$link</span>"</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      PRG=<span class="string">"`dirname "</span><span class="variable">$PRG</span><span class="string">"`/<span class="variable">$link</span>"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line">  <span class="comment"># 暂存当前的执行路径</span></span><br><span class="line">  saveddir=`<span class="built_in">pwd</span>`</span><br><span class="line"></span><br><span class="line">  ROCKETMQ_HOME=`dirname <span class="string">"<span class="variable">$PRG</span>"</span>`/..</span><br><span class="line"></span><br><span class="line">  <span class="comment"># make it fully qualified</span></span><br><span class="line">  <span class="comment"># 拼接获取RocketMQ绝对路径</span></span><br><span class="line">  ROCKETMQ_HOME=`<span class="built_in">cd</span> <span class="string">"<span class="variable">$ROCKETMQ_HOME</span>"</span> &amp;&amp; <span class="built_in">pwd</span>`</span><br><span class="line">  <span class="comment"># 跳转到当前暂存的命令执行路径</span></span><br><span class="line">  <span class="built_in">cd</span> <span class="string">"<span class="variable">$saveddir</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> ROCKETMQ_HOME</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关键： 执行runserver.sh脚本，携带logback的日志xml配置，以及传递JVM的启动main方法的入口类绝对路径</span></span><br><span class="line">sh <span class="variable">$&#123;ROCKETMQ_HOME&#125;</span>/bin/runserver.sh </span><br><span class="line">-Drmq.logback.configurationFile=<span class="variable">$ROCKETMQ_HOME</span>/conf/rmq.namesrv.logback.xml </span><br><span class="line">org.apache.rocketmq.namesrv.NamesrvStartup <span class="variable">$@</span></span><br></pre></td></tr></table></figure>
+
+<p>最开始的<code>mqnamesrv.sh</code>脚本获取环境变量的部分看不懂其实没啥影响，大略有个印象即可，当然可以截取部分的命令到Linux运行测试一下就明白了，比如准备环境变量等等，最后一句话比较关键。</p>
+<p>注意最后的两个字符<code>$@</code>，这两个字符的作用如下：</p>
+<p><strong>$@</strong> ：表示所有脚本参数的内容。</p>
+<p><strong>$#</strong> ：表示返回所有脚本参数的个数。</p>
+<p>再次强调前面的一大坨获取环境变量看不懂没关系，看懂核心的执行脚本即可。</p>
+<h1 id="runserver-sh-脚本"><a href="#runserver-sh-脚本" class="headerlink" title="runserver.sh 脚本"></a>runserver.sh 脚本</h1><p>runserver.sh 的脚本内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#===========================================================================================</span></span><br><span class="line"><span class="comment"># Java Environment Setting</span></span><br><span class="line"><span class="comment">#===========================================================================================</span></span><br><span class="line">error_exit ()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"ERROR: <span class="variable">$1</span> !!"</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">find_java_home()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"># uname 是获取Linux内核参数的指令，不带任何参数获取当前操作系统的类型，比如Linux就是“Linux”的文本</span></span><br><span class="line">    <span class="keyword">case</span> <span class="string">"`uname`"</span> <span class="keyword">in</span></span><br><span class="line">        Darwin)</span><br><span class="line">            JAVA_HOME=$(/usr/libexec/java_home)</span><br><span class="line">        ;;</span><br><span class="line">        *)</span><br><span class="line">        <span class="comment"># 可以简单认为获取到javac命令的绝对路径，然后执行两次cd..操作，以此作为JDK的路径</span></span><br><span class="line">        <span class="comment"># 比如 /opt/jdk/bin/javac dirname 两次之后就是 /opt/jdk</span></span><br><span class="line">            JAVA_HOME=$(dirname $(dirname $(readlink -f $(<span class="built_in">which</span> javac))))</span><br><span class="line">        ;;</span><br><span class="line">    <span class="keyword">esac</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用函数</span></span><br><span class="line">find_java_home</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取JAVA命令的执行地址</span></span><br><span class="line">[ ! -e <span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span> ] &amp;&amp; JAVA_HOME=<span class="variable">$HOME</span>/jdk/java</span><br><span class="line">[ ! -e <span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span> ] &amp;&amp; JAVA_HOME=/usr/java</span><br><span class="line">[ ! -e <span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span> ] &amp;&amp; error_exit <span class="string">"Please set the JAVA_HOME variable in your environment, We need java(x64)!"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># export 导出的临时环境变量，只适用当前SHELL连接</span></span><br><span class="line"><span class="comment"># JAVA 命令的执行地址,设置为环境变量</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME</span><br><span class="line"><span class="built_in">export</span> JAVA=<span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span></span><br><span class="line"><span class="comment"># $0 代表当前的请求传递的第一个参数，根据上一个脚本可以知道是：$&#123;ROCKETMQ_HOME&#125;/bin/runserver.sh</span></span><br><span class="line"><span class="built_in">export</span> BASE_DIR=$(dirname <span class="variable">$0</span>)/..</span><br><span class="line"><span class="comment"># 因为需要启动JVM进程，需要从ROCKETMQ_HOME的conf和lib路径告诉JDK找依赖包以及相关的配置文件</span></span><br><span class="line"><span class="built_in">export</span> CLASSPATH=.:<span class="variable">$&#123;BASE_DIR&#125;</span>/conf:<span class="variable">$&#123;BASE_DIR&#125;</span>/lib/*:<span class="variable">$&#123;CLASSPATH&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#===========================================================================================</span></span><br><span class="line"><span class="comment"># JVM Configuration</span></span><br><span class="line"><span class="comment">#===========================================================================================</span></span><br><span class="line"><span class="comment"># The RAMDisk initializing size in MB on Darwin OS for gc-log</span></span><br><span class="line"><span class="comment"># 在 Darwin OS 上为 gc-log 初始化 RAMDisk 的大小（以 MB 为单位）</span></span><br><span class="line">DIR_SIZE_IN_MB=600</span><br><span class="line"></span><br><span class="line">choose_gc_log_directory()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"># Darwin 操作系统需要特殊处理，忽略</span></span><br><span class="line">    <span class="keyword">case</span> <span class="string">"`uname`"</span> <span class="keyword">in</span></span><br><span class="line">        Darwin)</span><br><span class="line">            <span class="keyword">if</span> [ ! -d <span class="string">"/Volumes/RAMDisk"</span> ]; <span class="keyword">then</span></span><br><span class="line">                <span class="comment"># create ram disk on Darwin systems as gc-log directory</span></span><br><span class="line">                DEV=`hdiutil attach -nomount ram://$((2 * 1024 * DIR_SIZE_IN_MB))` &gt; /dev/null</span><br><span class="line">                diskutil eraseVolume HFS+ RAMDisk <span class="variable">$&#123;DEV&#125;</span> &gt; /dev/null</span><br><span class="line">                <span class="built_in">echo</span> <span class="string">"Create RAMDisk /Volumes/RAMDisk for gc logging on Darwin OS."</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line">            GC_LOG_DIR=<span class="string">"/Volumes/RAMDisk"</span></span><br><span class="line">        ;;</span><br><span class="line">        *)</span><br><span class="line">         <span class="comment"># </span></span><br><span class="line">            <span class="comment"># check if /dev/shm exists on other systems</span></span><br><span class="line">            <span class="comment"># 检查 /dev/shm 是否存在于其他系统上</span></span><br><span class="line">            <span class="comment"># What Is /dev/shm And Its Practical Usage</span></span><br><span class="line">            <span class="comment"># https://www.cyberciti.biz/tips/what-is-devshm-and-its-practical-usage.html</span></span><br><span class="line">            <span class="keyword">if</span> [ -d <span class="string">"/dev/shm"</span> ]; <span class="keyword">then</span></span><br><span class="line">                GC_LOG_DIR=<span class="string">"/dev/shm"</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                GC_LOG_DIR=<span class="variable">$&#123;BASE_DIR&#125;</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line">        ;;</span><br><span class="line">    <span class="keyword">esac</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">choose_gc_options()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"># 根据JDK的版本选择合适的GC参数，RocketMq最低需要JDK8，所以如果是1开头就是10以及之后的JDK版本</span></span><br><span class="line">    <span class="comment"># Example of JAVA_MAJOR_VERSION value: '1', '9', '10', '11', ...</span></span><br><span class="line">    <span class="comment"># '1' means releases befor Java 9</span></span><br><span class="line">    JAVA_MAJOR_VERSION=$(<span class="string">"<span class="variable">$JAVA</span>"</span> -version 2&gt;&amp;1 | sed -r -n <span class="string">'s/.* version "([0-9]*).*$/\1/p'</span>)</span><br><span class="line">    <span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$JAVA_MAJOR_VERSION</span>"</span> ] || [ <span class="string">"<span class="variable">$JAVA_MAJOR_VERSION</span>"</span> -lt <span class="string">"9"</span> ] ; <span class="keyword">then</span></span><br><span class="line">      <span class="comment"># 小于JDK 9 版本的参数</span></span><br><span class="line">      <span class="comment"># 堆内存（初始堆内存）为 4 g，新生代 2g，其他空间为 2g。元空间初始化128m，最大的扩容元空间为320mb</span></span><br><span class="line">      JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -server -Xms4g -Xmx4g -Xmn2g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"</span></span><br><span class="line">      <span class="comment"># g1收集器在jdk11得到并行Full GC能力，而zgc在jdk11版本处于实验状态，这里选择了比较稳妥的 CMS 老年代垃圾回收器</span></span><br><span class="line">      <span class="comment"># UseCMSCompactAtFullCollection：CMS垃圾在进行了Full GC时，对老年代进行压缩整理，处理掉内存碎片</span></span><br><span class="line">      <span class="comment"># CMSParallelRemarkEnabled 使用CMS老年代收集器</span></span><br><span class="line">      JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -XX:+UseConcMarkSweepGC -XX:+UseCMSCompactAtFullCollection -XX:CMSInitiatingOccupancyFraction=70 -XX:+CMSParallelRemarkEnabled -XX:SoftRefLRUPolicyMSPerMB=0 -XX:+CMSClassUnloadingEnabled -XX:SurvivorRatio=8 -XX:-UseParNewGC"</span></span><br><span class="line">      JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -verbose:gc -Xloggc:<span class="variable">$&#123;GC_LOG_DIR&#125;</span>/rmq_srv_gc_%p_%t.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps"</span></span><br><span class="line">      JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=30m"</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">	  <span class="comment"># JDK8 之后的参数</span></span><br><span class="line">      JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -server -Xms4g -Xmx4g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"</span></span><br><span class="line">      JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -XX:+UseG1GC -XX:G1HeapRegionSize=16m -XX:G1ReservePercent=25 -XX:InitiatingHeapOccupancyPercent=30 -XX:SoftRefLRUPolicyMSPerMB=0"</span></span><br><span class="line">      JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -Xlog:gc*:file=<span class="variable">$&#123;GC_LOG_DIR&#125;</span>/rmq_srv_gc_%p_%t.log:time,tags:filecount=5,filesize=30M"</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">choose_gc_log_directory</span><br><span class="line">choose_gc_options</span><br><span class="line">JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -XX:-OmitStackTraceInFastThrow"</span></span><br><span class="line">JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -XX:-UseLargePages"</span></span><br><span class="line"><span class="comment">#JAVA_OPT="$&#123;JAVA_OPT&#125; -Xdebug -Xrunjdwp:transport=dt_socket,address=9555,server=y,suspend=n"</span></span><br><span class="line">JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> <span class="variable">$&#123;JAVA_OPT_EXT&#125;</span>"</span></span><br><span class="line">JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -cp <span class="variable">$&#123;CLASSPATH&#125;</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$JAVA</span> <span class="variable">$&#123;JAVA_OPT&#125;</span> <span class="variable">$@</span></span><br></pre></td></tr></table></figure>
+
+<p><code>runserver.sh</code> 脚本的内容，内容比较多，这里拆分讲解。</p>
+<h2 id="前置准备工作"><a href="#前置准备工作" class="headerlink" title="前置准备工作"></a>前置准备工作</h2><p>首先是有关环境变量的配置获取以及查找<strong>JAVA_HOME</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#===========================================================================================</span></span><br><span class="line"><span class="comment"># Java Environment Setting</span></span><br><span class="line"><span class="comment">#===========================================================================================</span></span><br><span class="line">error_exit ()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"ERROR: <span class="variable">$1</span> !!"</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">find_java_home()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"># uname 是获取Linux内核参数的指令，不带任何参数获取当前操作系统的类型，比如Linux就是“Linux”的文本</span></span><br><span class="line">    <span class="keyword">case</span> <span class="string">"`uname`"</span> <span class="keyword">in</span></span><br><span class="line">        Darwin)</span><br><span class="line">            JAVA_HOME=$(/usr/libexec/java_home)</span><br><span class="line">        ;;</span><br><span class="line">        *)</span><br><span class="line">        <span class="comment"># 可以简单认为获取到javac命令的绝对路径，然后执行两次cd..操作，以此作为JDK的路径</span></span><br><span class="line">        <span class="comment"># 比如 /opt/jdk/bin/javac dirname 两次之后就是 /opt/jdk</span></span><br><span class="line">            JAVA_HOME=$(dirname $(dirname $(readlink -f $(<span class="built_in">which</span> javac))))</span><br><span class="line">        ;;</span><br><span class="line">    <span class="keyword">esac</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用函数</span></span><br><span class="line">find_java_home</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取JAVA命令的执行地址</span></span><br><span class="line">[ ! -e <span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span> ] &amp;&amp; JAVA_HOME=<span class="variable">$HOME</span>/jdk/java</span><br><span class="line">[ ! -e <span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span> ] &amp;&amp; JAVA_HOME=/usr/java</span><br><span class="line">[ ! -e <span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span> ] &amp;&amp; error_exit <span class="string">"Please set the JAVA_HOME variable in your environment, We need java(x64)!"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># export 导出的临时环境变量，只适用当前SHELL连接</span></span><br><span class="line"><span class="comment"># JAVA 命令的执行地址,设置为环境变量</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME</span><br><span class="line"><span class="built_in">export</span> JAVA=<span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span></span><br><span class="line"><span class="comment"># $0 代表当前的请求传递的第一个参数，根据上一个脚本可以知道是：$&#123;ROCKETMQ_HOME&#125;/bin/runserver.sh</span></span><br><span class="line"><span class="built_in">export</span> BASE_DIR=$(dirname <span class="variable">$0</span>)/..</span><br><span class="line"><span class="comment"># 因为需要启动JVM进程，需要从ROCKETMQ_HOME的conf和lib路径告诉JDK找依赖包以及相关的配置文件</span></span><br><span class="line"><span class="built_in">export</span> CLASSPATH=.:<span class="variable">$&#123;BASE_DIR&#125;</span>/conf:<span class="variable">$&#123;BASE_DIR&#125;</span>/lib/*:<span class="variable">$&#123;CLASSPATH&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><p>首先是开头部分，如果出现异常就打印错误参数。在SH脚本文件中，<code>$1</code>代表了跟在脚本后面的第一个参数，比如<code>./script.sh filename1 dir1</code>，则<code>$1 = filename1</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">error_exit ()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// $1 通常是调用函数传入的第一个参数，比如下文的：Please set the JAVA_HOME variable in your environment, We need java(x64)!</span></span><br><span class="line">    echo <span class="string">"ERROR: $1 !!"</span></span><br><span class="line">    exit <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="查找JDK-Home"><a href="#查找JDK-Home" class="headerlink" title="查找JDK Home"></a>查找JDK Home</h3><p>接着是查找 JAVA_HOME 的位置：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">find_java_home()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"># uname 是获取Linux内核参数的指令，不带任何参数获取当前操作系统的类型，比如Linux就是“Linux”的文本</span></span><br><span class="line">    <span class="keyword">case</span> <span class="string">"`uname`"</span> <span class="keyword">in</span></span><br><span class="line">        Darwin)</span><br><span class="line">            JAVA_HOME=$(/usr/libexec/java_home)</span><br><span class="line">        ;;</span><br><span class="line">        *)</span><br><span class="line">        <span class="comment"># 可以简单认为获取到javac命令的绝对路径，然后执行两次 cd.. 操作，以此作为JDK的路径</span></span><br><span class="line">        <span class="comment"># 比如 /opt/jdk/bin/javac dirname 两次之后就是 /opt/jdk</span></span><br><span class="line">            JAVA_HOME=$(dirname $(dirname $(readlink -f $(<span class="built_in">which</span> javac))))</span><br><span class="line">        ;;</span><br><span class="line">    <span class="keyword">esac</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>uname</strong> 是获取Linux内核参数的指令，不带任何参数获取当前操作系统的类型，比如Linux就是“Linux”的文本：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xander@xander:~$ uname </span><br><span class="line">Linux</span><br></pre></td></tr></table></figure>
+
+<p>这里通过uname 查找内核，如果是 darwin 的操作系统获取路径要特殊一些。而其他的方式则是<code>$(dirname $(dirname $(readlink -f $(which javac))))</code>层层查找：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zxd<span class="meta">@localhost</span> ~]$ echo $(dirname $(dirname $(readlink -f $(which javac))));</span><br><span class="line">/opt/jdk8</span><br></pre></td></tr></table></figure>
+
+<p>这些可以简单认为获取到<code>javac</code>命令的绝对路径，然后执行两次<code>cd..</code>操作，以此作为JDK的路径。最简单的验证方法是放到Linux上执行一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zxd<span class="meta">@localhost</span> ~]$ echo $(readlink -f $(which javac))</span><br><span class="line">/opt/jdk8/bin/javac</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zxd<span class="meta">@localhost</span> ~]$ echo $(dirname $(dirname $(readlink -f $(which javac))));</span><br><span class="line">/opt/jdk8</span><br></pre></td></tr></table></figure>
+
+<h3 id="取JAVA命令的执行地址"><a href="#取JAVA命令的执行地址" class="headerlink" title="取JAVA命令的执行地址"></a>取JAVA命令的执行地址</h3><p>这里比较简单，最后一句调用了error_exit函数，对应了第一个参数就是要打印的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 读取JAVA命令的执行地址</span><br><span class="line">[ ! -e <span class="string">"$JAVA_HOME/bin/java"</span> ] &amp;&amp; JAVA_HOME=$HOME/jdk/java</span><br><span class="line">[ ! -e <span class="string">"$JAVA_HOME/bin/java"</span> ] &amp;&amp; JAVA_HOME=/usr/java</span><br><span class="line">[ ! -e <span class="string">"$JAVA_HOME/bin/java"</span> ] &amp;&amp; error_exit <span class="string">"Please set the JAVA_HOME variable in your environment, We need java(x64)!"</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># export 导出的临时环境变量，只适用当前SHELL连接</span></span><br><span class="line"><span class="comment"># 取JAVA 命令的执行地址,设置为环境变量</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME</span><br><span class="line"><span class="built_in">export</span> JAVA=<span class="string">"<span class="variable">$JAVA_HOME</span>/bin/java"</span></span><br><span class="line"><span class="comment"># $0 通常代表脚本名称本身，这里获取出来的结果是：$&#123;ROCKETMQ_HOME&#125;</span></span><br><span class="line"><span class="built_in">export</span> BASE_DIR=$(dirname <span class="variable">$0</span>)/..</span><br><span class="line"><span class="comment"># 因为需要启动JVM进程，需要把ROCKETMQ_HOME的conf和lib路径告诉JDK找依赖包以及相关的配置文件</span></span><br><span class="line"><span class="built_in">export</span> CLASSPATH=.:<span class="variable">$&#123;BASE_DIR&#125;</span>/conf:<span class="variable">$&#123;BASE_DIR&#125;</span>/lib/*:<span class="variable">$&#123;CLASSPATH&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>上面需要注意的点：</p>
+<ol>
+<li>export 导出的临时环境变量，只适用当前SHELL连接。</li>
+<li><code>$0</code> 代表当前j脚本名称本身，<code>../</code>和<code>dirname</code> 结合类似<code>../../</code>效果，<code>$(dirname $0)/..</code>为Rocketmq的安装目录地址。</li>
+<li>需要把<code>ROCKETMQ_HOME</code>的<code>conf</code>和<code>lib</code>路径告诉JDK找依赖包以及相关的配置文件。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">JAVA=<span class="string">"$JAVA_HOME/bin/java"</span></span><br><span class="line">BASE_DIR=$&#123;ROCKETMQ_HOME&#125;/bin</span><br><span class="line">CLASSPATH=.:$&#123;ROCKETMQ_HOME&#125;/bin/conf:$&#123;BASE_DIR&#125;/lib<span class="comment">/*:$&#123;CLASSPATH&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="JVM-配置部分"><a href="#JVM-配置部分" class="headerlink" title="JVM 配置部分"></a>JVM 配置部分</h2><p>之后往下的部分是JVM的配置部分，这部分我们拆分成两个部分来讲，最关键的是JVM参数配置部分，最开始是获取JVM 的GC_LOG地址，这里用<code>uname</code>识别操作系统，</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在 Darwin OS 上为 gc-log 初始化 RAMDisk 的大小（以 MB 为单位）</span></span><br><span class="line">DIR_SIZE_IN_MB=600</span><br><span class="line"></span><br><span class="line">choose_gc_log_directory()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"># Darwin 操作系统需要特殊处理，忽略</span></span><br><span class="line">    <span class="keyword">case</span> <span class="string">"`uname`"</span> <span class="keyword">in</span></span><br><span class="line">        Darwin)</span><br><span class="line">            <span class="keyword">if</span> [ ! -d <span class="string">"/Volumes/RAMDisk"</span> ]; <span class="keyword">then</span></span><br><span class="line">                <span class="comment"># create ram disk on Darwin systems as gc-log directory</span></span><br><span class="line">                DEV=`hdiutil attach -nomount ram://$((2 * 1024 * DIR_SIZE_IN_MB))` &gt; /dev/null</span><br><span class="line">                diskutil eraseVolume HFS+ RAMDisk <span class="variable">$&#123;DEV&#125;</span> &gt; /dev/null</span><br><span class="line">                <span class="built_in">echo</span> <span class="string">"Create RAMDisk /Volumes/RAMDisk for gc logging on Darwin OS."</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line">            GC_LOG_DIR=<span class="string">"/Volumes/RAMDisk"</span></span><br><span class="line">        ;;</span><br><span class="line">        *)</span><br><span class="line">         <span class="comment"># </span></span><br><span class="line">            <span class="comment"># check if /dev/shm exists on other systems</span></span><br><span class="line">            <span class="comment"># 检查 /dev/shm 是否存在于其他系统上</span></span><br><span class="line">            <span class="comment"># What Is /dev/shm And Its Practical Usage</span></span><br><span class="line">            <span class="comment"># https://www.cyberciti.biz/tips/what-is-devshm-and-its-practical-usage.html</span></span><br><span class="line">            <span class="keyword">if</span> [ -d <span class="string">"/dev/shm"</span> ]; <span class="keyword">then</span></span><br><span class="line">                GC_LOG_DIR=<span class="string">"/dev/shm"</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                GC_LOG_DIR=<span class="variable">$&#123;BASE_DIR&#125;</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line">        ;;</span><br><span class="line">    <span class="keyword">esac</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在Linux系统中，会检查 <code>/dev/shm</code>是否存在系统上，如果是就把GC_LOG挂载到<code>/dev/shm</code>，否则就当前RocketMQ的安装目录<code>GC_LOG_DIR=${BASE_DIR}</code>。</p>
+<p>这里补充一下<code>/dev/shm</code>是什么？在Linux中，这块空间起很大的作用，因为他不是硬盘而是一块内存空间，默认为VM的一半大小，使用<code>df -h</code>命令可以看到：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">xander@xander:~$ df -h</span><br><span class="line">Filesystem                         Size  Used Avail Use% Mounted on</span><br><span class="line">tmpfs                              389M  1.7M  388M   1% /run</span><br><span class="line">/dev/mapper/ubuntu--vg-ubuntu--lv   14G  7.3G  5.8G  56% /</span><br><span class="line">tmpfs                              1.9G     0  1.9G   0% /dev/shm</span><br><span class="line">tmpfs                              5.0M     0  5.0M   0% /run/lock</span><br><span class="line">/dev/sda2                          2.0G  247M  1.6G  14% /boot</span><br><span class="line">tmpfs                              389M  4.0K  389M   1% /run/user/1000</span><br></pre></td></tr></table></figure>
+
+<p>RocketMq为什么要使用这一块空间？</p>
+<p>tmpfs有以下优势：</p>
+<ol>
+<li><p>动态文件系统的大小。</p>
+</li>
+<li><p>tmpfs 文件系统会完全驻留在 RAM 中，拥有近似内存的读写速度。</p>
+</li>
+</ol>
+<p>而缺点仅仅是 tmpfs 数据在重新启动之后不会保留，可以做一些脚本备份的操作。</p>
+<h4 id="tmpfs-和-dev-shm-解释"><a href="#tmpfs-和-dev-shm-解释" class="headerlink" title="tmpfs 和 /dev/shm 解释"></a>tmpfs 和 /dev/shm 解释</h4><p>这块空间的专业名词叫做：tmpfs（虚拟内存系统），<strong>tmpfs最大的特点就是它的存储空间在VM(virtual memory)，VM是由linux内核里面的vm子系统管理的</strong>。</p>
+<p>VM中又划分为RM (real memory) 和 swap，RM 就是VM实际可用的内存空间，而swap是用于辅助VM在RM不够的时候牺牲硬盘作为内存空间使用，同样RM还会把不常用的数据放到Swap。</p>
+<p>tmpfps = RM (real memory) + swap。</p>
+<p>tmpfs默认的大小是RM的一半，假如你的物理内存是1024M，那么tmpfs默认的大小就是512M。可以通过mount命令扩大这块空间大小。</p>
+<p>tmpfps的存在意义是可以动态的扩容和缩小，并且只要不使用这块空间它本身没有任何的内存占用（0字节）（零成本还好用），而一旦使用则可以把读写停留在内存保证数据瞬间完成，但是代价是这块空间不具备记忆功能，重启之后不会被保留。</p>
+<p>参考资料：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuY3liZXJjaXRpLmJpei90aXBzL3doYXQtaXMtZGV2c2htLWFuZC1pdHMtcHJhY3RpY2FsLXVzYWdlLmh0bWw=" title="https://www.cyberciti.biz/tips/what-is-devshm-and-its-practical-usage.html">What Is /dev/shm And Its Practical Usage<i class="fa fa-external-link"></i></span></li>
+</ul>
+<h2 id="JVM核心参数"><a href="#JVM核心参数" class="headerlink" title="JVM核心参数"></a>JVM核心参数</h2><p>核心参数的部分就是JVM的启动参数配置，也是脚本最为核心部分。</p>
+<h2 id="小于JDK9的启动参数"><a href="#小于JDK9的启动参数" class="headerlink" title="小于JDK9的启动参数"></a>小于JDK9的启动参数</h2><p>对应了 <strong>gc_options</strong> 的上半部分，首先判断JDK版本小于9之前的情况：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$JAVA_MAJOR_VERSION</span>"</span> ] || [ <span class="string">"<span class="variable">$JAVA_MAJOR_VERSION</span>"</span> -lt <span class="string">"9"</span> ] ; <span class="keyword">then</span></span><br><span class="line">  <span class="comment"># 堆内存（初始堆内存）为 4 g，新生代 2g，其他空间为 2g。元空间初始化128m，最大的扩容元空间为320mb</span></span><br><span class="line">  JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -server -Xms4g -Xmx4g -Xmn2g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"</span></span><br><span class="line">  <span class="comment"># g1收集器在jdk11得到并行Full GC能力，而zgc在jdk11版本处于实验状态，这里选择了比较稳妥的 CMS 老年代垃圾回收器</span></span><br><span class="line">  <span class="comment"># UseCMSCompactAtFullCollection：CMS垃圾在进行了Full GC时，对老年代进行压缩整理，处理掉内存碎片</span></span><br><span class="line">  <span class="comment"># CMSParallelRemarkEnabled 使用CMS老年代收集器</span></span><br><span class="line">  JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -XX:+UseConcMarkSweepGC -XX:+UseCMSCompactAtFullCollection -XX:CMSInitiatingOccupancyFraction=70 -XX:+CMSParallelRemarkEnabled -XX:SoftRefLRUPolicyMSPerMB=0 -XX:+CMSClassUnloadingEnabled -XX:SurvivorRatio=8 -XX:-UseParNewGC"</span></span><br><span class="line">  JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -verbose:gc -Xloggc:<span class="variable">$&#123;GC_LOG_DIR&#125;</span>/rmq_srv_gc_%p_%t.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps"</span></span><br><span class="line">  JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=30m"</span></span><br></pre></td></tr></table></figure>
+
+<p>首先是JVM堆大小和元空间大小分配：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -server -Xms4g -Xmx4g -Xmn2g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="server"><a href="#server" class="headerlink" title="-server"></a>-server</h3><p>启用<code>-server</code>时新生代默认采用<strong>并行收集</strong>，其他情况下，默认不启用。<code>-server</code>策略为：新生代使用并行清除，老年代使用单线程<code>Mark-Sweep-Compact</code>的垃圾收集器。</p>
+<h3 id="堆大小设置"><a href="#堆大小设置" class="headerlink" title="堆大小设置"></a>堆大小设置</h3><p>设置JVM的堆大小，堆内存（初始堆内存）为 4g，新生代 2g，其他空间为 2g，元空间初始化128M，最大的扩容元空间为320M。</p>
+<blockquote>
+<p>如果是个人机器配置比较低，建议把这几个值调小一些。</p>
+</blockquote>
+<p>下面的参数比较关键，RocketMq在JDK8没有选择G1而是使用了CMS，因为G1收集器在jdk11才得到并行Full GC能力，而ZGC在JDK11版本处于实验状态，在JDK8 用不成熟的G1不太合适。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># UseCMSCompactAtFullCollection：CMS垃圾在进行了Full GC时，对老年代进行压缩整理，处理掉内存碎片</span></span><br><span class="line"><span class="comment"># CMSParallelRemarkEnabled 使用CMS老年代收集器</span></span><br><span class="line">JAVA_OPT=<span class="string">"<span class="variable">$&#123;JAVA_OPT&#125;</span> -XX:+UseConcMarkSweepGC -XX:+UseCMSCompactAtFullCollection -XX:CMSInitiatingOccupancyFraction=70 -XX:+CMSParallelRemarkEnabled -XX:SoftRefLRUPolicyMSPerMB=0 -XX:+CMSClassUnloadingEnabled -XX:SurvivorRatio=8 -XX:-UseParNewGC"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="UseCMSCompactAtFullCollection"><a href="#UseCMSCompactAtFullCollection" class="headerlink" title="UseCMSCompactAtFullCollection"></a>UseCMSCompactAtFullCollection</h3><p>CMS垃圾在进行了Full GC时，对老年代进行压缩整理，处理掉内存碎片</p>
+<h3 id="CMSParallelRemarkEnabled"><a href="#CMSParallelRemarkEnabled" class="headerlink" title="CMSParallelRemarkEnabled"></a>CMSParallelRemarkEnabled</h3><p>老年代收集器指定为CMS，在进行了Full GC时对老年代进行压缩整理，处理掉内存碎片。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseCMSCompactAtFullCollection</span><br></pre></td></tr></table></figure>
+
+<h3 id="CMS垃圾收集器"><a href="#CMS垃圾收集器" class="headerlink" title="CMS垃圾收集器"></a>CMS垃圾收集器</h3><p>这里补充一下CMS垃圾收集器的知识点：</p>
+<p>CMS是基于<strong>标记清除</strong>算法实现的多线程老年代垃圾回收器。CMS为<strong>响应时间优先</strong>的垃圾回收器，适合于应用服务器，如网络游戏，电商等和电信领域的应用。Rocketmq本身就是诞生于电商平台使用CMS是比较稳妥的。</p>
+<h3 id="CMS垃圾收集器特点"><a href="#CMS垃圾收集器特点" class="headerlink" title="CMS垃圾收集器特点"></a>CMS垃圾收集器特点</h3><ul>
+<li>FUll GC大部分时间和应用程序并行，代价是增加CPU开销。</li>
+<li>并发FULL GC短暂停顿。</li>
+<li>用户线程和回收线程并行。</li>
+</ul>
+<p>垃圾回收算法：标记清除算法</p>
+<p>之后是对应的CMS常用优化参数。</p>
+<h3 id="XX-UseCMSCompactAtFullCollection"><a href="#XX-UseCMSCompactAtFullCollection" class="headerlink" title="-XX:+UseCMSCompactAtFullCollection"></a>-XX:+UseCMSCompactAtFullCollection</h3><p>设置此参数之后，CMS垃圾在进行了Full GC时，对老年代进行压缩整理，处理掉内存碎片。RocketMq 的脚本也开启了每次Full Gc之后进行碎片整理。</p>
+<h3 id="XX-CMSFullGCsBeforeCompaction-1"><a href="#XX-CMSFullGCsBeforeCompaction-1" class="headerlink" title="-XX:CMSFullGCsBeforeCompaction=1"></a>-XX:CMSFullGCsBeforeCompaction=1</h3><p>FUll GC 之后对老年代进行压缩整理，处理掉内存碎片。RocketMq 的默认应对策略是积极的进行内存碎片整理，缩小老年代的大小，因为RocketMq需要的是高响应时间。</p>
+<h3 id="CMSInitiatingOccupancyFraction-70"><a href="#CMSInitiatingOccupancyFraction-70" class="headerlink" title="CMSInitiatingOccupancyFraction=70"></a>CMSInitiatingOccupancyFraction=70</h3><p><strong>CMSInitiatingOccupancyFraction=70</strong> 表示当老年代达到70%时，触发CMS垃圾回收。</p>
+<ul>
+<li>计算老年代最大使用率（_initiating_occupancy）</li>
+<li>大于等于0则直接取百分号</li>
+<li>小于0则根据公式来计算</li>
+</ul>
+<p>如果使用默认值，则老年代触发回收的比例是动态的，不同的JDK版本可能会有不同的默认值，</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">((100 - MinHeapFreeRatio) + </span><br><span class="line"> (double) ( CMSTriggerRatio * MinHeapFreeRatio) / 100.0) </span><br><span class="line"> / 100.0</span><br></pre></td></tr></table></figure>
+
+<h2 id="XX-SoftRefLRUPolicyMSPerMB-0"><a href="#XX-SoftRefLRUPolicyMSPerMB-0" class="headerlink" title="-XX:SoftRefLRUPolicyMSPerMB=0"></a>-XX:SoftRefLRUPolicyMSPerMB=0</h2><p>官方解释是：Soft reference 在虚拟机中比在客户集中存活的更长一些。</p>
+<p>先说一下结论，个人认为这个参数设置为0是<strong>不应该</strong>的，至少需要设置个1000或者500（半秒）的缓冲，为什么呢？</p>
+<p>我们<strong>假设我们不小心把这个值设置为0有什么后果呢</strong>？</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230214080954.png" alt=""></p>
+<p>如果<code>-XX:SoftRefLRUPolicyMSPerMB=0</code>，会导致上面clock公式的计算结果为0。</p>
+<p>这个结果为0，就是软饮用被频繁回收导致触发频繁的GC，JVM发现每次反射分配的对象马上就会被回收掉，然后接着又会通过代理生成代理对象，<strong>导致每次soft软引用的对象一旦分配就会马上被回收</strong>.</p>
+<p>结论就是这个值为0，<strong>反射机制导致动态代理类不断的被新增，但是这部分对象又被马上回收掉，导致方法区的垃圾对象越来越多</strong>，会导致很多垃圾无法完全回收。</p>
+<p>为什么RocketMq默认要把<code>-XX:SoftRefLRUPolicyMSPerMB=0</code>值设置为0？</p>
+<p>我们接着分析，<code>-XX:SoftRefLRUPolicyMSPerMB=0</code>，但是使用的是服务器模式（-server），在server模式下，会用 <strong>-Xmx</strong> 参数获取空闲空间大小。  </p>
+<p>空闲的空间越大，软引用就会活的越久，如果设置的值过大，很可能因为框架反射类创建的软引用过多但是因为存在空闲时间计算又没法回收的情况。</p>
+<p>把这个值设置为0，基本上就是说不让反射产生的一些meta对象在GC之后回收不掉，直接通过1次GC就给他摆平了。但是个人角度来看未免过于极端，个人认为设置为0是不合适的。</p>
+<blockquote>
+<p>参考案例：<br>这里在网上找到电子表格缓存业务因为设置 <strong>-XX:SoftRefLRUPolicyMSPerMB=0</strong> 导致的问题例子。<br>当JVM参数中配置了 <strong>-XX:SoftRefLRUPolicyMSPerMB=0</strong> 参数，这个参数是控制SoftReference缓存时间，而我们的电子表格的缓存都是存储SoftReference里边的，当设置了这个参数设置为0的时候，任意操作，只要是触发了gc，这时候就会清空了电子表格缓存，导致即使在内存足够的情况下，缓存也不生效了。</p>
+</blockquote>
+<p>清除频率可以用命令行参数<code>-XX:SoftRefLRUPolicyMSPerMB=&lt;N&gt;</code>来控制，可以指定每兆堆空闲空间的 Soft reference 保持存活（一旦它饮用后不可达了）的毫秒数，这意味着每兆堆中的空闲空间中的 soft reference 会（在最后一个强引用被回收之后）存活1秒钟。</p>
+<p>当然并不是什么时候 <strong>-XX:SoftRefLRUPolicyMSPerMB=0</strong>都是错的，因为 soft reference 只会在垃圾回收时才会被清除，而垃圾回收并不总在发生。系统默认为一秒，如果觉得客户端不需要任何保留，改为 <code>-XX:SoftRefLRUPolicyMSPerMB=0</code> 可以及时清理干净数据。</p>
+<p>RocketMq的做法个人理解为想要让垃圾回收尽可能的回收干净对象，因为RocketMq并不是十分吃JVM堆内存，更多的是需要页缓存，况且NameServ本身比较轻量级。</p>
+<p>还有一个原因是软引用这东西能不用就尽量不用，风险比较大。</p>
+<h3 id="XX-CMSClassUnloadingEnabled"><a href="#XX-CMSClassUnloadingEnabled" class="headerlink" title="-XX:+CMSClassUnloadingEnabled"></a>-XX:+CMSClassUnloadingEnabled</h3><p>老年代启用CMS，但默认是不会回收永久代(Perm)的。此处启用对Perm区启用类回收，防止Perm区内存垃圾对象堆满（<strong>需要与+CMSPermGenSweepingEnabled同时启用</strong>）。</p>
+<blockquote>
+<p><strong>-XX:+CMSPermGenSweepingEnabled</strong>：</p>
+<p>同上，为了避免Perm区满引起的Full GC，开启并发收集器回收Perm区选项。</p>
+</blockquote>
+<p>但是实际上这篇帖子上指出 <span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMzcxNzkzNy9jbXNwZXJtZ2Vuc3dlZXBpbmdlbmFibGVkLXZzLWNtc2NsYXNzdW5sb2FkaW5nZW5hYmxlZA==" title="https://stackoverflow.com/questions/3717937/cmspermgensweepingenabled-vs-cmsclassunloadingenabled">https://stackoverflow.com/questions/3717937/cmspermgensweepingenabled-vs-cmsclassunloadingenabled<i class="fa fa-external-link"></i></span></p>
+<p><code>-XX：+CMSClassUnloadEnabled</code>和 <code>-XX：+CMSPermGenSweepingEnabled</code> 在 Java 1.7 中不可用，但是选项<code>-XX：+CMSClassUnloadEnabled</code>对于Java 1.7仍然有效。换句话说在JDK1.7之后被建议使用<code>-XX：+CMSClassUnloadEnabled</code>。</p>
+<p>JVM1.7之前是什么情况？为什么会<strong>需要与+CMSPermGenSweepingEnabled同时启用</strong></p>
+<p>下面这篇文章有评论进行了解释：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jbG91ZC50ZW5jZW50LmNvbS9kZXZlbG9wZXIvYXNrL3NvZi8xMTQxODUvYW5zd2VyLzEwMjQxNTA5OA==" title="https://cloud.tencent.com/developer/ask/sof/114185/answer/102415098">用户对问题“CMSPermGenSweepingEnabled vs CMSClassUnloadingEnabled”的回答 - 问答 - 腾讯云开发者社区-腾讯云 (tencent.com)<i class="fa fa-external-link"></i></span></p>
+<p>1.6 JVM的<code>CMSPermGenSweepingEnabled</code>参数做的唯一事情就是打印消息，它的处理方式与1.5不同。要使<code>CMSClassUnloadingEnabled</code>生效，还必须设置<code>UseConcMarkSweepGC</code>。</p>
+<h3 id="XX-SurvivorRatio-8"><a href="#XX-SurvivorRatio-8" class="headerlink" title="-XX:SurvivorRatio=8"></a>-XX:SurvivorRatio=8</h3><p>CMS 用的是标记清除的算法，使用CMS还是传统的<strong>新生代和老年代的分代概念</strong>，这里RocketMq用的是默认的分代分区策略，给了新生代更多的使用空间。它定义了新生代中Eden区域和Survivor区域（From幸存区或To幸存区）的比例，默认为8，也就是说Eden占新生代的8/10，From幸存区和To幸存区各占新生代的1/10.</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230219212846.png" alt=""></p>
+<h3 id="UseParNewGC"><a href="#UseParNewGC" class="headerlink" title="-UseParNewGC"></a>-UseParNewGC</h3><p><code>-XX:+UseParNewGC</code> 设置年轻代为多线程收集。可与CMS收集同时使用，ParNew 在Serial基础上实现的<strong>多线程收集器</strong>。</p>
+<h3 id="日志参数配置"><a href="#日志参数配置" class="headerlink" title="日志参数配置"></a>日志参数配置</h3><p>总得来说 RocketMq 在JDK8的版本使用了老牌的<code>-XX:+UseConcMarkSweepGC</code> CMS垃圾收集器 和<code>-XX:+UseParNewGC</code> CMS垃圾 垃圾收集器。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-verbose:gc -Xloggc:<span class="variable">$&#123;GC_LOG_DIR&#125;</span>/rmq_srv_gc_%p_%t.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps<span class="string">"</span></span><br></pre></td></tr></table></figure>
+
+<p><code>-verbose:gc</code>和<code>-XX:+PrintGCDetails</code>在官方文档中有说明两者<strong>功能一样</strong>，都用于<strong>垃圾收集时的信息打印</strong>。</p>
+<p>但是也有不同点：</p>
+<p><strong>-verbose:gc</strong> 是 稳定版本，参见：<span class="exturl" data-url="aHR0cDovL2RvY3Mub3JhY2xlLmNvbS9qYXZhc2UvNy9kb2NzL3RlY2hub3Rlcy90b29scy93aW5kb3dzL2phdmEuaHRtbA==" title="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/java.html">http://docs.oracle.com/javase/7/docs/technotes/tools/windows/java.html<i class="fa fa-external-link"></i></span></p>
+<p><strong>-XX:+PrintGC</strong> 是非稳定版本。</p>
+<p><strong>-XX:+PrintGCDateStamps</strong>，日志中添加时间标志（日志每行开头显示自从JVM启动以来的时间，单位为秒）</p>
+<p>注意<code>-XX:+PrintGCDateStamps</code>  打印GC发生时的<span class="exturl" data-url="aHR0cHM6Ly9zby5jc2RuLm5ldC9zby9zZWFyY2g/cT3ml7bpl7TmiLMmc3BtPTEwMDEuMjEwMS4zMDAxLjcwMjA=" title="https://so.csdn.net/so/search?q=时间戳&spm=1001.2101.3001.7020">时间戳<i class="fa fa-external-link"></i></span>，搭配<code>-XX:+PrintGCDetails</code> 使用，<strong>不可以独立使用</strong></p>
+<p>日志输出示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2014-01-03T12:08:38.102-0100: [GC 66048K-&gt;53077K(251392K), 0,0959470 secs]</span><br><span class="line"></span><br><span class="line">2014-01-03T12:08:38.239-0100: [GC 119125K-&gt;114661K(317440K), 0,1421720 secs]</span><br></pre></td></tr></table></figure>
+
+<p><code>-XX:+UseGCLogFileRotation</code> 、<code>-XX:NumberOfGCLogFiles=5</code>、 <code>-XX:GCLogFileSize=30m</code>。UseGCLogFileRotation 会根据后面两个参数的设置不断的<strong>轮询替换GC日志</strong>，这里最多保留了150M的GC日志，后续再进行写入就会从第一个文件开始替换。</p>
+<blockquote>
+<p> 150M日志足够及时处理大部分问题，并且不会出现历史日志长期驻留磁盘的问题。但是这个参数需要谨慎设置，如果设置过小容易导致关键GC 日志丢失。</p>
+</blockquote>
+<h2 id="JDK9之后的启动参数"><a href="#JDK9之后的启动参数" class="headerlink" title="JDK9之后的启动参数"></a>JDK9之后的启动参数</h2><p>应该说是比较关键的版本，很明显都是围绕G1垃圾收集器做的优化：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span></span><br><span class="line">  JAVA_OPT=<span class="string">"$&#123;JAVA_OPT&#125; -server -Xms4g -Xmx4g -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"</span></span><br><span class="line">  JAVA_OPT=<span class="string">"$&#123;JAVA_OPT&#125; -XX:+UseG1GC -XX:G1HeapRegionSize=16m -XX:G1ReservePercent=25 -XX:InitiatingHeapOccupancyPercent=30 -XX:SoftRefLRUPolicyMSPerMB=0"</span></span><br><span class="line">  JAVA_OPT=<span class="string">"$&#123;JAVA_OPT&#125; -Xlog:gc*:file=$&#123;GC_LOG_DIR&#125;/rmq_srv_gc_%p_%t.log:time,tags:filecount=5,filesize=30M"</span></span><br></pre></td></tr></table></figure>
+
+<p>第一行</p>
+<p>堆内存分配基本没啥区别：堆内存（初始堆内存）为 4g，新生代 2g，其他空间为 2g。元空间初始化128m，最大的扩容元空间为320mb。</p>
+<p>第二行</p>
+<p>垃圾回收器的关键配置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseG1GC -XX:G1HeapRegionSize=<span class="number">16</span>m -XX:G1ReservePercent=<span class="number">25</span> -XX:InitiatingHeapOccupancyPercent=<span class="number">30</span> -XX:SoftRefLRUPolicyMSPerMB=<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="XX-UseG1GC"><a href="#XX-UseG1GC" class="headerlink" title="-XX:+UseG1GC"></a>-XX:+UseG1GC</h3><p>使用G1垃圾收集器。需要注意JDK8的G1垃圾收集器是“残血”版本。</p>
+<h3 id="XX-G1HeapRegionSize"><a href="#XX-G1HeapRegionSize" class="headerlink" title="-XX:G1HeapRegionSize"></a>-XX:G1HeapRegionSize</h3><p>一个Region的大小可以通过参数<code>-XX:G1HeapRegionSize</code>设定，取值范围从1M到32M，且是2的指数。如果不设定，那么G1会根据Heap大小自动决定。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230219215610.png" alt=""></p>
+<p>关键部分为<code>region_size = 1 &lt;&lt; region_size_log</code>，左移的操作也就是2的倍数的概念。最后的参数判断会让region最大为32M，最小为1M，不允许超过这个范围。</p>
+<h3 id="XX-G1ReservePercent"><a href="#XX-G1ReservePercent" class="headerlink" title="-XX:G1ReservePercent"></a>-XX:G1ReservePercent</h3><p>`-XX:G1ReservePercent G1会保留一部分堆内存用来防止分配不了的情况，默认是10。</p>
+<p>官方对于这个参数的介绍如下：</p>
+<blockquote>
+<p>-XX:G1ReservePercent=10<br>Sets the percentage of reserve memory to keep free so as to reduce the risk of to-space overflows. The default is 10 percent. When you increase or decrease the percentage, make sure to adjust the total Java heap by the same amount. This setting is not available in Java HotSpot VM, build&#x20;<br>设置保留内存的百分比，以减少到空间溢出的风险。默认是10%。当你增加或减少这个百分比时，请确保预留足够的空间并且调整Java堆大小。注意这个设置在Java HotSpot VM中是不可用的。</p>
+</blockquote>
+<p>扩大这个数值可以保证在进行GC 的时候提供更多堆内存保证存活空间存放晋升老年代的Region.</p>
+<p><strong>G1为分配担保预留的空间比例</strong>：通过<code>-XX:G1ReservePercent</code>指定，默认<strong>10%</strong>。也就是老年代会预留10%的空间来给新生代的对象晋升，如果经常发生新生代晋升失败而导致 Full GC，那么可以适当调高此阈值。但是调高此值同时也意味着<strong>降低了老年代的实际可用空间</strong>。</p>
+<h3 id="XX-InitiatingHeapOccupancyPercent-30"><a href="#XX-InitiatingHeapOccupancyPercent-30" class="headerlink" title="-XX:InitiatingHeapOccupancyPercent=30"></a>-XX:InitiatingHeapOccupancyPercent=30</h3><p><strong>触发全局并发标记的老年代使用占比</strong>，默认值45%。</p>
+<p>默认值45%的含义是也就是老年代占堆的比例超过45%。如果Mixed GC周期结束后老年代使用率还是超过45%,那么会再次触发全局并发标记过程，这样就会导致频繁的老年代GC，影响应用吞吐量。</p>
+<p>当然调大这个值的代价是可能导致年轻代谨升失败而导致FULL GC。RocketMq使用30的设置是让老年代提早的触发GC并且回收垃圾。</p>
+<h3 id="XX-SoftRefLRUPolicyMSPerMB-0-1"><a href="#XX-SoftRefLRUPolicyMSPerMB-0-1" class="headerlink" title="-XX:SoftRefLRUPolicyMSPerMB=0"></a>-XX:SoftRefLRUPolicyMSPerMB=0</h3><p><code>-XX:SoftRefLRUPolicyMSPerMB=N</code>这个参数在是JVM系统参数和垃圾收集器无关。</p>
+<p><code>-XX:SoftRefLRUPolicyMSPerMB</code>参数，可以指定每兆堆空闲空间的软引用的存活时间，默认值是1000，也就是1秒。可以调低这个参数来触发更早的回收软引用。如果调高的话会有更多的存活数据，可能在GC后堆占用空间比会增加。 对于软引用，还是建议尽量少用，会增加存活数据量，增加GC的处理时间。</p>
+<h3 id="日志参数配置-1"><a href="#日志参数配置-1" class="headerlink" title="日志参数配置"></a>日志参数配置</h3><p>配置和之前的版本是一样的，这里直接忽略了。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$&#123;JAVA_OPT&#125;</span> -Xlog:gc*:file=<span class="variable">$&#123;GC_LOG_DIR&#125;</span>/rmq_srv_gc_%p_%t.log:time,tags:filecount=5,filesize=30M<span class="string">"</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>整个NameServ的启动脚本不算太复杂，这里简单归纳一下比较重要的点：</p>
+<ul>
+<li>JDK9之前没有用G1，因为不成熟，选择传统的CMS+ParNew经典组合。</li>
+<li>JDK9之后使用的是G1垃圾收集器，并且参数都是尽可能的给新生代预留空间。</li>
+<li>NameServ 新生代的压力会比较大，整体思路是尽可能的减少垃圾，通过积极的GC保证垃圾尽可能被回收。</li>
+</ul>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>个人认为这种学习方式一举多得，还可以看到不少Shell脚本的使用技巧，挺不错的。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/02/02/usegclogfilerotation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1321,125 +1620,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/08/24/httphuancun/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/24/httphuancun/" class="post-title-link" itemprop="url">【HTTP】HTTP 面试题 - 缓存技术</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-08-24 21:01:55" itemprop="dateCreated datePublished" datetime="2022-08-24T21:01:55+08:00">2022-08-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/HTTP/" itemprop="url" rel="index"><span itemprop="name">HTTP</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/08/24/httphuancun/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/24/httphuancun/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>11k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>10 分钟</span>
-            </span>
-            <div class="post-description">HTTP缓存技术</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="HTTP-缓存技术"><a href="#HTTP-缓存技术" class="headerlink" title="HTTP 缓存技术"></a>HTTP 缓存技术</h1><p>缓存技术出现在HTTP1.1当中，目的是尽可能的减少对于服务器进行请求。为了实现缓存技术，HTTP设计者在头部字段增加针对缓存的头部字段。HTTP 缓存有两种方式，<strong>强制缓存</strong>和<strong>协商缓存</strong>。</p>
-<h2 id="认识缓存"><a href="#认识缓存" class="headerlink" title="认识缓存"></a>认识缓存</h2><p>介绍具体的缓存技术之前，我们先来认识一下HTTP中的缓存特点。</p>
-<p>注意<strong>缓存只对获取文件有效</strong>，从服务器上拿到文件然后放入本地缓存，下次再获取则从本地缓存区获取文件，这样可以减轻服务器压力。</p>
-<p>缓存技术在HTTP中的体现是通过几个请求字段的配合，按照一定的判断流程控制。HTTP1.1主要通过下面三个请求头部信息判定缓存有效性：</p>
-<ul>
-<li><code>Cache-Control</code>：服务器可以返回此字段指定浏览器和中间缓存应该存活多久。</li>
-<li><code>ETag</code>：浏览器缓存过期的时候，通过Etag令牌检查文件是否出现改变。Etag 是特殊算法计算的唯一哈希值。</li>
-<li><code>Last-Modified</code>：和Etag用途相同，但是它是基于时间的策略检查是否更改。</li>
-</ul>
-<p>这三个字段基本囊括大部分HTTP缓存技术的应用场景。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/08/24/httphuancun/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1509,7 +1689,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-count">233</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1601,7 +1781,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">28:45</span>
+    <span title="站点阅读时长">28:48</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>
