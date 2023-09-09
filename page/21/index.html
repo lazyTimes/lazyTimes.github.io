@@ -197,7 +197,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/springbootpac/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/08/29/note19/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -211,7 +211,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/07/26/springbootpac/" class="post-title-link" itemprop="url">Springboot 打包的一些学习</a>
+            <a href="/2020/08/29/note19/" class="post-title-link" itemprop="url">简单分析Java的HashMap.entrySet()的实现</a>
         </h2>
 
         <div class="post-meta">
@@ -221,14 +221,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-07-26 14:23:01" itemprop="dateCreated datePublished" datetime="2020-07-26T14:23:01+08:00">2020-07-26</time>
+              <time title="创建时间：2020-08-29 22:34:22" itemprop="dateCreated datePublished" datetime="2020-08-29T22:34:22+08:00">2020-08-29</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -236,7 +236,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">java-java基础</span></a>
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
                 </span>
             </span>
 
@@ -249,8 +249,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/07/26/springbootpac/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/springbootpac/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/08/29/note19/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/29/note19/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -260,16 +260,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.1k</span>
+              <span>2.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
-            <div class="post-description">Springboot打包</div>
+            <div class="post-description">hashmap的entrySet是如何实现的</div>
 
         </div>
       </header>
@@ -280,235 +280,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI3MDI1NDcvYXJ0aWNsZS9kZXRhaWxzLzk1MTgwMjU2" title="https://blog.csdn.net/u012702547/article/details/95180256">https://blog.csdn.net/u012702547/article/details/95180256<i class="fa fa-external-link"></i></span></p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zODE4NzMxNy9hcnRpY2xlL2RldGFpbHMvODI2ODg5MDY=" title="https://blog.csdn.net/weixin_38187317/article/details/82688906">https://blog.csdn.net/weixin_38187317/article/details/82688906<i class="fa fa-external-link"></i></span></p>
-<p>制作七牛-spring-boot-starter并上传中央仓库 <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zODE4NzMxNy9hcnRpY2xlL2RldGFpbHMvODI3MjM3NTg=" title="https://blog.csdn.net/weixin_38187317/article/details/82723758">https://blog.csdn.net/weixin_38187317/article/details/82723758<i class="fa fa-external-link"></i></span></p>
-<blockquote>
-<p>说明： 依照七牛云自己实现了一个springboot，已上传中央仓库 来源博客： <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zODE4NzMxNy9hcnRpY2xlL2RldGFpbHMvODI2ODg5MDY=" title="https://blog.csdn.net/weixin_38187317/article/details/82688906">https://blog.csdn.net/weixin_38187317/article/details/82688906<i class="fa fa-external-link"></i></span> 目的：学习一下如何springboot 引入另一个springboot 的service层，</p>
-</blockquote>
-<h1 id="Spring-Boot-打包成的可执行-jar-，为什么不能被其他项目依赖？"><a href="#Spring-Boot-打包成的可执行-jar-，为什么不能被其他项目依赖？" class="headerlink" title="Spring Boot 打包成的可执行 jar ，为什么不能被其他项目依赖？"></a>Spring Boot 打包成的可执行 jar ，为什么不能被其他项目依赖？</h1><p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI3MDI1NDcvYXJ0aWNsZS9kZXRhaWxzLzk1MTgwMjU2" title="https://blog.csdn.net/u012702547/article/details/95180256">https://blog.csdn.net/u012702547/article/details/95180256<i class="fa fa-external-link"></i></span></p>
-<blockquote>
-<p>说明：这里解读了为什么不能使用springboot 的插件打包</p>
-</blockquote>
-<h1 id="SpringBoot-如何手动引入本地的jar包-并利用maven成功打包"><a href="#SpringBoot-如何手动引入本地的jar包-并利用maven成功打包" class="headerlink" title="SpringBoot 如何手动引入本地的jar包 并利用maven成功打包"></a>SpringBoot 如何手动引入本地的jar包 并利用maven成功打包</h1><ul>
-<li>参考博客 <span class="exturl" data-url="aHR0cHM6Ly93d3cuamF2YXR0LmNvbS9wLzg0OTY5" title="https://www.javatt.com/p/84969">https://www.javatt.com/p/84969<i class="fa fa-external-link"></i></span></li>
-<li>需要执行如下命令： <code>mvn install:install-file -Dfile=./qiniu-spring-boot-starter-0.2-RELEASE.jar -DgroupId=com.zxd -DartifactId=myquartz -Dversion=8 -Dpackaging=jar</code></li>
-<li>Maven将自己的jar包引入本地库中 <span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC9jZWYxYmM2NTU4NGQ=" title="https://www.jianshu.com/p/cef1bc65584d">https://www.jianshu.com/p/cef1bc65584d<i class="fa fa-external-link"></i></span></li>
-</ul>
-<h1 id="Spring-Boot-制作一个自己的-Starter"><a href="#Spring-Boot-制作一个自己的-Starter" class="headerlink" title="Spring Boot 制作一个自己的 Starter"></a>Spring Boot 制作一个自己的 Starter</h1><p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dvMTgyMzcwOTU1NzkvYXJ0aWNsZS9kZXRhaWxzLzgxMTk3MjQ1I+mHjeeCuee8luWGmS1hdXRvY29uZmlndXJlLeexuw==" title="https://blog.csdn.net/wo18237095579/article/details/81197245#重点编写-autoconfigure-类">https://blog.csdn.net/wo18237095579/article/details/81197245#重点编写-autoconfigure-类<i class="fa fa-external-link"></i></span></p>
-<h1 id="Springboot-打Jar包，Maven完美解决本地Jar包自动打入Springboot-Jar包中"><a href="#Springboot-打Jar包，Maven完美解决本地Jar包自动打入Springboot-Jar包中" class="headerlink" title="Springboot 打Jar包，Maven完美解决本地Jar包自动打入Springboot Jar包中"></a>Springboot 打Jar包，Maven完美解决本地Jar包自动打入Springboot Jar包中</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuc29qc29uLmNvbS9ibG9nLzI1My5odG1s" title="https://www.sojson.com/blog/253.html">https://www.sojson.com/blog/253.html<i class="fa fa-external-link"></i></span></p>
-<h1 id="Maven将自己的jar包引入本地库中"><a href="#Maven将自己的jar包引入本地库中" class="headerlink" title="Maven将自己的jar包引入本地库中"></a>Maven将自己的jar包引入本地库中</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC9jZWYxYmM2NTU4NGQ=" title="https://www.jianshu.com/p/cef1bc65584d">https://www.jianshu.com/p/cef1bc65584d<i class="fa fa-external-link"></i></span></p>
-<p>#　制作SpringBoot的jar给其他项目使用需要注意的点 <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zODE4NzMxNy9hcnRpY2xlL2RldGFpbHMvODI2ODg5MDY=" title="https://blog.csdn.net/weixin_38187317/article/details/82688906">https://blog.csdn.net/weixin_38187317/article/details/82688906<i class="fa fa-external-link"></i></span></p>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/win10readss/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/win10readss/" class="post-title-link" itemprop="url">WIN10系统安装与U盘系统制作教程</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-26 14:21:24" itemprop="dateCreated datePublished" datetime="2020-07-26T14:21:24+08:00">2020-07-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/win10readss/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/win10readss/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>126</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-            <div class="post-description">WIN10系统安装与U盘系统制作教程</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="装机技巧系列（二）：系统安装之Windows-10启动盘制作"><a href="#装机技巧系列（二）：系统安装之Windows-10启动盘制作" class="headerlink" title="装机技巧系列（二）：系统安装之Windows 10启动盘制作"></a>装机技巧系列（二）：系统安装之Windows 10启动盘制作</h1><p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8zNjQ5NTc3MQ==" title="https://zhuanlan.zhihu.com/p/36495771">https://zhuanlan.zhihu.com/p/36495771<i class="fa fa-external-link"></i></span></p>
-<h1 id="重装系统安装win10系统-激活，纯小白教程"><a href="#重装系统安装win10系统-激活，纯小白教程" class="headerlink" title="重装系统安装win10系统+激活，纯小白教程"></a>重装系统安装win10系统+激活，纯小白教程</h1><p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8xMTc0Njc1NzA=" title="https://zhuanlan.zhihu.com/p/117467570">https://zhuanlan.zhihu.com/p/117467570<i class="fa fa-external-link"></i></span></p>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/jitang/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/jitang/" class="post-title-link" itemprop="url">一点鸡汤</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-26 14:19:51" itemprop="dateCreated datePublished" datetime="2020-07-26T14:19:51+08:00">2020-07-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/jitang/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/jitang/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-            <div class="post-description">摘抄网上</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="网上查看"><a href="#网上查看" class="headerlink" title="网上查看"></a>网上查看</h1><p>Java学习这一部分其实也算是今天的重点，这一部分用来回答很多群里的朋友所问过的问题，那就是我你是如何学习Java的，能不能给点建议？今天我是打算来点干货，因此咱们就不说一些学习方法和技巧了，直接来谈每个阶段要学习的内容甚至是一些书籍。这一部分的内容，同样适用于一些希望转行到Java的同学。</p>
+          <h1 id="简单分析Java的HashMap-entrySet-的实现"><a href="#简单分析Java的HashMap-entrySet-的实现" class="headerlink" title="简单分析Java的HashMap.entrySet()的实现"></a>简单分析Java的HashMap.entrySet()的实现</h1><p>转载自：<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zMDgwNzc3OS9hcnRpY2xlL2RldGFpbHMvOTk1NjYwMTY=" title="https://blog.csdn.net/weixin_30807779/article/details/99566016">https://blog.csdn.net/weixin_30807779/article/details/99566016<i class="fa fa-external-link"></i></span></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/07/26/jitang/#more" rel="contents">
+              <a class="btn" href="/2020/08/29/note19/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -532,7 +307,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/compare1/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/08/29/note18/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -546,7 +321,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/07/26/compare1/" class="post-title-link" itemprop="url">【数据对比】综合分析百度情感分析以及华为情感分析的差异，我有了如下结果</a>
+            <a href="/2020/08/29/note18/" class="post-title-link" itemprop="url">如何导出表结构（navicat）</a>
         </h2>
 
         <div class="post-meta">
@@ -556,7 +331,237 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-07-26 14:17:27" itemprop="dateCreated datePublished" datetime="2020-07-26T14:17:27+08:00">2020-07-26</time>
+              <time title="创建时间：2020-08-29 22:02:28" itemprop="dateCreated datePublished" datetime="2020-08-29T22:02:28+08:00">2020-08-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/29/note18/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/29/note18/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+            <div class="post-description">如何导出表结构（navicat）</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="如何导出表结构（navicat）"><a href="#如何导出表结构（navicat）" class="headerlink" title="如何导出表结构（navicat）"></a>如何导出表结构（navicat）</h1><h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><p>我需要将表复制到 markdow 或者 word里面的时候</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/08/29/note18/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/08/29/2020qingbao/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/29/2020qingbao/" class="post-title-link" itemprop="url">2020 轻薄本怎么选</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-29 21:27:02" itemprop="dateCreated datePublished" datetime="2020-08-29T21:27:02+08:00">2020-08-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/29/2020qingbao/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/29/2020qingbao/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+            <div class="post-description">如何选择笔记本</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="2020-轻薄本怎么选"><a href="#2020-轻薄本怎么选" class="headerlink" title="2020 轻薄本怎么选"></a>2020 轻薄本怎么选</h1><h2 id="前情提示"><a href="#前情提示" class="headerlink" title="前情提示"></a>前情提示</h2><p><span class="exturl" data-url="aHR0cHM6Ly9wb3N0LnNtemRtLmNvbS9wL2Fkd2dxNDh6Lz9zZW5kX2J5PTIyNzA2Nzg0MjgmYW1wO2Zyb209b3RoZXImYW1wO2ludml0ZV9jb2RlPXpkbTMzZDk2dnNpbnY=" title="https://post.smzdm.com/p/adwgq48z/?send_by=2270678428&amp;from=other&amp;invite_code=zdm33d96vsinv">https://post.smzdm.com/p/adwgq48z/?send_by=2270678428&amp;from=other&amp;invite_code=zdm33d96vsinv<i class="fa fa-external-link"></i></span></p>
+<h2 id="追求性价比："><a href="#追求性价比：" class="headerlink" title="追求性价比："></a>追求性价比：</h2><p>2999元：联想扬天V14（AMD）</p>
+<p>3400元： 战66（AMD）</p>
+<p>3700元：联想小新air14或ThinkPad E14（AMD ）</p>
+<p>4200元：小新pro13（AMD）</p>
+<p>4500元：ThinkPad T14（AMD）</p>
+<p>4700元：惠普战X（AMD）</p>
+<p>4999元：华为matebook14（AMD）</p>
+<p>4999元：ThinkPad X13（AMD）</p>
+<p>5671元：ThinkPad T14s（AMD）</p>
+<p>8099元：官翻MacBook pro13（intel），没错，我认为它具备一定性价比</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/08/29/2020qingbao/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/08/22/note16/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/22/note16/" class="post-title-link" itemprop="url">显示器怎么选？</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-22 21:10:06" itemprop="dateCreated datePublished" datetime="2020-08-22T21:10:06+08:00">2020-08-22</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
@@ -584,8 +589,421 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/07/26/compare1/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/compare1/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/08/22/note16/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/22/note16/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>969</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+            <div class="post-description">显示器怎么选？</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="一图流："><a href="#一图流：" class="headerlink" title="一图流："></a>一图流：</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200822204710.png?ynotemdtimestamp=1598060052847" alt="img"></p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200822204751.png?ynotemdtimestamp=1598060052847" alt="img"></p>
+<h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>选显示器要注意以下几点：</p>
+<ol>
+<li>自己的需求：看电影？办公？打游戏</li>
+<li>尺寸大小</li>
+<li>性价比</li>
+</ol>
+<h2 id="屏幕厂商的排行"><a href="#屏幕厂商的排行" class="headerlink" title="屏幕厂商的排行"></a>屏幕厂商的排行</h2><p>一线：三星、LG、夏普、友达</p>
+<p>二线：京东方、</p>
+<p>二点五线：奇美（原因是屏幕普遍偏黄，偏暖）</p>
+<h1 id="电脑尺寸："><a href="#电脑尺寸：" class="headerlink" title="电脑尺寸："></a>电脑尺寸：</h1><h2 id="1M-以下的桌子"><a href="#1M-以下的桌子" class="headerlink" title="1M 以下的桌子"></a>1M 以下的桌子</h2><ol>
+<li>15、16、17 寸</li>
+<li>最好不要超过27寸</li>
+</ol>
+<h2 id="1M以上的桌子（1-2M-0-6）"><a href="#1M以上的桌子（1-2M-0-6）" class="headerlink" title="1M以上的桌子（1.2M - *0.6）"></a>1M以上的桌子（1.2M - *0.6）</h2><ol>
+<li>27 寸</li>
+<li>29寸</li>
+</ol>
+<h2 id="1-4M-0-8m"><a href="#1-4M-0-8m" class="headerlink" title="1.4M * 0.8m"></a>1.4M * 0.8m</h2><p>32 寸以上</p>
+<h1 id="色彩"><a href="#色彩" class="headerlink" title="色彩"></a>色彩</h1><h2 id="NTSC"><a href="#NTSC" class="headerlink" title="NTSC:"></a>NTSC:</h2><p>是一种美国的电视的标准，一般认为72%的NTSC就可以认为是高色准的屏幕，而设计类专业也最好以这一标准为参考</p>
+<p>低色域：45%</p>
+<p>高色域：72%</p>
+<h2 id="sRGB"><a href="#sRGB" class="headerlink" title="sRGB:"></a>sRGB:</h2><p>微软联合HP、三菱、爱普生等厂商联合开发的sRGB(<em>standard Red GreenBlue</em>)通用色彩标准，受微软强大用户群体的影响力的威慑，绝大多数的数码图像采集设备厂<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS/llYbpg70=" title="https://baike.baidu.com/item/商都">商都<i class="fa fa-external-link"></i></span>已经全线支持sRGB标准</p>
+<p>标准值：越接近100%说明色彩管理越好，而更高的则认为色域更好</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200822205047.png?ynotemdtimestamp=1598060052847" alt="img"></p>
+<h2 id="色差："><a href="#色差：" class="headerlink" title="色差："></a>色差：</h2><p>使用deltaE =&gt; △E</p>
+<p>△E&gt; 大于6：人眼可辨的色差</p>
+<p>△E &gt; 6 and △E &lt; 3 ：经过专业训练的人员可以辨别</p>
+<p>△E &lt; 3 ：肉眼以及专业训练基本看不出色差的屏幕</p>
+<p>专业设计</p>
+<p>△E &lt; 1 :基本无法分辨</p>
+<h1 id="分辨率"><a href="#分辨率" class="headerlink" title="分辨率"></a>分辨率</h1><p>1920*1080 =&gt; 24 寸</p>
+<h1 id="刷新率"><a href="#刷新率" class="headerlink" title="刷新率"></a>刷新率</h1><p>计算方式：1秒可以刷新多少次</p>
+<blockquote>
+<p>例如：</p>
+<p>60HZ 代表一秒可以显示60张图片</p>
+<p>144HZ 代表一秒可以显示144张图片</p>
+<p>越高的刷新率对于FPS游戏有很大的影响</p>
+</blockquote>
+<h2 id="灰阶响应时间："><a href="#灰阶响应时间：" class="headerlink" title="灰阶响应时间："></a>灰阶响应时间：</h2><p>简单概括：红绿蓝三原色切换的时间</p>
+<p>响应时间：这个表现的事灰阶的响应时间</p>
+<h1 id="面板类型："><a href="#面板类型：" class="headerlink" title="面板类型："></a>面板类型：</h1><h2 id="TN"><a href="#TN" class="headerlink" title="TN:"></a>TN:</h2><p>TN屏作为旧时代的产物本来应该淘汰了，但是由于电竞行业的兴起，又重回市场</p>
+<p>优点：</p>
+<ol>
+<li>价格便宜</li>
+<li>延迟低（可以达到最低的1 ms）</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>可视角度低</li>
+<li>色差大，色彩表现不佳</li>
+</ol>
+<h2 id="IPS："><a href="#IPS：" class="headerlink" title="IPS："></a>IPS：</h2><p>优点：</p>
+<ol>
+<li>可视角度大</li>
+<li>色彩表现基VA和TN屏幕之间</li>
+<li>目前主流屏幕</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>屏幕漏光，不可避免</li>
+</ol>
+<h2 id="VA："><a href="#VA：" class="headerlink" title="VA："></a>VA：</h2><p>优点：</p>
+<ol>
+<li>色彩表现比IPS更好</li>
+<li>多为曲面屏</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>响应低</li>
+<li>基本为三星屏幕</li>
+</ol>
+<h2 id="PLS："><a href="#PLS：" class="headerlink" title="PLS："></a>PLS：</h2><p>整体类似IPS</p>
+<h1 id="硬件优化"><a href="#硬件优化" class="headerlink" title="硬件优化"></a>硬件优化</h1><h2 id="Free-sync"><a href="#Free-sync" class="headerlink" title="Free-sync"></a>Free-sync</h2><p>AMD研发</p>
+<p>FreeSync<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS/mmL7npLrlmagvMzYyNzIy" title="https://baike.baidu.com/item/显示器/362722">显示器<i class="fa fa-external-link"></i></span>是指自身搭载FreeSync技术的显示设备，此类显示器特点在于能够解决画面撕裂以及卡顿等问题</p>
+<h2 id="G-sync"><a href="#G-sync" class="headerlink" title="G-sync:"></a>G-sync:</h2><p>英特尔研发</p>
+<blockquote>
+<p>两者都只有在<strong>DP</strong>接口下面才会有作用</p>
+</blockquote>
+<h1 id="参考视频优选"><a href="#参考视频优选" class="headerlink" title="参考视频优选"></a>参考视频优选</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL0JWMWI0NDExOTc4TS8/c3BtX2lkX2Zyb209dHJpZ2dlcl9yZWxvYWQ=" title="https://www.bilibili.com/video/BV1b4411978M/?spm_id_from=trigger_reload">https://www.bilibili.com/video/BV1b4411978M/?spm_id_from=trigger_reload<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/08/22/note15/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/22/note15/" class="post-title-link" itemprop="url">RestTemplate使用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-22 19:34:40" itemprop="dateCreated datePublished" datetime="2020-08-22T19:34:40+08:00">2020-08-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/22/note15/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/22/note15/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+            <div class="post-description">RestTemplate</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="RestTemplate介绍"><a href="#RestTemplate介绍" class="headerlink" title="RestTemplate介绍"></a><code>RestTemplate</code>介绍</h1><h2 id="借鉴"><a href="#借鉴" class="headerlink" title="借鉴"></a>借鉴</h2><p><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vcG9zdC82ODQ0OTAzODQyMDY1MTU0MDYx" title="https://juejin.im/post/6844903842065154061">https://juejin.im/post/6844903842065154061<i class="fa fa-external-link"></i></span> 掘金</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/08/22/note15/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/08/22/note13/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/22/note13/" class="post-title-link" itemprop="url">蓝牙应该怎么选？</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-22 19:33:25" itemprop="dateCreated datePublished" datetime="2020-08-22T19:33:25+08:00">2020-08-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/22/note13/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/22/note13/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>493</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+            <div class="post-description">蓝牙应该怎么选</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="先说说总结"><a href="#先说说总结" class="headerlink" title="先说说总结"></a>先说说总结</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmlsaWJpbGkuY29tL3ZpZGVvL0JWMWY0NDExTTdSMQ==" title="https://www.bilibili.com/video/BV1f4411M7R1">https://www.bilibili.com/video/BV1f4411M7R1<i class="fa fa-external-link"></i></span> 文章的最终来源</p>
+<ol>
+<li>蓝牙 5.0 的耳机连接更加稳定、范围更大、更省电</li>
+<li>一般情况下使用SBC或者AAC的编码足够<ol>
+<li>华为的部分机型格式：HWA</li>
+<li>索尼的格式：LDAC</li>
+<li>高通的特殊格式：aptX</li>
+</ol>
+</li>
+<li>蓝牙耳机不可能没有延迟，只能尽量减小、</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/08/22/note13/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/08/02/note12/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/02/note12/" class="post-title-link" itemprop="url">【Mysql 】Mysql zip 包安装指南</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-02 10:28:05" itemprop="dateCreated datePublished" datetime="2020-08-02T10:28:05+08:00">2020-08-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/02/note12/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/02/note12/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -604,7 +1022,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>2 分钟</span>
             </span>
-            <div class="post-description">华为云和百度云对比</div>
+            <div class="post-description">Mysql,Zip</div>
 
         </div>
       </header>
@@ -615,780 +1033,346 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>某一天，经理找到我，说BOSS需要情感分析对比的结果，我这边能不能研究一下几家情感分析的平台，按照（巴拉巴拉）的要求进行分析，于是就有了这篇文章……</p>
-<h1 id="为什么要进行对比"><a href="#为什么要进行对比" class="headerlink" title="为什么要进行对比"></a>为什么要进行对比</h1><ol>
-<li>公司任务</li>
-<li>了解下情感分析</li>
-<li>对比几家情感分析</li>
+          <h1 id="【Mysql-】Mysql-zip-包安装指南"><a href="#【Mysql-】Mysql-zip-包安装指南" class="headerlink" title="【Mysql 】Mysql zip 包安装指南"></a>【Mysql 】Mysql zip 包安装指南</h1><h1 id="1-下载zip-包"><a href="#1-下载zip-包" class="headerlink" title="1. 下载zip 包"></a>1. 下载zip 包</h1><h2 id="地址："><a href="#地址：" class="headerlink" title="地址："></a>地址：</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2dldC9Eb3dubG9hZHMvTXlTUUwtNS43L215c3FsLTUuNy4zMS13aW54NjQuemlw" title="https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.31-winx64.zip">https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.31-winx64.zip<i class="fa fa-external-link"></i></span></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/08/02/note12/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/note12/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/26/note12/" class="post-title-link" itemprop="url">Nodejs安装教程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-26 22:37:22" itemprop="dateCreated datePublished" datetime="2020-07-26T22:37:22+08:00">2020-07-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Nodejs/" itemprop="url" rel="index"><span itemprop="name">Nodejs</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/07/26/note12/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/note12/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">nodejs笔记记录</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Nodejs安装教程（Linux）"><a href="#Nodejs安装教程（Linux）" class="headerlink" title="Nodejs安装教程（Linux）"></a>Nodejs安装教程（Linux）</h1><h2 id="1-下载官方包"><a href="#1-下载官方包" class="headerlink" title="1. 下载官方包"></a>1. 下载官方包</h2><h3 id="1-1-相关命令"><a href="#1-1-相关命令" class="headerlink" title="1.1. 相关命令"></a>1.1. 相关命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># wget https:&#x2F;&#x2F;nodejs.org&#x2F;dist&#x2F;v10.9.0&#x2F;node-v10.9.0-linux-x64.tar.xz    &#x2F;&#x2F; 下载</span><br><span class="line"># tar xf  node-v10.9.0-linux-x64.tar.xz       &#x2F;&#x2F; 解压</span><br><span class="line"># cd node-v10.9.0-linux-x64&#x2F;                  &#x2F;&#x2F; 进入解压目录</span><br><span class="line"># .&#x2F;bin&#x2F;node -v                               &#x2F;&#x2F; 执行node命令 查看版本</span><br><span class="line">v10.9.0</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-设置软连接"><a href="#2-设置软连接" class="headerlink" title="2. 设置软连接"></a>2. 设置软连接</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ln -s &#x2F;usr&#x2F;software&#x2F;nodejs&#x2F;bin&#x2F;npm   &#x2F;usr&#x2F;local&#x2F;bin&#x2F; </span><br><span class="line">ln -s &#x2F;usr&#x2F;software&#x2F;nodejs&#x2F;bin&#x2F;node   &#x2F;usr&#x2F;local&#x2F;bin&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-常见问题解决"><a href="#3-常见问题解决" class="headerlink" title="3.常见问题解决"></a>3.常见问题解决</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&gt; cat &#x2F;etc&#x2F;redhat-release</span><br><span class="line">&gt; &#x2F;&#x2F;查看python版本</span><br><span class="line">&gt; python -v</span><br><span class="line">&gt; &#x2F;&#x2F;查看gcc rpm gcc-c++是否安装</span><br><span class="line">&gt; rpm -q gcc rpm -q gcc-c++</span><br><span class="line">&gt; &#x2F;&#x2F;安装gcc-c++</span><br><span class="line">&gt; yum -v install gcc-c++ kernel-devel</span><br><span class="line">&gt; &#x2F;&#x2F;大招荡平一切环境问题</span><br><span class="line">&gt; yum -y update &amp;&amp; yum -y groupinstall &quot;Development Tools&quot;</span><br><span class="line"></span><br><span class="line">------</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;复制官网链接（Source Code版本）进入&#x2F;usr&#x2F;src目录下载nodejs</span><br><span class="line">&gt;wget https:&#x2F;&#x2F;nodejs.org&#x2F;dist&#x2F;v6.11.4&#x2F;node-v6.11.4.tar.gz</span><br><span class="line">&#x2F;&#x2F;解压</span><br><span class="line">&gt;tar -xf node-v6.11.4.tar.gz</span><br><span class="line">&#x2F;&#x2F;删除压缩包</span><br><span class="line">&gt;rm node-v6.11.4.tar.gz</span><br><span class="line">&#x2F;&#x2F;进入node-v6.11.4目录，进行配置</span><br><span class="line">&gt;.&#x2F;configure</span><br><span class="line">&#x2F;&#x2F;编译</span><br><span class="line">&gt;make</span><br><span class="line">&#x2F;&#x2F;安装</span><br><span class="line">&gt;sodu make install</span><br></pre></td></tr></table></figure>
+
+<p><strong>！！！编译Node 时候发现gcc 版本太低需要升级gcc编译器版本</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#获取源码(由于官方镜像速度较慢，这里使用了中国科学院开源协会的镜像</span><br><span class="line">sudo wget http:&#x2F;&#x2F;mirrors.opencas.org&#x2F;gnu&#x2F;gcc&#x2F;gcc-6.3.0&#x2F;gcc-6.3.0.tar.bz2</span><br><span class="line">#如果以上给出的镜像不可用，也可以是使用http:&#x2F;&#x2F;ftp.gnu.org&#x2F;gnu&#x2F;gcc&#x2F;，但由于有墙的存在，通常这样都很慢，建议本地通过shadowsocks 下载后放到服务器上再继续以下步骤</span><br><span class="line"></span><br><span class="line">#解压</span><br><span class="line">sudo tar -jxvf gcc-6.3.0.tar.bz2</span><br><span class="line">#下载编译所需的依赖项</span><br><span class="line">#如果想更快，可以利用中国科学院开源协会的镜像加速下载gmp和mpfr这两个包（另外两个包镜像没有收录），手动替换.&#x2F;contrib&#x2F;download_prerequisites的以下两处命令：</span><br><span class="line">#1) 把wget ftp:&#x2F;&#x2F;gcc.gnu.org&#x2F;pub&#x2F;gcc&#x2F;infrastructure&#x2F;$MPFR.tar.bz2 || exit 1 替换成wget http:&#x2F;&#x2F;mirrors.opencas.org&#x2F;gnu&#x2F;mpfr&#x2F;$MPFR.tar.bz2 || exit 1</span><br><span class="line">#2) 把wget ftp:&#x2F;&#x2F;gcc.gnu.org&#x2F;pub&#x2F;gcc&#x2F;infrastructure&#x2F;$GMP.tar.bz2 || exit 1 替换成wget http:&#x2F;&#x2F;mirrors.opencas.org&#x2F;gnu&#x2F;gmp&#x2F;$GMP.tar.bz2 || exit 1</span><br><span class="line">cd gcc-6.3.0</span><br><span class="line">sudo .&#x2F;contrib&#x2F;download_prerequisites</span><br><span class="line">cd ..</span><br><span class="line"></span><br><span class="line">#建立编译输出目录</span><br><span class="line">sudo mkdir gcc-build-6.3.0</span><br><span class="line"></span><br><span class="line">#进入此目录，执行以下命令，生成makefile文件</span><br><span class="line">cd gcc-build-6.3.0</span><br><span class="line">sudo ..&#x2F;gcc-6.3.0&#x2F;configure --enable-checking&#x3D;release --enable-languages&#x3D;c,c++ --disable-multilib</span><br><span class="line"></span><br><span class="line">#执行命令进行编译，此处利用4个job，需编译时约40分钟，此值不宜设置过高</span><br><span class="line">sudo make -j4</span><br><span class="line"></span><br><span class="line">#安装</span><br><span class="line"></span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<p>强烈建议 centeros使用 7.0 以上版本</p>
+<h2 id="4-问题"><a href="#4-问题" class="headerlink" title="4. 问题"></a>4. 问题</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">make[2]: Leaving directory &#96;&#x2F;home&#x2F;imdb&#x2F;gcc-4.8.2&#x2F;gcc-build-4.8.2&#39;</span><br><span class="line">make[1]: *** [stage1-bubble] 错误 2</span><br><span class="line">make[1]: Leaving directory &#96;&#x2F;home&#x2F;imdb&#x2F;gcc-4.8.2&#x2F;gcc-build-4.8.2&#39;</span><br><span class="line"></span><br><span class="line">## make: *** [all] 错误 2</span><br><span class="line"></span><br><span class="line">解决办法</span><br><span class="line">ubuntu： apt-get install gcc g++ </span><br><span class="line">CentOS：yum install gcc gcc-c++</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-Npm-更换淘宝镜像"><a href="#5-Npm-更换淘宝镜像" class="headerlink" title="5. Npm 更换淘宝镜像"></a>5. Npm 更换淘宝镜像</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. npm config set registry https:&#x2F;&#x2F;registry.npm.taobao.org</span><br><span class="line">2. npm install</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-安装node-JS-pm2"><a href="#6-安装node-JS-pm2" class="headerlink" title="6.安装node JS pm2"></a>6.安装node JS pm2</h2><p>作用: 后台运行npm start 程序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cnpm install pm2 -g </span><br><span class="line"></span><br><span class="line">pm2启动：</span><br><span class="line">pm2 start &quot;&#x2F;usr&#x2F;local&#x2F;src&#x2F;node&#x2F;bin&#x2F;npm&quot; --name &quot;law&quot; -- start .</span><br><span class="line"> </span><br><span class="line">pm2 list</span><br><span class="line">pm2 stop    </span><br><span class="line">pm2 restart </span><br><span class="line">pm2 delete  </span><br><span class="line"></span><br><span class="line">linux 找不到pm2 </span><br><span class="line">ln -s &#x2F;usr&#x2F;local&#x2F;nodebox&#x2F;nodejs&#x2F;lib&#x2F;node_modules&#x2F;pm2&#x2F;bin&#x2F;pm2 &#x2F;usr&#x2F;local&#x2F;bin</span><br></pre></td></tr></table></figure><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/note11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/26/note11/" class="post-title-link" itemprop="url">导出数据的踩坑记录</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-26 22:23:40" itemprop="dateCreated datePublished" datetime="2020-07-26T22:23:40+08:00">2020-07-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/07/26/note11/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/note11/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+            <div class="post-description">情感分析的导出</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="情感分析的导出"><a href="#情感分析的导出" class="headerlink" title="情感分析的导出"></a>情感分析的导出</h1><ol>
+<li>将数据通过excel的形式导入到sqlsever</li>
+<li>查询整个数据表，查找是否已经处理，如果已经处理，跳过，否则，执行情感分析</li>
+<li>使用jsp Update 数据的状态，更新一条将标识位调整</li>
+<li>每隔一定的时间进行处理</li>
 </ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">String sql &#x3D; &quot;select id,new_name,old_name from m_test where flag &#x3D; 0&quot;;</span><br><span class="line">    ObjectManager objectManager &#x3D; new ObjectManager();</span><br><span class="line">    List&lt;IDataSet&gt; dataList &#x3D; objectManager.list(sql);</span><br><span class="line">    if (dataList.isEmpty()) &#123;</span><br><span class="line">        out.print(&quot;开始执行统计分析程序，没有需要分析的数据！&quot;);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    out.print(&quot;开始执行统计分析程序，需要分析：&quot; + dataList.size() + &quot;条&quot;);</span><br><span class="line"></span><br><span class="line">    int i &#x3D; 0;</span><br><span class="line">    for (IDataSet data : dataList) &#123;</span><br><span class="line">        String new_name &#x3D; data.getString(&quot;new_name&quot;);</span><br><span class="line">        String old_name &#x3D; data.getString(&quot;old_name&quot;);</span><br><span class="line">        SentimentAnalysis new_name_result &#x3D; null;</span><br><span class="line">        SentimentAnalysis old_name_result &#x3D; null;</span><br><span class="line">        try &#123;</span><br><span class="line">            new_name_result &#x3D; NlpApi.sentimentAnalysisByText(new_name);</span><br><span class="line">            old_name_result &#x3D; NlpApi.sentimentAnalysisByText(old_name);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            System.out.println(&quot;调用分析接口出错！&quot; + e.getMessage());</span><br><span class="line">            continue;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String new_sentimentname &#x3D; &quot;&quot;;</span><br><span class="line">        String new_confide &#x3D; &quot;&quot;;</span><br><span class="line">        String new_negative &#x3D; &quot;&quot;;</span><br><span class="line">        String new_positive &#x3D; &quot;&quot;;</span><br><span class="line">        String old_sentimentname &#x3D; &quot;&quot;;</span><br><span class="line">        String old_confide &#x3D; &quot;&quot;;</span><br><span class="line">        String old_negative &#x3D; &quot;&quot;;</span><br><span class="line">        String old_positive &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">        if(null !&#x3D; new_name_result)&#123;</span><br><span class="line">            new_sentimentname &#x3D; new_name_result.getSentimentName();</span><br><span class="line">            new_confide &#x3D; String.valueOf(new_name_result.getConfidence());</span><br><span class="line">            new_negative &#x3D; String.valueOf(new_name_result.getNegativeProb());</span><br><span class="line">            new_positive &#x3D; String.valueOf(new_name_result.getPositiveProb());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if(null !&#x3D; old_name_result)&#123;</span><br><span class="line">            old_sentimentname &#x3D; old_name_result.getSentimentName();</span><br><span class="line">            old_confide &#x3D; String.valueOf(old_name_result.getConfidence());</span><br><span class="line">            old_negative &#x3D; String.valueOf(old_name_result.getNegativeProb());</span><br><span class="line">            old_positive &#x3D; String.valueOf(old_name_result.getPositiveProb());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String updateSql &#x3D; &quot;update m_test set new_confide &#x3D; ? , new_negative &#x3D; ? , new_positive &#x3D; ?, new_anaresult &#x3D; ?,old_confide &#x3D; ? , old_negative &#x3D; ? , old_positive &#x3D; ?, old_anaresult &#x3D; ? , flag &#x3D; 1 where id &#x3D; ?&quot;;</span><br><span class="line"></span><br><span class="line">        objectManager.update(updateSql, new Object[]&#123;new_sentimentname, new_confide, new_negative, new_positive, old_sentimentname, old_confide, old_negative, old_positive, data.getInt(&quot;id&quot;)&#125;);</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    out.print(&quot;系统执行完毕，执行成功&quot; + i + &quot;条&quot;);</span><br></pre></td></tr></table></figure><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/note10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/26/note10/" class="post-title-link" itemprop="url">Neo4j 学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-26 22:05:18" itemprop="dateCreated datePublished" datetime="2020-07-26T22:05:18+08:00">2020-07-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/07/26/note10/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/note10/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+            <div class="post-description">Neo4j 学习</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Neo4j-学习"><a href="#Neo4j-学习" class="headerlink" title="Neo4j 学习"></a>Neo4j 学习</h1><h1 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h1><h2 id="1-入门"><a href="#1-入门" class="headerlink" title="1. 入门"></a>1. 入门</h2><h3 id="1-1-安装neo4j"><a href="#1-1-安装neo4j" class="headerlink" title="1.1 安装neo4j"></a>1.1 安装neo4j</h3><p>直接安装 neo4j desktop 版本</p>
+<p>如果是community 社区版本，则需要到安装目录的bin 下面执行如下命令</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/07/26/compare1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/window-study/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/window-study/" class="post-title-link" itemprop="url">Window 下面使用代办清单软件</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-26 13:57:20" itemprop="dateCreated datePublished" datetime="2020-07-26T13:57:20+08:00">2020-07-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/window-study/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/window-study/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>413</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-            <div class="post-description">常用代办任务工具</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="windows-代办清单软件"><a href="#windows-代办清单软件" class="headerlink" title="windows 代办清单软件"></a>windows 代办清单软件</h1><h2 id="为什么要使用待办任务软件"><a href="#为什么要使用待办任务软件" class="headerlink" title="为什么要使用待办任务软件"></a>为什么要使用待办任务软件</h2><ul>
-<li>人的记忆是靠不住的</li>
-<li>琐事繁杂，列出清单能更好的</li>
-</ul>
-<h2 id="使用代办清单的好处"><a href="#使用代办清单的好处" class="headerlink" title="使用代办清单的好处"></a>使用代办清单的好处</h2><ul>
-<li>理清思路</li>
-<li>把事情拆分，一条条处理</li>
-<li>今日事，今日毕</li>
-<li>保持良好的时间管理习惯，防止懈怠</li>
-<li>可以结合番茄工作法</li>
-</ul>
-<h2 id="怎么使用代办清单软件"><a href="#怎么使用代办清单软件" class="headerlink" title="怎么使用代办清单软件"></a>怎么使用代办清单软件</h2><ul>
-<li><p>使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">奇妙清单</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>地址：<span class="exturl" data-url="aHR0cHM6Ly93d3cud3VuZGVybGlzdC5jb20v" title="https://www.wunderlist.com/">https://www.wunderlist.com/<i class="fa fa-external-link"></i></span></li>
-<li>目前已经被收购</li>
-</ul>
-</li>
-<li><p>微软的TODO List，实现简单</p>
-<ul>
-<li>地址：<span class="exturl" data-url="aHR0cHM6Ly93d3cubWljcm9zb2Z0LmNvbS96aC1jbi9wL21pY3Jvc29mdC10by1kby1saXN0cy10YXNrcy1yZW1pbmRlcnMvOW5ibGdnaDVyNTU4P3J0Yz0xJmFtcDthY3RpdmV0YWI9cGl2b3Q6b3ZlcnZpZXd0YWI=" title="https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab">https://www.microsoft.com/zh-cn/p/microsoft-to-do-lists-tasks-reminders/9nblggh5r558?rtc=1&amp;activetab=pivot:overviewtab<i class="fa fa-external-link"></i></span></li>
-</ul>
-</li>
-<li><p>滴答清单</p>
-<ul>
-<li>地址：<span class="exturl" data-url="aHR0cHM6Ly93d3cuZGlkYTM2NS5jb20vYWJvdXQvZG93bmxvYWQ=" title="https://www.dida365.com/about/download">https://www.dida365.com/about/download<i class="fa fa-external-link"></i></span></li>
-</ul>
-</li>
-</ul>
-<h2 id="滴答清单的使用"><a href="#滴答清单的使用" class="headerlink" title="滴答清单的使用"></a>滴答清单的使用</h2><ul>
-<li>使用对应的账号关联登陆，这里使用个人的微信账号</li>
-<li>在左侧清单<ul>
-<li>任务清单的名称</li>
-</ul>
-</li>
-<li>在指定清单创建任务</li>
-<li>选择每一条任务，设置优先级</li>
-<li>右侧设置日期</li>
-</ul>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/hexo-study1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/hexo-study1/" class="post-title-link" itemprop="url">Hexo 搭建思维导图以及使用</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-26 12:31:59" itemprop="dateCreated datePublished" datetime="2020-07-26T12:31:59+08:00">2020-07-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/hexo-study1/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/hexo-study1/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>684</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-            <div class="post-description">搭建思维导图以及使用</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Hexo-搭建思维导图以及使用"><a href="#Hexo-搭建思维导图以及使用" class="headerlink" title="Hexo 搭建思维导图以及使用"></a>Hexo 搭建思维导图以及使用</h1><h2 id="1-Hexo-如何搭建"><a href="#1-Hexo-如何搭建" class="headerlink" title="1. Hexo 如何搭建"></a>1. Hexo 如何搭建</h2><ul>
-<li>详细查看Hexo学习博客：</li>
-</ul>
-<h2 id="2-选择："><a href="#2-选择：" class="headerlink" title="2. 选择："></a>2. 选择：</h2><ul>
-<li>百度的kitmap<ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly9xc2xpLmdpdGh1Yi5pby8yMDE3LzAxLzAxL21hcmtkb3duLW1pbmRtYXAv" title="https://qsli.github.io/2017/01/01/markdown-mindmap/">https://qsli.github.io/2017/01/01/markdown-mindmap/<i class="fa fa-external-link"></i></span></li>
-</ul>
-</li>
-<li><h2 id="Hexo-思维导图插件"><a href="#Hexo-思维导图插件" class="headerlink" title="Hexo 思维导图插件"></a>Hexo 思维导图插件</h2></li>
-<li>为什么使用百度的kityminder<ul>
-<li>使用简单</li>
-<li>百度开发，使用国内插件</li>
-</ul>
-</li>
-<li>使用hexo思维导图插件的原因<ul>
-<li>简单好用</li>
-</ul>
-</li>
-<li>什么是Kityminder<ul>
-<li>分成两部分<ul>
-<li>kity-core</li>
-<li>kity-editor</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>如何学习kityminder<ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly9xc2xpLmdpdGh1Yi5pby8yMDE3LzAxLzAxL21hcmtkb3duLW1pbmRtYXAv" title="https://qsli.github.io/2017/01/01/markdown-mindmap/">https://qsli.github.io/2017/01/01/markdown-mindmap/<i class="fa fa-external-link"></i></span></li>
-</ul>
-</li>
-<li>如何学习hexo 思维导图插件<ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC83NTQ2NzQ0MQ==" title="https://zhuanlan.zhihu.com/p/75467441">https://zhuanlan.zhihu.com/p/75467441<i class="fa fa-external-link"></i></span></li>
-</ul>
-</li>
-</ul>
-<h2 id="3-使用hexo-插件构建思维导图"><a href="#3-使用hexo-插件构建思维导图" class="headerlink" title="3. 使用hexo 插件构建思维导图"></a>3. 使用hexo 插件构建思维导图</h2><ul>
-<li><p>跳转到hexo的目录下面，执行如下命令</p>
-<ul>
-<li><code>npm install hexo-simple-mindmap</code></li>
-</ul>
-</li>
-<li><p>在博客内部加入如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;% pullquote mindmap mindmap-md %&#125;</span><br><span class="line">[Hexo 的思维导图插件](https:&#x2F;&#x2F;hunterx.xyz&#x2F;hexo-simple-mindmap-plugin-intro.html)</span><br><span class="line">- 前言</span><br><span class="line">- 使用方法</span><br><span class="line">&#123;% endpullquote %&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h2 id="4-查看效果"><a href="#4-查看效果" class="headerlink" title="4. 查看效果"></a>4. 查看效果</h2><p>进入文章，即可渲染出对应的思维导图</p>
-<h1 id="推荐其他的方式"><a href="#推荐其他的方式" class="headerlink" title="推荐其他的方式"></a>推荐其他的方式</h1><ul>
-<li>使用xmind 话思维导图<ul>
-<li>为什么？<ul>
-<li>软件画图，可以一键生成图片</li>
-<li>样式可以调整，不需要切换</li>
-<li>简单好用，相对于Markdown编写更为直观</li>
-</ul>
-</li>
-<li>怎么使用xmind<ul>
-<li>百度搜索xmind 进入</li>
-<li>推荐使用xmind 的升级版本</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/jdkymjd/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/jdkymjd/" class="post-title-link" itemprop="url">JDK源码解读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-26 12:27:28" itemprop="dateCreated datePublished" datetime="2020-07-26T12:27:28+08:00">2020-07-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">java-java基础</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/jdkymjd/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/jdkymjd/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>14k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>12 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="深入理解JVM虚拟机-JDK源码解读"><a href="#深入理解JVM虚拟机-JDK源码解读" class="headerlink" title="深入理解JVM虚拟机 - JDK源码解读"></a>深入理解JVM虚拟机 - JDK源码解读</h1><p>《深入理解JVM虚拟机》看过了好几遍了，对于编译一个JDK源码有很强的冲动。这里主要实战使用<strong>阿里云</strong>进行编译实战</p>
-<ul>
-<li>为什么使用阿里云？<ul>
-<li>个人电脑奋斗四年了，装虚拟机莫名其妙的死机</li>
-<li>阿里云带宽1M，只能用来干些LInux学习的工作</li>
-</ul>
-</li>
-<li>参考博客：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vcG9zdC81YzZiOWE0NzZmYjlhMDQ5YzMwYmNlYmQ=" title="https://juejin.im/post/5c6b9a476fb9a049c30bcebd">https://juejin.im/post/5c6b9a476fb9a049c30bcebd<i class="fa fa-external-link"></i></span></li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/26/jdkymjd/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/gostudy1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/gostudy1/" class="post-title-link" itemprop="url">Go语言学习笔记（一）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-26 11:33:37" itemprop="dateCreated datePublished" datetime="2020-07-26T11:33:37+08:00">2020-07-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/golang/" itemprop="url" rel="index"><span itemprop="name">golang</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/gostudy1/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/gostudy1/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>7.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-            <div class="post-description">go语言学习</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Go语言学习笔记（一）"><a href="#Go语言学习笔记（一）" class="headerlink" title="Go语言学习笔记（一）"></a>Go语言学习笔记（一）</h1><h2 id="Go语言是什么？"><a href="#Go语言是什么？" class="headerlink" title="Go语言是什么？"></a>Go语言是什么？</h2><p><em>Go 编程语言是一个使得程序员更加有效率的开源项目。Go 是有表达力、简洁、清晰和有效率的。它的并行机制使其很容易编写多核和网络应用,而新奇的类型系统允许构建有弹性的模块化程序。Go 编译到机器码非常快速,同时具有便利的垃圾回收和强大的运行时反射。它是快速的、静态类型编译语言,但是感觉上是动态类型的,解释型语言。</em></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/26/gostudy1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/picgo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/picgo/" class="post-title-link" itemprop="url">PicGo和码云实现自建图床</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-26 11:30:10" itemprop="dateCreated datePublished" datetime="2020-07-26T11:30:10+08:00">2020-07-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/picgo/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/picgo/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-            <div class="post-description">自建图床</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="PicGo和码云实现自建图床"><a href="#PicGo和码云实现自建图床" class="headerlink" title="PicGo和码云实现自建图床"></a>PicGo和码云实现自建图床</h1><h2 id="最好的教程"><a href="#最好的教程" class="headerlink" title="最好的教程"></a>最好的教程</h2><p>知乎的一篇教程：<span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8xMDI1OTQ1NTQ=" title="https://zhuanlan.zhihu.com/p/102594554">https://zhuanlan.zhihu.com/p/102594554<i class="fa fa-external-link"></i></span></p>
-<h2 id="测试图床链接："><a href="#测试图床链接：" class="headerlink" title="测试图床链接："></a>测试图床链接：</h2><p>链接1 ：</p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9naXRlZS5jb20vbGF6eVRpbWVzL2ltYWdlUmVwb3NpdHkvcmF3L21hc3Rlci9pbWcvMjAyMDAzMTgyMzQzNTMucG5n" title="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png<i class="fa fa-external-link"></i></span></p>
-<p>链接2：</p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9naXRlZS5jb20vbGF6eVRpbWVzL2ltYWdlUmVwb3NpdHkvcmF3L21hc3Rlci9pbWcvMjAyMDAzMTgyMzQ2MjEucG5n" title="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png">https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png<i class="fa fa-external-link"></i></span></p>
-<p>链接3：</p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9naXRlZS5jb20vbGF6eVRpbWVzL2ltYWdlUmVwb3NpdHkvcmF3L21hc3Rlci9qaXVoZS8yMDIwMDMxOTA5NDEzMy5wbmc=" title="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png">https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png<i class="fa fa-external-link"></i></span></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234353.png?ynotemdtimestamp=1595729096959" alt="最终结果1"></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20200318234621.png?ynotemdtimestamp=1595729096959" alt="最终结果2"></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/jiuhe/20200319094133.png?ynotemdtimestamp=1595729096959" alt="最终结果3"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/26/picgo/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/07/26/mavennexus/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/26/mavennexus/" class="post-title-link" itemprop="url">Maven私服Nexus搭建教程</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-26 11:16:10" itemprop="dateCreated datePublished" datetime="2020-07-26T11:16:10+08:00">2020-07-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">java-java基础</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/26/mavennexus/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/mavennexus/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
-            </span>
-            <div class="post-description">使用maven搭建私服</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Nexus-私服搭建基本流程"><a href="#Nexus-私服搭建基本流程" class="headerlink" title="Nexus 私服搭建基本流程"></a>Nexus 私服搭建基本流程</h1><h2 id="Nexus-是什么？"><a href="#Nexus-是什么？" class="headerlink" title="Nexus 是什么？"></a>Nexus 是什么？</h2><p>用于实现Maven构建私人仓库的一个工具。</p>
-<p>可以使用nexus 统一管理我们到依赖，不再需要再从中央仓库下载对应的jar包</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/26/mavennexus/#more" rel="contents">
+              <a class="btn" href="/2020/07/26/note10/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1411,7 +1395,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span>
+    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1477,20 +1461,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">210</span>
+          <span class="site-state-item-count">232</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1524,6 +1508,13 @@
   </div>
 
       </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
         <div class="back-to-top motion-element">
           <i class="fa fa-arrow-up"></i>
           <span>0%</span>
@@ -1556,13 +1547,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1.5m</span>
+    <span title="站点总字数">1.9m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">23:01</span>
+    <span title="站点阅读时长">28:45</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>

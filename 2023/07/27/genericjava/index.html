@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="java中使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Java】Generics in Java">
+<meta property="og:url" content="https://whitestore.top/2023/07/27/genericjava/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="java中使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:875/1*77SYONEADgKEPiyVPqUb-A.png">
+<meta property="article:published_time" content="2023-07-27T03:32:00.000Z">
+<meta property="article:modified_time" content="2023-09-09T00:53:49.935Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="generics in java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://miro.medium.com/v2/resize:fit:875/1*77SYONEADgKEPiyVPqUb-A.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/07/27/genericjava/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Java】Generics in Java | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/07/27/genericjava/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Java】Generics in Java
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-07-27 11:32:00" itemprop="dateCreated datePublished" datetime="2023-07-27T11:32:00+08:00">2023-07-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/07/27/genericjava/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/27/genericjava/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>10k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+            <div class="post-description">java中使用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL0BzYWxpdGhhY2hhdGh1cmFuZ2E5NC9nZW5lcmljcy1pbi1qYXZhLTNjNzkxNTU1ZTkyNA==" title="https://medium.com/@salithachathuranga94/generics-in-java-3c791555e924">Generics in Java. It’s all about type safety | by Salitha Chathuranga | Medium<i class="fa fa-external-link"></i></span></p>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>It’s all about type safety。</p>
+<p>所有内容都是关于线程安全。</p>
+<p><img src="https://miro.medium.com/v2/resize:fit:875/1*77SYONEADgKEPiyVPqUb-A.png" alt=""></p>
+<p>Hi all!!!</p>
+<p>I thought of writing a widely used but less discussed topic in Java. That is <strong>Generics</strong>! We use it, but majority of the developers don’t know about it as I have experienced.</p>
+<p>本次编写的有关内容是讨论较少主题，“<strong>泛型</strong>”，实际上我们经常使用（实际上天天都在用），但是大部分人并不了解。</p>
+<p>Let me clear this…have you ever used List or <strong>ArrayList</strong> in Java? Most probably, answer should be YES. Right? Without collections, we can’t even think of an easy way of handling data. So, do you remember how we define an ArrayList?</p>
+<p>让我澄清一下……您在Java中使用过List或<strong>ArrayList</strong>吗？答案很可能是 “是”。对不对？如果没有集合，我们甚至无法想象处理数据的简单方法。那么，你还记得我们是如何定义ArrayList的吗？</p>
+<a id="more"></a>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; numbers = <span class="keyword">new</span> ArrayList&lt;&gt;(); <span class="comment">// with Generics</span></span><br></pre></td></tr></table></figure>
+
+<p>This is the way we declare it. So, we have used generics. 😃 Here, <code>_&lt;Integer&gt;</code>_ is the Generic we passed. That is a Type. After we create list like this, you can <strong>only add integers</strong> to the list.</p>
+<p>在上面的例子中我们在泛型中指定<code>&lt;Integer&gt;</code>，之后我们创建的List<strong>只能添加</strong>整型类型数据。</p>
+<p>You may remember, if we define the list like below, we would be able to add any type of data which is extended from Object super class, to the list.</p>
+<p>如果我们在定义List的时候不指定任何泛型，我们可以添加任意类型的数据，这些数据是从对象超类中扩展出来的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List numbers = <span class="keyword">new</span> ArrayList(); <span class="comment">// without Generics</span></span><br></pre></td></tr></table></figure>
+
+<p>We can achieve Type Safety for this List, after we add generics.</p>
+<p>为了实现类型安全，之后我们可以添加泛型。</p>
+<p><strong>Generics</strong> means <strong>parameterized types.</strong> Java let us to create a single class, interface, and method that can be used with different types of data(objects) within the Generics domain.</p>
+<p>泛型也叫参数化类型，Java允许我们创建单一的类、接口和方法，这些类、接口和方法可用于泛型域内的不同类型的数据（对象）。</p>
+<p><strong>Advantages in Generics would be:</strong></p>
+<p>泛型的优点如下：</p>
+<ul>
+<li>Code Reusability — we can use a common code with multiple object types</li>
+</ul>
+<p>代码复用性：我们可以使用通用代码包含多种不同对象类型。</p>
+<ul>
+<li>Compile-time Type Checking — Java will check the generics code at the compile time against errors</li>
+</ul>
+<p>编译时期的类型检查：实现Java在编译时期进行类型检查。</p>
+<ul>
+<li>Type Safety — we can restrict adding unnecessary data</li>
+</ul>
+<p>类型安全：可以限制添加不必要的数据</p>
+<ul>
+<li>Usage in Collections — Collections need object types to deal with data</li>
+</ul>
+<p>集合中使用：集合需要对象类型的数据，泛型可以更好的控制。</p>
+<p><em>Let’s take and example to explain why we need Generics..</em></p>
+<p>下面举个栗子介绍为什么需要泛型。</p>
+<p>Imagine you have to print Numbers and Texts using a printer class. Printer has a method that accepts the data while creating it.</p>
+<p>想象一下你需要数字或者文本类型的打印机对象，打印机在创建时有一个接受数据的方法。</p>
+<p>In traditional way, we will have to creat 2 classes since we have 2 types of data: Number(Integer) and Text(String).</p>
+<p>按照传统的方式，我们会创建两个对象，根据需要的打印机类型构建字符串和整型（打印机）对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TextPrinter</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String data;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TextPrinter</span><span class="params">(String data)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.data = data;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"print::: "</span> + data);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NumberPrinter</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Integer data;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NumberPrinter</span><span class="params">(Integer data)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.data = data;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"print::: "</span> + data);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>How to use:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericsMain</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        NumberPrinter numberPrinter = <span class="keyword">new</span> NumberPrinter(<span class="number">5</span>);  </span><br><span class="line">        numberPrinter.print(); <span class="comment">// output = print::: 5  </span></span><br><span class="line">        TextPrinter textPrinter = <span class="keyword">new</span> TextPrinter(<span class="string">"Hello"</span>);  </span><br><span class="line">        textPrinter.print();   <span class="comment">// output = print::: Hello  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>You can see we have <strong>code duplication</strong>! Data type is the only difference here!</p>
+<p>你会发现这里有重复代码，这里仅仅是对象类型不同。</p>
+<p>We can simply use a Printer with a Generic here. Then we will only have 1 Printer! 😎</p>
+<p>只需要非常简单的添加一个泛型，</p>
+<p>Let’s deep dive into Generics and see how we achieve this… 😎</p>
+<p>让我们深入了解泛型，看看如何实现这一点…… </p>
+<h1 id="Create-a-Generic-创建通用型"><a href="#Create-a-Generic-创建通用型" class="headerlink" title="Create a Generic 创建通用型"></a>Create a Generic 创建通用型</h1><p>I’m taking the above simple example and will show how to create a <strong>Generic</strong> Printer.</p>
+<p>我将以上面的简单示例来说明如何创建一个<strong>通用</strong>打印机。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Printer</span>&lt;<span class="title">T</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> T data;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Printer</span><span class="params">(T data)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.data = data;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"print::: "</span> + data);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>How to use:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Printer&lt;Integer&gt; integerPrinter = <span class="keyword">new</span> Printer&lt;&gt;(<span class="number">5</span>);  </span><br><span class="line">integerPrinter.print();   <span class="comment">// output = print::: 5  </span></span><br><span class="line">  </span><br><span class="line">Printer&lt;String&gt; stringPrinter = <span class="keyword">new</span> Printer&lt;&gt;(<span class="string">"Hello"</span>);  </span><br><span class="line">stringPrinter.print();   <span class="comment">// output = print::: Hello  </span></span><br><span class="line">  </span><br><span class="line">Printer&lt;Double&gt; doublePrinter = <span class="keyword">new</span> Printer&lt;&gt;(<span class="number">45.34</span>);  </span><br><span class="line">doublePrinter.print();   <span class="comment">// output = print::: 45.34  </span></span><br><span class="line">  </span><br><span class="line">Printer&lt;Long&gt; longPrinter = <span class="keyword">new</span> Printer&lt;&gt;(<span class="number">5L</span>);  </span><br><span class="line">longPrinter.print();z    <span class="comment">// output = print::: 5</span></span><br></pre></td></tr></table></figure>
+
+<p>Now we only have 1 class! It accepts a Type. Here, T is used to denote the Type as a common standard. We can even create printer objects for other data types also like Double/Long. <strong>Code reusability</strong> is achieved in style. 😎</p>
+<p>现在我们只需要一个类就可以完成构建两种不同类型的打印机，这里的 T 表示作为通用标准的类型，我们甚至可以把这个T改为  Double/Long 类型，最终实现了 “代码重用性” 的风格。</p>
+<p>We can create Generic classes which accepts more than 1 type. Look at the below example. It accepts an Integer and a String both.</p>
+<p>我们可以创建接受多种类型的通用类。请看下面的示例，它同时接受一个整数和一个字符串。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MultiPrinter</span>&lt;<span class="title">T</span>, <span class="title">V</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> T data1;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> V data2;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MultiPrinter</span><span class="params">(T data1, V data2)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.data1 = data1;  </span><br><span class="line">        <span class="keyword">this</span>.data2 = data2;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"print::: "</span> + data1 + <span class="string">" : "</span> + data2);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MultiPrinter&lt;Integer, String&gt; multiPrinter = <span class="keyword">new</span> MultiPrinter&lt;&gt;(<span class="number">5</span>, <span class="string">"Hello"</span>);  </span><br><span class="line">multiPrinter.print(); <span class="comment">// output = print::: 5 : Hello</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Java Type Naming conventions</strong></p>
+<ul>
+<li>E — Element (used in Collections)</li>
+<li>K — Key (Used in Map)</li>
+<li>N — Number</li>
+<li>T — Type</li>
+<li>V — Value (Used in Map)</li>
+<li>S, U, V etc. — 2nd, 3rd, 4th types</li>
+</ul>
+<p><strong>Java类型命名规则</strong></p>
+<ul>
+<li>E - 元素（在集合中使用）</li>
+<li>K - 键（在地图中使用）</li>
+<li>N - 数字</li>
+<li>T - 类型</li>
+<li>V - 值（在映射中使用）</li>
+<li>S、U、V 等 - 第二、第三、第四类型</li>
+</ul>
+<h1 id="Bounded-Generics-有限泛型"><a href="#Bounded-Generics-有限泛型" class="headerlink" title="Bounded Generics 有限泛型"></a>Bounded Generics 有限泛型</h1><p>This is an advanced version of Generics. We can restrict more and achieve <strong>more type safety</strong> with bounded Generics.</p>
+<p>这是泛型的高级版本。通过有界泛型，我们可以限制更多，实现<strong>多的类型安全</strong>。</p>
+<p>Let’s say we have an <strong>AnimalPrinter</strong> class which can only print animal details. No other objects are allowed to be used with it. How to achieve this?</p>
+<p>假设我们有一个<strong>AnimalPrinter</strong>类，它只能打印动物的详细信息。不允许使用其他对象。如何实现？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String name;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String color;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Integer age;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Animal</span><span class="params">(String name, String color, Integer age)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.name = name;  </span><br><span class="line">        <span class="keyword">this</span>.color = color;  </span><br><span class="line">        <span class="keyword">this</span>.age = age;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> name;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getColor</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> color;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getAge</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> age;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span> == o) <span class="keyword">return</span> <span class="keyword">true</span>;  </span><br><span class="line">        <span class="keyword">if</span> (o == <span class="keyword">null</span> || getClass() != o.getClass()) <span class="keyword">return</span> <span class="keyword">false</span>;  </span><br><span class="line">        Animal animal = (Animal) o;  </span><br><span class="line">        <span class="keyword">return</span> Objects.equals(name, animal.name) &amp;&amp; Objects.equals(color, animal.color) &amp;&amp; Objects.equals(age, animal.age);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> Objects.hash(name, color, age);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Cat</span><span class="params">(String name, String color, Integer age)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>(name, color, age);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Dog</span><span class="params">(String name, String color, Integer age)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>(name, color, age);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnimalPrinter</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">Animal</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> T animalData;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AnimalPrinter</span><span class="params">(T animalData)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.animalData = animalData;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"Name::: "</span> + animalData.getName());  </span><br><span class="line">        System.out.println(<span class="string">"Color::: "</span> + animalData.getColor());  </span><br><span class="line">        System.out.println(<span class="string">"Age::: "</span> + animalData.getAge());  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this class, T extends Animal part does the job! We have limited our generic for Dog and Cat!</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">AnimalPrinter&lt;Cat&gt; animalPrinter1 = <span class="keyword">new</span> AnimalPrinter&lt;&gt;(<span class="keyword">new</span> Cat(<span class="string">"Jim"</span>, <span class="string">"brown"</span>, <span class="number">2</span>));  </span><br><span class="line">animalPrinter1.print();  </span><br><span class="line">AnimalPrinter&lt;Dog&gt; animalPrinter2 = <span class="keyword">new</span> AnimalPrinter&lt;&gt;(<span class="keyword">new</span> Dog(<span class="string">"Rocky"</span>, <span class="string">"black"</span>, <span class="number">5</span>));  </span><br><span class="line">animalPrinter2.print();</span><br></pre></td></tr></table></figure>
+
+<p>If we try to define the printer with another Object type, compiler will complain like this =&gt; <em>“Type parameter ‘java.lang.Object’ is not within its bound; should extend ‘generics.Animal’</em></p>
+<p>如果我们尝试使用其他对象类型定义打印机，编译器将发出如下警告 =&gt; <em>“类型参数’java.lang.Object’不在其绑定范围内；应该扩展’generics.Animal’</em>“。</p>
+<h1 id="Multiple-Bounds-多重边界"><a href="#Multiple-Bounds-多重边界" class="headerlink" title="Multiple Bounds 多重边界"></a>Multiple Bounds 多重边界</h1><p>Let’s say we want to add some more features to the Printer generic. We can achieve it like this.</p>
+<p>比方说，我们想为打印机通用程序添加更多的功能。我们可以这样实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnimalPrinter</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">Animal</span> &amp; <span class="title">Serializable</span>&gt; </span>&#123;  </span><br><span class="line">    ..................  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>I have provided Serializable functionality using Serializable interface. There are important things to remember here.</p>
+<ul>
+<li>We must implement interface in our child classes(Cat and Dog).</li>
+<li>Class should come first and the &amp; and interface.</li>
+<li>Only 1 class can be extended since Java does not support multiple inheritance.</li>
+</ul>
+<p>我使用Serializable接口提供了Serializable功能。这里有一些重要的事情需要记住。</p>
+<ul>
+<li>我们必须在子类（Cat和Dog）中实现接口。</li>
+<li>类应该放在前面，然后是 <strong>&amp;</strong> 和 <strong>接口</strong>。</li>
+<li>由于Java不支持多重继承，所以只能扩展一个类。</li>
+</ul>
+<h1 id="Wildcards-With-Generics-通用通配符"><a href="#Wildcards-With-Generics-通用通配符" class="headerlink" title="Wildcards With Generics 通用通配符"></a>Wildcards With Generics 通用通配符</h1><p>Wildcards are represented by the question mark <em>?</em> in Java, and we use them to refer to an unknown type. This can be used as a parameter type with Generics. Then it will accept any type. I have used a List of any object as a method argument using wild card, in the below code.</p>
+<p>通配符在Java中用问号 <em>?</em> 表示，我们用它来代指<strong>未知类型</strong>。通配符在Java中用问号 <em>?</em> ，然后它将接受任何类型。在下面的代码中，我使用通配符将任意对象的List作为方法参数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printList</span><span class="params">(List&lt; ?&gt; list)</span> </span>&#123;  </span><br><span class="line">    System.out.println(list);  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">printList(  </span><br><span class="line">    Arrays.asList(  </span><br><span class="line">        <span class="keyword">new</span> Cat(<span class="string">"Jim"</span>, <span class="string">"brown"</span>, <span class="number">2</span>),  </span><br><span class="line">        <span class="keyword">new</span> Dog(<span class="string">"Rocky"</span>, <span class="string">"black"</span>, <span class="number">5</span>)  </span><br><span class="line">    )  </span><br><span class="line">);  </span><br><span class="line">printList(Arrays.asList(<span class="number">50</span>, <span class="number">60</span>));  </span><br><span class="line">printList(Arrays.asList(<span class="number">50.45</span>, <span class="number">60.78</span>));  </span><br><span class="line">  </span><br><span class="line"><span class="comment">// output:  </span></span><br><span class="line"><span class="comment">// [generics.Cat@b1fa3959, generics.Dog@62294cd9]  </span></span><br><span class="line"><span class="comment">// [50, 60]  </span></span><br><span class="line"><span class="comment">// [50.45, 60.78]</span></span><br></pre></td></tr></table></figure>
+
+<p>List can be of any type now!!!</p>
+<p>List 现在可以是任意类型的。</p>
+<p>1️⃣ <strong>Upper Bounded Wild Cards</strong></p>
+<p>1️⃣ <strong>上界通配符</strong></p>
+<p>Consider this example:</p>
+<p>考虑下面的例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printAnimals</span><span class="params">(List&lt;Animal&gt; animals)</span> </span>&#123;  </span><br><span class="line">      animals.forEach(Animal::eat);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>If we imagine a subtype of <em>Animal</em>, such as a <em>Dog</em>, we can’t use this method with a list of <em>Dog</em>, even though <em>Dog</em> is a subtype of <em>Animal</em>. We can do this with a wild card.</p>
+<p>如果我们想象一个 <em>Animal</em> 的子类型，例如 <em>Dog</em> ，我们就不能在 <em>Dog</em> 的列表中使用这个方法，尽管 <em>Dog</em> 是 <em>Animal</em> 的子类型。</p>
+<p>我们可以使用通配符来实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printAnimals</span><span class="params">(List&lt;? extends Animal&gt; animals)</span> </span>&#123;  </span><br><span class="line">    ...  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Now this method works with type <strong><em>Animal</em></strong> and all <strong><em>its subtypes</em></strong>.</p>
+<p>现在该方法适用于 <strong><em>Animal</em></strong>  类型和所有 <strong><em>子类型</em></strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">printAnimals(  </span><br><span class="line">    Arrays.asList(  </span><br><span class="line">        <span class="keyword">new</span> Cat(<span class="string">"Jim"</span>, <span class="string">"brown"</span>, <span class="number">2</span>),  </span><br><span class="line">        <span class="keyword">new</span> Dog(<span class="string">"Rocky"</span>, <span class="string">"black"</span>, <span class="number">5</span>)  </span><br><span class="line">    )  </span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>This is called an <strong>upper-bounded wildcard</strong>, where type <strong><em>Animal</em></strong> is the upper bound.</p>
+<p>这被称为 <strong>上界通配符</strong> ，其中 <strong><em>Animal</em></strong> 类型是上界。</p>
+<p>2️⃣ <strong>Lower Bounded Wild Cards</strong></p>
+<p>2️⃣ <strong>下限通配符</strong></p>
+<p>We can also specify wildcards with a lower bound, where the unknown type has to be a <strong>super type of the specified type</strong>. Lower bounds can be specified using the <strong><em>super</em></strong> keyword followed by the specific type.</p>
+<p>我们还可以指定带有下限的通配符，其中未知类型必须是指定类型的 <strong>超类型</strong> 。可以使用 <strong><em>super</em></strong> 关键字指定下限，后面跟上特定的类型。</p>
+<p>Example:</p>
+<p>举例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addIntegers</span><span class="params">(List&lt;? <span class="keyword">super</span> Integer&gt; list)</span></span>&#123;  </span><br><span class="line">    list.add(<span class="keyword">new</span> Integer(<span class="number">70</span>));  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Generic-Methods-通用方法"><a href="#Generic-Methods-通用方法" class="headerlink" title="Generic Methods 通用方法"></a>Generic Methods 通用方法</h1><p>Imagine we need a method which takes different data types and do something. We can create a Generic method for this and reuse it.</p>
+<p>想象一下，我们需要一个接收不同数据类型的方法来做一些事情。我们可以为此创建一个通用方法并重复使用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">call</span><span class="params">(T data)</span> </span>&#123;  </span><br><span class="line">    System.out.println(data);  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">call(<span class="string">"hello"</span>);  </span><br><span class="line">call(<span class="number">45</span>);  </span><br><span class="line">call(<span class="number">15.67</span>);  </span><br><span class="line">call(<span class="number">5L</span>);  </span><br><span class="line">call(<span class="keyword">new</span> Dog(<span class="string">"Rocky"</span>, <span class="string">"black"</span>, <span class="number">5</span>));  </span><br><span class="line">  </span><br><span class="line"><span class="comment">/* output:  </span></span><br><span class="line"><span class="comment">    hello  </span></span><br><span class="line"><span class="comment">    45  </span></span><br><span class="line"><span class="comment">    15.67  </span></span><br><span class="line"><span class="comment">    5  </span></span><br><span class="line"><span class="comment">    generics.Dog@62294cd9  </span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>If we want to return data instead of VOID, we can do that also.</p>
+<p>如果我们想返回数据而不是VOID，我们也可以这样做。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">T <span class="title">getData</span><span class="params">(T data)</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> data;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line">System.out.println(getData(<span class="string">"Test"</span>));   <span class="comment">// output: Test</span></span><br></pre></td></tr></table></figure>
+
+<p>We can accept multiple data types also in a generic method.</p>
+<p>我们也可以在泛型方法中接受多种数据类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T, V&gt; <span class="function"><span class="keyword">void</span> <span class="title">getMultiData</span><span class="params">(T data1, V data2)</span> </span>&#123;  </span><br><span class="line">    System.out.println(<span class="string">"data 1: "</span> + data1);  </span><br><span class="line">    System.out.println(<span class="string">"data 2: "</span> + data2);  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">getMultiData(<span class="number">50</span>, <span class="string">"Shades of Grey"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>I think I have covered almost all the things to be learnt in Generics. So, this would be an ideal article for you to practice Generics in Java. ❤️</p>
+<p>我认为已经覆盖了泛型使用的大部分场景. 因此，这将是您练习Java泛型的理想文章。❤️</p>
+<p>I will bring you another Java stuff next time.</p>
+<p>下次我会给您带来另一款Java产品。</p>
+<p>Bye guys! 🙌</p>
+<p>再见 🙌</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/07/27/genericjava/" title="【Java】Generics in Java">https://whitestore.top/2023/07/27/genericjava/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/27/weeonotes20230723/" rel="prev" title="【周报】20230717 - 20230723 个人周报">
+      <i class="fa fa-chevron-left"></i> 【周报】20230717 - 20230723 个人周报
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/07/27/biosocketstart/" rel="next" title="【Java】BIO源码分析和改造（GraalVM JDK 11.0.19）">
+      【Java】BIO源码分析和改造（GraalVM JDK 11.0.19） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原文"><span class="nav-number">1.</span> <span class="nav-text">原文</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Create-a-Generic-创建通用型"><span class="nav-number">3.</span> <span class="nav-text">Create a Generic 创建通用型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bounded-Generics-有限泛型"><span class="nav-number">4.</span> <span class="nav-text">Bounded Generics 有限泛型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Multiple-Bounds-多重边界"><span class="nav-number">5.</span> <span class="nav-text">Multiple Bounds 多重边界</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Wildcards-With-Generics-通用通配符"><span class="nav-number">6.</span> <span class="nav-text">Wildcards With Generics 通用通配符</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Generic-Methods-通用方法"><span class="nav-number">7.</span> <span class="nav-text">Generic Methods 通用方法</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

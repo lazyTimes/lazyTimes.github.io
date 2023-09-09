@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="请输入描述信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Java】Mastering Backend Development with Java">
+<meta property="og:url" content="https://whitestore.top/2023/09/07/masteringjava/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="请输入描述信息">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131707.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131717.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131741.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131756.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131843.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131901.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131917.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907133704.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907134658.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907134647.png">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:875/0*ErfHekfADhtYb8e9.png">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:875/0*HsR7UP64pwDENvq8.png">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:875/0*I1A3DYUGTcDRdIQ2.png">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:875/0*uJmiodAstz6j0-1j.png">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:875/0*LWJF3cRbzU4wU09A.png">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:875/0*am8Xo9e4ngoABycE.png">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:875/0*IW4rJbi2sMKKak9P.png">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:240/0*ChADmyd-l_RX102d.png">
+<meta property="article:published_time" content="2023-09-07T06:03:14.000Z">
+<meta property="article:modified_time" content="2023-09-09T00:53:49.935Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="请输入关键字（英文逗号分隔多个关键字）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131707.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/09/07/masteringjava/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Java】Mastering Backend Development with Java | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/09/07/masteringjava/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Java】Mastering Backend Development with Java
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-09-07 14:03:14" itemprop="dateCreated datePublished" datetime="2023-09-07T14:03:14+08:00">2023-09-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/09/07/masteringjava/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/09/07/masteringjava/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+            <div class="post-description">请输入描述信息</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>#springboot</p>
+<h1 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h1><p><span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL0BpdHpuaWhhbC9tYXN0ZXJpbmctYmFja2VuZC1kZXZlbG9wbWVudC13aXRoLWphdmEtc3ByaW5nLWJvb3QtYmVzdC1wcmFjdGljZXMtYW5kLXByby10aXBzLTNmYzBmNTAxNDE4ZQ==" title="https://medium.com/@itznihal/mastering-backend-development-with-java-spring-boot-best-practices-and-pro-tips-3fc0f501418e">Mastering Backend Development with Java Spring Boot: Best Practices and Pro Tips | by Nihal Parmar | Medium<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131707.png" alt="image.png"></p>
+<p>Spring Boot is a widely used and very popular enterprise-level high-performance framework. </p>
+<p>Spring Boot 是一种广泛使用且非常流行的企业级高性能框架。</p>
+<p>Here are some best practices and a few tips you can use to improve your Spring Boot application and make it more efficient. </p>
+<p>以下是一些最佳实践和技巧，您可以用来改进 Spring Boot 应用程序，使其更加高效。</p>
+<p>This article will be a little longer, and it will take some time to completely read the article.</p>
+<p>本文篇幅稍长，完整阅读需要耗费不少时间。</p>
+<a id="more"></a>
+
+<h1 id="Proper-packaging-style-适当的包装风格"><a href="#Proper-packaging-style-适当的包装风格" class="headerlink" title="Proper packaging style  适当的包装风格"></a>Proper packaging style  适当的包装风格</h1><ul>
+<li><p>Proper packaging will help to understand the code and the flow of the application easily.</p>
+</li>
+<li><p>适当的包装有助于轻松理解代码和应用程序的流程。</p>
+</li>
+<li><p>You can structure your application with meaningful packaging.</p>
+</li>
+<li><p>您可以通过有意义的打包来构建应用程序。</p>
+</li>
+<li><p>You can include all your controllers into a separate package, services in a separate package, util classes into a separate package…etc. This style is very convenient in small-size microservices.</p>
+</li>
+<li><p>您可以将所有<code>controller</code>打包成一个单独的包，将服务打包成一个单独的包，将 <code>util</code> 类打包成一个单独的包……等等。这种风格在小型微服务中非常方便。</p>
+</li>
+<li><p>If you are working on a huge code base, a feature-based approach can be used. You can decide on your requirement.</p>
+</li>
+<li><p>如果您正在处理庞大的代码库，则可以使用基于功能的方法。您可以根据自己的需求来决定。</p>
+</li>
+</ul>
+<p><strong>Based on type</strong></p>
+<p><strong>基于类型</strong></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131717.png" alt="image.png"></p>
+<p><strong>Based on feature</strong></p>
+<p><strong>基于功能</strong></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131741.png" alt="image.png"></p>
+<h1 id="Use-design-patterns-使用设计模式"><a href="#Use-design-patterns-使用设计模式" class="headerlink" title="Use design patterns 使用设计模式"></a>Use design patterns 使用设计模式</h1><ul>
+<li><p>No complaints. Design patterns are already best practices.</p>
+</li>
+<li><p>But you must identify the place where you can use them.</p>
+</li>
+<li><p>Please check this article to understand “<a href="https://www.javastackflow.com/2022/09/how-to-use-builder-design-pattern-with.html" target="_blank" rel="noopener"><strong><em>how to use the Builder design pattern</em></strong></a>” in our Spring Boot applications.</p>
+</li>
+<li><p>不要埋怨。设计模式已经是最佳实践。</p>
+</li>
+<li><p>但您必须确定可以使用它们的地方。</p>
+</li>
+<li><p>请查看本文以了解：”<a href="https://www.javastackflow.com/2022/09/how-to-use-builder-design-pattern-with.html" target="_blank" rel="noopener"><strong><em>如何在 Spring Boot 应用程序中使用生成器设计模式</em></strong></a>“。</p>
+</li>
+</ul>
+<h1 id="Use-Spring-Boot-starters-使用-Spring-Boot-启动器"><a href="#Use-Spring-Boot-starters-使用-Spring-Boot-启动器" class="headerlink" title="Use Spring Boot starters 使用 Spring Boot 启动器"></a>Use Spring Boot starters 使用 Spring Boot 启动器</h1><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131756.png" alt="image.png"></p>
+<p>Image: <span class="exturl" data-url="aHR0cHM6Ly93d3cubWVycmlhbS13ZWJzdGVyLmNvbS93b3Jkcy1hdC1wbGF5L25hbWVzLW9mLWFwcGV0aXplcnM=" title="https://www.merriam-webster.com/words-at-play/names-of-appetizers">https://www.merriam-webster.com/words-at-play/names-of-appetizers<i class="fa fa-external-link"></i></span></p>
+<ul>
+<li><p>This is a cool feature of Spring Boot.</p>
+</li>
+<li><p>这是 Spring Boot 的一个很酷的功能。</p>
+</li>
+<li><p>We can very easily use starter dependencies without adding single dependencies one by one. These starter dependencies are already bundled with the required dependencies.</p>
+</li>
+<li><p>我们可以非常轻松地使用启动依赖，而无需逐个添加单个依赖。这些启动依赖已经与所需的依赖捆绑在一起。</p>
+</li>
+<li><p>For example, if we add <strong>spring-boot-starter-web</strong> dependency，by default,  it is bundled with <strong>jackson, spring-core, spring-mvc, and spring-boot-starter-tomcat dependencies</strong>.</p>
+</li>
+<li><p>例如，如果我们添加了<strong>spring-boot-starter-web</strong>依赖，默认情况下，它与 <strong>jackson、spring-core、spring-mvc 和 spring-boot-starter-tomcat 依赖</strong>捆绑在一起。</p>
+</li>
+<li><p>So we don’t need to care about adding dependencies separately.</p>
+</li>
+<li><p>因此，我们无需单独添加依赖。</p>
+</li>
+<li><p>And also it helps us to avoid version mismatches.</p>
+</li>
+<li><p>此外，它还能帮助我们避免版本不匹配。</p>
+<h1 id="Use-proper-versions-of-the-dependencies-使用正确的依赖版本"><a href="#Use-proper-versions-of-the-dependencies-使用正确的依赖版本" class="headerlink" title="Use proper versions of the dependencies 使用正确的依赖版本"></a>Use proper versions of the dependencies 使用正确的依赖版本</h1></li>
+<li><p>It is always recommended to use the latest stable <strong>GA</strong> versions.</p>
+</li>
+<li><p>建议始终使用最新的稳定<strong>GA</strong>版本。</p>
+</li>
+<li><p>Sometimes it may vary with the Java version, server versions, the type of the application…etc.</p>
+</li>
+<li><p>有时可能会因 Java 版本、服务器版本、应用程序类型……等而有所不同。</p>
+</li>
+<li><p>Do not use different versions of the same package and always use &lt; properties&gt; to specify the version if there are multiple dependencies.</p>
+</li>
+<li><p>不要使用同一软件包的不同版本，如果存在多个依赖关系，应始终使用 &lt; properties&gt; 来指定版本。</p>
+</li>
+</ul>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131843.png" alt="image.png"></p>
+<h1 id="Use-Lombok-使用-Lombok"><a href="#Use-Lombok-使用-Lombok" class="headerlink" title="Use Lombok 使用 Lombok"></a>Use Lombok 使用 Lombok</h1><ul>
+<li><p>As a Java developer, you have probably heard of the <strong>Lombok project</strong>.</p>
+</li>
+<li><p>Lombok is a Java library that can be used to reduce your codes and allow you to write clean code using its annotations.</p>
+</li>
+<li><p>For example, you may use plenty of lines for getters and setters in some classes like entities, request/response objects, dtos…etc.</p>
+</li>
+<li><p>But if you use Lombok, it is just one line, you can use <strong>@Data, @Getter</strong> or <strong>@Setter</strong> as per your requirement.</p>
+</li>
+<li><p>You can use <strong><em>Lombok</em></strong> logger annotations as well. <strong><em>@Slf4j</em></strong> is recommended.</p>
+</li>
+<li><p>Check this <a href="https://github.com/raviyasas/springboot-gcs-demo/blob/master/src/main/java/com/app/entity/InputFile.java" target="_blank" rel="noopener"><strong><em>file</em></strong></a> for your reference.</p>
+</li>
+<li><p>作为一名 Java 开发人员，您可能听说过<strong>Lombok 项目</strong>。</p>
+</li>
+<li><p><code>Lombok</code> 是一个 Java 库，可用于减少代码，并允许您使用其注解编写简洁的代码。</p>
+</li>
+<li><p>例如，在一些类（如实体、请求/响应对象、dtos……等）中，您可能会使用大量的行来表示 <code>getters</code> 和 <code>setters</code>。</p>
+</li>
+<li><p>但如果使用 <strong>Lombok</strong>，则只需一行，您可以根据需要使用 <strong>@Data</strong>、<strong>@Getter</strong> 或 <strong>@Setter</strong>。</p>
+</li>
+<li><p>您还可以使用 <strong><em>Lombok</em></strong> 日志注释。 建议使用 <strong><em>@Slf4j</em></strong>。</p>
+</li>
+<li><p>请查看此 <a href="https://github.com/raviyasas/springboot-gcs-demo/blob/master/src/main/java/com/app/entity/InputFile.java" target="_blank" rel="noopener"><strong><em>file</em></strong></a>，以供参考。</p>
+<h1 id="Use-constructor-injection-with-Lombok-使用-Lombok-注入构造函数"><a href="#Use-constructor-injection-with-Lombok-使用-Lombok-注入构造函数" class="headerlink" title="Use constructor injection with Lombok 使用 Lombok 注入构造函数"></a>Use constructor injection with Lombok 使用 Lombok 注入构造函数</h1></li>
+</ul>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131901.png" alt="image.png"></p>
+<ul>
+<li><p>When we talk about dependency injection, there are two types.</p>
+</li>
+<li><p>当我们谈论依赖注入时，有两种类型。</p>
+</li>
+<li><p>One is “<strong>constructor injection</strong>” and the other is “<strong>setter injection</strong>”. Apart from that, you can also use “<strong>field injection</strong>” using the very popular <strong>@Autowired</strong> annotation.</p>
+</li>
+<li><p>一种是 “<strong>构造器注入</strong>“，另一种是 “<strong>设置器注入</strong>“。除此之外，你还可以使用非常流行的<strong>@Autowired</strong>注解来进行 “ <strong>字段注入</strong> “。</p>
+</li>
+<li><p>But we highly recommend using <strong>Constructor injection</strong> over other types. Because it allows the application to initialize all required dependencies at the initialization time.</p>
+</li>
+<li><p>但我们强烈建议使用<strong>构造器注入</strong>，而不是其他类型。因为<strong>它允许应用程序在初始化时初始化所有需要的依赖关系</strong>。</p>
+</li>
+<li><p>This is very useful for unit testing.</p>
+</li>
+<li><p>这对<strong>单元测试</strong>非常有用。</p>
+</li>
+<li><p>The important thing is, that we can use the <strong>@RequiredArgsConstructor</strong> annotation by Lombok to use constructor injection.</p>
+</li>
+<li><p>重要的是，我们可以使用 Lombok 的 <strong>@RequiredArgsConstructor</strong> 注解来使用构造器注入。</p>
+</li>
+<li><p>Check this <a href="https://github.com/raviyasas/springboot-gcs-demo/blob/master/src/main/java/com/app/controller/FileController.java" target="_blank" rel="noopener"><em>sample controller</em></a> for your reference.</p>
+</li>
+<li><p>请查看 <a href="https://github.com/raviyasas/springboot-gcs-demo/blob/master/src/main/java/com/app/controller/FileController.java" target="_blank" rel="noopener"><em>sample controller</em></a> 以供参考。</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.app.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.app.entity.InputFile;</span><br><span class="line"><span class="keyword">import</span> com.app.service.FileService;</span><br><span class="line"><span class="keyword">import</span> lombok.RequiredArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.MediaType;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.PostMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestParam;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.multipart.MultipartFile;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/api/v1/files"</span>)</span><br><span class="line"><span class="meta">@RequiredArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger LOGGER = LoggerFactory.getLogger(FileController<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> FileService fileService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping</span>(consumes = &#123;MediaType.MULTIPART_FORM_DATA_VALUE&#125;)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;InputFile&gt; <span class="title">addFile</span><span class="params">(@RequestParam(<span class="string">"files"</span>)</span>MultipartFile[] files)</span>&#123;</span><br><span class="line">        LOGGER.debug(<span class="string">"Call addFile API"</span>);</span><br><span class="line">        <span class="keyword">return</span> fileService.uploadFiles(files);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Use-slf4j-logging-使用-slf4j-日志"><a href="#Use-slf4j-logging-使用-slf4j-日志" class="headerlink" title="Use slf4j logging 使用 slf4j 日志"></a>Use slf4j logging 使用 slf4j 日志</h1><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907131917.png" alt="image.png"></p>
+<ul>
+<li><p>Logging is very important.</p>
+</li>
+<li><p>If a problem occurs while your application is in production, logging is the only way to find out the root cause.</p>
+</li>
+<li><p>Therefore, you should think carefully before adding loggers, log message types, logger levels, and logger messages.</p>
+</li>
+<li><p>Do not use System.out.print()</p>
+</li>
+<li><p>Slf4j is recommended to use along with logback which is the default logging framework in Spring Boot.</p>
+</li>
+<li><p>Always use slf4j { } and avoid using String interpolation in logger messages. Because string interpolation consumes more memory.</p>
+</li>
+<li><p>Please check <a href="https://github.com/raviyasas/springboot-gcs-demo/blob/master/src/main/java/com/app/service/FileServiceImpl.java" target="_blank" rel="noopener"><em>this file</em></a> for your reference to get an idea about, implementing a logger.</p>
+</li>
+<li><p>==You can use Lombok== ==<strong><em>@Slf4j</em></strong>== ==<em>annotation to create a logger very easily.</em>==</p>
+</li>
+<li><p>If you are in a micro-services environment, you can use the ELK stack.</p>
+</li>
+<li><p>日志记录非常重要。  </p>
+</li>
+<li><p>如果应用程序在生产过程中出现问题，日志记录是找出根本原因的唯一途径。  </p>
+</li>
+<li><p>因此，在添加日志记录器、日志消息类型、日志记录器级别和日志记录器消息之前，应仔细考虑。  </p>
+</li>
+<li><p><strong>不要使用 System.out.print()</strong></p>
+</li>
+<li><p>建议使用 <code>Slf4j</code> 和 <code>logback</code>，后者是 <code>Spring Boot</code> 的默认日志框架。  </p>
+</li>
+<li><p>始终使用 slf4j { }，避免在日志记录器消息中使用字符串插值。因为字符串插值会消耗更多内存。  </p>
+</li>
+<li><p>请查看 <a href="https://github.com/raviyasas/springboot-gcs-demo/blob/master/src/main/java/com/app/service/FileServiceImpl.java" target="_blank" rel="noopener"><em>此文件</em></a> 以了解如何实现日志记录器，供您参考。  </p>
+</li>
+<li><p>===你可以使用 Lombok== ==<strong><em>@Slf4j</em></strong>== ==_annotation 来轻松创建日志记录器。  </p>
+</li>
+<li><p>如果你身处微服务环境，可以使用 ELK 栈。  </p>
+</li>
+</ul>
+<h1 id="Use-Controllers-only-for-routing-仅在路由时使用控制器"><a href="#Use-Controllers-only-for-routing-仅在路由时使用控制器" class="headerlink" title="Use Controllers only for routing 仅在路由时使用控制器"></a>Use Controllers only for routing 仅在路由时使用控制器</h1><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907133704.png" alt="image.png"></p>
+<ul>
+<li><p>Controllers are dedicated to routing.</p>
+</li>
+<li><p>It is <strong>stateless</strong> and <strong>singleton</strong>.</p>
+</li>
+<li><p>The DispatcherServlet will check the <em>@RequestMapping</em> on <em>Controllers</em></p>
+</li>
+<li><p>Controllers are the ultimate target of requests, then requests will be handed over to the service layer and processed by the service layer.</p>
+</li>
+<li><p>The business logic <strong>should not be</strong> in the controllers.</p>
+</li>
+<li><p>控制器专用于路由。</p>
+</li>
+<li><p>它是<strong>无状态</strong>和<strong>单例</strong>。</p>
+</li>
+<li><p>DispatcherServlet 会检查控制器上的 <em>@RequestMapping</em> 。</p>
+</li>
+<li><p>控制器是请求的最终目标，然后请求将被移交给服务层并由服务层处理。</p>
+</li>
+<li><p>业务逻辑<strong>不应该</strong>在控制器中。</p>
+<h1 id="Use-Services-for-business-logic-业务逻辑使用服务"><a href="#Use-Services-for-business-logic-业务逻辑使用服务" class="headerlink" title="Use Services for business logic 业务逻辑使用服务"></a>Use Services for business logic 业务逻辑使用服务</h1></li>
+<li><p>The <strong>complete business logic goes here</strong> with validations, caching…etc.</p>
+</li>
+<li><p>Services communicate with the persistence layer and receive the results.</p>
+</li>
+<li><p>Services are also singleton.</p>
+</li>
+<li><p>这里***完整的业务逻辑，包括验证、缓存……等。</p>
+</li>
+<li><p>服务与持久层通信并接收结果。</p>
+</li>
+<li><p>服务也是单例的。</p>
+</li>
+</ul>
+<blockquote>
+<p><em>Bonus article:</em> <a href="https://medium.com/@raviyasas/why-stress-and-how-to-manage-it-as-a-software-engineer-204b4e21ed9" target="_blank" rel="noopener"><em>Manage stress as a Software Engineer</em></a></p>
+<p><em>Bonus article:</em> <a href="https://medium.com/@raviyasas/why-stress-and-how-to-manage-it-as-a-software-engineer-204b4e21ed9" target="_blank" rel="noopener"><em>Manage stress as a Software Engineer</em></a></p>
+</blockquote>
+<h1 id="Avoid-NullPointerException-避免-NullPointerException"><a href="#Avoid-NullPointerException-避免-NullPointerException" class="headerlink" title="Avoid NullPointerException 避免 NullPointerException"></a>Avoid NullPointerException 避免 NullPointerException</h1><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907134658.png" alt="image.png"></p>
+<ul>
+<li><p>To avoid <strong>NullPointerException</strong> you can use <strong>Optional</strong> from java.util package.</p>
+</li>
+<li><p>You can also use null-safe libraries. Ex: <strong>Apache Commons StringUtils</strong></p>
+</li>
+<li><p>Call <strong>equals()</strong> and <strong>equalsIgnoreCase()</strong> methods on known objects.</p>
+</li>
+<li><p>Use <strong>valueOf()</strong> over <strong>toString()</strong></p>
+</li>
+<li><p>Use IDE-based <strong>@NotNull</strong> and <strong>@Nullable</strong> annotations.</p>
+</li>
+<li><p>避免<strong>NullPointerException</strong>，您可以使用 java.util 包中的<strong>Optional</strong>。</p>
+</li>
+<li><p>您还可以使用空安全库。例如：<strong>Apache Commons StringUtils</strong></p>
+</li>
+<li><p>在已知对象上调用 <strong>equals()</strong> 和 <strong>equalsIgnoreCase()</strong> 方法。</p>
+</li>
+<li><p>使用 <strong>valueOf()</strong> 而非 <strong>toString()</strong></p>
+</li>
+<li><p>使用基于 IDE 的 <strong>@NotNull</strong> 和 <strong>@Nullable</strong> 注解。</p>
+<h1 id="Use-best-practices-for-the-Collection-framework-使用Collection框架的最佳实践"><a href="#Use-best-practices-for-the-Collection-framework-使用Collection框架的最佳实践" class="headerlink" title="Use best practices for the Collection framework 使用Collection框架的最佳实践"></a>Use best practices for the Collection framework 使用Collection框架的最佳实践</h1></li>
+<li><p>Use appropriate collection for your data set.</p>
+</li>
+<li><p>Use <strong>forEach</strong> with Java 8 features and avoid using legacy for loops.</p>
+</li>
+<li><p>Use <strong>interface type</strong> instead of the implementation.</p>
+</li>
+<li><p>Use <strong>isEmpty()</strong> over <strong>size()</strong> for better readability.</p>
+</li>
+<li><p>Do not return null values, you can return an empty collection.</p>
+</li>
+<li><p>If you are using objects as data to be stored in a hash-based collection, you should override equals() and hashCode() methods. Please check this article “<a href="https://medium.com/@raviyasas/how-a-hashmap-internally-works-93e3887978f3" target="_blank" rel="noopener"><em>How does a HashMap internally work</em></a>”.</p>
+</li>
+<li><p>针对数据集使用适当的集合。</p>
+</li>
+<li><p>使用 Java 8 Lambda 的 <strong>forEach</strong>，避免使用传统的 for 循环。</p>
+</li>
+<li><p>使用 <strong>接口类型</strong> 而不是具体实现。</p>
+</li>
+<li><p>使用 <strong>isEmpty()</strong>，而不是 <strong>size()</strong>，以获得更好的可读性。</p>
+</li>
+<li><p>不要返回空值，可以返回空集合。</p>
+</li>
+<li><p>如果使用对象作为数据存储在基于Hash的集合中，则应覆盖 equals() 和 hashCode() 方法。请查看本文”<a href="https://medium.com/@raviyasas/how-a-hashmap-internally-works-93e3887978f3" target="_blank" rel="noopener"><em>HashMap 内部如何工作</em></a>“。</p>
+</li>
+</ul>
+<h1 id="Use-pagination-使用分页"><a href="#Use-pagination-使用分页" class="headerlink" title="Use pagination 使用分页"></a>Use pagination 使用分页</h1><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230907134647.png" alt="image.png"></p>
+<ul>
+<li><p>This will improve the performance of the application.</p>
+</li>
+<li><p>If you’re using <strong>Spring Data JPA</strong>, the <strong><em>PagingAndSortingRepository</em></strong> makes using pagination very easy and with little effort.</p>
+</li>
+<li><p>这将提高应用程序的性能。</p>
+</li>
+<li><p>如果你使用的是<strong>Spring Data JPA</strong>，那么 <strong><em>PagingAndSortingRepository</em></strong> 会让分页功能的使用变得非常简单，而且几乎不费吹灰之力。</p>
+<h1 id="Use-caching-使用缓存"><a href="#Use-caching-使用缓存" class="headerlink" title="Use caching 使用缓存"></a>Use caching 使用缓存</h1></li>
+<li><p>Caching is another important factor when talking about application performance.</p>
+</li>
+<li><p>By default Spring Boot provides caching with <strong>ConcurrentHashMap</strong> and you can achieve this by <strong>@EnableCaching</strong> annotation.</p>
+</li>
+<li><p>If you are not satisfied with default caching, you can use <strong>Redis</strong>, <strong>Hazelcast,</strong> or any other distributed caching implementations.</p>
+</li>
+<li><p>Redis and Hazelcast are <strong>in-memory</strong> caching methods. You also can use database cache implementations as well.</p>
+</li>
+<li><p>缓存是影响应用程序性能的另一个重要因素。</p>
+</li>
+<li><p>默认情况下，Spring Boot 通过 <strong>ConcurrentHashMap</strong> 提供缓存，您可以通过 <strong>@EnableCaching</strong> 注解实现缓存。</p>
+</li>
+<li><p>如果对默认缓存不满意，可以使用 <strong>Redis</strong>、<strong>Hazelcast</strong> 或其他分布式缓存实现。</p>
+</li>
+<li><p><strong>Redis</strong> 和 <strong>Hazelcast</strong> 是<strong>内存</strong>缓存方法。您也可以使用数据库缓存实现。</p>
+<h1 id="Use-custom-exception-handler-with-global-exception-handling-使用自定义异常处理程序和全局异常处理"><a href="#Use-custom-exception-handler-with-global-exception-handling-使用自定义异常处理程序和全局异常处理" class="headerlink" title="Use custom exception handler with global exception handling 使用自定义异常处理程序和全局异常处理"></a>Use custom exception handler with global exception handling 使用自定义异常处理程序和全局异常处理</h1></li>
+</ul>
+<p><img src="https://miro.medium.com/v2/resize:fit:875/0*ErfHekfADhtYb8e9.png" alt=""></p>
+<ul>
+<li><p>This is very important when working with large enterprise-level applications.</p>
+</li>
+<li><p>Apart from the general exceptions, we may have some scenarios to identify some specific error cases.</p>
+</li>
+<li><p>Exception adviser can be created with <strong>@ControllerAdvice</strong> and we can create separate exceptions with meaningful details.</p>
+</li>
+<li><p>It will make it much easier to identify and debug errors in the future.</p>
+</li>
+<li><p>Please check <a href="https://github.com/raviyasas/springboot-exceptions-demo/tree/master/src/main/java/com/app/exception" target="_blank" rel="noopener"><em>this</em></a> and <a href="https://github.com/raviyasas/springboot-gcs-demo/tree/master/src/main/java/com/app/exception" target="_blank" rel="noopener"><em>this</em></a> for your reference.</p>
+</li>
+<li><p>在处理大型企业级应用程序时，这一点非常重要。</p>
+</li>
+<li><p>除了一般的异常情况外，我们可能还需要在某些情况下识别一些特定的错误案例。</p>
+</li>
+<li><p>可以使用 <strong>@ControllerAdvice</strong> 创建异常切面，我们可以创建具有有意义细节的单独异常。</p>
+</li>
+<li><p>这将大大方便今后识别和调试错误。</p>
+</li>
+<li><p>请查看 <a href="https://github.com/raviyasas/springboot-exceptions-demo/tree/master/src/main/java/com/app/exception" target="_blank" rel="noopener"><em>this</em></a> 和 <a href="https://github.com/raviyasas/springboot-gcs-demo/tree/master/src/main/java/com/app/exception" target="_blank" rel="noopener"><em>this</em></a>，以供参考。</p>
+</li>
+</ul>
+<blockquote>
+<p><em>Bonus article:</em> <a href="https://www.javastackflow.com/2022/09/what-is-serverless-architecture.html" target="_blank" rel="noopener"><em>What is serverless Architecture?</em></a></p>
+<p><em>Bonus article:</em> <a href="https://www.javastackflow.com/2022/09/what-is-serverless-architecture.html" target="_blank" rel="noopener"><em>什么是无服务架构？</em></a></p>
+</blockquote>
+<h1 id="Use-custom-response-object-使用自定义响应对象"><a href="#Use-custom-response-object-使用自定义响应对象" class="headerlink" title="Use custom response object 使用自定义响应对象"></a>Use custom response object 使用自定义响应对象</h1><p><img src="https://miro.medium.com/v2/resize:fit:875/0*HsR7UP64pwDENvq8.png" alt=""></p>
+<ul>
+<li><p>A custom response object can be used to return an object with some specific data with the requirements like HTTP status code, API code, message…etc.</p>
+</li>
+<li><p>We can use the <strong>builder design pattern</strong> to create a custom response object with custom attributes.</p>
+</li>
+<li><p>Please check <a href="https://www.javastackflow.com/2022/09/how-to-use-builder-design-pattern-with.html" target="_blank" rel="noopener"><strong><em>this article</em></strong></a> for your reference.</p>
+</li>
+<li><p>自定义响应对象可用于返回带有某些特定数据的对象，这些数据应符合 HTTP 状态代码、API 代码、消息等要求。</p>
+</li>
+<li><p>我们可以使用 ** 生成器设计模式** 来创建带有自定义属性的自定义响应对象。</p>
+</li>
+<li><p>请查阅<a href="https://www.javastackflow.com/2022/09/how-to-use-builder-design-pattern-with.html" target="_blank" rel="noopener"><strong><em>本文</em></strong></a>以供参考。</p>
+<h1 id="Remove-unnecessary-codes-variables-methods-and-classes-删除不必要的代码、变量、方法和类"><a href="#Remove-unnecessary-codes-variables-methods-and-classes-删除不必要的代码、变量、方法和类" class="headerlink" title="Remove unnecessary codes, variables, methods, and classes.  删除不必要的代码、变量、方法和类"></a>Remove unnecessary codes, variables, methods, and classes.  删除不必要的代码、变量、方法和类</h1></li>
+</ul>
+<p><img src="https://miro.medium.com/v2/resize:fit:875/0*I1A3DYUGTcDRdIQ2.png" alt=""></p>
+<p>commented code in the production</p>
+<p>生产中的注释代码</p>
+<ul>
+<li><p><strong>Unused variable</strong> declarations will acquire some memory.</p>
+</li>
+<li><p>Remove unused methods, classes…etc because it will impact the performance of the application.</p>
+</li>
+<li><p>Try to avoid nested loops. You can use maps instead.</p>
+</li>
+<li><p>未使用的变量，**声明会占用一些内存。</p>
+</li>
+<li><p>删除未使用的方法、类……等，因为这将影响应用程序的性能。</p>
+</li>
+<li><p>尽量避免嵌套循环。可以使用映射来代替。</p>
+<h1 id="Using-comments-使用注释"><a href="#Using-comments-使用注释" class="headerlink" title="Using comments 使用注释"></a>Using comments 使用注释</h1></li>
+<li><p>Commenting is a good practice unless you abuse it.</p>
+</li>
+<li><p>DO NOT comment on everything. Instead, you can write descriptive code using meaningful words for classes, functions, methods, variables…etc.</p>
+</li>
+<li><p>Remove commented codes, misleading comments, and story-type comments.</p>
+</li>
+<li><p>You can use comments for warnings and explain something difficult to understand at first sight.</p>
+</li>
+<li><p>注释是一种很好的做法，除非你滥用它。</p>
+</li>
+<li><p><strong>切勿对所有内容进行注释</strong>。相反，您可以使用有意义的词来描述类、函数、方法、变量……等，编写描述性代码。</p>
+</li>
+<li><p>删除<strong>注释代码</strong>、<strong>误导性注释</strong>和<strong>故事型注释</strong>。</p>
+</li>
+<li><p>您可以使用注释来警告和解释一些<strong>乍一看难以理解</strong>的内容。</p>
+<h1 id="Use-meaningful-words-for-classes-methods-functions-variables-and-other-attributes-对类、方法、函数、变量和其他属性使用有意义的词语。"><a href="#Use-meaningful-words-for-classes-methods-functions-variables-and-other-attributes-对类、方法、函数、变量和其他属性使用有意义的词语。" class="headerlink" title="Use meaningful words for classes, methods, functions, variables, and other attributes. 对类、方法、函数、变量和其他属性使用有意义的词语。"></a>Use meaningful words for classes, methods, functions, variables, and other attributes. 对类、方法、函数、变量和其他属性使用有意义的词语。</h1></li>
+</ul>
+<p><img src="https://miro.medium.com/v2/resize:fit:875/0*uJmiodAstz6j0-1j.png" alt=""></p>
+<ul>
+<li><p>This looks very simple, but the impact is huge.</p>
+</li>
+<li><p>Always use proper <strong>meaningful and searchable</strong> naming conventions with proper case.</p>
+</li>
+<li><p>Usually, we use <strong>nouns or short phrases</strong> when declaring <strong>classes</strong>, <strong>variables</strong>, and <strong>constants</strong>. Ex: String firstName, const isValid</p>
+</li>
+<li><p>You can use <strong>verbs and short phrases with adjectives</strong> for <strong>functions</strong> and <strong>methods</strong>. Ex: readFile(), sendData()</p>
+</li>
+<li><p>Avoid using <strong>abbreviating variable</strong> names and <strong>intention revealing</strong> names. Ex: int i; String getExUsr;</p>
+</li>
+<li><p>If you use this meaningfully, declaration comment lines can be reduced. Since it has meaningful names, a fresh developer can easily understand by reading the code.</p>
+</li>
+<li><p>这看起来很简单，但影响却很大。</p>
+</li>
+<li><p>始终使用<strong>有意义且可搜索的</strong>命名规则，并使用正确的大小写。</p>
+</li>
+<li><p>通常，我们在声明<strong>类</strong>、<strong>变量</strong>和<strong>常量</strong>时使用<strong>名词或短语</strong>。例如：字符串 firstName、常量 isValid</p>
+</li>
+<li><p>在声明<strong>函数</strong>和<strong>方法</strong>时，可以使用<strong>谚语和带有形容词的短语</strong>。例如：readFile()、sendData()</p>
+</li>
+<li><p>避免使用<strong>缩略变量</strong>名和<strong>暴露想法</strong>名。例如：int i; String getExUsr；</p>
+</li>
+<li><p>如果使用这些有意义的名称，就可以减少声明注释行。由于使用了有意义的名称，新开发人员在阅读代码时很容易理解。</p>
+<h1 id="Use-proper-case-for-declarations-在声明中使用合适的大小写"><a href="#Use-proper-case-for-declarations-在声明中使用合适的大小写" class="headerlink" title="Use proper case for declarations 在声明中使用合适的大小写"></a>Use proper case for declarations 在声明中使用合适的大小写</h1></li>
+</ul>
+<p><img src="https://miro.medium.com/v2/resize:fit:875/0*LWJF3cRbzU4wU09A.png" alt=""></p>
+<ul>
+<li><p>There are many different cases like <strong>UPPERCASE, lowercase, camelCase, PascalCase, snake_case, SCREAMING_SNAKE_CASE, kebab-case</strong>…etc.</p>
+</li>
+<li><p>But we need to identify which case is dedicated to which variable.</p>
+</li>
+<li><p>Usually, I follow,</p>
+</li>
+<li><p>有许多不同的大小写，如 <strong>大写、小写、骆驼大写、帕斯卡大写、蛇大写、SCREAMING_SNAKE_CASE、kebab-case</strong>……等等。</p>
+</li>
+<li><p>但我们需要确定哪个大小写专用于哪个变量。</p>
+</li>
+<li><p>通常，我是这样做的。</p>
+</li>
+</ul>
+<p>classes — <strong>PascalCase</strong></p>
+<p>methods &amp; variables — <strong>camelCase</strong></p>
+<p>方法和变量–<strong>camelCase</strong></p>
+<p>constants — <strong>SCREAMING_SNAKE_CASE</strong></p>
+<p>常量 - <strong>SCREAMING_SNAKE_CASE</strong></p>
+<p>DB-related fields — <strong>snake_case</strong></p>
+<p>与 DB 相关的字段 - <strong>snake_case</strong></p>
+<ul>
+<li><p>This is just an example. It can be different from the standard you follow in the company.</p>
+</li>
+<li><p>这只是一个示例。它可能与您在公司中遵循的标准不同。</p>
+<h1 id="Be-simple-保持简单"><a href="#Be-simple-保持简单" class="headerlink" title="Be simple 保持简单"></a>Be simple 保持简单</h1></li>
+</ul>
+<p><img src="https://miro.medium.com/v2/resize:fit:875/0*am8Xo9e4ngoABycE.png" alt=""></p>
+<ul>
+<li><p>Always try to write simple, readable codes.</p>
+</li>
+<li><p>The same simple logic can be implemented using different ways, but it is difficult to understand if it is not readable or understandable.</p>
+</li>
+<li><p>Sometimes complex logic consumes more memory.</p>
+</li>
+<li><p>Try to use <strong>KISS</strong>, <strong>DRY</strong>, and <strong>SOLID</strong> principles when writing codes. I will explain this in a future article.</p>
+</li>
+<li><p>始终尽量编写简单、可读的代码。</p>
+</li>
+<li><p>同样简单的逻辑可以用不同的方法实现，但如果不可读性或不可懂性，就很难理解。</p>
+</li>
+<li><p>有时复杂的逻辑会消耗更多内存。</p>
+</li>
+<li><p>在编写代码时，尽量使用<strong>KISS</strong>、<strong>DRY</strong>和<strong>SOLID</strong>原则。我将在今后的文章中对此进行解释。</p>
+</li>
+</ul>
+<blockquote>
+<p>DRY stands for “Don’s Repeat Yourself</p>
+</blockquote>
+<p>如果代码可以公用就尽量公用，不要复制粘贴代码。</p>
+<blockquote>
+<p>kiss：KISS stands for “Keep It Simple, Stupid”.</p>
+</blockquote>
+<p>KISS就是保持简单，愚蠢。这个愚蠢指的是方法最好只知道干一件事情。这两点和Unix最初的设计的理念是一样的，简单好用即是美。</p>
+<p><strong>SOLID</strong>原则：</p>
+<p><strong>Single Responsibility Principle</strong> 单一职责：每个类和接口有明确目标。</p>
+<p><strong>Open-Closed Principle</strong> 开闭原则：开放扩展，封闭修改。</p>
+<p><strong>Liskov Substitution Principle</strong> 里式替代：尽可能让代码多态。</p>
+<p><strong>Interface Segregation Principle</strong> 接口隔离：实现接口替代类继承。</p>
+<p><strong>Dependency Inversion Principle</strong> 依赖倒转原则：依赖抽象而不是依赖实现。</p>
+<h1 id="Use-a-common-code-formatting-style-使用通用的代码格式样式"><a href="#Use-a-common-code-formatting-style-使用通用的代码格式样式" class="headerlink" title="Use a common code formatting style 使用通用的代码格式样式"></a>Use a common code formatting style 使用通用的代码格式样式</h1><p><img src="https://miro.medium.com/v2/resize:fit:875/0*IW4rJbi2sMKKak9P.png" alt=""></p>
+<ul>
+<li><p>Formatting styles vary from developer to developer. Coding style changes are also considered a change and can make code merging very difficult.</p>
+</li>
+<li><p>To avoid this, the team can have a common coding format.</p>
+</li>
+<li><p>格式风格因开发人员而异。编码风格的改变也被认为是一种改变，会使代码合并变得非常困难。</p>
+</li>
+<li><p>为了避免这种情况，团队可以采用统一的编码格式。</p>
+</li>
+</ul>
+<h1 id="Use-SonarLint-使用-SonarLint"><a href="#Use-SonarLint-使用-SonarLint" class="headerlink" title="Use SonarLint 使用 SonarLint"></a>Use SonarLint 使用 SonarLint</h1><p><img src="https://miro.medium.com/v2/resize:fit:240/0*ChADmyd-l_RX102d.png" alt=""></p>
+<ul>
+<li><p>This is very useful for identifying small bugs and best practices to avoid unnecessary bugs and code quality issues.</p>
+</li>
+<li><p>这对识别小错误和最佳实践非常有用，可避免不必要的错误和代码质量问题。</p>
+</li>
+<li><p>You can install the plugin into your favorite IDE.</p>
+</li>
+<li><p>您可以将该插件安装到自己喜欢的集成开发环境中。</p>
+</li>
+</ul>
+<p>Follow me for <em>new tidbits</em> on the <strong>domain of tech.</strong></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/09/07/masteringjava/" title="【Java】Mastering Backend Development with Java">https://whitestore.top/2023/09/07/masteringjava/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/09/06/obsidiandayplan/" rel="prev" title="Obsidian Day-Planner 插件新版本使用（0.7.X以上版本）">
+      <i class="fa fa-chevron-left"></i> Obsidian Day-Planner 插件新版本使用（0.7.X以上版本）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/09/09/note20/" rel="next" title="Jmeter压力测试学习">
+      Jmeter压力测试学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Source"><span class="nav-number">1.</span> <span class="nav-text">Source</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Proper-packaging-style-适当的包装风格"><span class="nav-number">2.</span> <span class="nav-text">Proper packaging style  适当的包装风格</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-design-patterns-使用设计模式"><span class="nav-number">3.</span> <span class="nav-text">Use design patterns 使用设计模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-Spring-Boot-starters-使用-Spring-Boot-启动器"><span class="nav-number">4.</span> <span class="nav-text">Use Spring Boot starters 使用 Spring Boot 启动器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-proper-versions-of-the-dependencies-使用正确的依赖版本"><span class="nav-number">5.</span> <span class="nav-text">Use proper versions of the dependencies 使用正确的依赖版本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-Lombok-使用-Lombok"><span class="nav-number">6.</span> <span class="nav-text">Use Lombok 使用 Lombok</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-constructor-injection-with-Lombok-使用-Lombok-注入构造函数"><span class="nav-number">7.</span> <span class="nav-text">Use constructor injection with Lombok 使用 Lombok 注入构造函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-slf4j-logging-使用-slf4j-日志"><span class="nav-number">8.</span> <span class="nav-text">Use slf4j logging 使用 slf4j 日志</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-Controllers-only-for-routing-仅在路由时使用控制器"><span class="nav-number">9.</span> <span class="nav-text">Use Controllers only for routing 仅在路由时使用控制器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-Services-for-business-logic-业务逻辑使用服务"><span class="nav-number">10.</span> <span class="nav-text">Use Services for business logic 业务逻辑使用服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Avoid-NullPointerException-避免-NullPointerException"><span class="nav-number">11.</span> <span class="nav-text">Avoid NullPointerException 避免 NullPointerException</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-best-practices-for-the-Collection-framework-使用Collection框架的最佳实践"><span class="nav-number">12.</span> <span class="nav-text">Use best practices for the Collection framework 使用Collection框架的最佳实践</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-pagination-使用分页"><span class="nav-number">13.</span> <span class="nav-text">Use pagination 使用分页</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-caching-使用缓存"><span class="nav-number">14.</span> <span class="nav-text">Use caching 使用缓存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-custom-exception-handler-with-global-exception-handling-使用自定义异常处理程序和全局异常处理"><span class="nav-number">15.</span> <span class="nav-text">Use custom exception handler with global exception handling 使用自定义异常处理程序和全局异常处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-custom-response-object-使用自定义响应对象"><span class="nav-number">16.</span> <span class="nav-text">Use custom response object 使用自定义响应对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Remove-unnecessary-codes-variables-methods-and-classes-删除不必要的代码、变量、方法和类"><span class="nav-number">17.</span> <span class="nav-text">Remove unnecessary codes, variables, methods, and classes.  删除不必要的代码、变量、方法和类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Using-comments-使用注释"><span class="nav-number">18.</span> <span class="nav-text">Using comments 使用注释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-meaningful-words-for-classes-methods-functions-variables-and-other-attributes-对类、方法、函数、变量和其他属性使用有意义的词语。"><span class="nav-number">19.</span> <span class="nav-text">Use meaningful words for classes, methods, functions, variables, and other attributes. 对类、方法、函数、变量和其他属性使用有意义的词语。</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-proper-case-for-declarations-在声明中使用合适的大小写"><span class="nav-number">20.</span> <span class="nav-text">Use proper case for declarations 在声明中使用合适的大小写</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Be-simple-保持简单"><span class="nav-number">21.</span> <span class="nav-text">Be simple 保持简单</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-a-common-code-formatting-style-使用通用的代码格式样式"><span class="nav-number">22.</span> <span class="nav-text">Use a common code formatting style 使用通用的代码格式样式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-SonarLint-使用-SonarLint"><span class="nav-number">23.</span> <span class="nav-text">Use SonarLint 使用 SonarLint</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

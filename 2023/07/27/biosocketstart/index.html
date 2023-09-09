@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="网络IO编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Java】BIO源码分析和改造（GraalVM JDK 11.0.19）">
+<meta property="og:url" content="https://whitestore.top/2023/07/27/biosocketstart/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="网络IO编程">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717073204.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230705110036.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230411212436.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230705103727.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706174016.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706114407.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707151128.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707160516.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707161437.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707163648.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707163430.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707163500.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707175534.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712151156.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712160311.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712160613.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712160628.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712161314.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712163105.png">
+<meta property="article:published_time" content="2023-07-27T03:43:47.000Z">
+<meta property="article:modified_time" content="2023-09-09T00:54:05.258Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="本文介绍网络IO编程的入门部分">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717073204.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/07/27/biosocketstart/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Java】BIO源码分析和改造（GraalVM JDK 11.0.19） | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/07/27/biosocketstart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Java】BIO源码分析和改造（GraalVM JDK 11.0.19）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-07-27 11:43:47" itemprop="dateCreated datePublished" datetime="2023-07-27T11:43:47+08:00">2023-07-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:54:05" itemprop="dateModified" datetime="2023-09-09T08:54:05+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/07/27/biosocketstart/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/27/biosocketstart/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>33k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>30 分钟</span>
+            </span>
+            <div class="post-description">网络IO编程</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本文介绍网络IO编程的入门部分，Java 的传统BIO Socket编程源码分析，了解如何将BIO阻塞行为<code>accept()</code> 和 <code>read()</code> 改造为非阻塞行为，并且将结合Linux文档介绍其中的机制，文档中描述了如何处理<code>Socket</code>的<code>accept</code>，对比Java的Socket实现代码，基本可以发现和Linux行为基本一致。</p>
+<p>废话不多说，我们直接开始。</p>
+<h1 id="draw-io-文件"><a href="#draw-io-文件" class="headerlink" title="draw.io 文件"></a>draw.io 文件</h1><p>本文涉及的个人源码分析绘图均由 <code>draw.io</code> 绘制，源文件如下：</p>
+<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMUZIQVl0NEF4V2gwRGQ0cWkySktaTFE/cHdkPXFzbWc=" title="https://pan.baidu.com/s/1FHAYt4AxWh0Dd4qi2JKZLQ?pwd=qsmg">https://pan.baidu.com/s/1FHAYt4AxWh0Dd4qi2JKZLQ?pwd=qsmg <i class="fa fa-external-link"></i></span><br>提取码：qsmg </p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717073204.png" alt="image.png"></p>
+<a id="more"></a>
+
+<h1 id="什么是Socket？"><a href="#什么是Socket？" class="headerlink" title="什么是Socket？"></a>什么是Socket？</h1><p>Socket起源于Unix的一种通信机制，中文通常叫他“套接字”，代表了网络IP和端口，可以看作是通信过程的一个“句柄”。</p>
+<p>Socket 也可以理解为网络编程当中的API，编程语言提供了对应的API实现方式，电脑上的网络应用程序也是通过“套接字”完成网络请求接受与应答。</p>
+<p>总而言之：<strong>Socket是应用层与TCP/IP协议族通信的中间软件抽象层</strong>。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230705110036.png" alt="Socket是应用层与TCP/IP协议族通信的中间软件抽象层"></p>
+<blockquote>
+<p>图片来源：<span class="exturl" data-url="aHR0cHM6Ly93d3cudG9wZ29lci5jb20vJUU3JUJEJTkxJUU3JUJCJTlDJUU3JUJDJTk2JUU3JUE4JThCL3NvY2tldCVFNyVCQyU5NiVFNyVBOCU4Qi9zb2NrZXQlRTUlOUIlQkUlRTglQTclQTMuaHRtbA==" title="https://www.topgoer.com/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/socket%E7%BC%96%E7%A8%8B/socket%E5%9B%BE%E8%A7%A3.html">socket图解 · Go语言中文文档 (topgoer.com)<i class="fa fa-external-link"></i></span></p>
+</blockquote>
+<h1 id="阻塞式IO模型"><a href="#阻塞式IO模型" class="headerlink" title="阻塞式IO模型"></a>阻塞式IO模型</h1><p>在 <strong>《UNIX Network Programming》</strong> 一书当中，用UDP传输的案例模拟了阻塞式的IO模型，这个模型的概念和Java BIO的阻塞模型类似。</p>
+<p>下面函数中应用进程在调用 <code>recvfrom</code> 之后就开始系统调用并且进行阻塞，等待内核把数据准备并且复制完成之后才得到结果，或者等待过程中发生错误返回。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230411212436.png" alt="阻塞式IO模型"></p>
+<p>从图片可以看到，在内核工作的整个过程中应用进程无法做其他任何操作。</p>
+<h1 id="BIO-通信模型"><a href="#BIO-通信模型" class="headerlink" title="BIO 通信模型"></a>BIO 通信模型</h1><p>我们把上面的阻塞IO模型转为IO通信模型，结果如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230705103727.png" alt="BIO 通信模型"></p>
+<p>BIO对于每一个客户端进行阻塞等待接收连接，同一个时间只能处理一个Socket请求，并且在构建完成之后通常会分配一个Thread线程为其进行服务。</p>
+<h1 id="BIO-阻塞案例代码"><a href="#BIO-阻塞案例代码" class="headerlink" title="BIO 阻塞案例代码"></a>BIO 阻塞案例代码</h1><h2 id="BioClientSocket"><a href="#BioClientSocket" class="headerlink" title="BioClientSocket"></a>BioClientSocket</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> *  BioClientSocket 客户端 Socket实现  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Xander  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> v1.0.0  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Package</span> : com.zxd.interview.niosource.bio  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> : BioClientSocket 客户端 Socket实现  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Create</span> on : 2023/7/5 09:52  </span></span><br><span class="line"><span class="comment"> **/</span><span class="meta">@Slf</span>4j  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BioClientSocket</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initBIOClient</span><span class="params">(String host, <span class="keyword">int</span> port)</span> </span>&#123;  </span><br><span class="line">        BufferedReader reader = <span class="keyword">null</span>;  </span><br><span class="line">        BufferedWriter writer = <span class="keyword">null</span>;  </span><br><span class="line">        Socket socket = <span class="keyword">null</span>;  </span><br><span class="line">        String inputContent;  </span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;  </span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(System.in));  </span><br><span class="line">            socket = <span class="keyword">new</span> Socket(host, port);  </span><br><span class="line">            writer = <span class="keyword">new</span> BufferedWriter(<span class="keyword">new</span> OutputStreamWriter(socket.getOutputStream()));  </span><br><span class="line">            log.info(<span class="string">"clientSocket started: "</span> + stringNowTime());  </span><br><span class="line">            <span class="keyword">while</span> (((inputContent = reader.readLine()) != <span class="keyword">null</span>) &amp;&amp; count &lt; <span class="number">2</span>) &#123;  </span><br><span class="line">                inputContent = stringNowTime() + <span class="string">": 第"</span> + count + <span class="string">"条消息: "</span> + inputContent + <span class="string">"\n"</span>;  </span><br><span class="line">                writer.write(inputContent);<span class="comment">//将消息发送给服务端  </span></span><br><span class="line">                writer.flush();  </span><br><span class="line">                count++;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;  </span><br><span class="line">            e.printStackTrace();  </span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                socket.close();  </span><br><span class="line">                reader.close();  </span><br><span class="line">                writer.close();  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                e.printStackTrace();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">stringNowTime</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        SimpleDateFormat format = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);  </span><br><span class="line">        <span class="keyword">return</span> format.format(<span class="keyword">new</span> Date());  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        BioClientSocket client = <span class="keyword">new</span> BioClientSocket();  </span><br><span class="line">        client.initBIOClient(<span class="string">"127.0.0.1"</span>, <span class="number">8888</span>);  </span><br><span class="line">    &#125;<span class="comment">/**  </span></span><br><span class="line"><span class="comment">     运行结果：  </span></span><br><span class="line"><span class="comment">     clientSocket started: 2023-07-05 10:26:05  </span></span><br><span class="line"><span class="comment">     7978987     797898     tyuytu     */</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="BioServerSocket"><a href="#BioServerSocket" class="headerlink" title="BioServerSocket"></a>BioServerSocket</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * ServerSocket 实现  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Xander  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> v1.0.0  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Package</span> : com.zxd.interview.niosource.bio  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> : ServerSocket 实现  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Create</span> on : 2023/7/5 09:48  </span></span><br><span class="line"><span class="comment"> **/</span><span class="meta">@Slf</span>4j  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BioServerSocket</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initBIOServer</span><span class="params">(<span class="keyword">int</span> port)</span> </span>&#123;  </span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">null</span>;<span class="comment">//服务端Socket  </span></span><br><span class="line">        Socket socket = <span class="keyword">null</span>;<span class="comment">//客户端socket  </span></span><br><span class="line">        BufferedReader reader = <span class="keyword">null</span>;  </span><br><span class="line">        String inputContent;  </span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;  </span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            serverSocket = <span class="keyword">new</span> ServerSocket(port);  </span><br><span class="line">           log.info(stringNowTime() + <span class="string">": serverSocket started"</span>);  </span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;  </span><br><span class="line">                socket = serverSocket.accept();  </span><br><span class="line">               log.info(stringNowTime() + <span class="string">": id为"</span> + socket.hashCode() + <span class="string">"的Clientsocket connected"</span>);  </span><br><span class="line">                reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(socket.getInputStream()));  </span><br><span class="line">                <span class="keyword">while</span> ((inputContent = reader.readLine()) != <span class="keyword">null</span>) &#123;  </span><br><span class="line">                   log.info(<span class="string">"收到id为"</span> + socket.hashCode() + <span class="string">"  "</span> + inputContent);  </span><br><span class="line">                    count++;  </span><br><span class="line">                &#125;  </span><br><span class="line">               log.info(<span class="string">"id为"</span> + socket.hashCode() + <span class="string">"的Clientsocket "</span> + stringNowTime() + <span class="string">"读取结束"</span>);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">            e.printStackTrace();  </span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                <span class="keyword">if</span>(Objects.nonNull(reader))&#123;  </span><br><span class="line">  </span><br><span class="line">                    reader.close();  </span><br><span class="line">                &#125;  </span><br><span class="line">                <span class="keyword">if</span>(Objects.nonNull(socket))&#123;  </span><br><span class="line">  </span><br><span class="line">                    socket.close();  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                e.printStackTrace();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">    &#125;<span class="comment">/**  </span></span><br><span class="line"><span class="comment">     运行结果：  </span></span><br><span class="line"><span class="comment">     10:25:57.731 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - 2023-07-05 10:25:57: serverSocket started  </span></span><br><span class="line"><span class="comment">     10:26:08.442 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - 2023-07-05 10:26:08: id为161960012的Clientsocket connected  </span></span><br><span class="line"><span class="comment">     10:26:29.356 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - 收到id为161960012  2023-07-05 10:26:26: 第0条消息: 7978987  </span></span><br><span class="line"><span class="comment">     10:26:34.409 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - 收到id为161960012  2023-07-05 10:26:34: 第1条消息: 797898  </span></span><br><span class="line"><span class="comment">     10:26:38.298 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - id为161960012的Clientsocket 2023-07-05 10:26:38读取结束  </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">stringNowTime</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        SimpleDateFormat format = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);  </span><br><span class="line">        <span class="keyword">return</span> format.format(<span class="keyword">new</span> Date());  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        BioServerSocket server = <span class="keyword">new</span> BioServerSocket();  </span><br><span class="line">        server.initBIOServer(<span class="number">8888</span>);  </span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>BIO 阻塞模型中，需要关注的代码主要是这几个：</p>
+<ul>
+<li><code>serverSocket = new ServerSocket(port);</code></li>
+<li><code>socket = serverSocket.accept();</code></li>
+<li><code>socket = new Socket(host, port);</code></li>
+</ul>
+<p>从代码中可以看出，客户端在获取Socket建立连接后，通过系统输入输出流完成读写IO操作，服务端则通过系统缓冲流Buffer来提高读写效率。 </p>
+<h1 id="ServerSocket-中-bind-解读"><a href="#ServerSocket-中-bind-解读" class="headerlink" title="ServerSocket 中 bind 解读"></a>ServerSocket 中 bind 解读</h1><p>在具体的解读之前，先看下整个调用的大致流程图。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706174016.png" alt="ServerSocket 中 bind 解读"></p>
+<p>由于是<code>ServerSocket</code>服务端先启动，这里先对<code>bind</code>操作进行解读，<code>bind</code>操作是在本机的某个端口和IP地址上进行listen监听。</p>
+<p>在bind成功之后，服务端进入<code>accept</code>阻塞等待，此时客户端Socket请求此地址将会进行Socket连接绑定。</p>
+<p>我们从<code>ServerSocket</code>的初始化代码作为入口进行介绍。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//java.net.ServerSocket#ServerSocket(int)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ServerSocket</span><span class="params">(<span class="keyword">int</span> port)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(port, <span class="number">50</span>, <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ServerSocket</span><span class="params">(<span class="keyword">int</span> port, <span class="keyword">int</span> backlog, InetAddress bindAddr)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    setImpl();</span><br><span class="line">    <span class="comment">// 检查端口是否越界</span></span><br><span class="line">    <span class="comment">// 0xFFFF = 15 * 16^3 + 15 * 16^2 + 15 * 16^1 + 15 * 16^0 = **65535**</span></span><br><span class="line">    <span class="keyword">if</span> (port &lt; <span class="number">0</span> || port &gt; <span class="number">0xFFFF</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(</span><br><span class="line">                    <span class="string">"Port value out of range: "</span> + port);</span><br><span class="line">    <span class="keyword">if</span> (backlog &lt; <span class="number">1</span>)</span><br><span class="line">        backlog = <span class="number">50</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">	    <span class="comment">// 核心部分</span></span><br><span class="line">        bind(<span class="keyword">new</span> InetSocketAddress(bindAddr, port), backlog);</span><br><span class="line">    &#125; <span class="keyword">catch</span>(SecurityException e) &#123;</span><br><span class="line">        close();</span><br><span class="line">        <span class="keyword">throw</span> e;</span><br><span class="line">    &#125; <span class="keyword">catch</span>(IOException e) &#123;</span><br><span class="line">        close();</span><br><span class="line">        <span class="keyword">throw</span> e;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>setImpl();</code>这个方法我们先暂时放到一边，我们简单扫一下其他代码。</p>
+<p>在上面的案例代码当中，我们传入的<code>ip</code>和<code>port</code>都处在合法的范围内，Socket规定的端口范围是<strong>0 - 65525</strong>，超过这个范围不允许进行<code>bind</code>。</p>
+<p>上面代码的核心逻辑是<code>bind(xxx)</code>这一段操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bind(<span class="keyword">new</span> InetSocketAddress(bindAddr, port), backlog);</span><br></pre></td></tr></table></figure>
+
+<h2 id="new-InetSocketAddress-bindAddr-port"><a href="#new-InetSocketAddress-bindAddr-port" class="headerlink" title="new InetSocketAddress(bindAddr, port)"></a>new InetSocketAddress(bindAddr, port)</h2><p>在<code>bind</code>方法调用之前，<code>ServerSocket</code>会先构建 <strong>InetSocketAddress</strong> 对象。<strong>InetSocketAddress</strong>对象构建实际为<strong>InetSocketAddressHolder</strong>包装类。包装类的作用是可以防止<code>IP</code>和<code>Port</code>等敏感字段的外部篡改。</p>
+<p>此外从代码可以看到，构建对象会对于<code>IP</code>和<code>Port</code>进行二次检查，如果IP地址不存在，会给一个默认值（通常是<code>0.0.0.0</code> ）。</p>
+<blockquote>
+<p>Creates a socket address from an IP address and a port number.<br>    A valid port value is between 0 and 65535. A port number of zero will let the system pick up an ephemeral port in a bind operation.|<br>    根据IP地址和端口号创建Socket地址。有效的端口值介于0和65535之间。端口号为0时，系统将在绑定操作中使用短暂端口。</p>
+</blockquote>
+<p><strong>InetSocketAddressHolder</strong> 对象构建完成之后，接着就进入到核心的<code>bind(SocketAddress endpoint, int backlog)</code>内部代码。</p>
+<h2 id="bind-SocketAddress-endpoint-int-backlog"><a href="#bind-SocketAddress-endpoint-int-backlog" class="headerlink" title="bind(SocketAddress endpoint, int backlog)"></a>bind(SocketAddress endpoint, int backlog)</h2><p><strong>java.net.ServerSocket#bind(java.net.SocketAddress, int)</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">Binds the ServerSocket to a specific address (IP address and port number).</span></span><br><span class="line"><span class="comment">将ServerSocket绑定到一个特定的地址（IP地址和端口号）。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">If the address is null, then the system will pick up an ephemeral port and a valid local address to bind the socket.</span></span><br><span class="line"><span class="comment">如果地址为空，那么系统会选取一个短暂的端口和一个有效的本地地址来绑定套接字。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">bind</span><span class="params">(SocketAddress endpoint, <span class="keyword">int</span> backlog)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		<span class="comment">// Socket是否已经被关闭</span></span><br><span class="line">        <span class="keyword">if</span> (isClosed())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Socket is closed"</span>);</span><br><span class="line">        <span class="comment">// 判断是否已经绑定</span></span><br><span class="line">        <span class="keyword">if</span> (!oldImpl &amp;&amp; isBound())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Already bound"</span>);</span><br><span class="line">        <span class="keyword">if</span> (endpoint == <span class="keyword">null</span>)</span><br><span class="line">	        <span class="comment">// 如果地址为空，给一个默认地址</span></span><br><span class="line">            endpoint = <span class="keyword">new</span> InetSocketAddress(<span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (!(endpoint <span class="keyword">instanceof</span> InetSocketAddress))</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Unsupported address type"</span>);</span><br><span class="line">        <span class="comment">// 类型强转为 InetSocketAddress</span></span><br><span class="line">        InetSocketAddress epoint = (InetSocketAddress) endpoint;</span><br><span class="line">        <span class="comment">// 如果地址已经被占用了</span></span><br><span class="line">        <span class="keyword">if</span> (epoint.isUnresolved())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Unresolved address"</span>);</span><br><span class="line">        <span class="keyword">if</span> (backlog &lt; <span class="number">1</span>)</span><br><span class="line">          backlog = <span class="number">50</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            SecurityManager security = System.getSecurityManager();</span><br><span class="line">            <span class="keyword">if</span> (security != <span class="keyword">null</span>)</span><br><span class="line">	            <span class="comment">// 端口进行安全检查</span></span><br><span class="line">                security.checkListen(epoint.getPort());</span><br><span class="line">            getImpl().bind(epoint.getAddress(), epoint.getPort());</span><br><span class="line">            getImpl().listen(backlog);</span><br><span class="line">            bound = <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span>(SecurityException e) &#123;</span><br><span class="line">            bound = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125; <span class="keyword">catch</span>(IOException e) &#123;</span><br><span class="line">            bound = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>bind 方法是将 <strong>ServerSocket</strong> 绑定到一个特定的地址（IP地址和端口号）， 如果地址为空，那么系统会选取一个临时端口和有效的本地地址来绑定 ServerSocket。</p>
+<p>跳过不需要关注的校验代码，在·<code>try</code> 中有三行比较重要的代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">getImpl().bind(epoint.getAddress(), epoint.getPort());  </span><br><span class="line">getImpl().listen(backlog);  </span><br><span class="line">bound = <span class="keyword">true</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这里的代码初步理解是获取一个<code>impl</code>对象，绑定地址和端口，调用<code>listen</code>方法传递<code>backlog</code>。</p>
+<p><code>backlog</code>这个值的作用可以看下面的地址，这里整理文章内容大致理解：</p>
+<ul>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly93d3cubGludXhqb3VybmFsLmNvbS9maWxlcy9saW51eGpvdXJuYWwuY29tL2xpbnV4am91cm5hbC9hcnRpY2xlcy8wMjMvMjMzMy8yMzMzczIuaHRtbA==" title="https://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/023/2333/2333s2.html">Linux Network Programming, Part 1 (linuxjournal.com)<i class="fa fa-external-link"></i></span></p>
+</li>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8xMDQ4NzQ2MDU=" title="https://zhuanlan.zhihu.com/p/104874605">详解socket中的backlog 参数 - 知乎 (zhihu.com)<i class="fa fa-external-link"></i></span></p>
+</li>
+</ul>
+<p><code>backlog</code>主要是和<code>Socket</code>有关。在Socket编程中<strong>listen函数的第二个参数为backlog</strong>，用于服务器编程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">listen</span>(sock, backlog);</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706114407.png" alt="TCP 握手"></p>
+<p>在TCP 三次握手当中，LISTEN 状态的服务端 Socket 收到 SYN，会建立一个 <strong>SYN_REVD</strong> 的连接，<strong>SYN_REVD</strong> 是一个半连接状态，只有在收到客户端的ACK之后才会进入<strong>ESTABLISHED</strong>，也就是说三次握手的过程必然会经历<strong>SYN_REVD</strong>和<strong>ESTABLISHED</strong>两个状态。</p>
+<p>针对这两个状态，不同的操作系统有不同实现，<strong>在 FressBSD 中 backlog 就是描述状态为 SYN_REVD 和 ESTABLISHED 的所有连接最大数量</strong>。</p>
+<p>在 Linux 系统当中，使用两个队列 <strong>syn queue</strong>和 <strong>accept queue</strong>，这两个队列分别存储状态为<strong>SYN_REVD</strong>和状态为<strong>ESTABLISHED</strong>的连接，<strong>Llinux2.2及以后，backlog表示accept queue的大小</strong>，而syn queue大小由 <code>/proc/sys/net/ipv4/tcp_max_syn_backlog</code>配置。</p>
+<p>可以看到backlog的值直接影响了建立连接的效率。上面代码中<code>backlog=50</code>，可以认为 accept queue 的容量为 50。</p>
+<p><code>listen</code>方法执行完成之后，此时将设置<code>bound = true</code>，代码执行到此处说明<code>Socket</code>绑定成功了。</p>
+<p>现在我们回过头看<code>getImpl().bind(epoint.getAddress(), epoint.getPort());</code>这块代码工作。</p>
+<h2 id="setImpl"><a href="#setImpl" class="headerlink" title="setImpl()"></a>setImpl()</h2><p>介绍<code>getImpl()</code>的前提是我们要知道如何<code>set</code>的，具体代码位于构造方法中一行不起眼的<code>setImpl()</code>操作。</p>
+<p><strong>java.net.ServerSocket#setImpl</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setImpl</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (factory != <span class="keyword">null</span>) &#123;</span><br><span class="line">            impl = factory.createSocketImpl();</span><br><span class="line">            checkOldImpl();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// No need to do a checkOldImpl() here, we know it's an up to date</span></span><br><span class="line">            <span class="comment">// SocketImpl!</span></span><br><span class="line">            impl = <span class="keyword">new</span> SocksSocketImpl();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (impl != <span class="keyword">null</span>)</span><br><span class="line">            impl.setServerSocket(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，在第一次初始化的时候，<code>SocketImplFactory</code>是没有被初始化过的，所以走的是<code>else</code>分支，具体工作是为内部的成员变量 <code>SocketImpl</code>进行初始化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * The implementation of this Socket. */</span></span><br><span class="line"><span class="keyword">private</span> SocketImpl impl;</span><br></pre></td></tr></table></figure>
+
+<p><code>SocksSocketImpl</code> 初始化之后，将会设置它的成员变量<code>ServerSocket</code>为<code>this</code>引用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (impl != <span class="keyword">null</span>)  </span><br><span class="line">    impl.setServerSocket(<span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这里的处理工作很简单，分别是初始化 <strong>SocksSocketImpl</strong> ，把当前对象实例的this引用传递给这个初始化的 <strong>SocksSocketImpl</strong> 的成员变量（这时候自身的引用逸出了）。</p>
+<p>了解<code>setImpl</code>之后，下面这里我们再看看 <code>getImpl()</code> 干了啥。</p>
+<h2 id="getImpl"><a href="#getImpl" class="headerlink" title="getImpl()"></a>getImpl()</h2><p><strong>java.net.ServerSocket#getImpl</strong></p>
+<p>代码内容也比较简单，首先检查<code>SocketImpl</code>是否创建，第一次连接这里为<code>false</code>，此时会进入<code>createImpl()</code>方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">Get the SocketImpl attached to this socket, creating it if necessary.</span></span><br><span class="line"><span class="comment">获取连接到此套接字的SocketImpl，如果有必要，可以创建它。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function">SocketImpl <span class="title">getImpl</span><span class="params">()</span> <span class="keyword">throws</span> SocketException </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (!created)  </span><br><span class="line">        createImpl();  </span><br><span class="line">    <span class="keyword">return</span> impl;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在<code>createImpl()</code>当中，通常 <strong>SocketImpl</strong> 已经在构造器初始化完成，这里直接更新 <code>created</code> 状态即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createImpl</span><span class="params">()</span> <span class="keyword">throws</span> SocketException </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (impl == <span class="keyword">null</span>)  </span><br><span class="line">        setImpl();  </span><br><span class="line">    <span class="keyword">try</span> &#123;  </span><br><span class="line">        impl.create(<span class="keyword">true</span>);  </span><br><span class="line">        created = <span class="keyword">true</span>;  </span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(e.getMessage());  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>setImpl()</code> 和 <code>getImpl()</code>方法配合，可以确定 <strong>SocketImpl</strong> 在使用的时候一定是被初始化完成的。</p>
+<h3 id="SocketImpl-bind-epoint-getAddress-epoint-getPort"><a href="#SocketImpl-bind-epoint-getAddress-epoint-getPort" class="headerlink" title="SocketImpl.bind(epoint.getAddress(), epoint.getPort())"></a>SocketImpl.bind(epoint.getAddress(), epoint.getPort())</h3><p>下面再来看看它是如何进行下面两项关键操作的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getImpl().bind(epoint.getAddress(), epoint.getPort());  </span><br><span class="line">getImpl().listen(backlog);</span><br></pre></td></tr></table></figure>
+
+<p>在之前的初始化代码中，<code>InetAddress</code>对象初始化设置了<code>IP</code>和<code>Port</code>等参数，现在委托 <strong>SocketImpl</strong>执行具体<code>bind</code>操作。</p>
+<p><strong>java.net.AbstractPlainSocketImpl#bind</strong></p>
+<p><code>bind</code>方法是同步的，一开始需要先获取到<code>fdLock</code>锁，然后判断是否满足<code>Socket</code>绑定条件，如果满足则利用钩子(<code>NetHooks</code>) 对象进行前置TCP绑定。</p>
+<blockquote>
+<p>注意，个人发现<code>NetHooks.beforeTcpBind(fd, address, lport);</code>方法发现在<strong>JDK11</strong>之中是一个<strong>空方法</strong>，而<strong>JDK8</strong>当中会有一段<code>provider.implBeforeTcpBind(fdObj, address, port);</code>的调用。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">bind</span><span class="params">(InetAddress address, <span class="keyword">int</span> lport)</span>  </span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> IOException  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">	<span class="comment">// 获取 fdLock 锁</span></span><br><span class="line">   <span class="keyword">synchronized</span> (fdLock) &#123;  </span><br><span class="line">        <span class="keyword">if</span> (!closePending &amp;&amp; (socket == <span class="keyword">null</span> || !socket.isBound())) &#123;  </span><br><span class="line">            NetHooks.beforeTcpBind(fd, address, lport);  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">// 是否链接本地地址</span></span><br><span class="line">    <span class="keyword">if</span> (address.isLinkLocalAddress()) &#123;  </span><br><span class="line">        address = IPAddressUtil.toScopedAddress(address);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">// 关键</span></span><br><span class="line">    socketBind(address, lport);  </span><br><span class="line">    <span class="comment">// 服务端和客户端的Socket走不同的 if 判断</span></span><br><span class="line">    <span class="keyword">if</span> (socket != <span class="keyword">null</span>)  </span><br><span class="line">        socket.setBound();  </span><br><span class="line">    <span class="keyword">if</span> (serverSocket != <span class="keyword">null</span>)  </span><br><span class="line">        serverSocket.setBound();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>加锁部分和核心逻辑无太多干系，我们跳过细枝末节，看<code>socketBind(address, lport);</code>这部分代码。</p>
+<blockquote>
+<p>fdLock 锁作用：注释说明它用于在增加/减少<strong>fdUseCount</strong>时锁定。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* lock when increment/decrementing fdUseCount */</span>  </span><br><span class="line"><span class="comment">// 在增加/减少fdUseCount时锁定</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> Object fdLock = <span class="keyword">new</span> Object();</span><br></pre></td></tr></table></figure>
+
+<h3 id="PlainSocketImpl-socketBind-InetAddress-address-int-port"><a href="#PlainSocketImpl-socketBind-InetAddress-address-int-port" class="headerlink" title="PlainSocketImpl#socketBind(InetAddress address, int port)"></a>PlainSocketImpl#socketBind(InetAddress address, int port)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span>  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">socketBind</span><span class="params">(InetAddress address, <span class="keyword">int</span> port)</span> <span class="keyword">throws</span> IOException </span>&#123;  </span><br><span class="line">    <span class="keyword">int</span> nativefd = checkAndReturnNativeFD();  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (address == <span class="keyword">null</span>)  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"inet address argument is null."</span>);  </span><br><span class="line"></span><br><span class="line">	<span class="comment">// 目前IPv4地址已经分配完毕，所以优先用 IPV6的，并且不支持 IPV4 </span></span><br><span class="line">    <span class="keyword">if</span> (preferIPv4Stack &amp;&amp; !(address <span class="keyword">instanceof</span> Inet4Address))  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Protocol family not supported"</span>);  </span><br><span class="line"></span><br><span class="line">	<span class="comment">// 核心操作</span></span><br><span class="line">    bind0(nativefd, address, port, useExclusiveBind);  </span><br><span class="line">    <span class="comment">// 如果是之前 InetAddress 为空默认初始化的端口为0，则重新随机分配一个端口</span></span><br><span class="line">    <span class="keyword">if</span> (port == <span class="number">0</span>) &#123;  </span><br><span class="line">        localport = localPort0(nativefd);  </span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">        localport = port;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">this</span>.address = address;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>socketBind(address, lport);</code>方法调用，最后绑定操作为JVM的底层C++操作<code>bind0</code>。</p>
+<p><code>bind0</code>属于比较底层的代码，这里我们就不继续探究了，如果读者好奇，可以阅读 <code>HotSpot</code> 的开源实现代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">bind0</span><span class="params">(<span class="keyword">int</span> fd, InetAddress localAddress, <span class="keyword">int</span> localport,  </span></span></span><br><span class="line"><span class="function"><span class="params">                         <span class="keyword">boolean</span> exclBind)</span>  </span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+
+<p>从整体上看，上面这一整个<code>bind</code>操作都是同步完成的，主要逻辑是先做一系列检查，之后调用底层的JVM方法完成<code>Socket</code>绑定。</p>
+<h2 id="画图小结"><a href="#画图小结" class="headerlink" title="画图小结"></a>画图小结</h2><p>笔者通过个人理解画了一幅图，主要描述了 <code>bind</code> 操作大致的逻辑，可以看到很多地方都和<code>JVM</code>的底层C++代码打交道。</p>
+<blockquote>
+<p>有必要说明一下，BIO毕竟是 Java1.0 出来的玩意，看源码我们要抓大放小，后续的JDK提案中，有人提出要收拾这个老古董=-=。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707151128.png" alt="ServerSocket的bind"></p>
+<blockquote>
+<p> 从图中也可以看出，要完成Socket连接构建，必须要获得文件描述符。</p>
+</blockquote>
+<h1 id="ServerSocket中accept解读"><a href="#ServerSocket中accept解读" class="headerlink" title="ServerSocket中accept解读"></a>ServerSocket中accept解读</h1><p><code>ServerSocket</code>的<code>accpet</code>是如何阻塞获取连接的？</p>
+<p><code>accept</code>方法的作用是询问操作系统是否有收到新的<code>Socket</code>套接字信息，操作过程在操作系统底层调用实现上都是 <strong>同步</strong>的。</p>
+<p>操作系统从<code>Socket</code>中没有<code>Socket</code>连接进来怎么办？根据Linux的<code>accept</code>文档描述，以及Java注释的JavaDoc文档描述，都明确说明此时会在底层操作系统<strong>阻塞</strong> 。</p>
+<h2 id="java-net-ServerSocket-accept"><a href="#java-net-ServerSocket-accept" class="headerlink" title="java.net.ServerSocket#accept"></a>java.net.ServerSocket#accept</h2><p>我们从代码层面看看 <code>accept</code> 方法干了啥。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.</span></span><br><span class="line"><span class="comment">监听并接受与此套接字的连接。该方法会阻塞，直到有一个连接被建立。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">A new Socket s is created and, if there is a security manager, the security manager's checkAccept method is called with s.getInetAddress().getHostAddress() and s.getPort() as its arguments to ensure the operation is allowed. This could result in a SecurityException.</span></span><br><span class="line"><span class="comment">一个新的Socket s被创建，如果有一个安全管理器，安全管理器的checkAccept方法被调用，参数是s.getInetAddress().getHostAddress()和s.getPort()，以确保该操作被允许。这可能会导致一个SecurityException。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Socket <span class="title">accept</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (isClosed())  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Socket is closed"</span>);  </span><br><span class="line">    <span class="keyword">if</span> (!isBound())  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Socket is not bound yet"</span>);  </span><br><span class="line">    Socket s = <span class="keyword">new</span> Socket((SocketImpl) <span class="keyword">null</span>);  </span><br><span class="line">    implAccept(s);  </span><br><span class="line">    <span class="keyword">return</span> s;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Java Doc 说明了<code>accept()</code>会进行阻塞，这里疑问比较大的点可能是<code>Socket s = new Socket((SocketImpl) null);</code>，这行代码为什么又要新建一个<code>Socket</code>？带着疑问我们继续看<code>implAccept(s);</code>方法。</p>
+<h2 id="java-net-ServerSocket-implAccept"><a href="#java-net-ServerSocket-implAccept" class="headerlink" title="java.net.ServerSocket#implAccept"></a>java.net.ServerSocket#implAccept</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">Subclasses of ServerSocket use this method to override accept() to return their own subclass of socket. So a FooServerSocket will typically hand this method an empty FooSocket. On return from implAccept the FooSocket will be connected to a client.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">ServerSocket的子类使用这个方法来覆盖accept()（的行为），以返回他们自己的socket子类。比如一个FooServerSocket通常会将一个空的FooSocket交给这个方法。从 implAccept 返回时，FooSocket 将被连接到一个客户端。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">implAccept</span><span class="params">(Socket s)</span> <span class="keyword">throws</span> IOException </span>&#123;  </span><br><span class="line">    SocketImpl si = <span class="keyword">null</span>;  </span><br><span class="line">    <span class="keyword">try</span> &#123;  </span><br><span class="line">	    <span class="comment">// 判断新对象 Socketimpl 是否设置</span></span><br><span class="line">        <span class="keyword">if</span> (s.impl == <span class="keyword">null</span>)  </span><br><span class="line">          s.setImpl();  </span><br><span class="line">        <span class="keyword">else</span> &#123;  </span><br><span class="line">            s.impl.reset();  </span><br><span class="line">        &#125;  </span><br><span class="line"></span><br><span class="line">		<span class="comment">// si 指向 Socket 对象的 impl </span></span><br><span class="line">        si = s.impl; </span><br><span class="line">        <span class="comment">// Socket 对象的 impl 引用 暂时置空</span></span><br><span class="line">        s.impl = <span class="keyword">null</span>;  </span><br><span class="line">        <span class="comment">// impl 地址和文件描述符初始化</span></span><br><span class="line">        si.address = <span class="keyword">new</span> InetAddress();  </span><br><span class="line">        si.fd = <span class="keyword">new</span> FileDescriptor();  </span><br><span class="line">        <span class="comment">// getImpl() 获取的是 ServerSocket 的 impl，注意不是 Socket的</span></span><br><span class="line"><span class="comment">// 4. 调用 ServerSocket 持有的 SocksSocketImpl 对象完成底层操作系统的 accept 操作</span></span><br><span class="line">        getImpl().accept(si);  </span><br><span class="line"></span><br><span class="line">		<span class="comment">// raw fd has been set </span></span><br><span class="line">		<span class="comment">// 原始fd已被设置  </span></span><br><span class="line">        SocketCleanable.register(si.fd);    </span><br><span class="line">		<span class="comment">// 安全检查</span></span><br><span class="line">        SecurityManager security = System.getSecurityManager();  </span><br><span class="line">        <span class="keyword">if</span> (security != <span class="keyword">null</span>) &#123;  </span><br><span class="line">            security.checkAccept(si.getInetAddress().getHostAddress(),  </span><br><span class="line">                                 si.getPort());  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">	    <span class="comment">// 如果出现底层IO异常，则s.impl = si;把之前临时置空的引用给重置回来</span></span><br><span class="line">        <span class="keyword">if</span> (si != <span class="keyword">null</span>)  </span><br><span class="line">            si.reset();  </span><br><span class="line">        s.impl = si;  </span><br><span class="line">        <span class="keyword">throw</span> e;  </span><br><span class="line">    &#125; <span class="keyword">catch</span> (SecurityException e) &#123;  </span><br><span class="line">        <span class="keyword">if</span> (si != <span class="keyword">null</span>)  </span><br><span class="line">            si.reset();  </span><br><span class="line">        s.impl = si;  </span><br><span class="line">        <span class="keyword">throw</span> e;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">// 把之前临时置空的引用给重置回来</span></span><br><span class="line">    s.impl = si;  </span><br><span class="line">    s.postAccept();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码首先进入一个<code>if</code>判断，检查 <code>new Socket</code> 新对象的<strong>Socketimpl</strong>是否设置，如果为空则就设置，如果不为空，则<code>reset()</code> 重置。</p>
+<p>毫无疑问，这里是刚刚初始化的<code>Socket</code>，此时<strong>Socket.Socketimpl</strong> 肯定是没有设置的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (s.impl == <span class="keyword">null</span>)  </span><br><span class="line">  s.setImpl();  </span><br><span class="line"><span class="keyword">else</span> &#123;  </span><br><span class="line">	s.impl.reset();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首次进入代码通常就是走<code>if</code>分支。<code>Socket.setImpl</code> 这个方法和<code>ServerSocket</code>的<code>setImpl</code>非常像，<code>new Socket</code> 新对象会为自己的 <strong>SocketImpl</strong> 成员对象进行初始化。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707160516.png" alt="SocketImpl"></p>
+<p>至此，我们画图理解代码操作逻辑：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707161437.png" alt="accept 操作分析"></p>
+<p>接下来是一些有点”绕“的操作，建议读者边调试边跟着图示理解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. si 指向 Socket 对象的 impl </span></span><br><span class="line">si = s.impl; </span><br><span class="line"><span class="comment">// 2. Socket 对象的 impl引用 暂时置空</span></span><br><span class="line">s.impl = <span class="keyword">null</span>;  </span><br><span class="line"><span class="comment">// 3. impl 地址和文件描述符初始化</span></span><br><span class="line">si.address = <span class="keyword">new</span> InetAddress();  </span><br><span class="line">si.fd = <span class="keyword">new</span> FileDescriptor();</span><br><span class="line"><span class="comment">// getImpl() 获取的是 ServerSocket 的 impl，注意不是 Socket的</span></span><br><span class="line"><span class="comment">// 4. 调用 ServerSocket 持有的 SocksSocketImpl 对象完成底层操作系统的 accept 操作</span></span><br><span class="line">getImpl().accept(si);  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// ....</span></span><br><span class="line"><span class="comment">// 假设此时 accept 获取到连接</span></span><br><span class="line">s.impl = si;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里吐槽下老外这种变量命名给规则，啥<code>si</code>呀<code>s</code>，a，b，c，d 的，不画图很容易绕进去。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707163648.png" alt="ServerSocket 中 accepet 解读"></p>
+<p>格外强调下， <code>getImpl()</code> 的 <strong>impl对象</strong>和 <code>si.impl</code> 对象并不是同一个，这些代码内容非常像但是属于不同的类，切记不要混淆。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707163430.png" alt="实例对象对比"></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707163500.png" alt="实例对象对比"></p>
+<p>代码最后有必定会执行的 <code>s.impl = si;</code>操作（因为之前暂时把引用“脱钩”了），如果是异常的<code>si</code>还会进行额外的<code>reset</code>重置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s.impl = si;</span><br></pre></td></tr></table></figure>
+
+<p>这里回答一下之前遗留的问题，<code>Socket s = new Socket((SocketImpl) null);</code>这行代码为什么又要新建一个Socket？</p>
+<p>我们观察上面绘制的操作图，<code>s.impl = null;</code>的执行，此时Socket对象和这个<code>SocketImpl</code>暂时”失去关联“，这个时候确保哪怕<code>new Socket</code>对象绑定失败，此时对于<code>SocketImpl</code>来说根本是无感知的。</p>
+<p>换句话说，如果失败了<code>Socket</code>会完全重置，好像什么都没有发送过，而如果成功了，此时把引用“接回去”，必然得到的可用的<code>Socket</code>。</p>
+<blockquote>
+<p>这里给一个不恰当的比喻，当年诸葛亮草船借箭，如果有碰到没有借箭的船，极端一点是不是就可以直接”烧了“不要了，而如果“接”到箭自然需要回港“卸货‘”，对于吴国来说，它们只看到“成功”借到箭的船只。</p>
+</blockquote>
+<p>执行<code>getImpl().accept(si);</code>方法之后，我们在<strong>AbstractPlainSocketImpl</strong>找到<strong>accept</strong>方法。我</p>
+<h3 id="java-net-AbstractPlainSocketImpl-accept"><a href="#java-net-AbstractPlainSocketImpl-accept" class="headerlink" title="java.net.AbstractPlainSocketImpl#accept"></a>java.net.AbstractPlainSocketImpl#accept</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">Accepts connections.</span></span><br><span class="line"><span class="comment">接受连接</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(SocketImpl s)</span> <span class="keyword">throws</span> IOException </span>&#123;  </span><br><span class="line">    acquireFD();  </span><br><span class="line">    <span class="keyword">try</span> &#123;  </span><br><span class="line">        socketAccept(s);  </span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">        releaseFD();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>accept</code>调用<code>acquireFD();</code>获取并且植入文件描述符号，加锁获取之后会把<strong>fdUseCount</strong> 的计数器值+1，表示有一个新增的<code>Socket</code>连接。</p>
+<blockquote>
+<p>加锁保证 fdUseCount  计数是线程安全的</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// "Acquires" and returns the FileDescriptor for this impl</span></span><br><span class="line"><span class="comment">// - "获取 "并返回该植入物的文件描述符。</span></span><br><span class="line"><span class="function">FileDescriptor <span class="title">acquireFD</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">synchronized</span> (fdLock) &#123;  </span><br><span class="line">        fdUseCount++;  </span><br><span class="line">        <span class="keyword">return</span> fd;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="java-net-PlainSocketImpl-socketAccept"><a href="#java-net-PlainSocketImpl-socketAccept" class="headerlink" title="java.net.PlainSocketImpl#socketAccept"></a>java.net.PlainSocketImpl#socketAccept</h3><p>不同的操作系统实现不同，这里仅以个人看到的<strong>JDK11</strong>版本源码为例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">socketAccept</span><span class="params">(SocketImpl s)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> nativefd = checkAndReturnNativeFD();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (s == <span class="keyword">null</span>)</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"socket is null"</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> newfd = -<span class="number">1</span>;</span><br><span class="line">	InetSocketAddress[] isaa = <span class="keyword">new</span> InetSocketAddress[<span class="number">1</span>];</span><br><span class="line">	<span class="keyword">if</span> (timeout &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">		newfd = accept0(nativefd, isaa);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		configureBlocking(nativefd, <span class="keyword">false</span>);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			waitForNewConnection(nativefd, timeout);</span><br><span class="line">			newfd = accept0(nativefd, isaa);</span><br><span class="line">			<span class="keyword">if</span> (newfd != -<span class="number">1</span>) &#123;</span><br><span class="line">				configureBlocking(newfd, <span class="keyword">true</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			configureBlocking(nativefd, <span class="keyword">true</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/* Update (SocketImpl)s' fd */</span></span><br><span class="line">	fdAccess.set(s.fd, newfd);</span><br><span class="line">	<span class="comment">/* Update socketImpls remote port, address and localport */</span></span><br><span class="line">	InetSocketAddress isa = isaa[<span class="number">0</span>];</span><br><span class="line">	s.port = isa.getPort();</span><br><span class="line">	s.address = isa.getAddress();</span><br><span class="line">	s.localport = localport;</span><br><span class="line">	<span class="keyword">if</span> (preferIPv4Stack &amp;&amp; !(s.address <span class="keyword">instanceof</span> Inet4Address))</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Protocol family not supported"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们只关心下面这部分代码，方法中首先判断 <strong>timeout</strong> 是否小于等于<strong>0</strong>（如果没有设置，那么默认就是 0），如果是则走<code>accept0(nativefd, isaa)</code>方法。</p>
+<p>前面反复提到的，<code>accept</code>操作核心实现这是下面的 <code>native accept0</code> 方法，具体操作是：</p>
+<p><strong>在操作系统层面检查<code>bind</code>的端口上是否有客户端数据接入，如果没有则一直阻塞等待</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (timeout &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">	newfd = accept0(nativefd, isaa);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	configureBlocking(nativefd, <span class="keyword">false</span>);</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		waitForNewConnection(nativefd, timeout);</span><br><span class="line">		newfd = accept0(nativefd, isaa);  </span><br><span class="line">		<span class="keyword">if</span> (newfd != -<span class="number">1</span>) &#123;</span><br><span class="line">			configureBlocking(newfd, <span class="keyword">true</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">		configureBlocking(nativefd, <span class="keyword">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125; <span class="comment">// &lt;4&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">int</span> <span class="title">accept0</span><span class="params">(<span class="keyword">int</span> fd, InetSocketAddress[] isaa)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+
+<p>因为操作系统层面的阻塞需要影响到应用程序级别阻塞？显然<code>accept0(nativefd, isaa)</code>的操作系统层面阻塞是无 法避免的。</p>
+<p>仔细观察代码，上面的代码分支提供了另外一种选择， <strong>timeout</strong> 的值设置大于0的值，此时<strong>程序会在等到我们设置的时间后返回</strong>，并且只会阻塞设置的这个时间量的值（单位毫秒）。</p>
+<blockquote>
+<p>注意，这里的 <strong>newfd</strong> 如果是 -1，表示底层没有任何数据返回，在Linux的文档中也有对应的介绍。</p>
+</blockquote>
+<h3 id="java-net-ServerSocket-setSoTimeout"><a href="#java-net-ServerSocket-setSoTimeout" class="headerlink" title="java.net.ServerSocket#setSoTimeout"></a>java.net.ServerSocket#setSoTimeout</h3><p>既然不阻塞的关键参数是<strong>timeout</strong> ， 接下来我们看下 <strong>timeout</strong> 值要如何设置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">Enable/disable SO_TIMEOUT with the specified timeout, in milliseconds. With this option set to a non-zero timeout, a call to accept() for this ServerSocket will block for only this amount of time. If the timeout expires, a java.net.SocketTimeoutException is raised, though the ServerSocket is still valid. The option must be enabled prior to entering the blocking operation to have effect. The timeout must be &gt; 0. A timeout of zero is interpreted as an infinite timeout.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">启用/禁用SO_TIMEOUT，指定超时时间，单位为毫秒。在这个选项被设置为非零超时的情况下，对这个ServerSocket的accept()的调用将只阻塞这个时间量。如果超时过后，会引发java.net.SocketTimeoutException，尽管ServerSocket仍然有效。该选项必须在进入阻塞操作之前启用才能生效。超时必须大于0。超时为0会被解释为无限期超时。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setSoTimeout</span><span class="params">(<span class="keyword">int</span> timeout)</span> <span class="keyword">throws</span> SocketException </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (isClosed())  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Socket is closed"</span>);  </span><br><span class="line">    getImpl().setOption(SocketOptions.SO_TIMEOUT, timeout);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>简单明了，<strong>java.net.SocketOptions#setOption</strong> 方法最终调用的是<code>java.net.AbstractPlainSocketImpl#setOption()</code>。</p>
+<h3 id="java-net-AbstractPlainSocketImpl-setOption"><a href="#java-net-AbstractPlainSocketImpl-setOption" class="headerlink" title="java.net.AbstractPlainSocketImpl#setOption"></a>java.net.AbstractPlainSocketImpl#setOption</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOption</span><span class="params">(<span class="keyword">int</span> opt, Object val)</span> <span class="keyword">throws</span> SocketException </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (isClosedOrPending()) &#123;  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Socket Closed"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">boolean</span> on = <span class="keyword">true</span>;  </span><br><span class="line">    <span class="keyword">switch</span> (opt) &#123;  </span><br><span class="line">	<span class="keyword">case</span> SO_LINGER:  </span><br><span class="line">        <span class="comment">//..</span></span><br><span class="line">    <span class="keyword">case</span> SO_TIMEOUT:  </span><br><span class="line">        <span class="keyword">if</span> (val == <span class="keyword">null</span> || (!(val <span class="keyword">instanceof</span> Integer)))</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Bad parameter for SO_TIMEOUT"</span>);</span><br><span class="line">            <span class="keyword">int</span> tmp = ((Integer) val).intValue();</span><br><span class="line">            <span class="keyword">if</span> (tmp &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"timeout &lt; 0"</span>);</span><br><span class="line">            timeout = tmp;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> TCP_NODELAY:  </span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">    <span class="keyword">case</span> SO_RCVBUF:  </span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">    <span class="keyword">case</span> SO_KEEPALIVE:  </span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">    &#125;  </span><br><span class="line">    socketSetOption(opt, on, val);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为了方便阅读，这里把其他的代码都删除了，只保留传参部分。</p>
+<p>可以看到，这里仅仅是将<code>setOption</code>里面传入的<code>timeout</code>值，设置到了<code>AbstractPlainSocketImpl</code>的全局变量<code>timeout</code>。</p>
+<h2 id="画图小结-1"><a href="#画图小结-1" class="headerlink" title="画图小结"></a>画图小结</h2><p>个人认为整个<code>accept()</code>操作比较”恶心“（个人观点）的是几个引用的赋值变化上面，暂时”解绑“的目的是在进行底层Socket连接的时候，如果<code>Socket</code>出现异常也没有影响，此时<code>Socket</code>持有的引用也是<code>null</code>，可以无阻碍的重新进行下一次Socket连接。</p>
+<p>换句话说，<strong>整个Socket要么对接成功，要么就是重置回没对接之前的状态可以进行下一次尝试，保证ServerSocket会收到一个没有任何异常的Socket连接</strong>。</p>
+<p>最后再看一眼图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230707175534.png" alt="accept 操作总结"></p>
+<h1 id="改造并实现accept的非阻塞实现"><a href="#改造并实现accept的非阻塞实现" class="headerlink" title="改造并实现accept的非阻塞实现"></a>改造并实现accept的非阻塞实现</h1><p>在进行案例程序的改造之前，必须要先理解<strong>同步、异步、阻塞、非阻塞</strong>这几个概念。</p>
+<p>这个概念在之前的笔记中 [[《跟闪电侠学Netty》阅读笔记 - 开篇入门Netty]] 【洗衣机案例理解阻塞非阻塞，同步异步概念】这一部分提到过，[[【Java】《2小时搞定多线程》个人笔记]] 中又一次对于这几个概念做了个区分。</p>
+<p>区分<strong>同步</strong>和<strong>异步</strong>的关键点是<strong>被调用方的行为</strong>，没有得到结果之前，服务端不返回任何结果，那么操作就是同步的。</p>
+<p>如果没有得到结果之前，服务器可以返回结果，比如给一个<strong>句柄</strong>，通过这个句柄可以在未来某个时间点之后获得结果，那么操作就是<strong>异步</strong>的。</p>
+<blockquote>
+<p>这个句柄可以对应Java 并发编程的 <strong>Future</strong> 的概念</p>
+</blockquote>
+<p>再举个例子，比如说前面的<code>accept0</code>是<strong>应用程序调用操作系统</strong>，在Linux中就是访问系统内核，此时这一整块逻辑处理是选择”<strong>永久等待一个客户端连接</strong>“，符合 <strong>没有得到结果之前，服务端不返回任何结果</strong> 这种情况，所以它是<strong>同步</strong>的。</p>
+<p>区分阻塞和非阻塞的关键点则是 <strong>对于调用者而言的服务端状态*</strong>，比如我们站在线程状态的角度，阻塞对应 <strong>Blocking</strong>，非阻塞此时应该对应<strong>Running</strong>正常执行。再比如站在<strong>线程发出请求</strong>之后请求方的角度，阻塞和非阻塞分别对应<strong>waiting</strong>和<strong>No waiting</strong>。</p>
+<p>理解同步异步阻塞和非阻塞之后，下面来尝试改造相关代码<code>accept</code>的阻塞问题，实现方式很简单，那就是设置 ** <strong>timeout</strong> ** ， 然后在异常处理上<code>continue</code>重试。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * accept 超时时间设置  </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SO_TIMEOUT = <span class="number">2000</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/***</span></span><br><span class="line"><span class="comment"> * NIO 改写</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span> NIO 改写</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> port</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> xander</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2023/7/12 10:35</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initNioServer</span><span class="params">(<span class="keyword">int</span> port)</span> </span>&#123;</span><br><span class="line">	ServerSocket serverSocket = <span class="keyword">null</span>;<span class="comment">//服务端Socket</span></span><br><span class="line">	Socket socket = <span class="keyword">null</span>;<span class="comment">//客户端socket</span></span><br><span class="line">	BufferedReader reader = <span class="keyword">null</span>;</span><br><span class="line">	String inputContent;</span><br><span class="line">	<span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		serverSocket = <span class="keyword">new</span> ServerSocket(port);</span><br><span class="line">		<span class="comment">// 1. 需要设置超时时间，会等待设置的时间之后再进行返回</span></span><br><span class="line">		serverSocket.setSoTimeout(SO_TIMEOUT);</span><br><span class="line">		log.info(stringNowTime() + <span class="string">": serverSocket started"</span>);</span><br><span class="line">		<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">			<span class="comment">// 2. 如果超时没有获取，这里会抛出异常，这里的处理策略是不处理异常</span></span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				socket = serverSocket.accept();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (SocketTimeoutException e) &#123;</span><br><span class="line">				<span class="comment">//运行到这里表示本次accept是没有收到任何数据的，服务端的主线程在这里可以做一些其他事情</span></span><br><span class="line">				log.info(<span class="string">"now time is: "</span> + stringNowTime());</span><br><span class="line">				<span class="keyword">continue</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			log.info(stringNowTime() + <span class="string">": id为"</span> + socket.hashCode() + <span class="string">"的Clientsocket connected"</span>);</span><br><span class="line">			reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(socket.getInputStream()));</span><br><span class="line">			<span class="keyword">while</span> ((inputContent = reader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">				log.info(<span class="string">"收到id为"</span> + socket.hashCode() + <span class="string">"  "</span> + inputContent);</span><br><span class="line">				count++;</span><br><span class="line">			&#125;</span><br><span class="line">			log.info(<span class="string">"id为"</span> + socket.hashCode() + <span class="string">"的Clientsocket "</span> + stringNowTime() + <span class="string">"读取结束"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">if</span>(Objects.nonNull(reader))&#123;</span><br><span class="line"></span><br><span class="line">				reader.close();</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span>(Objects.nonNull(socket))&#123;</span><br><span class="line"></span><br><span class="line">				socket.close();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;<span class="comment">/**运行结果：</span></span><br><span class="line"><span class="comment">     10:40:49.272 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - 2023-07-12 10:40:49: serverSocket started</span></span><br><span class="line"><span class="comment">     10:40:52.826 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - now time is: 2023-07-12 10:40:52</span></span><br><span class="line"><span class="comment">     10:40:54.830 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - now time is: 2023-07-12 10:40:54</span></span><br><span class="line"><span class="comment">     10:40:56.837 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - now time is: 2023-07-12 10:40:56</span></span><br><span class="line"><span class="comment">     10:40:58.840 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - now time is: 2023-07-12 10:40:58</span></span><br><span class="line"><span class="comment">     10:41:00.849 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - now time is: 2023-07-12 10:41:00</span></span><br><span class="line"><span class="comment">     10:41:02.852 [main] INFO com.zxd.interview.niosource.bio.BioServerSocket - now time is: 2023-07-12 10:41:02</span></span><br><span class="line"><span class="comment">     */</span></span><br></pre></td></tr></table></figure>
+
+<p>设置了<strong>timeout</strong>之后，<code>accept</code> 方法每次都会在间隔指定时间之后被唤醒一次，如果没有收到连接就会抛出异常，我们的处理方式是吞掉异常并且重新<code>accept</code>，这样就实现了类似非阻塞的效果。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p> Socket 当中 <code>getInputStream()</code> 的方法解析以及后续的<code>read</code>操作结构图如下。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712151156.png" alt="Socket.getInputStream()"></p>
+<h1 id="Socket-中的-getInputStream-方法解析"><a href="#Socket-中的-getInputStream-方法解析" class="headerlink" title="Socket 中的 getInputStream() 方法解析"></a>Socket 中的 getInputStream() 方法解析</h1><p>实现了非阻塞的<code>accept</code>之后，再来看下另一个会产生阻塞的方法，那就是<code>Socket.getInputStream</code>，这个方法在Socket连接，服务端在<code>read()</code> 读取数据的时候会进行调用。</p>
+<p><strong>java.net.Socket#getInputStream</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">返回该socket的输入流。</span></span><br><span class="line"><span class="comment">如果该套接字有一个关联的通道，那么生成的输入流会将其所有操作委托给该通道。如果通道处于非阻塞模式，那么输入流的读操作将抛出java.nio.channel.IllegalBlockingModeException。</span></span><br><span class="line"><span class="comment">在异常情况下，底层连接可能会被远程主机或网络软件中断（例如在TCP连接中的连接重置）。当网络软件检测到连接断开时，返回的输入流会出现以下情况：</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> InputStream <span class="title">getInputStream</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isClosed())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Socket is closed"</span>);</span><br><span class="line">        <span class="keyword">if</span> (!isConnected())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Socket is not connected"</span>);</span><br><span class="line">        <span class="keyword">if</span> (isInputShutdown())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Socket input is shutdown"</span>);</span><br><span class="line">        InputStream is = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            is = AccessController.doPrivileged(</span><br><span class="line">                <span class="keyword">new</span> PrivilegedExceptionAction&lt;&gt;() &#123;</span><br><span class="line">                    <span class="function"><span class="keyword">public</span> InputStream <span class="title">run</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">                        <span class="keyword">return</span> impl.getInputStream();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (java.security.PrivilegedActionException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> (IOException) e.getException();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> is;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面通过<code>AccessController</code>进行授权，<code>run</code>方法中调用<strong>java.net.AbstractPlainSocketImpl#getInputStream</strong>方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> InputStream <span class="title">getInputStream</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;  </span><br><span class="line">    <span class="keyword">synchronized</span> (fdLock) &#123;  </span><br><span class="line">        <span class="keyword">if</span> (isClosedOrPending())  </span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Socket Closed"</span>);  </span><br><span class="line">        <span class="keyword">if</span> (shut_rd)  </span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Socket input is shutdown"</span>);  </span><br><span class="line">        <span class="keyword">if</span> (socketInputStream == <span class="keyword">null</span>)  </span><br><span class="line">            socketInputStream = <span class="keyword">new</span> SocketInputStream(<span class="keyword">this</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">return</span> socketInputStream;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，代码中创建了 <strong>SocketInputStream</strong> 对象，并且会将当前<code>AbstractPlainSocketImpl</code>对象传进去（这个对象实际就是 <strong>SocksSocketImpl</strong> ）。</p>
+<p><code>read</code>读数据的时候，则会调用如下方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">byte</span> b[], <span class="keyword">int</span> off, <span class="keyword">int</span> length)</span> <span class="keyword">throws</span> IOException </span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> read(b, off, length, impl.getTimeout());  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">byte</span> b[], <span class="keyword">int</span> off, <span class="keyword">int</span> length, <span class="keyword">int</span> timeout)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> n;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// EOF already encountered</span></span><br><span class="line">	<span class="keyword">if</span> (eof) &#123;</span><br><span class="line">		<span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// connection reset</span></span><br><span class="line">	<span class="keyword">if</span> (impl.isConnectionReset()) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Connection reset"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// bounds check</span></span><br><span class="line">	<span class="keyword">if</span> (length &lt;= <span class="number">0</span> || off &lt; <span class="number">0</span> || length &gt; b.length - off) &#123;</span><br><span class="line">		<span class="keyword">if</span> (length == <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> ArrayIndexOutOfBoundsException(<span class="string">"length == "</span> + length</span><br><span class="line">				+ <span class="string">" off == "</span> + off + <span class="string">" buffer length == "</span> + b.length);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// acquire file descriptor and do the read</span></span><br><span class="line">	<span class="comment">// 获取文件描述符并进行读取</span></span><br><span class="line">	FileDescriptor fd = impl.acquireFD();</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		n = socketRead(fd, b, off, length, timeout);</span><br><span class="line">		<span class="keyword">if</span> (n &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> n;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">catch</span> (ConnectionResetException rstExc) &#123;</span><br><span class="line">		impl.setConnectionReset();</span><br><span class="line">	&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">		impl.releaseFD();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * If we get here we are at EOF, the socket has been closed,</span></span><br><span class="line"><span class="comment">	 * or the connection has been reset.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (impl.isClosedOrPending()) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Socket closed"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (impl.isConnectionReset()) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> SocketException(<span class="string">"Connection reset"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	eof = <span class="keyword">true</span>;</span><br><span class="line">	<span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重点关注下面这一行代码，这里在读取的时候同样传递了 <strong>timeout</strong> 参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">n = socketRead(fd, b, off, length, timeout);</span><br></pre></td></tr></table></figure>
+
+<p><strong>socketRead</strong> 方法会调用 <strong>native</strong> 的 <code>socketRead0</code> 方法，<strong>timeout</strong> 代表了读取的超时时间。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">native</span> <span class="keyword">int</span> <span class="title">socketRead0</span><span class="params">(FileDescriptor fd,  </span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="keyword">byte</span> b[], <span class="keyword">int</span> off, <span class="keyword">int</span> len,  </span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="keyword">int</span> timeout)</span>  </span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>timeout</strong> 参数源于前面的<code>new SocketInputStream(this)</code>（也就是 <strong>AbstractPlainSocketImpl</strong> 对象）中的<strong>this</strong>引用<code>impl.getTimeout()</code>，这个参数的作用是指定<code>read</code>的超时时间，超时之后没有结果抛出异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serverSocket.setSoTimeout(SO_TIMEOUT);</span><br></pre></td></tr></table></figure>
+
+<p>了解<code>read</code>方法中<code>timeout</code>的作用之后，我们便可以着手改造代码了，具体的改造部分个人放到后文单独的 <code>titile</code> 进行说明，方便后续回顾。</p>
+<p>此外，这里经过仔细考虑，判断这部分代码读者很有可能会存在理解误区，误以为此处的 <strong>AbstractPlainSocketImpl</strong> 属于 <strong>ServerSocket</strong>，实际上它属于 <strong>Socket</strong>，也就是说我们设置的 <code>timeout</code> 是设置到 <strong>Socket</strong> 的 <strong>AbstractPlainSocketImpl</strong> 。</p>
+<p>最为简单的证明方法是先在  <strong>java.net.Socket#setImpl</strong> 中打上断点，在启动BIO的服务端之后，立即启动客户端，具体的Debug断点如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712160311.png" alt="Socket 的 setImpl"></p>
+<p>通过单步调试，我们在<strong>BioServerSocket</strong> 中看到两个对象是不一样的。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712160613.png" alt="BioServerSocket"></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712160628.png" alt="对象对比"></p>
+<p>为什么不一样呢？这里需要回顾前面的【ServerSocket中accept 解读】这一部分的操作。这里把重要操作标记了一下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712161314.png" alt="ServerSocket中accept解读可能的理解误区1"></p>
+<p>这里复习之前提到的内容，在<strong>accept();</strong> 中为了确保Socket连接是正确并且可用的，每次都会<code>new Socket()</code>，而这里的<code>SocksSocketImpl</code> 是属于 <strong>Socket</strong> 的成员变量。</p>
+<p>在进行Socket套接字连接之前会先判断是否初始化，如果初始化没有就先进行初始化（具体可以看红框框的位置）。</p>
+<p>如果还是理解不了，那么只能再次寄出另一张杀手锏图了：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230712163105.png" alt="ServerSocket中accept解读可能的理解误2"></p>
+<h1 id="实现-Socket-中的-read-方法非阻塞"><a href="#实现-Socket-中的-read-方法非阻塞" class="headerlink" title="实现 Socket 中的 read 方法非阻塞"></a>实现 Socket 中的 read 方法非阻塞</h1><p><strong>AbstractPlainSocketImpl</strong>实现<code>socketRead</code>方法非阻塞，具体做法其实就是使用 <strong>AbstractPlainSocketImpl</strong> 传入了 <strong>timeout</strong> 参数，实现 <strong>SocketInputStream</strong> 非阻塞<code>read</code>。</p>
+<p>表面上看上去 <strong>read</strong> 方法是非阻塞的，实际上这里存在一个明显的 <strong>误区</strong>，那就是在<code>socket = serverSocket.accept();</code>这一段代码中，服务端构建出 <code>Socket</code> 连接之后，客户端和服务端交互是通过独立的<code>Socket</code>对象完成IO读写的。</p>
+<p>然而在第一次改造过后，实际上还有两点不易察觉的问题：</p>
+<p>（1）服务端<code>read</code>的非阻塞轮询效率非常低，基本上是“一核繁忙、多核围观”的情况。</p>
+<p>（2）第一次改造设置的是设定的是<strong>ServerSocket级别</strong>的<strong>SocksSocketImpl</strong>的timeout。每个新的客户端进来都是新的Socket连接，每个Socket又有各自的 <strong>SocksSocketImpl</strong>，这里<strong>客户端连接所产生新的Socket</strong>的<strong>timeout</strong>是没有做设置的，换句话说，服务端针对每个Socket的<code>read</code>依然是完全阻塞。</p>
+<p>前文提到，在BIO非阻塞同步模型中，我们虽然没法解决 系统底层”同步” 问题，但是我们可以让“非阻塞”这一块更为优化合理和更为高效。</p>
+<p>第一个问题的解决策略是启动<strong>多线程</strong>以非阻塞<code>read()</code>方式轮询，这样做的另一点好处是，某个Socket读写压力大并不会影响CPU 切到其他线程的正常工作。</p>
+<p>解决第二点问题，我们需要为<strong>每个新的Socket</strong>设置 <strong>timeout</strong>。</p>
+<p>解决上面两个问题，真正BIO非阻塞实现才算是真正成立，下面我们来看下第二版代码优化：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 1. NIO 改写，accept 非阻塞</span></span><br><span class="line"><span class="comment">     * 2. 实现 read() 同样非阻塞</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> port</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@description</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> xander</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@date</span> 2023/7/12 16:38</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initNioAndNioReadServer</span><span class="params">(<span class="keyword">int</span> port)</span> </span>&#123;</span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">null</span>;<span class="comment">//服务端Socket</span></span><br><span class="line">        Socket socket = <span class="keyword">null</span>;<span class="comment">//客户端socket</span></span><br><span class="line">        BufferedReader reader = <span class="keyword">null</span>;</span><br><span class="line">        ExecutorService threadPool = Executors.newCachedThreadPool();</span><br><span class="line">        String inputContent;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            serverSocket = <span class="keyword">new</span> ServerSocket(port);</span><br><span class="line">            <span class="comment">// 1. 需要设置超时时间，会等待设置的时间之后再进行返回</span></span><br><span class="line">            serverSocket.setSoTimeout(SO_TIMEOUT);</span><br><span class="line">            log.info(stringNowTime() + <span class="string">": serverSocket started"</span>);</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="comment">// 2. 如果超时没有获取，这里会抛出异常，这里的处理策略是不处理异常</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    socket = serverSocket.accept();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SocketTimeoutException e) &#123;</span><br><span class="line">                    <span class="comment">//运行到这里表示本次accept是没有收到任何数据的，服务端的主线程在这里可以做一些其他事情</span></span><br><span class="line">                    log.info(<span class="string">"now time is: "</span> + stringNowTime());</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 3. 拿到Socket 之后，应该使用线程池新开线程方式处理客户端连接，提高CPU利用率。</span></span><br><span class="line">                Thread thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> ClientSocketThread(socket));</span><br><span class="line">                threadPool.execute(thread);</span><br><span class="line"><span class="comment">//                log.info(stringNowTime() + ": id为" + socket.hashCode() + "的Clientsocket connected");</span></span><br><span class="line"><span class="comment">//                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//                while ((inputContent = reader.readLine()) != null) &#123;</span></span><br><span class="line"><span class="comment">//                    log.info("收到 id为" + socket.hashCode() + "  " + inputContent);</span></span><br><span class="line"><span class="comment">//                    count++;</span></span><br><span class="line"><span class="comment">//                &#125;</span></span><br><span class="line"><span class="comment">//                log.info("id为" + socket.hashCode() + "的Clientsocket " + stringNowTime() + "读取结束");</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (Objects.nonNull(reader)) &#123;</span><br><span class="line">                    reader.close();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (Objects.nonNull(socket)) &#123;</span><br><span class="line"></span><br><span class="line">                    socket.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 改写 客户端 Socket 连接为单独线程处理</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ClientSocketThread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SO_TIMEOUT = <span class="number">2000</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SLEEP_TIME = <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">final</span> Socket socket;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ClientSocketThread</span><span class="params">(Socket socket)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.socket = socket;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            BufferedReader reader = <span class="keyword">null</span>;</span><br><span class="line">            String inputContent;</span><br><span class="line">            <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                socket.setSoTimeout(SO_TIMEOUT);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SocketException e1) &#123;</span><br><span class="line">                e1.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(socket.getInputStream()));</span><br><span class="line">                <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="keyword">while</span> ((inputContent = reader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                            log.info(<span class="string">"收到id为"</span> + socket.hashCode() + <span class="string">"  "</span> + inputContent);</span><br><span class="line">                            count++;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                        <span class="comment">//执行到这里表示read方法没有获取到任何数据，线程可以执行一些其他的操作</span></span><br><span class="line">                        log.info(<span class="string">"Not read data: "</span> + stringNowTime());</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">//执行到这里表示读取到了数据，我们可以在这里进行回复客户端的工作</span></span><br><span class="line">                    log.info(<span class="string">"id为"</span> + socket.hashCode() + <span class="string">"的Clientsocket "</span> + stringNowTime() + <span class="string">"读取结束"</span>);</span><br><span class="line">                    Thread.sleep(SLEEP_TIME);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException | InterruptedException e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (Objects.nonNull(reader)) &#123;</span><br><span class="line">                        reader.close();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (Objects.nonNull(socket)) &#123;</span><br><span class="line">                        socket.close();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>经过上面的改造，我们基本把 BIO 同步阻塞的工作方式更新为 <strong>同步非阻塞</strong>的工作方式，核心是对于 <code>read()</code>以及服务端接收新连接的<code>accept()</code>设置<code>timeout</code>参数。</p>
+<p>在外部处理上，通过<code>while(true)</code> 加上“吞异常”方式，结合<code>Thread.sleep()</code>的套路实现“非阻塞”定期<code>accept</code>。</p>
+<p>当然，我们也可以看到，通过线程池每次都构建新线程的方式，在连接比较少的时候是比较高效的，但是一旦连接暴增，理论上JVM虽然可以构建非常多线程，实际上CPU肯定是吃不消，多线程“空轮询”判断的方式也十分浪费CPU资源，多线程切换起来更是雪上加霜。</p>
+<blockquote>
+<p>基于BIO的种种弊端，Sun 在JDK1.4 提供了 NIO 来解决上面的几点问题。</p>
+</blockquote>
+<h1 id="native-accept方法在Linux运作解读"><a href="#native-accept方法在Linux运作解读" class="headerlink" title="native accept方法在Linux运作解读"></a>native <code>accept</code>方法在Linux运作解读</h1><p><span class="exturl" data-url="aHR0cHM6Ly9saW51eC5kaWUubmV0L21hbi8yL2FjY2VwdA==" title="https://linux.die.net/man/2/accept">accept(2): accept connection on socket - Linux man page (die.net)<i class="fa fa-external-link"></i></span></p>
+<p>原始文档相关解读：[[【Linux】accept(2) - Linux man page]]，下面的内容基本为文档的翻译和理解介绍。</p>
+<p><code>accept()</code>本地方法，我们可以来试着看一看Linux这块的相关解读：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;sys/types.h&gt;</span><br><span class="line"></span><br><span class="line">#include &lt;sys/socket.h&gt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">accept</span><span class="params">(<span class="keyword">int</span> sockfd,struct sockaddr *addr,socklen_t *addrlen)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>accept()</code>系统调用主要用在基于连接的套接字类型，比如<strong>SOCK_STREAM</strong>和<strong>SOCK_SEQPACKET</strong>。它提取出所监听套接字的等待连接队列中第一个连接请求，<strong>创建一个新的套接字</strong>，并返回指向该套接字的文件描述符。新建立的套接字不在监听状态，原来所监听的套接字也不受该系统调用的影响。</p>
+<p><strong>备注：新建立的套接字准备发送<code>send()</code>和接收数据<code>recv()</code>。</strong></p>
+<p><strong>sockfd</strong>，作用是 利用系统调用<code>socket()</code>建立的套接字描述符，通过<code>bind()</code>绑定到一个本地地址(一般为服务器的套接字)，并且通过<code>listen()</code>一直在监听连接；</p>
+<p><strong>addr</strong>, 指向<code>struct sockaddr</code>的指针，该结构用通讯层服务器对等套接字的地址(一般为客户端地址)填写，返回地址<code>addr</code>的确切格式由套接字的地址类别(比如TCP或UDP)决定；</p>
+<p>若<code>addr</code>为NULL，没有有效地址填写，这种情况下，addrlen也不使用，应该置为NULL；</p>
+<p><strong>备注：addr是个指向局部数据结构sockaddr_in的指针，这就是要求接入的信息本地的套接字(地址和指针)。</strong></p>
+<p><code>addrlen</code>， 代表一个值结果参数，调用函数必须初始化为包含addr所指向结构大小的数值，函数返回时包含对等地址(一般为服务器地址)的实际数值；</p>
+<p><strong>备注：addrlen是个局部整形变量，设置为<code>sizeof(struct sockaddr_in)</code>。</strong></p>
+<p>如果队列中没有等待的连接，套接字也没有被标记为Non-blocking，accept()会阻塞调用函数直到连接出现；如果套接字被标记为Non-blocking，队列中也没有等待的连接，accept()返回错误<strong>EAGAIN</strong>或<strong>EWOULDBLOCK</strong>。</p>
+<p><strong>备注：一般来说accept()为阻塞函数，当监听socket调用accept()时，它先到自己的receive_buf中查看是否有连接数据包；若有，把数据拷贝出来，删掉接收到的数据包，创建新的socket与客户发来的地址建立连接；若没有，就阻塞等待；</strong></p>
+<p>为了在套接字中有到来的连接时得到通知，可以使用<strong>select()</strong> 或<strong>poll()</strong>。当尝试建立新连接时，系统发送一个可读事件，然后调用<code>accept()</code>为该连接获取套接字。另一种方法是，当套接字中有连接到来时设定套接字发送SIGIO信号。</p>
+<p>返回值成功时，返回非负整数，该整数是接收到套接字的描述符；<strong>出错时会返回－1</strong>，相应地设定全局变量error。</p>
+<p>所以，在Java部分的源码里（<strong>java.net.ServerSocket#accept</strong>）会new 一个Socket出来，方便连接后拿到的新Socket的文件描述符的信息给设定到我们new出来的这个Socket 上来，这点在<code>java.net.PlainSocketImpl#socketAccept</code>中看到的尤为明显，读者可以回顾相关源码。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文一开始介绍了Bio Socket的基本代码，接着从<code>ServerSocket</code>的<code>bind</code>方法解读，通过图文结合的方式介绍了源码如何处理，整个<code>bind</code>操作过程中有许多<code>native</code>层调用，所以Socket的代码调试是非常麻烦的。</p>
+<p>介绍完<code>bind</code>之后，我们接着介绍了<code>ServerSocket</code>中<code>accept</code>方法，并且介绍了<code>accept</code> 方法的阻塞问题实际上和底层的操作系统行为有关，并且通过画图的方式理解<code>accept</code>中Socket连接比较“绕”的操作。</p>
+<p>最后，文章的后半部分介绍了如何改造<code>accept</code>以及客户端的<code>Socket</code>连接解决非阻塞问题IO，最后我们介绍了  <code>native accept</code>方法在Linux运作，主要内容为Linux的相关文档理解。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>理解Socket的非阻塞操作有助于理解 NIO的Channel和Buffer的概念，实际上从我们的Demo代码可以看到Channel和非阻塞的BIO思路比较类似，而BufferReader缓冲流则贴合了 Buffer 的概念。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cubGludXhqb3VybmFsLmNvbS9maWxlcy9saW51eGpvdXJuYWwuY29tL2xpbnV4am91cm5hbC9hcnRpY2xlcy8wMjMvMjMzMy8yMzMzczIuaHRtbA==" title="https://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/023/2333/2333s2.html">Linux Network Programming, Part 1 (linuxjournal.com)<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8xMDQ4NzQ2MDU=" title="https://zhuanlan.zhihu.com/p/104874605">详解socket中的backlog 参数 - 知乎 (zhihu.com)<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82ODQ0OTAzNzUxMTc4NzgwNjg2" title="https://juejin.cn/post/6844903751178780686">BIO到NIO源码的一些事儿之BIO - 掘金 (juejin.cn)<i class="fa fa-external-link"></i></span></p>
+<h2 id="CachedThreadPool的工作原理"><a href="#CachedThreadPool的工作原理" class="headerlink" title="CachedThreadPool的工作原理"></a>CachedThreadPool的工作原理</h2><p>源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newCachedThreadPool</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">0</span>, Integer.MAX_VALUE,  </span><br><span class="line">                                  <span class="number">60L</span>, TimeUnit.SECONDS, <span class="comment">//60s </span></span><br><span class="line">                                  <span class="keyword">new</span> SynchronousQueue&lt;Runnable&gt;());  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（1）corePoolSize = 0，maximumPoolSize = 最大值（无限大），keepAliveTime = 60s，workQueue = <strong>SynchronousQueue</strong></p>
+<p>（2）<strong>SynchronousQueue</strong>（实际上没有存储数据的空闲，是用来做多线程通信之间的协调作用的）。一开始提交一个任务过来，要求线程池里<strong>必须有一个线程对应可以处理这个任务</strong>，但是此时一个线程都没有，poolSize &gt;= corePoolSize , workQueue已经满了，poolSize &lt; maximumPoolSize（最大值），直接就会<strong>创建一个新的线程来处理这个任务</strong>。</p>
+<blockquote>
+<p>这样的效果也就是来一个任务就开一个线程，无界，无限开新线程，线程过多容易导致JVM的压力过大甚至直接崩溃。这也是为什么阿里巴巴规范禁掉这个方法的直接原因，容易误用。</p>
+</blockquote>
+<p>（3）如果短期内有大量的任务都涌进来，实际上是走一个直接提交的思路，对每个任务，如果没法找到一个空闲的线程来处理它，那么就会立即创建一个新的线程出来，来处理这个新提交的任务</p>
+<p>（4）短时间内，如果大量的任务涌入，可能会导致瞬间创建出来几百个线程，几千个线程，是不固定的。</p>
+<p>（5）但是当这些线程工作完一段时间之后，就会处于空闲状态，就会看超过60s的空闲，就会直接将空闲的线程给释放掉。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/07/27/biosocketstart/" title="【Java】BIO源码分析和改造（GraalVM JDK 11.0.19）">https://whitestore.top/2023/07/27/biosocketstart/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/27/genericjava/" rel="prev" title="【Java】Generics in Java">
+      <i class="fa fa-chevron-left"></i> 【Java】Generics in Java
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/08/10/linuxperformance/" rel="next" title="【Linux】Linux Performance">
+      【Linux】Linux Performance <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#draw-io-文件"><span class="nav-number">2.</span> <span class="nav-text">draw.io 文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是Socket？"><span class="nav-number">3.</span> <span class="nav-text">什么是Socket？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#阻塞式IO模型"><span class="nav-number">4.</span> <span class="nav-text">阻塞式IO模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BIO-通信模型"><span class="nav-number">5.</span> <span class="nav-text">BIO 通信模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BIO-阻塞案例代码"><span class="nav-number">6.</span> <span class="nav-text">BIO 阻塞案例代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BioClientSocket"><span class="nav-number">6.1.</span> <span class="nav-text">BioClientSocket</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BioServerSocket"><span class="nav-number">6.2.</span> <span class="nav-text">BioServerSocket</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ServerSocket-中-bind-解读"><span class="nav-number">7.</span> <span class="nav-text">ServerSocket 中 bind 解读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#new-InetSocketAddress-bindAddr-port"><span class="nav-number">7.1.</span> <span class="nav-text">new InetSocketAddress(bindAddr, port)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bind-SocketAddress-endpoint-int-backlog"><span class="nav-number">7.2.</span> <span class="nav-text">bind(SocketAddress endpoint, int backlog)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setImpl"><span class="nav-number">7.3.</span> <span class="nav-text">setImpl()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#getImpl"><span class="nav-number">7.4.</span> <span class="nav-text">getImpl()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SocketImpl-bind-epoint-getAddress-epoint-getPort"><span class="nav-number">7.4.1.</span> <span class="nav-text">SocketImpl.bind(epoint.getAddress(), epoint.getPort())</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PlainSocketImpl-socketBind-InetAddress-address-int-port"><span class="nav-number">7.4.2.</span> <span class="nav-text">PlainSocketImpl#socketBind(InetAddress address, int port)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#画图小结"><span class="nav-number">7.5.</span> <span class="nav-text">画图小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ServerSocket中accept解读"><span class="nav-number">8.</span> <span class="nav-text">ServerSocket中accept解读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#java-net-ServerSocket-accept"><span class="nav-number">8.1.</span> <span class="nav-text">java.net.ServerSocket#accept</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java-net-ServerSocket-implAccept"><span class="nav-number">8.2.</span> <span class="nav-text">java.net.ServerSocket#implAccept</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#java-net-AbstractPlainSocketImpl-accept"><span class="nav-number">8.2.1.</span> <span class="nav-text">java.net.AbstractPlainSocketImpl#accept</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-net-PlainSocketImpl-socketAccept"><span class="nav-number">8.2.2.</span> <span class="nav-text">java.net.PlainSocketImpl#socketAccept</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-net-ServerSocket-setSoTimeout"><span class="nav-number">8.2.3.</span> <span class="nav-text">java.net.ServerSocket#setSoTimeout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-net-AbstractPlainSocketImpl-setOption"><span class="nav-number">8.2.4.</span> <span class="nav-text">java.net.AbstractPlainSocketImpl#setOption</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#画图小结-1"><span class="nav-number">8.3.</span> <span class="nav-text">画图小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#改造并实现accept的非阻塞实现"><span class="nav-number">9.</span> <span class="nav-text">改造并实现accept的非阻塞实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">9.1.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Socket-中的-getInputStream-方法解析"><span class="nav-number">10.</span> <span class="nav-text">Socket 中的 getInputStream() 方法解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现-Socket-中的-read-方法非阻塞"><span class="nav-number">11.</span> <span class="nav-text">实现 Socket 中的 read 方法非阻塞</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#native-accept方法在Linux运作解读"><span class="nav-number">12.</span> <span class="nav-text">native accept方法在Linux运作解读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">13.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">14.</span> <span class="nav-text">写在最后</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">15.</span> <span class="nav-text">参考资料</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CachedThreadPool的工作原理"><span class="nav-number">15.1.</span> <span class="nav-text">CachedThreadPool的工作原理</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Linux性能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Linux】Linux Performance">
+<meta property="og:url" content="https://whitestore.top/2023/08/10/linuxperformance/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Linux性能">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803143138.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803143201.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144043.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144100.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144135.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144210.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144229.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144249.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144318.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144334.png">
+<meta property="article:published_time" content="2023-08-10T08:48:04.000Z">
+<meta property="article:modified_time" content="2023-09-09T00:53:49.936Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Linux性能">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803143138.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/08/10/linuxperformance/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Linux】Linux Performance | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/08/10/linuxperformance/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Linux】Linux Performance
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-08-10 16:48:04" itemprop="dateCreated datePublished" datetime="2023-08-10T16:48:04+08:00">2023-08-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/08/10/linuxperformance/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/08/10/linuxperformance/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+            <div class="post-description">Linux性能</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="【Linux】Linux-性能"><a href="#【Linux】Linux-性能" class="headerlink" title="【Linux】Linux 性能"></a>【Linux】Linux 性能</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>干货不是一般的多。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9saW51eHBlcmYuaHRtbA==" title="https://www.brendangregg.com/linuxperf.html">https://www.brendangregg.com/linuxperf.html<i class="fa fa-external-link"></i></span></p>
+<p>This page links to various Linux performance material I’ve created, including the tools maps on the right. These use a large font size to suit slide decks. You can also print them out for your office wall. They show: <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X29ic2VydmFiaWxpdHlfdG9vbHMucG5n" title="https://www.brendangregg.com/Perf/linux_observability_tools.png">Linux observability tools<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3N0YXRpY190b29scy5wbmc=" title="https://www.brendangregg.com/Perf/linux_static_tools.png">Linux static performance analysis tools<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X2JlbmNobWFya2luZ190b29scy5wbmc=" title="https://www.brendangregg.com/Perf/linux_benchmarking_tools.png">Linux benchmarking tools<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3R1bmluZ190b29scy5wbmc=" title="https://www.brendangregg.com/Perf/linux_tuning_tools.png">Linux tuning tools<i class="fa fa-external-link"></i></span>, and <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X29ic2VydmFiaWxpdHlfc2FyLnBuZw==" title="https://www.brendangregg.com/Perf/linux_observability_sar.png">Linux sar<i class="fa fa-external-link"></i></span>. Check the year on the image (bottom right) to see how recent it is.</p>
+<p>本页链接到我制作的各种 Linux 性能材料，包括右侧的工具图。这些地图使用大号字体，适合幻灯片使用。你也可以打印出来贴在办公室墙上。它们显示 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X29ic2VydmFiaWxpdHlfdG9vbHMucG5n" title="https://www.brendangregg.com/Perf/linux_observability_tools.png">Linux 可观察性工具<i class="fa fa-external-link"></i></span>、<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3N0YXRpY190b29scy5wbmc=" title="https://www.brendangregg.com/Perf/linux_static_tools.png">Linux 静态性能分析工具<i class="fa fa-external-link"></i></span>、<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X2JlbmNobWFya2luZ190b29scy5wbmc=" title="https://www.brendangregg.com/Perf/linux_benchmarking_tools.png">Linux 基准测试工具<i class="fa fa-external-link"></i></span>、<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3R1bmluZ190b29scy5wbmc=" title="https://www.brendangregg.com/Perf/linux_tuning_tools.png">Linux 调试工具<i class="fa fa-external-link"></i></span>和<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X29ic2VydmFiaWxpdHlfc2FyLnBuZw==" title="https://www.brendangregg.com/Perf/linux_observability_sar.png">Linux sar<i class="fa fa-external-link"></i></span>。请查看图片（右下角）上的年份，了解其最新版本。 </p>
+<a id="more"></a>
+
+<p>There is also a hi-res diagram combining observability, static performance tuning, and perf-tools/bcc: <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3BlcmZfdG9vbHNfZnVsbC5wbmc=" title="https://www.brendangregg.com/Perf/linux_perf_tools_full.png">png<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3BlcmZfdG9vbHNfZnVsbC5zdmc=" title="https://www.brendangregg.com/Perf/linux_perf_tools_full.svg">svg<i class="fa fa-external-link"></i></span> (see <span class="exturl" data-url="aHR0cHM6Ly93d3cucmVkZGl0LmNvbS9yL2xpbnV4L2NvbW1lbnRzLzR4NHNtdS9saW51eF9wZXJmb3JtYW5jZV90b29sc19mdWxsX3ZlcnNpb25fZHJhZnQv" title="https://www.reddit.com/r/linux/comments/4x4smu/linux_performance_tools_full_version_draft/">discussion<i class="fa fa-external-link"></i></span>), but it is not as complete as the other diagrams. For even more diagrams, see my slide decks below.</p>
+<p>还有一个结合了可观察性、静态性能调优和 <strong>perf-tools/bcc</strong> 的高清图表：<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3BlcmZfdG9vbHNfZnVsbC5wbmc=" title="https://www.brendangregg.com/Perf/linux_perf_tools_full.png">png<i class="fa fa-external-link"></i></span>、<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3BlcmZfdG9vbHNfZnVsbC5zdmc=" title="https://www.brendangregg.com/Perf/linux_perf_tools_full.svg">svg<i class="fa fa-external-link"></i></span>（见<span class="exturl" data-url="aHR0cHM6Ly93d3cucmVkZGl0LmNvbS9yL2xpbnV4L2NvbW1lbnRzLzR4NHNtdS9saW51eF9wZXJmb3JtYW5jZV90b29sc19mdWxsX3ZlcnNpb25fZHJhZnQv" title="https://www.reddit.com/r/linux/comments/4x4smu/linux_performance_tools_full_version_draft/">讨论<i class="fa fa-external-link"></i></span>），但不如其他图表完整。需更多图表，请参阅下面的幻灯片。</p>
+<p>On this page: <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9saW51eHBlcmYuaHRtbCNUb29scw==" title="https://www.brendangregg.com/linuxperf.html#Tools">Tools<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9saW51eHBlcmYuaHRtbCNEb2N1bWVudGF0aW9u" title="https://www.brendangregg.com/linuxperf.html#Documentation">Documentation<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9saW51eHBlcmYuaHRtbCNUYWxrcw==" title="https://www.brendangregg.com/linuxperf.html#Talks">Talks<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9saW51eHBlcmYuaHRtbCNSZXNvdXJjZXM=" title="https://www.brendangregg.com/linuxperf.html#Resources">Resources<i class="fa fa-external-link"></i></span>.</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3BlcmZfdG9vbHNfZnVsbC5wbmc=" title="https://www.brendangregg.com/Perf/linux_perf_tools_full.png">png<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803143138.png" alt="image.png"></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9QZXJmL2xpbnV4X3BlcmZfdG9vbHNfZnVsbC5zdmc=" title="https://www.brendangregg.com/Perf/linux_perf_tools_full.svg">svg<i class="fa fa-external-link"></i></span>（注意只有部分）</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803143201.png" alt="image.png"></p>
+<p>在本页中：<strong>Tools</strong>, <strong>Documentation</strong>, <strong>Talks</strong>, <strong>Resources</strong>.</p>
+<h1 id="Tools"><a href="#Tools" class="headerlink" title="Tools"></a>Tools</h1><ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9wZXJmLmh0bWw=" title="https://www.brendangregg.com/perf.html">perf<i class="fa fa-external-link"></i></span>: perf one-liners, examples, visualizations. （perf 、实例、可视化。）</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9lYnBmLmh0bWw=" title="https://www.brendangregg.com/ebpf.html">eBPF tools<i class="fa fa-external-link"></i></span>: BPF/bcc tracing tools and examples.  （BPF/bcc 跟踪工具和示例）</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2JyZW5kYW5ncmVnZy9wZXJmLXRvb2xz" title="https://github.com/brendangregg/perf-tools">perf-tools<i class="fa fa-external-link"></i></span>: Ftrace perf tools (github). （Ftrace perf 工具（github））</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2lvdmlzb3IvYmNjI3Rvb2xz" title="https://github.com/iovisor/bcc#tools">bcc<i class="fa fa-external-link"></i></span>: BPF/bcc perf tools (github). （BPF/bcc perf 工具（github））</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2lvdmlzb3IvYnBmdHJhY2UjdG9vbHM=" title="https://github.com/iovisor/bpftrace#tools">bpftrace<i class="fa fa-external-link"></i></span>: BPF/bpftrace perf tools (github).（BPF/bpftrace perf 工具（github）。）</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9mbGFtZWdyYXBocy5odG1s" title="https://www.brendangregg.com/flamegraphs.html">Flame Graphs<i class="fa fa-external-link"></i></span>: using <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9GbGFtZUdyYXBocy9jcHVmbGFtZWdyYXBocy5odG1sI3BlcmY=" title="https://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html#perf">perf<i class="fa fa-external-link"></i></span> and other profilers.（使用 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9GbGFtZUdyYXBocy9jcHVmbGFtZWdyYXBocy5odG1sI3BlcmY=" title="https://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html#perf">perf<i class="fa fa-external-link"></i></span> 和其他剖析器。）</li>
+</ul>
+<h1 id="Documentation"><a href="#Documentation" class="headerlink" title="Documentation"></a>Documentation</h1><ul>
+<li><span class="exturl" data-url="aHR0cDovL3RlY2hibG9nLm5ldGZsaXguY29tLzIwMTUvMTEvbGludXgtcGVyZm9ybWFuY2UtYW5hbHlzaXMtaW4tNjBzLmh0bWw=" title="http://techblog.netflix.com/2015/11/linux-performance-analysis-in-60s.html">Linux Performance Analysis in 60,000 Milliseconds<i class="fa fa-external-link"></i></span> shows the first ten commands to use in an investigation (<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMTItMDMvbGludXgtcGVyZi02MHMtdmlkZW8uaHRtbA==" title="https://www.brendangregg.com/blog/2015-12-03/linux-perf-60s-video.html">video<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9BcnRpY2xlcy9OZXRmbGl4X0xpbnV4X1BlcmZfQW5hbHlzaXNfNjBzLnBkZg==" title="https://www.brendangregg.com/Articles/Netflix_Linux_Perf_Analysis_60s.pdf">PDF<i class="fa fa-external-link"></i></span>). Written by myself and the performance engineering team at Netflix (2015).</li>
+</ul>
+<p><span class="exturl" data-url="aHR0cDovL3RlY2hibG9nLm5ldGZsaXguY29tLzIwMTUvMTEvbGludXgtcGVyZm9ybWFuY2UtYW5hbHlzaXMtaW4tNjBzLmh0bWw=" title="http://techblog.netflix.com/2015/11/linux-performance-analysis-in-60s.html">Linux Performance Analysis in 60,000 Milliseconds<i class="fa fa-external-link"></i></span> 显示了调查中使用的前十个命令（<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMTItMDMvbGludXgtcGVyZi02MHMtdmlkZW8uaHRtbA==" title="https://www.brendangregg.com/blog/2015-12-03/linux-perf-60s-video.html">视频<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9BcnRpY2xlcy9OZXRmbGl4X0xpbnV4X1BlcmZfQW5hbHlzaXNfNjBzLnBkZg==" title="https://www.brendangregg.com/Articles/Netflix_Linux_Perf_Analysis_60s.pdf">PDF<i class="fa fa-external-link"></i></span>）。由我本人和 Netflix 的性能工程团队撰写（2015 年）。</p>
+<ul>
+<li>My post <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDMtMDMvcGVyZm9ybWFuY2UtdHVuaW5nLWxpbnV4LWluc3RhbmNlcy1vbi1lYzIuaHRtbA==" title="https://www.brendangregg.com/blog/2015-03-03/performance-tuning-linux-instances-on-ec2.html">Performance Tuning Linux Instances on EC2<i class="fa fa-external-link"></i></span> includes the tunables we’re using at Netflix (2015).</li>
+</ul>
+<p>我的文章 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDMtMDMvcGVyZm9ybWFuY2UtdHVuaW5nLWxpbnV4LWluc3RhbmNlcy1vbi1lYzIuaHRtbA==" title="https://www.brendangregg.com/blog/2015-03-03/performance-tuning-linux-instances-on-ec2.html">Performance Tuning Linux Instances on EC2<i class="fa fa-external-link"></i></span>包含了我们在 Netflix 使用的可调性（2015 年）。</p>
+<ul>
+<li>A post on <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTctMDgtMDgvbGludXgtbG9hZC1hdmVyYWdlcy5odG1s" title="https://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html">Linux Load Averages: Solving the Mystery<i class="fa fa-external-link"></i></span>, explaining what they are and why they include the uninterruptible sleep state (2017).</li>
+</ul>
+<p>关于[Linux 负载平均值：解开之谜]的帖子(<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTctMDgtMDgvbGludXgtbG9hZC1hdmVyYWdlcy5odG1sKe+8jOino+mHiuS6huS7gOS5iOaYr+i0n+i9veW5s+Wdh+WAvOS7peWPiuS4uuS7gOS5iOWMheWQq+S4jemXtOaWreedoeecoOeKtuaAge+8iDIwMTc=" title="https://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html)，解释了什么是负载平均值以及为什么包含不间断睡眠状态（2017">https://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html)，解释了什么是负载平均值以及为什么包含不间断睡眠状态（2017<i class="fa fa-external-link"></i></span> 年）。</p>
+<ul>
+<li><p>A <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDgtMDkvZ2RiLWV4YW1wbGUtbmN1cnNlcy5odG1s" title="https://www.brendangregg.com/blog/2016-08-09/gdb-example-ncurses.html">gdb Debugging Full Example (Tutorial)<i class="fa fa-external-link"></i></span>, including the use of some perf/debugging tools (2016).</p>
+</li>
+<li><p>gdb 调试完整示例（教程）](<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDgtMDkvZ2RiLWV4YW1wbGUtbmN1cnNlcy5odG1sKe+8jOWMheaLrOS4gOS6mw==" title="https://www.brendangregg.com/blog/2016-08-09/gdb-example-ncurses.html)，包括一些">https://www.brendangregg.com/blog/2016-08-09/gdb-example-ncurses.html)，包括一些<i class="fa fa-external-link"></i></span> perf/debugging 工具的使用（2016 年）。</p>
+</li>
+<li><p>The book <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9zeXN0ZW1zLXBlcmZvcm1hbmNlLTJuZC1lZGl0aW9uLWJvb2suaHRtbA==" title="https://www.brendangregg.com/systems-performance-2nd-edition-book.html">Systems Performance: Enterprise and the Cloud, 2nd Edition (2020)<i class="fa fa-external-link"></i></span> covers performance analysis methods and Linux tools, including perf, Ftrace, and eBPF.</p>
+</li>
+<li><p>系统性能：企业与云，第 2 版 (2020)](<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9zeXN0ZW1zLXBlcmZvcm1hbmNlLTJuZC1lZGl0aW9uLWJvb2suaHRtbA==" title="https://www.brendangregg.com/systems-performance-2nd-edition-book.html">https://www.brendangregg.com/systems-performance-2nd-edition-book.html<i class="fa fa-external-link"></i></span>) 一书介绍了性能分析方法和 Linux 工具，包括 perf、Ftrace 和 eBPF。</p>
+</li>
+<li><p>The book <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9icGYtcGVyZm9ybWFuY2UtdG9vbHMtYm9vay5odG1s" title="https://www.brendangregg.com/bpf-performance-tools-book.html">BPF Performance Tools: Linux System and Application Observability<i class="fa fa-external-link"></i></span> tours over 100 eBPF performance analysis tools, while including short summaries of the traditional tools. In a way, this is volume 2, and Systems Performance 2nd Edition is volume 1.</p>
+</li>
+<li><p>BPF 性能工具：Linux 系统和应用程序可观察性](<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9icGYtcGVyZm9ybWFuY2UtdG9vbHMtYm9vay5odG1s" title="https://www.brendangregg.com/bpf-performance-tools-book.html">https://www.brendangregg.com/bpf-performance-tools-book.html<i class="fa fa-external-link"></i></span>) 一书介绍了 100 多种 eBPF 性能分析工具，同时还包括传统工具的简短摘要。在某种程度上，这本书是第二卷，而《系统性能第二版》是第一卷。</p>
+</li>
+</ul>
+<ul>
+<li><p>Generating flame graphs on Linux using perf &amp; eBPF:<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9GbGFtZUdyYXBocy9jcHVmbGFtZWdyYXBocy5odG1sI0xpbnV4" title="https://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html#Linux">CPU Flame Graphs<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9GbGFtZUdyYXBocy9vZmZjcHVmbGFtZWdyYXBocy5odG1sI0xpbnV4" title="https://www.brendangregg.com/FlameGraphs/offcpuflamegraphs.html#Linux">Off-CPU Flame Graphs<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9GbGFtZUdyYXBocy9tZW1vcnlmbGFtZWdyYXBocy5odG1sI0xpbnV4" title="https://www.brendangregg.com/FlameGraphs/memoryflamegraphs.html#Linux">Memory Flame Graphs<i class="fa fa-external-link"></i></span></p>
+</li>
+<li><p>使用 perf 和 eBPF 在 Linux 上生成火焰图：<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9GbGFtZUdyYXBocy9jcHVmbGFtZWdyYXBocy5odG1sI0xpbnV4" title="https://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html#Linux">CPU 火焰图<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9GbGFtZUdyYXBocy9vZmZjcHVmbGFtZWdyYXBocy5odG1sI0xpbnV4" title="https://www.brendangregg.com/FlameGraphs/offcpuflamegraphs.html#Linux">非 CPU 火焰图<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9GbGFtZUdyYXBocy9tZW1vcnlmbGFtZWdyYXBocy5odG1sI0xpbnV4" title="https://www.brendangregg.com/FlameGraphs/memoryflamegraphs.html#Linux">内存火焰图<i class="fa fa-external-link"></i></span></p>
+</li>
+<li><p>Posts about eBPF, bcc, and bpftrace (2015-21):</p>
+</li>
+<li><p>关于 eBPF、bcc 和 bpftrace 的帖子 (2015-21)：</p>
+<p>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDUtMTUvZWJwZi1vbmUtc21hbGwtc3RlcC5odG1s" title="https://www.brendangregg.com/blog/2015-05-15/ebpf-one-small-step.html">Linux eBPF<i class="fa fa-external-link"></i></span> (2015)<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDktMjIvYmNjLWxpbnV4LTQuMy10cmFjaW5nLmh0bWw=" title="https://www.brendangregg.com/blog/2015-09-22/bcc-linux-4.3-tracing.html">bcc: Taming Linux 4.3+ Tracing Superpowers<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMTAtMzEvdGNwY29ubmVjdC10Y3BhY2NlcHQtYmNjLmh0bWw=" title="https://www.brendangregg.com/blog/2015-10-31/tcpconnect-tcpaccept-bcc.html">tcpconnect and tcpaccept for Linux (bcc)<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDEtMTgvZWJwZi1zdGFjay10cmFjZS1oYWNrLmh0bWw=" title="https://www.brendangregg.com/blog/2016-01-18/ebpf-stack-trace-hack.html">Linux eBPF Stack Trace Hack (bcc)<i class="fa fa-external-link"></i></span> (2016)<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDEtMjAvZWJwZi1vZmZjcHUtZmxhbWUtZ3JhcGguaHRtbA==" title="https://www.brendangregg.com/blog/2016-01-20/ebpf-offcpu-flame-graph.html">Linux eBPF Off-CPU Flame Graph (bcc)<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDItMDEvbGludXgtd2FrZXVwLW9mZndha2UtcHJvZmlsaW5nLmh0bWw=" title="https://www.brendangregg.com/blog/2016-02-01/linux-wakeup-offwake-profiling.html">Linux Wakeup and Off-Wake Profiling (bcc)<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDItMDUvZWJwZi1jaGFpbmdyYXBoLXByb3RvdHlwZS5odG1s" title="https://www.brendangregg.com/blog/2016-02-05/ebpf-chaingraph-prototype.html">Linux chain graph prototype (bcc)<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDItMDgvbGludXgtZWJwZi1iY2MtdXByb2Jlcy5odG1s" title="https://www.brendangregg.com/blog/2016-02-08/linux-ebpf-bcc-uprobes.html">Linux eBPF/bcc uprobes<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDMtMjgvbGludXgtYnBmLWJjYy1yb2FkLWFoZWFkLTIwMTYuaHRtbA==" title="https://www.brendangregg.com/blog/2016-03-28/linux-bpf-bcc-road-ahead-2016.html">Linux BPF/bcc Road Ahead<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDYtMTQvdWJ1bnR1LXhlbmlhbC1iY2MtYnBmLmh0bWw=" title="https://www.brendangregg.com/blog/2016-06-14/ubuntu-xenial-bcc-bpf.html">Ubuntu Xenial bcc/BPF<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMTAtMDEvbGludXgtYmNjLXNlY3VyaXR5LWNhcGFiaWxpdGllcy5odG1s" title="https://www.brendangregg.com/blog/2016-10-01/linux-bcc-security-capabilities.html">Linux bcc/BPF Tracing Security Capabilities<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMTAtMDQvbGludXgtYmNjLW15c3FsZC1xc2xvd2VyLmh0bWw=" title="https://www.brendangregg.com/blog/2016-10-04/linux-bcc-mysqld-qslower.html">Linux MySQL Slow Query Tracing with bcc/BPF<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMTAtMDYvbGludXgtYmNjLWV4dDRkaXN0LWV4dDRzbG93ZXIuaHRtbA==" title="https://www.brendangregg.com/blog/2016-10-06/linux-bcc-ext4dist-ext4slower.html">Linux bcc/BPF ext4 Latency Tracing<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMTAtMDgvbGludXgtYmNjLXJ1bnFsYXQuaHRtbA==" title="https://www.brendangregg.com/blog/2016-10-08/linux-bcc-runqlat.html">Linux bcc/BPF Run Queue (Scheduler) Latency<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMTAtMTIvbGludXgtYmNjLW5vZGVqcy11c2R0Lmh0bWw=" title="https://www.brendangregg.com/blog/2016-10-12/linux-bcc-nodejs-usdt.html">Linux bcc/BPF Node.js USDT Tracing<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMTAtMTUvbGludXgtYmNjLXRjcHRvcC5odG1s" title="https://www.brendangregg.com/blog/2016-10-15/linux-bcc-tcptop.html">Linux bcc tcptop<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMTAtMjEvbGludXgtZWZmaWNpZW50LXByb2ZpbGVyLmh0bWw=" title="https://www.brendangregg.com/blog/2016-10-21/linux-efficient-profiler.html">Linux 4.9’s Efficient BPF-based Profiler<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMTAtMjcvZHRyYWNlLWZvci1saW51eC0yMDE2Lmh0bWw=" title="https://www.brendangregg.com/blog/2016-10-27/dtrace-for-linux-2016.html">DTrace for Linux 2016<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvbGludXgtNHgtdHJhY2luZy10b29scy11c2luZy1icGYtc3VwZXJwb3dlcnM=" title="http://www.slideshare.net/brendangregg/linux-4x-tracing-tools-using-bpf-superpowers">Linux 4.x Tracing Tools: Using BPF Superpowers<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMTEtMzAvbGludXgtYmNjLXRjcGxpZmUuaHRtbA==" title="https://www.brendangregg.com/blog/2016-11-30/linux-bcc-tcplife.html">Linux bcc/BPF tcplife: TCP Lifespans<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTctMDEtMzEvZ29sYW5nLWJjYy1icGYtZnVuY3Rpb24tdHJhY2luZy5odG1s" title="https://www.brendangregg.com/blog/2017-01-31/golang-bcc-bpf-function-tracing.html">Golang bcc/BPF Function Tracing<i class="fa fa-external-link"></i></span> (2017)<br>  <span class="exturl" data-url="aHR0cHM6Ly9vcGVuc291cmNlLmNvbS9hcnRpY2xlLzE3LzExL2JjY2JwZi1wZXJmb3JtYW5jZQ==" title="https://opensource.com/article/17/11/bccbpf-performance">7 BPF tools for performance analysis on Fedora<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTgtMDMtMjIvdGNwLXRyYWNlcG9pbnRzLmh0bWw=" title="https://www.brendangregg.com/blog/2018-03-22/tcp-tracepoints.html">TCP Tracepoints<i class="fa fa-external-link"></i></span> (2018)<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTgtMDUtMzEvbGludXgtdGNwZHJvcC5odG1s" title="https://www.brendangregg.com/blog/2018-05-31/linux-tcpdrop.html">Linux bcc/eBPF tcpdrop<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTgtMTAtMDgvZHRyYWNlLWZvci1saW51eC0yMDE4Lmh0bWw=" title="https://www.brendangregg.com/blog/2018-10-08/dtrace-for-linux-2018.html">bpftrace (DTrace 2.0) for Linux 2018<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTktMDEtMDEvbGVhcm4tZWJwZi10cmFjaW5nLmh0bWw=" title="https://www.brendangregg.com/blog/2019-01-01/learn-ebpf-tracing.html">Learn eBPF Tracing: Tutorial and Examples<i class="fa fa-external-link"></i></span> (2019)<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTktMDgtMTkvYnBmdHJhY2UuaHRtbA==" title="https://www.brendangregg.com/blog/2019-08-19/bpftrace.html">A thorough introduction to bpftrace<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTktMTItMDIvYnBmLWEtbmV3LXR5cGUtb2Ytc29mdHdhcmUuaHRtbA==" title="https://www.brendangregg.com/blog/2019-12-02/bpf-a-new-type-of-software.html">BPF: A New Type of Software<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTktMTItMjIvYnBmLXRoZXJlbWluLmh0bWw=" title="https://www.brendangregg.com/blog/2019-12-22/bpf-theremin.html">BPF Theremin, Tetris, and Typewriters<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMjAtMTEtMDQvYnBmLWNvLXJlLWJ0Zi1saWJicGYuaHRtbA==" title="https://www.brendangregg.com/blog/2020-11-04/bpf-co-re-btf-libbpf.html">BPF binaries: BTF, CO-RE, and the future of BPF perf tools<i class="fa fa-external-link"></i></span> (2020)<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMjEtMDYtMTUvYnBmLWludGVybmFscy5odG1s" title="https://www.brendangregg.com/blog/2021-06-15/bpf-internals.html">USENIX LISA2021 BPF Internals (eBPF)<i class="fa fa-external-link"></i></span> (2021)<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMjEtMDctMDMvaG93LXRvLWFkZC1icGYtb2JzZXJ2YWJpbGl0eS5odG1s" title="https://www.brendangregg.com/blog/2021-07-03/how-to-add-bpf-observability.html">How To Add eBPF Observability To Your Product<i class="fa fa-external-link"></i></span>  </p>
+</li>
+<li><p>My <span class="exturl" data-url="aHR0cDovL2x3bi5uZXQv" title="http://lwn.net/">lwn.net<i class="fa fa-external-link"></i></span> article <span class="exturl" data-url="aHR0cDovL2x3bi5uZXQvQXJ0aWNsZXMvNjA4NDk3Lw==" title="http://lwn.net/Articles/608497/">Ftrace: The Hidden Light Switch<i class="fa fa-external-link"></i></span> shows a use case for Linux ftrace (Aug, 2014).</p>
+</li>
+<li><p>我的 <span class="exturl" data-url="aHR0cDovL2x3bi5uZXQv" title="http://lwn.net/">lwn.net<i class="fa fa-external-link"></i></span>文章 <span class="exturl" data-url="aHR0cDovL2x3bi5uZXQvQXJ0aWNsZXMvNjA4NDk3Lw==" title="http://lwn.net/Articles/608497/">Ftrace：隐藏的电灯开关<i class="fa fa-external-link"></i></span> 展示了 Linux ftrace 的使用案例（2014 年 8 月）。</p>
+</li>
+<li><p>Posts about ftrace-based perf-tools (2014-5):</p>
+</li>
+<li><p>关于基于 ftrace 的 perf 工具的帖子 (2014-5)：</p>
+<p>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDctMTYvaW9zbm9vcC1mb3ItbGludXguaHRtbA==" title="https://www.brendangregg.com/blog/2014-07-16/iosnoop-for-linux.html">iosnoop for Linux<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDctMjMvbGludXgtaW9zbm9vcC1sYXRlbmN5LWhlYXQtbWFwcy5odG1s" title="https://www.brendangregg.com/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">iosnoop Latency Heat Maps<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDctMjUvb3BlbnNub29wLWZvci1saW51eC5odG1s" title="https://www.brendangregg.com/blog/2014-07-25/opensnoop-for-linux.html">opensnoop for Linux<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDctMjgvZXhlY3Nub29wLWZvci1saW51eC5odG1s" title="https://www.brendangregg.com/blog/2014-07-28/execsnoop-for-linux.html">execsnoop for Linux<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDgtMzAvZnRyYWNlLXRoZS1oaWRkZW4tbGlnaHQtc3dpdGNoLmh0bWw=" title="https://www.brendangregg.com/blog/2014-08-30/ftrace-the-hidden-light-switch.html">ftrace: The Hidden Light Switch<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDktMDYvbGludXgtZnRyYWNlLXRjcC1yZXRyYW5zbWl0LXRyYWNpbmcuaHRtbA==" title="https://www.brendangregg.com/blog/2014-09-06/linux-ftrace-tcp-retransmit-tracing.html">tcpretrans<i class="fa fa-external-link"></i></span><br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMTItMzEvbGludXgtcGFnZS1jYWNoZS1oaXQtcmF0aW8uaHRtbA==" title="https://www.brendangregg.com/blog/2014-12-31/linux-page-cache-hit-ratio.html">Page Cache Hit Ratio<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDYtMjgvbGludXgtZnRyYWNlLXVwcm9iZS5odG1s" title="https://www.brendangregg.com/blog/2015-06-28/linux-ftrace-uprobe.html">uprobe: User-Level Dynamic Tracing<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDctMDMvaGFja2luZy1saW51eC11c2R0LWZ0cmFjZS5odG1s" title="https://www.brendangregg.com/blog/2015-07-03/hacking-linux-usdt-ftrace.html">Hacking Linux USDT<i class="fa fa-external-link"></i></span></p>
+</li>
+</ul>
+<ul>
+<li>Posts about perf-based perf-tools: <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDctMTAvcGVyZi1oYWNrdG9ncmFtLmh0bWw=" title="https://www.brendangregg.com/blog/2014-07-10/perf-hacktogram.html">perf Hacktogram<i class="fa fa-external-link"></i></span>.</li>
+</ul>
+<p>关于基于 perf 的 perf 工具的帖子</p>
+<ul>
+<li>Posts about perf_events (2014-7):<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDYtMjIvcGVyZi1jcHUtc2FtcGxlLmh0bWw=" title="https://www.brendangregg.com/blog/2014-06-22/perf-cpu-sample.html">perf CPU Sampling<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDYtMjkvcGVyZi1zdGF0aWMtdHJhY2Vwb2ludHMuaHRtbA==" title="https://www.brendangregg.com/blog/2014-06-29/perf-static-tracepoints.html">perf Static Tracepoints<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDctMDEvcGVyZi1oZWF0LW1hcHMuaHRtbA==" title="https://www.brendangregg.com/blog/2014-07-01/perf-heat-maps.html">perf Heat Maps<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDctMDMvcGVyZi1jb3VudGluZy5odG1s" title="https://www.brendangregg.com/blog/2014-07-03/perf-counting.html">perf Counting<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDktMTEvcGVyZi1rZXJuZWwtbGluZS10cmFjaW5nLmh0bWw=" title="https://www.brendangregg.com/blog/2014-09-11/perf-kernel-line-tracing.html">perf Kernel Line Tracing<i class="fa fa-external-link"></i></span>,<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDItMjYvbGludXgtcGVyZi1vZmYtY3B1LWZsYW1lLWdyYXBoLmh0bWw=" title="https://www.brendangregg.com/blog/2015-02-26/linux-perf-off-cpu-flame-graph.html">perf Off-CPU Time Flame Graphs<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDItMjcvbGludXgtcHJvZmlsaW5nLWF0LW5ldGZsaXguaHRtbA==" title="https://www.brendangregg.com/blog/2015-02-27/linux-profiling-at-netflix.html">Linux Profiling at Netflix<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cDovL3RlY2hibG9nLm5ldGZsaXguY29tLzIwMTUvMDcvamF2YS1pbi1mbGFtZXMuaHRtbA==" title="http://techblog.netflix.com/2015/07/java-in-flames.html">Java Mixed-Mode Flame Graphs<i class="fa fa-external-link"></i></span> (<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9BcnRpY2xlcy9OZXRmbGl4X0phdmFfaW5fRmxhbWVzLnBkZg==" title="https://www.brendangregg.com/Articles/Netflix_Java_in_Flames.pdf">PDF<i class="fa fa-external-link"></i></span>), <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDQtMzAvbGludXgtcGVyZi1mb2xkZWQuaHRtbA==" title="https://www.brendangregg.com/blog/2016-04-30/linux-perf-folded.html">Linux 4.5 perf folded format<i class="fa fa-external-link"></i></span>,<br>  <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTctMDMtMTYvcGVyZi1zY2hlZC5odG1s" title="https://www.brendangregg.com/blog/2017-03-16/perf-sched.html">perf sched for Linux CPU scheduler analysis<i class="fa fa-external-link"></i></span></li>
+</ul>
+<ul>
+<li><p>A page on <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS93c3MuaHRtbA==" title="https://www.brendangregg.com/wss.html">Working Set Size Estimation<i class="fa fa-external-link"></i></span> for Linux (2018+).</p>
+</li>
+<li><p>A post on <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTgtMDItMDkva3B0aS1rYWlzZXItbWVsdGRvd24tcGVyZm9ybWFuY2UuaHRtbA==" title="https://www.brendangregg.com/blog/2018-02-09/kpti-kaiser-meltdown-performance.html">KPTI/KAISER Meltdown Initial Performance Regressions<i class="fa fa-external-link"></i></span> (2018).</p>
+</li>
+<li><p>In <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTctMDUtMDQvdGhlLXBtY3Mtb2YtZWMyLmh0bWw=" title="https://www.brendangregg.com/blog/2017-05-04/the-pmcs-of-ec2.html">The PMCs of EC2: Measuring IPC<i class="fa fa-external-link"></i></span> I showed the new Performance Monitoring Counter (PMC) support in the AWS EC2 cloud (2017).</p>
+<p>我展示了 AWS EC2 云中新的性能监控计数器（PMC）支持（2017 年）。</p>
+</li>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTctMDUtMDkvY3B1LXV0aWxpemF0aW9uLWlzLXdyb25nLmh0bWw=" title="https://www.brendangregg.com/blog/2017-05-09/cpu-utilization-is-wrong.html">CPU Utilization is Wrong<i class="fa fa-external-link"></i></span>: a post explaining the growing problem of memory stall cycles dominating the %CPU metric (2017).</p>
+</li>
+</ul>
+<p>解释了内存停滞周期主导 %CPU 指标这一日益严重的问题（2017 年）。</p>
+<ul>
+<li>A post about <span class="exturl" data-url="aHR0cDovL3d3dy5icmVuZGFuZ3JlZ2cuY29tL2Jsb2cvMjAxNi0wNi0wOC9saW51eC1oaXN0LXRyaWdnZXJzLmh0bWw=" title="http://www.brendangregg.com/blog/2016-06-08/linux-hist-triggers.html">Linux 4.7 Hist Triggers<i class="fa fa-external-link"></i></span> (2016).</li>
+<li>The blog post <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDUtMTEvc3RyYWNlLXdvdy1tdWNoLXN5c2NhbGwuaHRtbA==" title="https://www.brendangregg.com/blog/2014-05-11/strace-wow-much-syscall.html">strace Wow Much Syscall<i class="fa fa-external-link"></i></span> discusses strace(1) for production use, and compares it to advanced tracing tools (2014).</li>
+</ul>
+<p>讨论了用于生产的 strace(1)，并将其与高级跟踪工具进行了比较（2014 年）。</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9VU0VtZXRob2QvdXNlLWxpbnV4Lmh0bWw=" title="https://www.brendangregg.com/USEmethod/use-linux.html">USE Method: Linux Performance Checklist<i class="fa fa-external-link"></i></span>; also see the <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS91c2VtZXRob2QuaHRtbA==" title="https://www.brendangregg.com/usemethod.html">USE Method<i class="fa fa-external-link"></i></span> page for the description of this methodology.</li>
+</ul>
+<p>另请参阅 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS91c2VtZXRob2QuaHRtbA==" title="https://www.brendangregg.com/usemethod.html">USE Method<i class="fa fa-external-link"></i></span> 页面，了解该方法的说明。</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9vZmZjcHVhbmFseXNpcy5odG1s" title="https://www.brendangregg.com/offcpuanalysis.html">Off-CPU Analysis Method<i class="fa fa-external-link"></i></span>, where I demonstrate this methodology on Linux.</li>
+</ul>
+<p>我在 Linux 上演示了这种方法。</p>
+<h1 id="Talks"><a href="#Talks" class="headerlink" title="Talks"></a>Talks</h1><p>In rough order of recommended viewing or difficulty, intro to more advanced:</p>
+<p>按推荐观看或难度从入门到高级的大致顺序排列：</p>
+<h2 id="1-Linux-Systems-Performance-USENIX-LISA-2019"><a href="#1-Linux-Systems-Performance-USENIX-LISA-2019" class="headerlink" title="1. Linux Systems Performance (USENIX LISA 2019)"></a>1. Linux Systems Performance (USENIX LISA 2019)</h2><p>This is my summary of Linux systems performance in 40 minutes, covering six facets: observability, methodologies, benchmarking, profiling, tracing, and tuning. It’s intended for everyone as a tour of fundamentals, and some companies have indicated they will use it for new hire training.</p>
+<p>这是我在 40 分钟内对 Linux 系统性能的总结，涵盖六个方面：可观察性、方法、基准测试、剖析、跟踪和调整。它面向所有人，是基础知识的巡礼，一些公司表示将把它用于新员工培训。</p>
+<p>A video of the talk is on <span class="exturl" data-url="aHR0cHM6Ly93d3cudXNlbml4Lm9yZy9jb25mZXJlbmNlL2xpc2ExOS9wcmVzZW50YXRpb24vZ3JlZ2ctbGludXg=" title="https://www.usenix.org/conference/lisa19/presentation/gregg-linux">usenix.org<i class="fa fa-external-link"></i></span> and <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1maEJIdnNpMFFsMCZmZWF0dXJlPWVtYl9sb2dv" title="https://www.youtube.com/watch?v=fhBHvsi0Ql0&feature=emb_logo">youtube<i class="fa fa-external-link"></i></span>, and the slides are on <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2xpc2EyMDE5LWxpbnV4LXN5c3RlbXMtcGVyZm9ybWFuY2U=" title="https://www.slideshare.net/brendangregg/lisa2019-linux-systems-performance">slideshare<i class="fa fa-external-link"></i></span> or as a <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvTElTQTIwMTlfTGludXhfU3lzdGVtc19QZXJmb3JtYW5jZS5wZGY=" title="https://www.brendangregg.com/Slides/LISA2019_Linux_Systems_Performance.pdf">PDF<i class="fa fa-external-link"></i></span><br>讲座视频可在 <span class="exturl" data-url="aHR0cHM6Ly93d3cudXNlbml4Lm9yZy9jb25mZXJlbmNlL2xpc2ExOS9wcmVzZW50YXRpb24vZ3JlZ2ctbGludXg=" title="https://www.usenix.org/conference/lisa19/presentation/gregg-linux">usenix.org<i class="fa fa-external-link"></i></span> 和 <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1maEJIdnNpMFFsMCZmZWF0dXJlPWVtYl9sb2dv" title="https://www.youtube.com/watch?v=fhBHvsi0Ql0&feature=emb_logo">youtube<i class="fa fa-external-link"></i></span> 上观看，幻灯片可在 <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2xpc2EyMDE5LWxpbnV4LXN5c3RlbXMtcGVyZm9ybWFuY2U=" title="https://www.slideshare.net/brendangregg/lisa2019-linux-systems-performance">slideshare<i class="fa fa-external-link"></i></span> 或 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvTElTQTIwMTlfTGludXhfU3lzdGVtc19QZXJmb3JtYW5jZS5wZGY=" title="https://www.brendangregg.com/Slides/LISA2019_Linux_Systems_Performance.pdf">PDF<i class="fa fa-external-link"></i></span> 上观看。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144043.png" alt="image.png"></p>
+<p>For a lot more information on observability tools, profiling, and tracing, see the talks that follow.</p>
+<p>有关可观察性工具、剖析和跟踪的更多信息，请参阅后面的讲座。</p>
+<h2 id="2-Linux-Performance-2018-PerconaLive-2018"><a href="#2-Linux-Performance-2018-PerconaLive-2018" class="headerlink" title="2. Linux Performance 2018 (PerconaLive 2018)"></a>2. Linux Performance 2018 (PerconaLive 2018)</h2><p>This was a 20 minute keynote summary of recent changes and features in Linux performance in 2018.</p>
+<p>这是一个 20 分钟的主题演讲，总结了 2018 年 Linux 性能方面的最新变化和功能。</p>
+<p>A video of the talk is on <span class="exturl" data-url="aHR0cHM6Ly95b3V0dS5iZS9zVjNYZnJmanJQbz90PTMwbTUxcw==" title="https://youtu.be/sV3XfrfjrPo?t=30m51s">youtube<i class="fa fa-external-link"></i></span>, and the slides are on <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2xpbnV4LXBlcmZvcm1hbmNlLTIwMTgtcGVyY29uYWxpdmUta2V5bm90ZS05NTUxNjkzNA==" title="https://www.slideshare.net/brendangregg/linux-performance-2018-perconalive-keynote-95516934">slideshare<i class="fa fa-external-link"></i></span> or as a <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvUGVyY29uYTIwMThfTGludXhfUGVyZm9ybWFuY2UucGRm" title="https://www.brendangregg.com/Slides/Percona2018_Linux_Performance.pdf">PDF.<i class="fa fa-external-link"></i></span></p>
+<p>讲座视频可在 <span class="exturl" data-url="aHR0cHM6Ly95b3V0dS5iZS9zVjNYZnJmanJQbz90PTMwbTUxcw==" title="https://youtu.be/sV3XfrfjrPo?t=30m51s">youtube<i class="fa fa-external-link"></i></span> 上观看，幻灯片可在 <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2xpbnV4LXBlcmZvcm1hbmNlLTIwMTgtcGVyY29uYWxpdmUta2V5bm90ZS05NTUxNjkzNA==" title="https://www.slideshare.net/brendangregg/linux-performance-2018-perconalive-keynote-95516934">slideshare<i class="fa fa-external-link"></i></span> 上观看，也可下载 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvUGVyY29uYTIwMThfTGludXhfUGVyZm9ybWFuY2UucGRm" title="https://www.brendangregg.com/Slides/Percona2018_Linux_Performance.pdf">PDF.<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144100.png" alt="image.png"></p>
+<h2 id="3-Linux-Performance-Tools-Velocity-2015"><a href="#3-Linux-Performance-Tools-Velocity-2015" class="headerlink" title="3. Linux Performance Tools (Velocity 2015)"></a>3. Linux Performance Tools (Velocity 2015)</h2><p>At Velocity 2015, I gave a 90 minute tutorial on Linux performance tools, summarizing performance observability, benchmarking, tuning, static performance tuning, and tracing tools. I also covered performance methodology, and included some live demos. This should be useful for everyone working on Linux systems. If you just saw my PerconaLive2016 talk, then some content should be familiar, but with many extras: I focus a lot more on the tools in this talk.</p>
+<p>在Velocity 2015大会上，我做了90分钟的Linux性能工具教程，总结了性能可观测性、基准测试、调优、静态性能调优和跟踪工具。我还介绍了性能方法论，并包括一些现场演示。这对每个在 Linux 系统上工作的人都很有用。如果您刚刚看过我的 PerconaLive2016 演讲，那么有些内容应该不会陌生，但还有很多额外的内容： 在本讲座中，我更关注工具。</p>
+<p>A video of the talk is on youtube (<span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1GSlc4bkdWNGp4WSZsaXN0PVBMaGhkSU1WaTBvNVJOcmY4RTJkVWlqdkdwcUtMQjlUQ1I=" title="https://www.youtube.com/watch?v=FJW8nGV4jxY&list=PLhhdIMVi0o5RNrf8E2dUijvGpqKLB9TCR">playlist<i class="fa fa-external-link"></i></span>; <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1GSlc4bkdWNGp4WQ==" title="https://www.youtube.com/watch?v=FJW8nGV4jxY">part 1<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj16cnIyblVsbjlLaw==" title="https://www.youtube.com/watch?v=zrr2nUln9Kk">part 2<i class="fa fa-external-link"></i></span>) and the slides are on <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvdmVsb2NpdHktMjAxNS1saW51eC1wZXJmLXRvb2xz" title="http://www.slideshare.net/brendangregg/velocity-2015-linux-perf-tools">slideshare<i class="fa fa-external-link"></i></span> or as a <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvVmVsb2NpdHkyMDE1X0xpbnV4UGVyZlRvb2xzLnBkZg==" title="https://www.brendangregg.com/Slides/Velocity2015_LinuxPerfTools.pdf">PDF<i class="fa fa-external-link"></i></span>.</p>
+<p>讲座视频可在 youtube 上观看（<span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1GSlc4bkdWNGp4WSZsaXN0PVBMaGhkSU1WaTBvNVJOcmY4RTJkVWlqdkdwcUtMQjlUQ1I=" title="https://www.youtube.com/watch?v=FJW8nGV4jxY&list=PLhhdIMVi0o5RNrf8E2dUijvGpqKLB9TCR">播放列表<i class="fa fa-external-link"></i></span>；<span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1GSlc4bkdWNGp4WQ==" title="https://www.youtube.com/watch?v=FJW8nGV4jxY">第一部分<i class="fa fa-external-link"></i></span>，<span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj16cnIyblVsbjlLaw==" title="https://www.youtube.com/watch?v=zrr2nUln9Kk">第二部分<i class="fa fa-external-link"></i></span>），幻灯片可在 <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvdmVsb2NpdHktMjAxNS1saW51eC1wZXJmLXRvb2xz" title="http://www.slideshare.net/brendangregg/velocity-2015-linux-perf-tools">slideshare<i class="fa fa-external-link"></i></span> 或 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvVmVsb2NpdHkyMDE1X0xpbnV4UGVyZlRvb2xzLnBkZg==" title="https://www.brendangregg.com/Slides/Velocity2015_LinuxPerfTools.pdf">PDF<i class="fa fa-external-link"></i></span> 上观看。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144135.png" alt="image.png"></p>
+<blockquote>
+<p>幻灯片失效了，视频貌似还有用</p>
+</blockquote>
+<p>This was similar to my <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj0weXlvcmhsNklqTQ==" title="https://www.youtube.com/watch?v=0yyorhl6IjM">SCaLE11x<i class="fa fa-external-link"></i></span> and <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDgtMjMvbGludXgtcGVyZi10b29scy1saW51eGNvbi1uYS0yMDE0Lmh0bWw=" title="https://www.brendangregg.com/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">LinuxCon<i class="fa fa-external-link"></i></span> talks, however, with 90 minutes I was able to cover more tools and methodologies, making it the most complete tour of the topic I’ve done. I also posted about it on the <span class="exturl" data-url="aHR0cDovL3RlY2hibG9nLm5ldGZsaXguY29tLzIwMTUvMDgvbmV0ZmxpeC1hdC12ZWxvY2l0eS0yMDE1LWxpbnV4Lmh0bWw=" title="http://techblog.netflix.com/2015/08/netflix-at-velocity-2015-linux.html">Netflix Tech Blog<i class="fa fa-external-link"></i></span>.</p>
+<p>这与我的<span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj0weXlvcmhsNklqTQ==" title="https://www.youtube.com/watch?v=0yyorhl6IjM">SCaLE11x<i class="fa fa-external-link"></i></span> 和<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTQtMDgtMjMvbGludXgtcGVyZi10b29scy1saW51eGNvbi1uYS0yMDE0Lmh0bWw=" title="https://www.brendangregg.com/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">LinuxCon<i class="fa fa-external-link"></i></span> 演讲类似，不过，在 90 分钟的时间里，我可以介绍更多的工具和方法，这是我做过的最完整的一次演讲。我还在 <span class="exturl" data-url="aHR0cDovL3RlY2hibG9nLm5ldGZsaXguY29tLzIwMTUvMDgvbmV0ZmxpeC1hdC12ZWxvY2l0eS0yMDE1LWxpbnV4Lmh0bWw=" title="http://techblog.netflix.com/2015/08/netflix-at-velocity-2015-linux.html">Netflix 技术博客<i class="fa fa-external-link"></i></span> 上发布了相关内容。</p>
+<h2 id="4-How-Netflix-Tunes-EC2-Instances-for-Performance-AWS-re-Invent-2017"><a href="#4-How-Netflix-Tunes-EC2-Instances-for-Performance-AWS-re-Invent-2017" class="headerlink" title="4. How Netflix Tunes EC2 Instances for Performance (AWS re:Invent, 2017)"></a>4. How Netflix Tunes EC2 Instances for Performance (AWS re:Invent, 2017)</h2><p>Instead of performance observability, this talk is about tuning. I begin by providing Netflix background, covering instance types and features in the AWS EC2 cloud, and then talk about Linux kernel tunables and observability.</p>
+<p>本讲座的主题不是性能可观测性，而是调优。首先，我将介绍 Netflix 的背景，涵盖 AWS EC2 云的实例类型和功能，然后谈谈 Linux 内核可调性和可观测性。</p>
+<p>A video of the talk is on <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj04OWZZT28xVjJwQQ==" title="https://www.youtube.com/watch?v=89fYOo1V2pA">youtube<i class="fa fa-external-link"></i></span> and the slides are on <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2hvdy1uZXRmbGl4LXR1bmVzLWVjMi1pbnN0YW5jZXMtZm9yLXBlcmZvcm1hbmNl" title="https://www.slideshare.net/brendangregg/how-netflix-tunes-ec2-instances-for-performance">slideshare<i class="fa fa-external-link"></i></span>:</p>
+<p>讲座视频在 <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj04OWZZT28xVjJwQQ==" title="https://www.youtube.com/watch?v=89fYOo1V2pA">youtube<i class="fa fa-external-link"></i></span> 上，幻灯片在 <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2hvdy1uZXRmbGl4LXR1bmVzLWVjMi1pbnN0YW5jZXMtZm9yLXBlcmZvcm1hbmNl" title="https://www.slideshare.net/brendangregg/how-netflix-tunes-ec2-instances-for-performance">slideshare<i class="fa fa-external-link"></i></span> 上：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144210.png" alt="image.png"></p>
+<h2 id="5-Container-Performance-Analysis-DockerCon-2017"><a href="#5-Container-Performance-Analysis-DockerCon-2017" class="headerlink" title="5. Container Performance Analysis (DockerCon, 2017)"></a>5. Container Performance Analysis (DockerCon, 2017)</h2><p>At DockerCon 2017 in Austin, I gave a talk on Linux container performance analysis, showing how to find bottlenecks in the host vs the container, how to profiler container apps, and dig deeper into the kernel.</p>
+<p>在奥斯汀举行的 DockerCon 2017 上，我发表了关于 Linux 容器性能分析的演讲，展示了如何找到主机与容器的瓶颈，如何对容器应用程序进行剖析，以及如何深入挖掘内核。</p>
+<p>A video of the talk is on <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1iSzlBNU9ESWdhYw==" title="https://www.youtube.com/watch?v=bK9A5ODIgac">youtube<i class="fa fa-external-link"></i></span> and the slides are on <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2NvbnRhaW5lci1wZXJmb3JtYW5jZS1hbmFseXNpcw==" title="https://www.slideshare.net/brendangregg/container-performance-analysis">slideshare<i class="fa fa-external-link"></i></span>.</p>
+<p>讲座视频在 <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1iSzlBNU9ESWdhYw==" title="https://www.youtube.com/watch?v=bK9A5ODIgac">youtube<i class="fa fa-external-link"></i></span> 上，幻灯片在 <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2NvbnRhaW5lci1wZXJmb3JtYW5jZS1hbmFseXNpcw==" title="https://www.slideshare.net/brendangregg/container-performance-analysis">slideshare<i class="fa fa-external-link"></i></span> 上。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144229.png" alt="image.png"></p>
+<h2 id="6-Broken-Linux-Performance-Tools-SCaLE14x-2016"><a href="#6-Broken-Linux-Performance-Tools-SCaLE14x-2016" class="headerlink" title="6. Broken Linux Performance Tools (SCaLE14x, 2016)"></a>6. Broken Linux Performance Tools (SCaLE14x, 2016)</h2><p>At the Southern California Linux Expo (<span class="exturl" data-url="aHR0cDovL3d3dy5zb2NhbGxpbnV4ZXhwby5vcmcvc2NhbGUvMTR4" title="http://www.socallinuxexpo.org/scale/14x">SCaLE 14x<i class="fa fa-external-link"></i></span>), I gave a talk on Broken Linux Performance Tools. This was a follow-on to my earlier Linux Performance Tools talk originally at SCaLE11x (and more recently at <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9saW51eHBlcmYuaHRtbCNWZWxvY2l0eTIwMTU=" title="https://www.brendangregg.com/linuxperf.html#Velocity2015">Velocity<i class="fa fa-external-link"></i></span> as a tutorial). This broken tools talk was a tour of common problems with Linux system tools, metrics, statistics, visualizations, measurement overhead, and benchmarks. It also includes advice on how to cope (the green “What You Can Do” slides).</p>
+<p>在南加州Linux博览会（<span class="exturl" data-url="aHR0cDovL3d3dy5zb2NhbGxpbnV4ZXhwby5vcmcvc2NhbGUvMTR4" title="http://www.socallinuxexpo.org/scale/14x">SCaLE 14x<i class="fa fa-external-link"></i></span>）上，我做了一个关于破碎的Linux性能工具的演讲。这是我之前在SCaLE11x上发表的Linux性能工具演讲（最近在<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9saW51eHBlcmYuaHRtbCNWZWxvY2l0eTIwMTU=" title="https://www.brendangregg.com/linuxperf.html#Velocity2015">Velocity<i class="fa fa-external-link"></i></span>上作为教程发表）的后续演讲。这篇 “破损的工具 “演讲讲述了 Linux 系统工具、度量、统计、可视化、测量开销和基准的常见问题。其中还包括应对建议（绿色的 “你能做什么 “幻灯片）。</p>
+<p>A video of the talk is on <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1PUGlvOFYtejAzYw==" title="https://www.youtube.com/watch?v=OPio8V-z03c">youtube<i class="fa fa-external-link"></i></span> and the slides are on <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvYnJva2VuLWxpbnV4LXBlcmZvcm1hbmNlLXRvb2xzLTIwMTY=" title="http://www.slideshare.net/brendangregg/broken-linux-performance-tools-2016">slideshare<i class="fa fa-external-link"></i></span> or as a <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvU0NBTEUyMDE2X0Jyb2tlbl9MaW51eF9QZXJmb3JtYW5jZV9Ub29scy5wZGY=" title="https://www.brendangregg.com/Slides/SCALE2016_Broken_Linux_Performance_Tools.pdf">PDF<i class="fa fa-external-link"></i></span>.</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144249.png" alt="image.png"></p>
+<h2 id="7-Using-Linux-perf-at-Netflix-Kernel-Recipes-2017"><a href="#7-Using-Linux-perf-at-Netflix-Kernel-Recipes-2017" class="headerlink" title="7. Using Linux perf at Netflix (Kernel Recipes, 2017)"></a>7. Using Linux perf at Netflix (Kernel Recipes, 2017)</h2><p>At <span class="exturl" data-url="aHR0cHM6Ly9rZXJuZWwtcmVjaXBlcy5vcmcvZW4vMjAxNy90YWxrcy9wZXJmLWluLW5ldGZsaXgv" title="https://kernel-recipes.org/en/2017/talks/perf-in-netflix/">Kernel Recipes 2017<i class="fa fa-external-link"></i></span> I gave an updated talk on Linux perf at Netflix, focusing on getting CPU profiling and flame graphs to work. This talk includes a crash course on perf_events, plus gotchas such as fixing stack traces and symbols when profiling Java, Node.js, VMs, and containers.</p>
+<p>在 <span class="exturl" data-url="aHR0cHM6Ly9rZXJuZWwtcmVjaXBlcy5vcmcvZW4vMjAxNy90YWxrcy9wZXJmLWluLW5ldGZsaXgv" title="https://kernel-recipes.org/en/2017/talks/perf-in-netflix/">Kernel Recipes 2017<i class="fa fa-external-link"></i></span> 上，我发表了关于 Netflix Linux perf 的最新演讲，重点是如何让 CPU 剖析和火焰图发挥作用。本讲座包括 perf_events 的速成课程，以及在剖析 Java、Node.js、虚拟机和容器时修复堆栈跟踪和符号等疑难问题。</p>
+<p>A video of the talk is on <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1VVk0zV1g4THEyaw==" title="https://www.youtube.com/watch?v=UVM3WX8Lq2k">youtube<i class="fa fa-external-link"></i></span> and the slides are on <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2tlcm5lbC1yZWNpcGVzLTIwMTctdXNpbmctbGludXgtcGVyZi1hdC1uZXRmbGl4" title="https://www.slideshare.net/brendangregg/kernel-recipes-2017-using-linux-perf-at-netflix">slideshare<i class="fa fa-external-link"></i></span>:</p>
+<p>讲座视频在 <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1VVk0zV1g4THEyaw==" title="https://www.youtube.com/watch?v=UVM3WX8Lq2k">youtube<i class="fa fa-external-link"></i></span> 上，幻灯片在 <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL2tlcm5lbC1yZWNpcGVzLTIwMTctdXNpbmctbGludXgtcGVyZi1hdC1uZXRmbGl4" title="https://www.slideshare.net/brendangregg/kernel-recipes-2017-using-linux-perf-at-netflix">slideshare<i class="fa fa-external-link"></i></span> 上：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144318.png" alt="image.png"></p>
+<p>There’s also an older version of this talk from 2015, which I’ve <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDItMjcvbGludXgtcHJvZmlsaW5nLWF0LW5ldGZsaXguaHRtbA==" title="https://www.brendangregg.com/blog/2015-02-27/linux-profiling-at-netflix.html">posted<i class="fa fa-external-link"></i></span> about. To learn more about flame graphs, see my <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9mbGFtZWdyYXBocy5odG1sI1ByZXNlbnRhdGlvbg==" title="https://www.brendangregg.com/flamegraphs.html#Presentation">flame graphs presentation<i class="fa fa-external-link"></i></span>.</p>
+<p>这个讲座还有一个 2015 年的旧版本，我已经<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDItMjcvbGludXgtcHJvZmlsaW5nLWF0LW5ldGZsaXguaHRtbA==" title="https://www.brendangregg.com/blog/2015-02-27/linux-profiling-at-netflix.html">发布<i class="fa fa-external-link"></i></span>了。要了解有关火焰图的更多信息，请参阅我的 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9mbGFtZWdyYXBocy5odG1sI1ByZXNlbnRhdGlvbg==" title="https://www.brendangregg.com/flamegraphs.html#Presentation">火焰图演示<i class="fa fa-external-link"></i></span>。</p>
+<h2 id="8-Give-me-15-minutes-and-I’ll-change-your-view-of-Linux-tracing-LISA-2016"><a href="#8-Give-me-15-minutes-and-I’ll-change-your-view-of-Linux-tracing-LISA-2016" class="headerlink" title="8. Give me 15 minutes and I’ll change your view of Linux tracing (LISA, 2016)"></a>8. Give me 15 minutes and I’ll change your view of Linux tracing (LISA, 2016)</h2><p>I gave this demo at USENIX/LISA 2016, showing ftrace, perf, and bcc/BPF. A video is on <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1Hc01zM244Q0I2Zw==" title="https://www.youtube.com/watch?v=GsMs3n8CB6g">youtube<i class="fa fa-external-link"></i></span> (sorry, the sound effects are a bit too loud):.</p>
+<p>我在 USENIX/LISA 2016 上做了这个演示，展示了 ftrace、perf 和 bcc/BPF。视频在 <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1Hc01zM244Q0I2Zw==" title="https://www.youtube.com/watch?v=GsMs3n8CB6g">youtube<i class="fa fa-external-link"></i></span>（抱歉，音效有点大）：。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230803144334.png" alt="image.png"></p>
+<p>This was the first part of a longer talk on Linux 4.x Tracing Tools: Using BPF Superpowers. See the full <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1VbU9VM0kzNlQyVQ==" title="https://www.youtube.com/watch?v=UmOU3I36T2U">talk video<i class="fa fa-external-link"></i></span> and <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvbGludXgtNHgtdHJhY2luZy10b29scy11c2luZy1icGYtc3VwZXJwb3dlcnM=" title="http://www.slideshare.net/brendangregg/linux-4x-tracing-tools-using-bpf-superpowers">talk slides<i class="fa fa-external-link"></i></span>.</p>
+<p>这是关于 Linux 4.x 跟踪工具的长篇演讲的第一部分： 使用 BPF 超强功能。请参阅完整的 <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1VbU9VM0kzNlQyVQ==" title="https://www.youtube.com/watch?v=UmOU3I36T2U">讲座视频<i class="fa fa-external-link"></i></span> 和 <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvbGludXgtNHgtdHJhY2luZy10b29scy11c2luZy1icGYtc3VwZXJwb3dlcnM=" title="http://www.slideshare.net/brendangregg/linux-4x-tracing-tools-using-bpf-superpowers">讲座幻灯片<i class="fa fa-external-link"></i></span>。</p>
+<h2 id="9-Performance-analysis-superpowers-with-Linux-eBPF-O’Reilly-Velocity-2017"><a href="#9-Performance-analysis-superpowers-with-Linux-eBPF-O’Reilly-Velocity-2017" class="headerlink" title="9. Performance analysis superpowers with Linux eBPF (O’Reilly Velocity, 2017)"></a>9. Performance analysis superpowers with Linux eBPF (O’Reilly Velocity, 2017)</h2><p>This talk covers using enhanced BPF (aka eBPF) features added to the Linux 4.x series for performance analysis, observability, and debugging. The front-end used in this talk is bcc (BPF compiler collection), an open source project that provides BPF interfaces and a collection of tools.</p>
+<p>本讲座将介绍如何使用 Linux 4.x 系列新增的增强型 BPF（又称 eBPF）功能进行性能分析、可观察性和调试。本讲座中使用的前端是 bcc（BPF 编译器集合），它是一个提供 BPF 接口和工具集合的开源项目。</p>
+<p>A video of the talk is on <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1iajNxZEVEYkNENA==" title="https://www.youtube.com/watch?v=bj3qdEDbCD4">youtube<i class="fa fa-external-link"></i></span>, and the slides are on <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL3ZlbG9jaXR5LTIwMTctcGVyZm9ybWFuY2UtYW5hbHlzaXMtc3VwZXJwb3dlcnMtd2l0aC1saW51eC1lYnBm" title="https://www.slideshare.net/brendangregg/velocity-2017-performance-analysis-superpowers-with-linux-ebpf">slideshare<i class="fa fa-external-link"></i></span> or as a <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvVmVsb2NpdHkyMDE3X0JQRl9zdXBlcnBvd2Vycy5wZGY=" title="https://www.brendangregg.com/Slides/Velocity2017_BPF_superpowers.pdf">PDF<i class="fa fa-external-link"></i></span>.</p>
+<p>讲座视频在 <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1iajNxZEVEYkNENA==" title="https://www.youtube.com/watch?v=bj3qdEDbCD4">youtube<i class="fa fa-external-link"></i></span> 上，幻灯片在 <span class="exturl" data-url="aHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvYnJlbmRhbmdyZWdnL3ZlbG9jaXR5LTIwMTctcGVyZm9ybWFuY2UtYW5hbHlzaXMtc3VwZXJwb3dlcnMtd2l0aC1saW51eC1lYnBm" title="https://www.slideshare.net/brendangregg/velocity-2017-performance-analysis-superpowers-with-linux-ebpf">slideshare<i class="fa fa-external-link"></i></span> 或 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvVmVsb2NpdHkyMDE3X0JQRl9zdXBlcnBvd2Vycy5wZGY=" title="https://www.brendangregg.com/Slides/Velocity2017_BPF_superpowers.pdf">PDF<i class="fa fa-external-link"></i></span> 上。</p>
+<h2 id="10-Linux-Performance-Analysis-New-Tools-and-Old-Secrets-ftrace-LISA-2014"><a href="#10-Linux-Performance-Analysis-New-Tools-and-Old-Secrets-ftrace-LISA-2014" class="headerlink" title="10. Linux Performance Analysis: New Tools and Old Secrets (ftrace) (LISA 2014)"></a>10. Linux Performance Analysis: New Tools and Old Secrets (ftrace) (LISA 2014)</h2><p>At USENIX LISA 2014, I gave a talk on the new ftrace and perf_events tools I’ve been developing: the <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2JyZW5kYW5ncmVnZy9wZXJmLXRvb2xz" title="https://github.com/brendangregg/perf-tools">perf-tools<i class="fa fa-external-link"></i></span> collection on github, which mostly uses ftrace: a tracer that has been built into the Linux kernel for many years, but few have discovered (practically a secret).</p>
+<p>在 2014 年的 USENIX LISA 大会上，我发表了关于我一直在开发的新 ftrace 和 perf_events 工具的演讲：github 上的 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2JyZW5kYW5ncmVnZy9wZXJmLXRvb2xz" title="https://github.com/brendangregg/perf-tools">perf-tools<i class="fa fa-external-link"></i></span> 套件，其中大部分使用了 ftrace：这是一个内置于 Linux 内核多年的跟踪器，但很少有人发现它（实际上是一个秘密）。</p>
+<p>A video of the talk is on <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1SNElLZU1RaE0wWQ==" title="https://www.youtube.com/watch?v=R4IKeMQhM0Y">youtube<i class="fa fa-external-link"></i></span>, and the slides are on <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvbGludXgtcGVyZm9ybWFuY2UtYW5hbHlzaXMtbmV3LXRvb2xzLWFuZC1vbGQtc2VjcmV0cw==" title="http://www.slideshare.net/brendangregg/linux-performance-analysis-new-tools-and-old-secrets">slideshare<i class="fa fa-external-link"></i></span> or as a <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvTElTQTIwMTRfTGludXhQZXJmQW5hbHlzaXNOZXdUb29scy5wZGY=" title="https://www.brendangregg.com/Slides/LISA2014_LinuxPerfAnalysisNewTools.pdf">PDF<i class="fa fa-external-link"></i></span>. In a <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDMtMTcvdXNlbml4LWxpc2EtMjAxNC1saW51eC1mdHJhY2UtcGVyZi10b29scy5tYXJrZG93bg==" title="https://www.brendangregg.com/blog/2015-03-17/usenix-lisa-2014-linux-ftrace-perf-tools.markdown">post<i class="fa fa-external-link"></i></span> about this talk, I included some more screenshots of these tools in action.</p>
+<p>演讲视频在 <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1SNElLZU1RaE0wWQ==" title="https://www.youtube.com/watch?v=R4IKeMQhM0Y">youtube<i class="fa fa-external-link"></i></span> 上，幻灯片在 <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvbGludXgtcGVyZm9ybWFuY2UtYW5hbHlzaXMtbmV3LXRvb2xzLWFuZC1vbGQtc2VjcmV0cw==" title="http://www.slideshare.net/brendangregg/linux-performance-analysis-new-tools-and-old-secrets">slideshare<i class="fa fa-external-link"></i></span> 或 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvTElTQTIwMTRfTGludXhQZXJmQW5hbHlzaXNOZXdUb29scy5wZGY=" title="https://www.brendangregg.com/Slides/LISA2014_LinuxPerfAnalysisNewTools.pdf">PDF<i class="fa fa-external-link"></i></span> 上。在一篇关于本讲座的<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTUtMDMtMTcvdXNlbml4LWxpc2EtMjAxNC1saW51eC1mdHJhY2UtcGVyZi10b29scy5tYXJrZG93bg==" title="https://www.brendangregg.com/blog/2015-03-17/usenix-lisa-2014-linux-ftrace-perf-tools.markdown">帖子<i class="fa fa-external-link"></i></span>中，我还附上了这些工具的截图。</p>
+<h2 id="11-Performance-Checklists-for-SREs-SREcon-2016"><a href="#11-Performance-Checklists-for-SREs-SREcon-2016" class="headerlink" title="11. Performance Checklists for SREs (SREcon, 2016)"></a>11. Performance Checklists for SREs (SREcon, 2016)</h2><p>At <span class="exturl" data-url="aHR0cHM6Ly93d3cudXNlbml4Lm9yZy9jb25mZXJlbmNlL3NyZWNvbjE2L3Byb2dyYW0=" title="https://www.usenix.org/conference/srecon16/program">SREcon 2016 Santa Clara<i class="fa fa-external-link"></i></span>, I gave the closing talk on performance checklists for SREs (Site Reliability Engineers). The later half of this talk included Linux checklists for incident performance response. These may be useful whether you’re analyzing Linux performance in a hurry or not.</p>
+<p>在<span class="exturl" data-url="aHR0cHM6Ly93d3cudXNlbml4Lm9yZy9jb25mZXJlbmNlL3NyZWNvbjE2L3Byb2dyYW0=" title="https://www.usenix.org/conference/srecon16/program">SREcon 2016 Santa Clara<i class="fa fa-external-link"></i></span>上，我做了关于站点可靠性工程师（SRE）性能检查表的闭幕演讲。演讲的后半部分包括用于事件性能响应的 Linux 检查单。无论您是否在匆忙中分析 Linux 性能，这些清单都可能很有用。</p>
+<p>A video of the talk is on <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj16eENXWE5pZ0RwQQ==" title="https://www.youtube.com/watch?v=zxCWXNigDpA">youtube<i class="fa fa-external-link"></i></span> and <span class="exturl" data-url="aHR0cHM6Ly93d3cudXNlbml4Lm9yZy9jb25mZXJlbmNlL3NyZWNvbjE2L3Byb2dyYW0vcHJlc2VudGF0aW9uL2dyZWdn" title="https://www.usenix.org/conference/srecon16/program/presentation/gregg">usenix<i class="fa fa-external-link"></i></span>, and the slides are on <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvc3JlY29uLTIwMTYtcGVyZm9ybWFuY2UtY2hlY2tsaXN0cy1mb3Itc3Jlcw==" title="http://www.slideshare.net/brendangregg/srecon-2016-performance-checklists-for-sres">slideshare<i class="fa fa-external-link"></i></span> and as a <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvU1JFY29uXzIwMTZfcGVyZl9jaGVja2xpc3RzLnBkZg==" title="https://www.brendangregg.com/Slides/SREcon_2016_perf_checklists.pdf">PDF<i class="fa fa-external-link"></i></span>. I included the checklists in a <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDUtMDQvc3JlY29uMjAxNi1wZXJmLWNoZWNrbGlzdHMtZm9yLXNyZXMuaHRtbA==" title="https://www.brendangregg.com/blog/2016-05-04/srecon2016-perf-checklists-for-sres.html">blog post<i class="fa fa-external-link"></i></span>.</p>
+<p>讲座视频在 <span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj16eENXWE5pZ0RwQQ==" title="https://www.youtube.com/watch?v=zxCWXNigDpA">youtube<i class="fa fa-external-link"></i></span> 和 <span class="exturl" data-url="aHR0cHM6Ly93d3cudXNlbml4Lm9yZy9jb25mZXJlbmNlL3NyZWNvbjE2L3Byb2dyYW0vcHJlc2VudGF0aW9uL2dyZWdn" title="https://www.usenix.org/conference/srecon16/program/presentation/gregg">usenix<i class="fa fa-external-link"></i></span> 上，幻灯片在 <span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9icmVuZGFuZ3JlZ2cvc3JlY29uLTIwMTYtcGVyZm9ybWFuY2UtY2hlY2tsaXN0cy1mb3Itc3Jlcw==" title="http://www.slideshare.net/brendangregg/srecon-2016-performance-checklists-for-sres">slideshare<i class="fa fa-external-link"></i></span> 和 <span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9TbGlkZXMvU1JFY29uXzIwMTZfcGVyZl9jaGVja2xpc3RzLnBkZg==" title="https://www.brendangregg.com/Slides/SREcon_2016_perf_checklists.pdf">PDF<i class="fa fa-external-link"></i></span> 上。我在一篇<span class="exturl" data-url="aHR0cHM6Ly93d3cuYnJlbmRhbmdyZWdnLmNvbS9ibG9nLzIwMTYtMDUtMDQvc3JlY29uMjAxNi1wZXJmLWNoZWNrbGlzdHMtZm9yLXNyZXMuaHRtbA==" title="https://www.brendangregg.com/blog/2016-05-04/srecon2016-perf-checklists-for-sres.html">博文<i class="fa fa-external-link"></i></span>中附上了核对表。  </p>
+<h2 id="Resources-相关资源"><a href="#Resources-相关资源" class="headerlink" title="Resources 相关资源"></a>Resources 相关资源</h2><p>Other resources (not by me) I’d recommend for the topic of Linux performance:</p>
+<p>关于 Linux 性能主题，我想推荐的其他资源（不是我写的）：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1ja2FydkdKRThRYw==" title="https://www.youtube.com/watch?v=ckarvGJE8Qc">Performance analysis &amp; tuning of Red Hat Enterprise Linux - 2015 Red Hat Summit<i class="fa fa-external-link"></i></span> (video 2hrs): this is a great and in-depth tour of Linux performance tuning that should be largely applicable to all Linux distros.</li>
+</ul>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1ja2FydkdKRThRYw==" title="https://www.youtube.com/watch?v=ckarvGJE8Qc">红帽企业 Linux 的性能分析与调优 - 2015 红帽峰会<i class="fa fa-external-link"></i></span>(视频 2 小时）：这是一次深入浅出的 Linux 性能调整之旅，在很大程度上适用于所有 Linux 发行版。</p>
+<p> <strong>(视频 2 小时）：这是一次深入浅出的 Linux 性能调整之旅，在很大程度上适用于所有 Linux 发行版。</strong></p>
+<ul>
+<li><span class="exturl" data-url="aHR0cDovL3d3dy5zbGlkZXNoYXJlLm5ldC9EYXJrU3RhclN3b3JkL2luc3RydW1lbnRhdGlvbg==" title="http://www.slideshare.net/DarkStarSword/instrumentation">Linux Instrumentation<i class="fa fa-external-link"></i></span>: slides from a great talk in June 2010 by Ian Munsie, which summarizes the different Linux tracers very well. If you’re trying to understand all the tracers and frameworks, this is worth studying (keeping in mind it’s from 2010).</li>
+</ul>
+<p>这是 Ian Munsie 于 2010 年 6 月发表的精彩演讲的幻灯片，其中很好地总结了不同的 Linux 跟踪器。如果您正试图了解所有跟踪器和框架，那么这篇文章值得一读（请注意这是 2010 年的文章）。</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cDovL2p2bnMuY2Ev" title="http://jvns.ca/">Julia Evans blog<i class="fa fa-external-link"></i></span> has many posts about many topics, including performance tools.</li>
+</ul>
+<p>有许多关于性格讨论等问题的帖子，包括性能工具。</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cDovL2Jsb2cuc3Rnb2xhYnMubmV0L3NlYXJjaC9sYWJlbC9saW51eA==" title="http://blog.stgolabs.net/search/label/linux">Davidlohr Bueso’s<i class="fa fa-external-link"></i></span> Linux performance posts.</li>
+</ul>
+<p>Linux 性能讨论文章。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/08/10/linuxperformance/" title="【Linux】Linux Performance">https://whitestore.top/2023/08/10/linuxperformance/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/27/biosocketstart/" rel="prev" title="【Java】BIO源码分析和改造（GraalVM JDK 11.0.19）">
+      <i class="fa fa-chevron-left"></i> 【Java】BIO源码分析和改造（GraalVM JDK 11.0.19）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/08/10/httpclientjdk11/" rel="next" title="【Java】Exploring the New HTTP Client in Java">
+      【Java】Exploring the New HTTP Client in Java <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#【Linux】Linux-性能"><span class="nav-number">1.</span> <span class="nav-text">【Linux】Linux 性能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tools"><span class="nav-number">4.</span> <span class="nav-text">Tools</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Documentation"><span class="nav-number">5.</span> <span class="nav-text">Documentation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Talks"><span class="nav-number">6.</span> <span class="nav-text">Talks</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Linux-Systems-Performance-USENIX-LISA-2019"><span class="nav-number">6.1.</span> <span class="nav-text">1. Linux Systems Performance (USENIX LISA 2019)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Linux-Performance-2018-PerconaLive-2018"><span class="nav-number">6.2.</span> <span class="nav-text">2. Linux Performance 2018 (PerconaLive 2018)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Linux-Performance-Tools-Velocity-2015"><span class="nav-number">6.3.</span> <span class="nav-text">3. Linux Performance Tools (Velocity 2015)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-How-Netflix-Tunes-EC2-Instances-for-Performance-AWS-re-Invent-2017"><span class="nav-number">6.4.</span> <span class="nav-text">4. How Netflix Tunes EC2 Instances for Performance (AWS re:Invent, 2017)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Container-Performance-Analysis-DockerCon-2017"><span class="nav-number">6.5.</span> <span class="nav-text">5. Container Performance Analysis (DockerCon, 2017)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Broken-Linux-Performance-Tools-SCaLE14x-2016"><span class="nav-number">6.6.</span> <span class="nav-text">6. Broken Linux Performance Tools (SCaLE14x, 2016)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-Using-Linux-perf-at-Netflix-Kernel-Recipes-2017"><span class="nav-number">6.7.</span> <span class="nav-text">7. Using Linux perf at Netflix (Kernel Recipes, 2017)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-Give-me-15-minutes-and-I’ll-change-your-view-of-Linux-tracing-LISA-2016"><span class="nav-number">6.8.</span> <span class="nav-text">8. Give me 15 minutes and I’ll change your view of Linux tracing (LISA, 2016)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-Performance-analysis-superpowers-with-Linux-eBPF-O’Reilly-Velocity-2017"><span class="nav-number">6.9.</span> <span class="nav-text">9. Performance analysis superpowers with Linux eBPF (O’Reilly Velocity, 2017)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-Linux-Performance-Analysis-New-Tools-and-Old-Secrets-ftrace-LISA-2014"><span class="nav-number">6.10.</span> <span class="nav-text">10. Linux Performance Analysis: New Tools and Old Secrets (ftrace) (LISA 2014)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-Performance-Checklists-for-SREs-SREcon-2016"><span class="nav-number">6.11.</span> <span class="nav-text">11. Performance Checklists for SREs (SREcon, 2016)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Resources-相关资源"><span class="nav-number">6.12.</span> <span class="nav-text">Resources 相关资源</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

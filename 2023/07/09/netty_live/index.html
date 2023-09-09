@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Netty">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《跟闪电侠学Netty》阅读笔记 - ChannelHandler 生命周期">
+<meta property="og:url" content="https://whitestore.top/2023/07/09/netty_live/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Netty">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/%E3%80%8A%E8%B7%9F%E9%97%AA%E7%94%B5%E4%BE%A0%E5%AD%A6Netty%E3%80%8B-%20ChannelHandler%20%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230709201836.png">
+<meta property="article:published_time" content="2023-07-09T13:29:04.000Z">
+<meta property="article:modified_time" content="2023-07-09T13:30:30.826Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="ChannelInboundHandler生命周期">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/%E3%80%8A%E8%B7%9F%E9%97%AA%E7%94%B5%E4%BE%A0%E5%AD%A6Netty%E3%80%8B-%20ChannelHandler%20%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/07/09/netty_live/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《跟闪电侠学Netty》阅读笔记 - ChannelHandler 生命周期 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/07/09/netty_live/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《跟闪电侠学Netty》阅读笔记 - ChannelHandler 生命周期
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-07-09 21:29:04 / 修改时间：21:30:30" itemprop="dateCreated datePublished" datetime="2023-07-09T21:29:04+08:00">2023-07-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/07/09/netty_live/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/09/netty_live/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">Netty</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本文主要介绍ChannelHandler当中的ChannelInboundHandler。</p>
+<h1 id="思维导图"><a href="#思维导图" class="headerlink" title="思维导图"></a>思维导图</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cubXVidS5jb20vZG9jLzFsSzkyMlIxNEJs" title="https://www.mubu.com/doc/1lK922R14Bl">https://www.mubu.com/doc/1lK922R14Bl<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/%E3%80%8A%E8%B7%9F%E9%97%AA%E7%94%B5%E4%BE%A0%E5%AD%A6Netty%E3%80%8B-%20ChannelHandler%20%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png" alt="《跟闪电侠学Netty》- ChannelHandler 生命周期.png"></p>
+<a id="more"></a>
+
+<h1 id="LifeCycleTestHandler-案例"><a href="#LifeCycleTestHandler-案例" class="headerlink" title="LifeCycleTestHandler 案例"></a>LifeCycleTestHandler 案例</h1><p>首先来看一下案例，LifeCycleTestHandlerTest 利用适配器 <strong>ChannelInboundHandlerAdapter</strong> 重写，重写相关方法。</p>
+<ul>
+<li>public void handlerAdded(ChannelHandlerContext ctx) throws Exception  </li>
+<li>public void channelRegistered(ChannelHandlerContext ctx) throws Exception  </li>
+<li>public void channelActive(ChannelHandlerContext ctx) throws Exception  </li>
+<li>public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception  </li>
+<li>public void channelReadComplete(ChannelHandlerContext ctx) throws Exception  </li>
+<li>public void channelInactive(ChannelHandlerContext ctx) throws Exception  </li>
+<li>public void channelUnregistered(ChannelHandlerContext ctx) throws Exception  </li>
+<li>public void handlerRemoved(ChannelHandlerContext ctx) throws Exception</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 测试netty channelHandler 的生命周期</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 对应的是 ChannelInboundHandlerAdapter</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LifeCycleTestHandlerTest</span> <span class="keyword">extends</span> <span class="title">ChannelInboundHandlerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ServerBootstrap serverBootstrap = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line"></span><br><span class="line">        NioEventLoopGroup boss = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">        NioEventLoopGroup worker = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line"></span><br><span class="line">        serverBootstrap</span><br><span class="line">                .group(boss, worker)</span><br><span class="line">                .channel(NioServerSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">childHandler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">NioSocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(NioSocketChannel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> StringDecoder());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> LifeCycleTestHandlerTest());</span><br><span class="line"></span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;)</span><br><span class="line">                .bind(<span class="number">8001</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handlerAdded</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">"逻辑处理器被添加 handlerAdded() "</span>);</span><br><span class="line">        <span class="keyword">super</span>.handlerAdded(ctx);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRegistered</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">"channel 绑定到线程 (NioEventLoop)：channelRegistered() "</span>);</span><br><span class="line">        <span class="keyword">super</span>.channelRegistered(ctx);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">"channel 准备就绪 channelActive()"</span>);</span><br><span class="line">        <span class="keyword">super</span>.channelActive(ctx);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">"channel 某次数据读写完成 channelReadComplete() "</span>);</span><br><span class="line">        <span class="keyword">super</span>.channelReadComplete(ctx);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">"channel 有数据可读 channelRead() "</span>);</span><br><span class="line">        <span class="keyword">super</span>.channelRead(ctx, msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelInactive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">"channel 被关闭 channelInactive()"</span>);</span><br><span class="line">        <span class="keyword">super</span>.channelInactive(ctx);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelUnregistered</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">"channel取消线程 (NioEventLoop) 的绑定：channelUnregistered() "</span>);</span><br><span class="line">        <span class="keyword">super</span>.channelUnregistered(ctx);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handlerRemoved</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">"逻辑处理器被删除 handlerRemoved() "</span>);</span><br><span class="line">        <span class="keyword">super</span>.handlerRemoved(ctx);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果启动Client客户端并且进行连接，<strong>ChannelHanlder</strong> 的回调方法执行顺序如下：</p>
+<ol>
+<li><code>handlerAdded()</code></li>
+<li><code>channelRegistered()</code></li>
+<li><code>channelActive()</code></li>
+<li><code>channelRead()</code></li>
+<li><code>channelReadComplete()</code></li>
+</ol>
+<h2 id="Channel连接方法回调"><a href="#Channel连接方法回调" class="headerlink" title="Channel连接方法回调"></a>Channel连接方法回调</h2><p>根据上面的执行顺序，这里补充介绍回调方法的含义。</p>
+<ol>
+<li><p>逻辑处理器被添加：<code>handlerAdded()</code></p>
+<p> 检测到新连接，调用<code>ch.pipleLine(new LifeCycleTestHandlerTest())</code> 之后的回调，表示<strong>当前的Channel成功绑定一个逻辑处理器</strong>。</p>
+</li>
+<li><p>channel 绑定到线程 (NioEventLoop)：<code>channelRegistered()</code></p>
+<p> 表示当前Channel所有逻辑处理器和某个线程模型的线程绑定完成，比如绑定到NIO模型的NioEventLoop。此时会创建线程处理连接的读写，具体使用了JDK的线程池实现，通过线程池抓一个线程方式绑定。</p>
+</li>
+<li><p>channel 准备就绪： <code>channelActive()</code>  </p>
+<p> 触发条件是所有的业务逻辑准备完成，也就是pipeline添加了所有的Handler ，以及绑定好一个NIO的线程之后，相当于是worker全部就位，就等boss一声令下开工。</p>
+</li>
+<li><p>channel 有数据可读 <code>channelRead()</code></p>
+<p> 客户端每次发数据都会以此进行回调。</p>
+</li>
+<li><p>channel 某次数据读写完成 <code>channelReadComplete()</code></p>
+<p> 服务端每次处理以此数据都回调此方法进行回调 。</p>
+</li>
+</ol>
+<h1 id="Channel-关闭方法回调"><a href="#Channel-关闭方法回调" class="headerlink" title="Channel 关闭方法回调"></a>Channel 关闭方法回调</h1><ol>
+<li><p>channel 被关闭：<code>channelInactive()</code> </p>
+<p>TCP层已经转为非ESTABLISH模式。</p>
+</li>
+<li><p>channel取消线程 (NioEventLoop) 的绑定：<code>channelUnregistered()</code></p>
+<p>与连接线程的绑定全部取消时候触发。</p>
+</li>
+</ol>
+<ol start="3">
+<li><p>逻辑处理器被删除：<code>handlerRemoved()</code></p>
+<p> 移除连接对应的所有业务逻辑处理器触发。</p>
+</li>
+</ol>
+<h1 id="Channel连接和关闭回调流程图"><a href="#Channel连接和关闭回调流程图" class="headerlink" title="Channel连接和关闭回调流程图"></a>Channel连接和关闭回调流程图</h1><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230709201836.png" alt="Channel连接和关闭回调流程图"></p>
+<h1 id="ChannelHanlder用法举例"><a href="#ChannelHanlder用法举例" class="headerlink" title="ChannelHanlder用法举例"></a>ChannelHanlder用法举例</h1><h2 id="ChannelInitializer"><a href="#ChannelInitializer" class="headerlink" title="ChannelInitializer"></a>ChannelInitializer</h2><p>入门程序当中的 <code>.childHandler(new ChannelInitializer&lt;NioSocketChannel&gt;()</code>定义了抽象initChannel方法，抽象方法需要自行实现，通常是服务端启动流程的逻辑处理器中使用，添加Handler链到Pipeline。</p>
+<p><code>handlerAdded()</code> 方法和 <code>channelRegistered()</code>方法都会尝试调用 initChannel，initChannel被多次调用，利用putIfAbsent防止initChannel被多次调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (initMap.putIfAbsent(ctx, Boolean.TRUE) == <span class="keyword">null</span>) &#123; <span class="comment">// Guard against re-entrance.</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>思考：为什么既要防止被多次调用，Netty又要调用多次<code>initChannel</code>？<br>    1. handlerAdded方法已经通过<code>Channel</code>进行绑定。<br>    2. 用户自行覆盖和重写<code>ChannelInitializer</code>的<code>handlerAdded</code>，导致<code>Channel</code>不触发绑定<br>    3. <code>channelRegisted()</code> 中再触发一次绑定，并且本身不允许被重写。<br>    <code>public final void channelRegistered(ChannelHandlerContext ctx) throws Exception {</code><br>    4. 引导实现者只关注重写handlerAdded之后的逻辑处理  </p>
+</blockquote>
+<h2 id="handlerAdded-与-channelInActive"><a href="#handlerAdded-与-channelInActive" class="headerlink" title="handlerAdded 与 channelInActive"></a>handlerAdded 与 channelInActive</h2><p>主要用做资源释放和申请。  </p>
+<h2 id="channelActive-和-ChannelInActive"><a href="#channelActive-和-ChannelInActive" class="headerlink" title="channelActive 和 ChannelInActive"></a>channelActive 和 ChannelInActive</h2><p>应用的场景如下：</p>
+<ol>
+<li><p>TCP建立和连接抽象  </p>
+</li>
+<li><p>实现统计单机的连接数量  </p>
+<ul>
+<li>其中channelActive被调用，对应的每次调用连接+1</li>
+<li>其中channelInActive被调用，对应的每次调用连接-1</li>
+</ul>
+</li>
+<li><p>实现客户端IP黑白名单的连接过滤  </p>
+</li>
+</ol>
+<h2 id="channelRead"><a href="#channelRead" class="headerlink" title="channelRead()"></a>channelRead()</h2><p>这个方法和粘包和拆包问题相关，服务端根据自定义协议拆包，在这个方法中每次读取一定数据，都会累加到容器当中。  </p>
+<h2 id="channelReadComplete"><a href="#channelReadComplete" class="headerlink" title="channelReadComplete"></a>channelReadComplete</h2><p>每次向客户端写入数据都调用<code>writeAndFlush</code>不是很高效，  更好的实现是向客户端写数据只<code>write</code>，但是在<code>ChannelReadComplete</code>里面一次 <strong>flush</strong> ，所以这个方法相当于批量刷新机制，批量刷新追求更高性能。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>本部分主要是介绍ChannelHandler的各种回调，以及连接建立关闭，执行回调是一个逆向过程。</li>
+<li>每一种回调都有各自用法，但是部分回调界限比较模糊，更多需要在实践中区分和使用。</li>
+</ol>
+<h1 id="写到最后"><a href="#写到最后" class="headerlink" title="写到最后"></a>写到最后</h1><p>生命周期和回调在Netty中非常直观，本文更多是对于重要的方法进行罗列。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/07/09/netty_live/" title="《跟闪电侠学Netty》阅读笔记 - ChannelHandler 生命周期">https://whitestore.top/2023/07/09/netty_live/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Netty/" rel="tag"># Netty</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/09/activitystudy/" rel="prev" title="【Activity】从零开始到掌握工作流开发业务代码">
+      <i class="fa fa-chevron-left"></i> 【Activity】从零开始到掌握工作流开发业务代码
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/07/11/nettychatimpl/" rel="next" title="《跟闪电侠学Netty》阅读笔记 - 聊天系统实现">
+      《跟闪电侠学Netty》阅读笔记 - 聊天系统实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思维导图"><span class="nav-number">2.</span> <span class="nav-text">思维导图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LifeCycleTestHandler-案例"><span class="nav-number">3.</span> <span class="nav-text">LifeCycleTestHandler 案例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Channel连接方法回调"><span class="nav-number">3.1.</span> <span class="nav-text">Channel连接方法回调</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Channel-关闭方法回调"><span class="nav-number">4.</span> <span class="nav-text">Channel 关闭方法回调</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Channel连接和关闭回调流程图"><span class="nav-number">5.</span> <span class="nav-text">Channel连接和关闭回调流程图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ChannelHanlder用法举例"><span class="nav-number">6.</span> <span class="nav-text">ChannelHanlder用法举例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ChannelInitializer"><span class="nav-number">6.1.</span> <span class="nav-text">ChannelInitializer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#handlerAdded-与-channelInActive"><span class="nav-number">6.2.</span> <span class="nav-text">handlerAdded 与 channelInActive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#channelActive-和-ChannelInActive"><span class="nav-number">6.3.</span> <span class="nav-text">channelActive 和 ChannelInActive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#channelRead"><span class="nav-number">6.4.</span> <span class="nav-text">channelRead()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#channelReadComplete"><span class="nav-number">6.5.</span> <span class="nav-text">channelReadComplete</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写到最后"><span class="nav-number">8.</span> <span class="nav-text">写到最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

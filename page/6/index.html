@@ -197,7 +197,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/dongtaileixing/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/08/11/rswljcgn/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -211,7 +211,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/02/20/dongtaileixing/" class="post-title-link" itemprop="url">深入理解JVM - 动态类型语言</a>
+            <a href="/2022/08/11/rswljcgn/" class="post-title-link" itemprop="url">《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）</a>
         </h2>
 
         <div class="post-meta">
@@ -221,14 +221,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-02-20 22:23:18" itemprop="dateCreated datePublished" datetime="2022-02-20T22:23:18+08:00">2022-02-20</time>
+              <time title="创建时间：2022-08-11 05:30:06" itemprop="dateCreated datePublished" datetime="2022-08-11T05:30:06+08:00">2022-08-11</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -236,7 +236,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
                 </span>
             </span>
 
@@ -249,8 +249,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/02/20/dongtaileixing/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/dongtaileixing/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/08/11/rswljcgn/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/11/rswljcgn/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -260,16 +260,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.6k</span>
+              <span>12k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>11 分钟</span>
             </span>
-            <div class="post-description">动态类型语言使用</div>
+            <div class="post-description">网络基础</div>
 
         </div>
       </header>
@@ -280,18 +280,30 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>  上一节讲述了栈桢和分派的细节，这一节我们来讲讲自java语言诞生新增加的新语言特性：动态类型语言支持，这一节将会根据动态语言的特性以及相关的介绍同时讲述jvm一个重要的指令：<strong>invoke dynamic指令</strong>。但是需要注意的是：<strong>invokedy namic指令面向 的主要服务对象并非Java语言，而是其他Java虚拟机之上的其他动态类型语言</strong></p>
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ol>
-<li><p>介绍什么是动态类型语言，以及java为什么是静态语言的讲解。</p>
-</li>
-<li><p>介绍invokeDynamic指令在实际案例中的运用</p>
-</li>
-<li><p>介绍java实现动态语言调用的一些曲线救国的手段。</p>
-</li>
+          <h1 id="《网络是怎么样连接的》读书笔记-认识网络基础概念（一）"><a href="#《网络是怎么样连接的》读书笔记-认识网络基础概念（一）" class="headerlink" title="《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）"></a>《网络是怎么样连接的》读书笔记 - 认识网络基础概念（一）</h1><h2 id="本章重点"><a href="#本章重点" class="headerlink" title="本章重点"></a>本章重点</h2><ol>
+<li>关于互联网的一些历史补充</li>
+<li>解析URL的过程简述</li>
+<li>HTPP请求的基本结构和组成</li>
+<li>IP 地址、子网掩码以及DNS的基本了解，掌握概念和相关知识点。</li>
 </ol>
+<h2 id="讲讲历史"><a href="#讲讲历史" class="headerlink" title="讲讲历史"></a>讲讲历史</h2><p>1991年8月6日，在瑞士日内瓦的核子研究中心（CERN）工作的英国物理学家蒂姆·伯纳斯·李（Tim Berners-Lee），正式提出了World Wide Web，也就是如今我们非常熟悉的www。</p>
+<p>www是什么？万维网WWW是World Wide Web的简称，也称为Web、3W等。WWW是基于<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS/lrqLmiLfmnLovNTE2ODE1Mw==" title="https://baike.baidu.com/item/客户机/5168153">客户机<i class="fa fa-external-link"></i></span>/<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS/mnI3liqHlmagvMTAwNTcx" title="https://baike.baidu.com/item/服务器/100571">服务器<i class="fa fa-external-link"></i></span>方式的信息发现技术和<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS/otoXmlofmnKwvMjgzMjQyMg==" title="https://baike.baidu.com/item/超文本/2832422">超文本<i class="fa fa-external-link"></i></span>的<strong>综合技术</strong>。</p>
+<p>这里个人比较好奇我们天天都在说3w，3w，但是<strong>互联网是怎么出现的的书中并没有解释？</strong></p>
+<p>这里查了下网上资料根据个人理解解释一波：</p>
+<p>实际上网络最开始苗头出现在美苏冷战的时期美国建立的<strong>APRA</strong>科研部门，被突然扯出来的科研部门一盘散沙不知道干嘛，对付苏联的科研工作也没什么进展，直到一个叫做罗伯特·泰勒的哥们出现，他的突破口是发现小型的通信网络不能兼容不同型号的计算机，我们都知道技术的顶峰就是定规则，毫无疑问他选择构建一套协议让所有的计算机都能遵守这一套规则干活。</p>
+<p>于是他找来了几个牛逼的大佬开始捣鼓，中间巴拉巴拉做了很多事绕了很多弯，目的其实就是为了实现上面说的东西，最终在一次失败的“LOGIN”验证中虽然仅仅传输了“LO”两个字母就断开了，但是这次失败是历史性的进步，因为两个不同的设备实实在在的通信了，最终修复之后完成了这五个字母的正常传输。</p>
+<p>随后捯饬出的<strong>ARPANET（阿帕网）</strong> 这个项目，也就是正式的互联网雏形。</p>
+<p>课外知识到此结束，现在我们看看第一章主要看点：</p>
+<ol>
+<li>如何解析网址？</li>
+<li>DNS 服务器如何查询域名对应的 IP 地址？</li>
+<li>DNS服务器如何接力？</li>
+<li>浏览器如何将消息委托给操作系统发送给 Web 服务器？</li>
+</ol>
+<p>核心是理解DNS的角色地位和作用，以及浏览器如何跟DNS交互完成网址（域名）解析为IP这一个操作的，本章最后的委托流程是整个第二章的重点内容，笔记顺其自然的放到了第二章笔记当中，为了方便理解把笔记归纳到第二部分。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/02/20/dongtaileixing/#more" rel="contents">
+              <a class="btn" href="/2022/08/11/rswljcgn/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -315,7 +327,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/leiwenjian/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/08/11/howtodie/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -329,7 +341,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/02/20/leiwenjian/" class="post-title-link" itemprop="url">深入理解JVM - 类文件结构</a>
+            <a href="/2022/08/11/howtodie/" class="post-title-link" itemprop="url">《how to die alone》读书笔记</a>
         </h2>
 
         <div class="post-meta">
@@ -339,14 +351,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-02-20 20:52:32" itemprop="dateCreated datePublished" datetime="2022-02-20T20:52:32+08:00">2022-02-20</time>
+              <time title="创建时间：2022-08-11 05:28:25" itemprop="dateCreated datePublished" datetime="2022-08-11T05:28:25+08:00">2022-08-11</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -354,7 +366,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
                 </span>
             </span>
 
@@ -367,8 +379,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/02/20/leiwenjian/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/leiwenjian/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/08/11/howtodie/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/11/howtodie/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -378,7 +390,120 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.1k</span>
+              <span>9.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+            <div class="post-description">how-to-die-alone</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="《how-to-die-alone》读书笔记"><a href="#《how-to-die-alone》读书笔记" class="headerlink" title="《how to die alone》读书笔记"></a>《how to die alone》读书笔记</h1><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220604191654.png" alt=""></p>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>算是个人真正意义上靠着翻译软件和自己掌握的拉胯的单词水平啃完的第一本全英文书，从封面到内容半个中文都没有，前前后后靠着自己的记录啃了2个月左右的时间，最终看完发现对于自己的单词积累量提升还是挺大的。</p>
+<p>这本书是图文结合的一本娱乐向小说？作者用摆烂的布莱尔发泄自己被甩的怨恨和愤怒，比较有意思的书籍，整体看来来也并不会因为作者是一个外国人get不到点。</p>
+<p>看这本书一方面是对于书名比较感兴趣，另一方面是顺带锻炼自己的英语能力。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/11/howtodie/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/06/02/bywholive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/06/02/bywholive/" class="post-title-link" itemprop="url">《银河铁道之夜》读书笔记-为了谁而活？</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-02 18:16:09" itemprop="dateCreated datePublished" datetime="2022-06-02T18:16:09+08:00">2022-06-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/06/02/bywholive/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/06/02/bywholive/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -387,7 +512,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>5 分钟</span>
             </span>
-            <div class="post-description">请输入描述信息</div>
+            <div class="post-description">非常“美丽”的书名，实际上却是一个十分悲伤的故事</div>
 
         </div>
       </header>
@@ -398,17 +523,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="深入理解JVM-类文件结构"><a href="#深入理解JVM-类文件结构" class="headerlink" title="深入理解JVM - 类文件结构"></a>深入理解JVM - 类文件结构</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    JVM的类文件结构基本都会要记忆的内容，我相信你也记不住，当然我也是记不住的，所以这里只会列出大致的类文件结构，我们需要大致了解类文件结构是怎么一回事就行了，具体到那个位存哪个内容，内容确实太多了，感兴趣可以直接去读书中对应的<code>第6章　类文件结构</code>这一个章节的内容。</p>
-<p>​    类文件结构个人认为需要注意的点就是这几点：大致的类文件结构，部分Jdk的特性如何通过改动class文件结构实现，比如泛型，自动拆装箱，动态代理，lambada语法等。</p>
-<h1 id="概述："><a href="#概述：" class="headerlink" title="概述："></a>概述：</h1><p>​    其实主要内容就是介绍CLASS的文件结构。</p>
-<ol>
-<li>了解JVM的类文件基本结构。</li>
-<li>了解常量池的内容</li>
-<li>了解重点内容属性表集合</li>
-</ol>
+          <p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20220601171128.png" alt=""></p>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>非常“美丽”的书名，实际上却是一个十分悲伤的故事，大概悲剧更能引起读者的共鸣，本文标题起了一个叫做“为了谁”和这本书的作者身世有关，作者是为妹妹而坚持活着的人，像我这样的绝大多数普通人都难以做到吧。</p>
+<p>这本书总是和《小王子》放到一起比较，因为两者都是源自于一场旅行的成长，我很少去了解作者过去，看书也很少去关注书名，但是因为不是很懂作品说了啥和故事背景，之后开始了解宫泽贤治的身世，不免对他抱持信念以及执着十分钦佩，能为了谁而活的人本身就是伟大的。</p>
+<p>当我看完这本书再看看书中夹着的能通往任何地方的“车票”时候，这场旅行的回忆深深刻在脑海。</p>
+<p><strong>下面的内容涉及剧透，如果对这本书感兴趣建议查看下面的资源了解了解。</strong></p>
+<h1 id="资源"><a href="#资源" class="headerlink" title="资源"></a>资源</h1><p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMUVqRHhpMjJvQVpSUkQzX1psZHFkZmc/cHdkPTJramE=" title="https://pan.baidu.com/s/1EjDxi22oAZRRD3_Zldqdfg?pwd=2kja">https://pan.baidu.com/s/1EjDxi22oAZRRD3_Zldqdfg?pwd=2kja<i class="fa fa-external-link"></i></span> 提取码：2kja</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/02/20/leiwenjian/#more" rel="contents">
+              <a class="btn" href="/2022/06/02/bywholive/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -432,7 +555,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/jvmzijiema/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/google-bigtable/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -446,7 +569,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/02/20/jvmzijiema/" class="post-title-link" itemprop="url">深入理解JVM - 字节码指令</a>
+            <a href="/2022/05/21/google-bigtable/" class="post-title-link" itemprop="url">谷歌三件套 - Bigtable</a>
         </h2>
 
         <div class="post-meta">
@@ -456,7 +579,126 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-02-20 20:47:02" itemprop="dateCreated datePublished" datetime="2022-02-20T20:47:02+08:00">2022-02-20</time>
+              <time title="创建时间：2022-05-21 19:16:54" itemprop="dateCreated datePublished" datetime="2022-05-21T19:16:54+08:00">2022-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%B0%B7%E6%AD%8C%E4%B8%89%E4%BB%B6%E5%A5%97/" itemprop="url" rel="index"><span itemprop="name">谷歌三件套</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/05/21/google-bigtable/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/google-bigtable/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">bigtable数据结构解析</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="谷歌三件套-Bigtable"><a href="#谷歌三件套-Bigtable" class="headerlink" title="谷歌三件套 - Bigtable"></a>谷歌三件套 - Bigtable</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>如标题所言，这一篇文章简单介绍BigTable，其实个人更建议看LevelDB这款开源数据库，因为这数据库也是Bigtable的作者 <strong>JeffreyDean</strong> 设计的，很多内容不能说像简直就是一模一样。</p>
+<p>值得注意的是，看Bigtable的内容<strong>千万不要带着关系型数据库的思维</strong>，建议看之前看看《数据密集型应用系统设计》的第三章，里面提到了LSM-Tree以及大数据系统设计思想，或者看看个人之前写的文章 [[《数据密集型型系统设计》LSM-Tree VS BTree]]</p>
+<h1 id="三件套论文资料"><a href="#三件套论文资料" class="headerlink" title="三件套论文资料"></a>三件套论文资料</h1><p>Bigtable 原始在线论文： <strong><span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvYmlndGFibGUtb3NkaTA2LnBkZg==" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/bigtable-osdi06.pdf">Bigtable: A Distributed Storage System for Structured Data<i class="fa fa-external-link"></i></span></strong></p>
+<p>MapReduct 原始在线论文：<span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvbWFwcmVkdWNlLW9zZGkwNC5wZGY=" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/mapreduce-osdi04.pdf">MapReduce: Simplified Data Processing on Large Clusters<i class="fa fa-external-link"></i></span></p>
+<p>GFS 原始在线论文：<span class="exturl" data-url="aHR0cHM6Ly9zdGF0aWMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL21lZGlhL3Jlc2VhcmNoLmdvb2dsZS5jb20vemgtQ04vL2FyY2hpdmUvZ2ZzLXNvc3AyMDAzLnBkZg==" title="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/gfs-sosp2003.pdf">The Google File System<i class="fa fa-external-link"></i></span></p>
+<p>如果看不懂英文或者想要线下阅读，个人从某全是广告的技术网站买了一份中文翻译以及原始英文论文PDF，合并到一起免费分享给大家（虽然掏钱买也没几个钱）：</p>
+<p>链接: <span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMTVaMjRhcTYydTI1WV9MckhTYU5DQ3c=" title="https://pan.baidu.com/s/15Z24aq62u25Y_LrHSaNCCw">Google-GFS,Bigtable,Mapreduce三大论文英文原版+中文翻译<i class="fa fa-external-link"></i></span> 提取码: 82ok </p>
+<blockquote>
+<p>（如果链接失效可以关注公众号“懒时小窝” 回复“谷歌三件套”或者“谷歌”获取这些内容）</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/05/21/google-bigtable/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/szygw/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/21/szygw/" class="post-title-link" itemprop="url">《生之欲》观影感悟</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-21 19:15:11" itemprop="dateCreated datePublished" datetime="2022-05-21T19:15:11+08:00">2022-05-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
@@ -471,7 +713,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
                 </span>
             </span>
 
@@ -484,8 +726,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/02/20/jvmzijiema/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/jvmzijiema/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/05/21/szygw/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/szygw/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -495,7 +737,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3k</span>
+              <span>3.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -504,7 +746,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>3 分钟</span>
             </span>
-            <div class="post-description">字节码指令如何记忆和处理</div>
+            <div class="post-description">乘着假期的尾巴看了这一部电影</div>
 
         </div>
       </header>
@@ -515,17 +757,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="深入理解JVM-字节码指令"><a href="#深入理解JVM-字节码指令" class="headerlink" title="深入理解JVM - 字节码指令"></a>深入理解JVM - 字节码指令</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>​    字节码指令的部分更多要和实战搭配学习和使用，所以这一节将会是简单概述字节码的相关指令内容，和class结构不同，字节码指令常见的命令是需要了解的，虽然我们很多时候并不需要研究底层字节码的指令，但是譬如动态语言的支持就是通过新增字节码指令完成的。</p>
-<p>​    这一节内容更加建议配合阅读字节码，根据字节码阅读来加强记忆。后续的文章将会单独开一篇讲一讲字节码的源代码处理。</p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ol>
-<li>了解jvm字节码指令的基本特点</li>
-<li>了解jvm的常见字节码指令（建议在阅读字节码的时候不知道什么意思的时候再来查）</li>
-<li>部分指令的处理细节讲解。</li>
-<li><strong>最后根据书中的内容整理了一个excel表格，供阅读的时候进行快速查阅</strong></li>
-</ol>
+          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>乘着假期的尾巴看了这一部电影，不得不说虽然豆瓣的高分不一定是好电影，但是这一部上世纪五十年代的电影还是值得观看。</p>
+<p>本文内容<strong>包含剧透</strong>。</p>
+<blockquote>
+<p>兑现前两天立得看电影的Flag，个人认为不管是好的电影还是书籍都是值得记录和回忆的， 为了让自己不忘记电影留下点东西也为不白白浪费两个小时的 宝贵人生。</p>
+</blockquote>
+<h1 id="故事内容"><a href="#故事内容" class="headerlink" title="故事内容"></a><strong>故事内容</strong></h1><p>一句话概括：《生之欲》讲述了一位官僚在发现自己患了晚期癌症后，试图在他的生活中找到意义。</p>
+<blockquote>
+<p>A bureaucrat tries to find a meaning in his life after he discovers he has terminal cancer.</p>
+</blockquote>
+<p>《<strong>生之欲</strong>》（日语：生きる）在<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUE2JTk5JUU2JUI4JUFG" title="https://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF">香港<i class="fa fa-external-link"></i></span>译作《<strong>流芳颂</strong>》，乃是1952年由<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTk3JUE1JUU2JTlDJUFD" title="https://zh.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC">日本<i class="fa fa-external-link"></i></span>知名<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUIwJThFJUU2JUJDJTk0" title="https://zh.wikipedia.org/wiki/%E5%B0%8E%E6%BC%94">导演<i class="fa fa-external-link"></i></span><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUJCJTkxJUU2JUJFJUE0JUU2JTk4JThF" title="https://zh.wikipedia.org/wiki/%E9%BB%91%E6%BE%A4%E6%98%8E">黑泽明<i class="fa fa-external-link"></i></span>执导的<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1">电影<i class="fa fa-external-link"></i></span>，曾获得日本<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JUFGJThGJUU2JTk3JUE1JUU5JTlCJUJCJUU1JUJEJUIxJUU3JThEJThF" title="https://zh.wikipedia.org/wiki/%E6%AF%8F%E6%97%A5%E9%9B%BB%E5%BD%B1%E7%8D%8E">每日电影最佳影片奖<i class="fa fa-external-link"></i></span>、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIxJUU2JTk3JUFDJUU1JUEwJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1%E6%97%AC%E5%A0%B1">电影旬报<i class="fa fa-external-link"></i></span>年度最佳影片奖、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTlGJThGJUU2JTlFJTk3JUU1JUJEJUIxJUU1JUIxJTk1" title="https://zh.wikipedia.org/wiki/%E6%9F%8F%E6%9E%97%E5%BD%B1%E5%B1%95">柏林影展<i class="fa fa-external-link"></i></span>特别奖等奖项。</p>
+<p>在市公所工作30年的市民课课长渡边勘治每天过着盖章、签公文的乏味生活，某日因身体不适前往<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTg2JUFCJUU5JTk5JUEy" title="https://zh.wikipedia.org/wiki/%E9%86%AB%E9%99%A2">医院<i class="fa fa-external-link"></i></span>检查，结果竟被告知罹患<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU4JTgzJTgzJUU3JTk5JThD" title="https://zh.wikipedia.org/wiki/%E8%83%83%E7%99%8C">胃癌<i class="fa fa-external-link"></i></span>末期，只剩下约半年的生命。回到家中，<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg1JTkyJUU1JUFEJTkw" title="https://zh.wikipedia.org/wiki/%E5%85%92%E5%AD%90">儿子<i class="fa fa-external-link"></i></span>与<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUFBJUIzJUU1JUE5JUE2" title="https://zh.wikipedia.org/wiki/%E5%AA%B3%E5%A9%A6">媳妇<i class="fa fa-external-link"></i></span>对他并不友善，甚至可谓不孝。感到悲伤的渡边，带了毕生积蓄离家出走，也不去上班了。他在外头遇见一位<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUIwJThGJUU4JUFBJUFB" title="https://zh.wikipedia.org/wiki/%E5%B0%8F%E8%AA%AA">小说<i class="fa fa-external-link"></i></span><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU0JUJEJTlDJUU1JUFFJUI2" title="https://zh.wikipedia.org/wiki/%E4%BD%9C%E5%AE%B6">作家<i class="fa fa-external-link"></i></span>，告之自己将不久于人世，他认为从未替自己好好活过。小说家同情其遭遇，带他去打<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUJEJTg4JUU3JThGJUEwJUU2JUE5JTlG" title="https://zh.wikipedia.org/wiki/%E5%BD%88%E7%8F%A0%E6%A9%9F">小钢珠<i class="fa fa-external-link"></i></span>，甚至去<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUE2JTkzJUU5JTk5JUEy" title="https://zh.wikipedia.org/wiki/%E5%A6%93%E9%99%A2">声色场所<i class="fa fa-external-link"></i></span>。对渡边来说，虽然这些事很新鲜，但到头来却觉得空虚落寞。第二天他就告别了小说家，一个人孤独的走在街上。</p>
+<p>他遇见了市公所的一位年轻女职员小田切丰，后者表示她厌倦公务员无聊的工作，已觅得新职，却因课长没来上班，没人批准<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU4JUJFJUFEJUU4JTgxJUI3" title="https://zh.wikipedia.org/wiki/%E8%BE%AD%E8%81%B7">辞呈<i class="fa fa-external-link"></i></span>。渡边便将小田切带回家中，为她盖离职同意书；见她丝袜破掉，想为她买双新的。这天他要求小田切带他去玩，两人也度过快乐的一天。但回家后却遭到儿子辱骂，认为他之前带走的存款算是家用的一部分；儿子同时误会小田切是他的年轻<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTg0JTlCJUU0JUJBJUJB" title="https://zh.wikipedia.org/wiki/%E6%84%9B%E4%BA%BA">情人<i class="fa fa-external-link"></i></span>，要求父亲自重。</p>
+<p>过了几天后，渡边前往小田切新任职的<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU3JThFJUE5JUU1JTg1JUI3" title="https://zh.wikipedia.org/wiki/%E7%8E%A9%E5%85%B7">玩具<i class="fa fa-external-link"></i></span>工厂，希望她再陪着出去玩。小田切原本不想答应，但渡边苦苦哀求，她只好同意。晚上来到一家<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU4JUE1JUJGJUU5JUE0JTkwJUU1JUJCJUIz" title="https://zh.wikipedia.org/wiki/%E8%A5%BF%E9%A4%90%E5%BB%B3">西餐厅<i class="fa fa-external-link"></i></span>，渡边的举动让小田切以为他要对她不轨，十分害怕。没想到渡边告诉她自己得了不治之症，来日无多，但是见到小田切如此年轻有活力，希望小田切告诉他究竟活着是为了什么。小田切只好战战兢兢的拿出一只玩具<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg1JTk0" title="https://zh.wikipedia.org/wiki/%E5%85%94">兔<i class="fa fa-external-link"></i></span>子告诉他，她平常在工厂工作就是做这种东西；只要想到自己做出的东西是为别人带来欢乐，自己也就很开心。渡边突然想到自己想要什么了，向小田切道谢后便离开餐厅。此时碰巧有群年轻人替一位少女庆生，众人唱起<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU3JUE1JTlEJUU0JUJEJUEwJUU3JTk0JTlGJUU2JTk3JUE1JUU1JUJGJUFCJUU0JUI5JTkw" title="https://zh.wikipedia.org/wiki/%E7%A5%9D%E4%BD%A0%E7%94%9F%E6%97%A5%E5%BF%AB%E4%B9%90">生日快乐歌<i class="fa fa-external-link"></i></span>，仿佛在庆祝渡边的重生。</p>
+<p>翌日渡边再度回到市公所上班，将他请假这些日子的公文全数拿出来，发觉有件案子是许多妇女前来陈情，希望将某条臭水沟改建为<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JTg1JUFDJUU1JTlDJTky" title="https://zh.wikipedia.org/wiki/%E5%85%AC%E5%9C%92">公园<i class="fa fa-external-link"></i></span>，却屡屡遭到各单位互踢皮球不愿处理。他决定要处理这件事，带着下属开始各处奔走。5个月后，渡边过世，在灵堂上大家开始回忆他生命最后5个月的过程，发觉他非常努力奔走以建立公园，最后甚至选择在大<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUFB" title="https://zh.wikipedia.org/wiki/%E9%9B%AA">雪<i class="fa fa-external-link"></i></span>的夜里独自快乐的唱着歌，死于自己亲手建立的公园里。虽然在守灵的酒会上，大家如此怀念渡边所做的一切，但等到第二天上班时市公所 依就弥漫着官僚之气。尽管有职员看不过去，心中认为应该要继承渡边的精神，但也仅止于缅怀而已。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/02/20/jvmzijiema/#more" rel="contents">
+              <a class="btn" href="/2022/05/21/szygw/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -549,7 +797,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/shijieshi/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/leveldb-source/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -563,7 +811,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/02/20/shijieshi/" class="post-title-link" itemprop="url">《半小时漫画世界史（一）》读书笔记</a>
+            <a href="/2022/05/21/leveldb-source/" class="post-title-link" itemprop="url">LSM-Tree - LevelDb 源码解析</a>
         </h2>
 
         <div class="post-meta">
@@ -573,14 +821,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-02-20 20:45:23" itemprop="dateCreated datePublished" datetime="2022-02-20T20:45:23+08:00">2022-02-20</time>
+              <time title="创建时间：2022-05-21 19:13:33" itemprop="dateCreated datePublished" datetime="2022-05-21T19:13:33+08:00">2022-05-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -588,7 +836,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                  <a href="/categories/LevelDB/" itemprop="url" rel="index"><span itemprop="name">LevelDB</span></a>
                 </span>
             </span>
 
@@ -601,8 +849,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/02/20/shijieshi/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/shijieshi/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/05/21/leveldb-source/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/leveldb-source/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -612,16 +860,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.3k</span>
+              <span>24k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>22 分钟</span>
             </span>
-            <div class="post-description">漫画世界史</div>
+            <div class="post-description">源码解析</div>
 
         </div>
       </header>
@@ -632,11 +880,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="《半小时漫画世界史（一）》读书笔记"><a href="#《半小时漫画世界史（一）》读书笔记" class="headerlink" title="《半小时漫画世界史（一）》读书笔记"></a>《半小时漫画世界史（一）》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    额，一本漫画确实不太好做读书笔记，这本书不应该算书，更像是给儿童科普的漫画，把枯燥乏味的历史用漫画的方式表现挺有意思的，当然作为一个成年人来看肯定不能把里面的内容当真（当真就完了）。历史不是靠一两张图片和一段话就能叙述完的，这部漫画最多最多让你了解历史大概的进程是怎么回事。</p>
-<h1 id="推荐程度"><a href="#推荐程度" class="headerlink" title="推荐程度"></a>推荐程度</h1><p>​    3星，轻松娱乐向的书，有点让我找回了当年看阿衰的感觉，这本书是边做笔记边看的，没有也不需要翻第二遍，第一部讲述了欧洲历史，希波战争，美国的崛起和独立，三大骑士团条顿骑士团、医院骑士团、圣殿骑士团的出身和发展，以及最后快速的过了一遍日本历史。</p>
+          <h1 id="LSM-Tree-LevelDb-源码解析"><a href="#LSM-Tree-LevelDb-源码解析" class="headerlink" title="LSM-Tree - LevelDb 源码解析"></a>LSM-Tree - LevelDb 源码解析</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>在上一篇文章[[LSM-Tree - LevelDb了解和实现]]中介绍了LevelDb相关的数据结构和核心组件，LevelDB的核心读写部分，以及为什么在这个数据库中写入的速度要比读取的速度快上好几倍。 </p>
+<p>LevelDB的源代码还是比较好懂的，好懂到我只学过学JAVA只有定点基础C语言入门知识的人也能看懂，另一方面作者在关键的地方都给了注释，甚至告诉你为什么要这么设计<s>（写的很好很棒让人落泪为什么自己没这样的同事）</s>。</p>
+<p>如果还是看不懂，作者也写了很多数据结构介绍的md文档（在doc目录中）告诉你核心组件的作用。</p>
+<p>总之，不要惧怕这个数据库，无论是作为优秀代码和设计模式还是各种主流数据结构算法应用都非常值得学习和参考。</p>
+<blockquote>
+<p>Tip：这一节代码内容非常多，所以不建议在手机或者移动设备阅读，更适合在PC上观看。</p>
+</blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/02/20/shijieshi/#more" rel="contents">
+              <a class="btn" href="/2022/05/21/leveldb-source/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -660,7 +913,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/jvmzgc/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/level-skiplist/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -674,7 +927,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/02/20/jvmzgc/" class="post-title-link" itemprop="url">深入理解JVM - ZGC收集器</a>
+            <a href="/2022/05/21/level-skiplist/" class="post-title-link" itemprop="url">LSM-Tree - LevelDb Skiplist跳表</a>
         </h2>
 
         <div class="post-meta">
@@ -684,14 +937,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-02-20 20:43:43" itemprop="dateCreated datePublished" datetime="2022-02-20T20:43:43+08:00">2022-02-20</time>
+              <time title="创建时间：2022-05-21 19:10:02" itemprop="dateCreated datePublished" datetime="2022-05-21T19:10:02+08:00">2022-05-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -699,7 +952,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
+                  <a href="/categories/LevelDB/" itemprop="url" rel="index"><span itemprop="name">LevelDB</span></a>
                 </span>
             </span>
 
@@ -712,8 +965,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/02/20/jvmzgc/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/jvmzgc/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/05/21/level-skiplist/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/level-skiplist/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -723,7 +976,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.7k</span>
+              <span>8.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -732,7 +985,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>7 分钟</span>
             </span>
-            <div class="post-description">zgc收集器的实现细节</div>
+            <div class="post-description">Skiplist跳表</div>
 
         </div>
       </header>
@@ -743,27 +996,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="深入理解JVM-ZGC收集器"><a href="#深入理解JVM-ZGC收集器" class="headerlink" title="深入理解JVM - ZGC收集器"></a>深入理解JVM - ZGC收集器</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    上文讲到了Shenadoah收集器，这一节我们来讲一下ZGC收集器，ZGC收集器是JDK11之后由Oracle官方开发的一款低延迟垃圾收集器。另外这里吐槽一句ZGC的内容非常复杂并且知识点巨多，所以建议泡杯茶边喝边看。</p>
-<p>​    在正式的介绍之前，先看下ZGC支持的内容：</p>
+          <h1 id="LSM-Tree-LevelDb-Skiplist跳表"><a href="#LSM-Tree-LevelDb-Skiplist跳表" class="headerlink" title="LSM-Tree - LevelDb Skiplist跳表"></a>LSM-Tree - LevelDb Skiplist跳表</h1><h1 id="跳表介绍"><a href="#跳表介绍" class="headerlink" title="跳表介绍"></a>跳表介绍</h1><p>跳表（SkipList）是由William Pugh提出的。他在论文<Skip lists: a probabilistic alternative to balanced trees>中详细地介绍了有关跳表结构、插入删除操作的细节。</p>
 <blockquote>
-<p>关于ZGC的关键字如下：</p>
-<ul>
-<li>Concurrent（并发）</li>
-<li>Region-based（region）</li>
-<li>Compacting（压缩-整理算法）</li>
-<li>NUMA-aware（NUMA支持）</li>
-<li>Using colored pointers（染色指针）</li>
-<li>Using load barriers（读屏障）</li>
-</ul>
+<p>文档：Skiplist跳表原始论文 - pugh-skiplists-cacm1990.pdf<br>链接：<span class="exturl" data-url="aHR0cDovL25vdGUueW91ZGFvLmNvbS9ub3Rlc2hhcmU/aWQ9NjY3YWVkOTZmMDEyZWRjYWRhMDQ3YmFmNzVhYTE3NjkmYW1wO3N1Yj1CNDI3RTAwQzgxOEI0MjhBQkQzOEE4MTMxODBBRjlBOA==" title="http://note.youdao.com/noteshare?id=667aed96f012edcada047baf75aa1769&amp;sub=B427E00C818B428ABD38A813180AF9A8">http://note.youdao.com/noteshare?id=667aed96f012edcada047baf75aa1769&amp;sub=B427E00C818B428ABD38A813180AF9A8<i class="fa fa-external-link"></i></span></p>
 </blockquote>
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ol>
-<li>介绍ZGC收集器，以及ZGC收集器的特点（重点：染色指针）</li>
-<li>了解ZGC的基本工作原理，以及工作流程和步骤</li>
-<li>ZGC的深入学习方式了解（文末）</li>
-</ol>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在线性的数据数据结构中我们经常可以想到数组和链表，数组是插入慢查询快，而链表是插入快，查询要稍微慢一些，而跳表主要是针对链表<strong>查询速度</strong>进行优化的一种数据结构，多层级的跳表实际上是对底层链表的索引，非常典型的空间换时间，把链表的查询时间尽量控制在O(logN)。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/02/20/jvmzgc/#more" rel="contents">
+              <a class="btn" href="/2022/05/21/level-skiplist/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -787,7 +1027,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/shenadoahshoujiqi/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/leveled-bloom/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -801,7 +1041,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/02/20/shenadoahshoujiqi/" class="post-title-link" itemprop="url">深入理解JVM - Shenadoah收集器</a>
+            <a href="/2022/05/21/leveled-bloom/" class="post-title-link" itemprop="url">LSM-Tree - LevelDb 布隆过滤器</a>
         </h2>
 
         <div class="post-meta">
@@ -811,14 +1051,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-02-20 20:40:57" itemprop="dateCreated datePublished" datetime="2022-02-20T20:40:57+08:00">2022-02-20</time>
+              <time title="创建时间：2022-05-21 19:07:44" itemprop="dateCreated datePublished" datetime="2022-05-21T19:07:44+08:00">2022-05-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -826,7 +1066,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                  <a href="/categories/LevelDB/" itemprop="url" rel="index"><span itemprop="name">LevelDB</span></a>
                 </span>
             </span>
 
@@ -839,8 +1079,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/02/20/shenadoahshoujiqi/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/shenadoahshoujiqi/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/05/21/leveled-bloom/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/leveled-bloom/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -850,16 +1090,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.1k</span>
+              <span>17k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>15 分钟</span>
             </span>
-            <div class="post-description">收集器</div>
+            <div class="post-description">有问题找布隆</div>
 
         </div>
       </header>
@@ -870,13 +1110,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="深入理解JVM-Shenadoah收集器"><a href="#深入理解JVM-Shenadoah收集器" class="headerlink" title="深入理解JVM - Shenadoah收集器"></a>深入理解JVM - Shenadoah收集器</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    zgc和shenadoah的收集器是面向未来的收集器，目前还处于不断完善的阶段，虽然我们平时可能不太用的上，但是了解和基本掌握它是必须的，关于这一块网上的内容确实比较少，所以个人还是使用了书本里面的内容进行总结。</p>
-<p>​    另外这两个垃圾收集器是完全舍弃分代这个概念的，注意是完全舍弃，并不是类似G1收集器虽然使用了分区但是本质上还是分代收集的收集器。</p>
-<p>​    由于这两个收集器的内容较多，这里分开进行讲解，本篇讲解Shenadoah收集器。</p>
-<h1 id="思维导图："><a href="#思维导图：" class="headerlink" title="思维导图："></a>思维导图：</h1><p>不想看文字的，可以查看思维导图：<span class="exturl" data-url="aHR0cHM6Ly93d3cubXVidWNtLmNvbS9kb2MvN0w0Vy1GQTBDRkI=" title="https://www.mubucm.com/doc/7L4W-FA0CFB">https://www.mubucm.com/doc/7L4W-FA0CFB<i class="fa fa-external-link"></i></span></p>
+          <h1 id="LSM-Tree-LevelDb布隆过滤器"><a href="#LSM-Tree-LevelDb布隆过滤器" class="headerlink" title="LSM-Tree - LevelDb布隆过滤器"></a>LSM-Tree - LevelDb布隆过滤器</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>布隆过滤器有点类似哈希表，但是比哈希表的效率要更高，因为使用了位来判断Key是否存在，布隆过滤器在完成高效搜索key是否存在的同时带来一定的副作用– <strong>不保证Key一定存在</strong>，所以它只适用于允许一定容错率的系统。</p>
+<p>一句话概括：<code>Bloom Filter</code> 是一个<strong>基于概率的数据结构</strong>，它只能告诉我们一个元素绝对不在集合内或<strong>可能</strong>在集合内。</p>
+<p>布隆过滤器比较悬浮的东西是它不保证元素百分百在一个集合内，所以适用于具备一定容错的业务，关于它的理论和实践很多内容都是参考或者直接摘自网上的资料加上自己的理解，如有错误欢迎指正。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/02/20/shenadoahshoujiqi/#more" rel="contents">
+              <a class="btn" href="/2022/05/21/leveled-bloom/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -900,7 +1139,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/riqiapi/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/bntydkcm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -914,7 +1153,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/02/20/riqiapi/" class="post-title-link" itemprop="url">JAVA8实战 - 日期API</a>
+            <a href="/2022/05/21/bntydkcm/" class="post-title-link" itemprop="url">14岁懂社会-《被你讨厌的昆虫们》读书笔记</a>
         </h2>
 
         <div class="post-meta">
@@ -924,254 +1163,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-02-20 20:34:21" itemprop="dateCreated datePublished" datetime="2022-02-20T20:34:21+08:00">2022-02-20</time>
+              <time title="创建时间：2022-05-21 18:57:38" itemprop="dateCreated datePublished" datetime="2022-05-21T18:57:38+08:00">2022-05-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/02/20/riqiapi/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/riqiapi/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>20k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>18 分钟</span>
-            </span>
-            <div class="post-description">日期api使用</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="JAVA8实战-日期API"><a href="#JAVA8实战-日期API" class="headerlink" title="JAVA8实战 - 日期API"></a>JAVA8实战 - 日期API</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这一节我们来讲讲JAVA8的日期类，源代码的作者其实就是Joda-Time，所以可以看到很多代码的API和Joda类比较像。日期类一直是一个比较难用的东西，但是JAVA8给日期类提供了一套新的API让日期类更加好用。</p>
-<p>​    本文代码较多，建议亲自运行代码理解。<br>（微信公众号建议阅读原文）</p>
-<h1 id="思维导图："><a href="#思维导图：" class="headerlink" title="思维导图："></a>思维导图：</h1><p>地址：<span class="exturl" data-url="aHR0cHM6Ly93d3cubXVidWNtLmNvbS9kb2MvY2s1WkNyZ0hrQg==" title="https://www.mubucm.com/doc/ck5ZCrgHkB">https://www.mubucm.com/doc/ck5ZCrgHkB<i class="fa fa-external-link"></i></span></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210808200827.png" alt=""></p>
-<h1 id="内容概述："><a href="#内容概述：" class="headerlink" title="内容概述："></a>内容概述：</h1><ol>
-<li>关于JDK8日期的三个核心类：LocalDate、LocalTime、LocalDateTime的相关介绍</li>
-<li>机器时间和日期格式<code>Instant</code>等关于细粒度的时间操作介绍</li>
-<li>TemporalAdjusters 用于更加复杂的日期计算，比如计算下一个工作日的时候这个类提供了一些实现</li>
-<li>DateTimeFormatter 格式化器，非常的灵活多变，属于<code>SimpleDateFormat</code>的替代品。</li>
-<li>日期API的一些个人工具封装举例，以及在使用JDK8的时候一些个人的踩坑</li>
-</ol>
-<p>​    最后希望通过本文能帮你摆脱<code>new Date()</code></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/02/20/riqiapi/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/duixiangfenpei/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/20/duixiangfenpei/" class="post-title-link" itemprop="url">深入理解JVM - 对象分配内存</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-02-20 20:28:31" itemprop="dateCreated datePublished" datetime="2022-02-20T20:28:31+08:00">2022-02-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-jvm/" itemprop="url" rel="index"><span itemprop="name">java-jvm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/02/20/duixiangfenpei/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/duixiangfenpei/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-            <div class="post-description">jvm是如何分配内存的</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="深入理解JVM-对象分配内存"><a href="#深入理解JVM-对象分配内存" class="headerlink" title="深入理解JVM - 对象分配内存"></a>深入理解JVM - 对象分配内存</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这一节我们来讨论对象分配内存的细节，这一块的内容相对比较简单，但是也是比较重要的内容，最后会总结书里面的OOM的溢出案例，在过去的文章已经讲到过不少类似的情况。</p>
-<h1 id="思维导图："><a href="#思维导图：" class="headerlink" title="思维导图："></a>思维导图：</h1><p>地址：<span class="exturl" data-url="aHR0cHM6Ly93d3cubXVidWNtLmNvbS9kb2MvNm5GVWNiRW4tM0I=" title="https://www.mubucm.com/doc/6nFUcbEn-3B">https://www.mubucm.com/doc/6nFUcbEn-3B<i class="fa fa-external-link"></i></span></p>
-<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210811220025.png" alt=""></p>
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ol>
-<li>讲述对象分配内存的方式：“指针碰撞”和“空闲列表”的实现方式</li>
-<li>对象分配中使用了哪些方法，当出现并发分配使用什么方式进行处理的。</li>
-<li>对象的访问方式有哪些，访问的过程的优劣对比</li>
-<li>对象在内存当中的布局，分为三个大类，需要重点掌握对象头的部分</li>
-<li>实战OOM的内容，这部分适合实战的时候再看。</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/02/20/duixiangfenpei/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/changtui/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/20/changtui/" class="post-title-link" itemprop="url">《长腿叔叔》读书笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-02-20 20:28:14" itemprop="dateCreated datePublished" datetime="2022-02-20T20:28:14+08:00">2022-02-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1192,8 +1191,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/02/20/changtui/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/changtui/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/05/21/bntydkcm/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/bntydkcm/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -1203,16 +1202,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.6k</span>
+              <span>4.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>4 分钟</span>
             </span>
-            <div class="post-description">这本书是推荐给同事看的，当然最后还是自己先看完了，还算不错的一本书，内容讲述的是关于“感恩”这一个题材的，还算是比较少见的书</div>
+            <div class="post-description">曾经为之讨厌的东西，实际接触才发现如此喜欢</div>
 
         </div>
       </header>
@@ -1223,16 +1222,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="《长腿叔叔》读书笔记"><a href="#《长腿叔叔》读书笔记" class="headerlink" title="《长腿叔叔》读书笔记"></a>《长腿叔叔》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这本书是推荐给同事看的，当然最后还是自己先看完了，还算不错的一本书，内容讲述的是关于“感恩”这一个题材的，还算是比较少见的书。</p>
-<h1 id="资源链接："><a href="#资源链接：" class="headerlink" title="资源链接："></a>资源链接：</h1><p>​    下面是对应的资源链接</p>
-<blockquote>
-<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMUw0S2VleF85T1dTTDhPS1lxeDd3OXc=" title="https://pan.baidu.com/s/1L4Keex_9OWSL8OKYqx7w9w">https://pan.baidu.com/s/1L4Keex_9OWSL8OKYqx7w9w<i class="fa fa-external-link"></i></span><br>提取码：avni<br>–来自百度网盘超级会员V6的分享</p>
-</blockquote>
-<h1 id="推荐程度"><a href="#推荐程度" class="headerlink" title="推荐程度"></a>推荐程度</h1><p>​    4星，本书整体都使用了一种书信的格式来传达，讲述了收养人与被收养人之间的书信来往，我们可以从这篇文章看到朱蒂（杰露莎）由最开始的埋怨长腿叔叔（这里其实可以看作是读者）并且写出第一封信之后逐渐成长，也可以看到一个从来没有读过书的孤儿院女孩是如何靠自己的努力成为一名合格的作家。</p>
-<p>​    从朱蒂的身上也可以看到不少闪光点，而由于“我”和朱蒂的关系逐渐亲近，我们越发的了解一个人的内心，在时而坚强时而柔弱的朱蒂背后，是一个不断走向成熟的背影，而“我”（长腿叔叔）则是注视这一切的人。</p>
+          <h1 id="14岁懂社会-《被你讨厌的昆虫们》读书笔记"><a href="#14岁懂社会-《被你讨厌的昆虫们》读书笔记" class="headerlink" title="14岁懂社会-《被你讨厌的昆虫们》读书笔记"></a>14岁懂社会-《被你讨厌的昆虫们》读书笔记</h1><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p><strong>曾经为之讨厌的东西，实际接触之后才发现那么多喜爱</strong>，这是看完这本书之后感触最深的一句话。对于作者来说昆虫们因为不被人接受逐渐淡出视野惋惜，真正喜爱的人才能发现昆虫的魅力。个人观察过最多的动物大概是蚂蚁的，不知道为什么特别喜欢蚂蚁搬东西的场景，每次看到这样的画面都会忍不住看上几眼或者放空电脑盯上很久。</p>
+<p>最后作者提到的《生之欲》这部电影倒是意外收获，打算后续无聊打发时间的时候看看。</p>
+<p>《<strong>生之欲</strong>》（日语：生きる）在<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUE2JTk5JUU2JUI4JUFG" title="https://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF">香港<i class="fa fa-external-link"></i></span>译作《<strong>流芳颂</strong>》，乃是1952年由<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTk3JUE1JUU2JTlDJUFD" title="https://zh.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC">日本<i class="fa fa-external-link"></i></span>知名<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU1JUIwJThFJUU2JUJDJTk0" title="https://zh.wikipedia.org/wiki/%E5%B0%8E%E6%BC%94">导演<i class="fa fa-external-link"></i></span><span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JUJCJTkxJUU2JUJFJUE0JUU2JTk4JThF" title="https://zh.wikipedia.org/wiki/%E9%BB%91%E6%BE%A4%E6%98%8E">黑泽明<i class="fa fa-external-link"></i></span>执导的<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1">电影<i class="fa fa-external-link"></i></span>，曾获得日本<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JUFGJThGJUU2JTk3JUE1JUU5JTlCJUJCJUU1JUJEJUIxJUU3JThEJThF" title="https://zh.wikipedia.org/wiki/%E6%AF%8F%E6%97%A5%E9%9B%BB%E5%BD%B1%E7%8D%8E">每日电影最佳影片奖<i class="fa fa-external-link"></i></span>、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU5JTlCJUJCJUU1JUJEJUIxJUU2JTk3JUFDJUU1JUEwJUIx" title="https://zh.wikipedia.org/wiki/%E9%9B%BB%E5%BD%B1%E6%97%AC%E5%A0%B1">电影旬报<i class="fa fa-external-link"></i></span>年度最佳影片奖、<span class="exturl" data-url="aHR0cHM6Ly96aC53aWtpcGVkaWEub3JnL3dpa2kvJUU2JTlGJThGJUU2JTlFJTk3JUU1JUJEJUIxJUU1JUIxJTk1" title="https://zh.wikipedia.org/wiki/%E6%9F%8F%E6%9E%97%E5%BD%B1%E5%B1%95">柏林影展<i class="fa fa-external-link"></i></span>特别奖等奖项。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/02/20/changtui/#more" rel="contents">
+              <a class="btn" href="/2022/05/21/bntydkcm/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1256,7 +1251,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/02/20/optional/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/05/21/abioss/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -1270,7 +1265,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/02/20/optional/" class="post-title-link" itemprop="url">JAVA8实战 - Optional工具类</a>
+            <a href="/2022/05/21/abioss/" class="post-title-link" itemprop="url">阿里云OSS图床搭建</a>
         </h2>
 
         <div class="post-meta">
@@ -1280,7 +1275,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-02-20 20:26:21" itemprop="dateCreated datePublished" datetime="2022-02-20T20:26:21+08:00">2022-02-20</time>
+              <time title="创建时间：2022-05-21 18:50:06" itemprop="dateCreated datePublished" datetime="2022-05-21T18:50:06+08:00">2022-05-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
@@ -1295,7 +1290,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
                 </span>
             </span>
 
@@ -1308,8 +1303,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/02/20/optional/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/20/optional/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/05/21/abioss/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/21/abioss/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -1319,16 +1314,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>16k</span>
+              <span>2.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>14 分钟</span>
+              <span>3 分钟</span>
             </span>
-            <div class="post-description">JAVA8可以说是JAVA划时代的一个版本</div>
+            <div class="post-description">图床处理</div>
 
         </div>
       </header>
@@ -1339,19 +1334,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="JAVA8实战-Optional工具类"><a href="#JAVA8实战-Optional工具类" class="headerlink" title="JAVA8实战 - Optional工具类"></a>JAVA8实战 - Optional工具类</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210807203312.png" alt=""></p>
-<p>[toc]</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    没错，这又是一个新的专栏，JAVA8可以说是JAVA划时代的一个版本，几乎是让JAVA焕发了第三春（第二春在JDK5），当然里面的新特性也是十分重要的，虽然Java现在都已经到了10几的版本，但是国内多数使用的版本还是JAVA8，所以这个系列将会围绕Java8的新特性和相关工具做一些总结。希望对大家日常学习和工作中有所帮助。</p>
-<h1 id="概述："><a href="#概述：" class="headerlink" title="概述："></a>概述：</h1><ol>
-<li>日常工作学习我们大致是如何规避空指针的。</li>
-<li>关于Optional的系统介绍，常见的使用和处理方法</li>
-<li>Optional的使用场景以及一些小型案例代码</li>
-<li>来看看《Effective Java》这个作者如何看待Optional这个工具类&gt;</li>
-</ol>
-<h1 id="思维导图："><a href="#思维导图：" class="headerlink" title="思维导图："></a>思维导图：</h1><p>地址：<span class="exturl" data-url="aHR0cHM6Ly93d3cubXVidWNtLmNvbS9kb2MvMnFTNDBFTDFnX0I=" title="https://www.mubucm.com/doc/2qS40EL1g_B">https://www.mubucm.com/doc/2qS40EL1g_B<i class="fa fa-external-link"></i></span><br><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210807214651.png" alt=""></p>
+          <h1 id="阿里云OSS图床搭建"><a href="#阿里云OSS图床搭建" class="headerlink" title="阿里云OSS图床搭建"></a>阿里云OSS图床搭建</h1><h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>过去介绍过Gitee的图床搭建，用了一年多都挺稳定了，访问速度尚可，但是2022年开始发现不是很稳定，并且部分网站会发现“图片消失”的情况，F12看一下发现是很多外国网站给直接<strong>302临时重定向</strong>了。</p>
+<p>所以为了保证数据安全，这里无奈只能掏钱买阿里云的 OSS做图床了，查了下价钱也还能接受，标准LRS存储一年也就10块钱。</p>
+<p>本文就根据OSS配置再结合个人常用的几个软件来总结阿里云OSS相关配置和应用。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/02/20/optional/#more" rel="contents">
+              <a class="btn" href="/2022/05/21/abioss/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1374,7 +1362,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1440,20 +1428,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">210</span>
+          <span class="site-state-item-count">232</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1487,6 +1475,13 @@
   </div>
 
       </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
         <div class="back-to-top motion-element">
           <i class="fa fa-arrow-up"></i>
           <span>0%</span>
@@ -1519,13 +1514,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1.5m</span>
+    <span title="站点总字数">1.9m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">23:01</span>
+    <span title="站点阅读时长">28:45</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>

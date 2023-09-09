@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Zookeeper的客户端Curator使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Zookeeper】Apach Curator 框架源码分析：初始化过程（一）【Ver 4.3.0】">
+<meta property="og:url" content="https://whitestore.top/2023/08/10/curatorsource1/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Zookeeper的客户端Curator使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/Curator%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.drawio.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230708120150.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230708120426.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230704210542.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230705073357.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230708125752.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230703204542.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706215011.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706220450.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230708111456.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706222022.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717113221.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717112918.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717113503.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717113536.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/Curator%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.drawio.png">
+<meta property="article:published_time" content="2023-08-10T08:57:00.000Z">
+<meta property="article:modified_time" content="2023-09-09T00:53:49.936Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Curator">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/Curator%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.drawio.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/08/10/curatorsource1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Zookeeper】Apach Curator 框架源码分析：初始化过程（一）【Ver 4.3.0】 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/08/10/curatorsource1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Zookeeper】Apach Curator 框架源码分析：初始化过程（一）【Ver 4.3.0】
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-08-10 16:57:00" itemprop="dateCreated datePublished" datetime="2023-08-10T16:57:00+08:00">2023-08-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zookeeper/" itemprop="url" rel="index"><span itemprop="name">Zookeeper</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/08/10/curatorsource1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/08/10/curatorsource1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>36k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>32 分钟</span>
+            </span>
+            <div class="post-description">Zookeeper的客户端Curator使用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Curator是netflix公司开源的一套zookeeper客户端，目前是Apache的顶级项目。</p>
+<p>和ZK的原生客户端相比，Curator的抽象层次要更高，同时简化了ZK的常用功能开发量，比如Curator自带连接重试、反复注册Watcher、NodeExistsException 异常处理等等。</p>
+<p>根据官方的介绍，我们可以了解到它是一个用于分布式的Java客户端API工具。它基于<code>high-level API</code>，拥有它可以更简单易懂的指挥Zookeeper实现分布式安全应用程序开发。</p>
+<p>Curator由一系列的模块构成，对于一般开发者而言，常用的是<strong>curator-framework</strong>和<strong>curator-recipes</strong>，以及广为熟知的 <strong>分布式锁</strong>。</p>
+<p>Curator 当然也包括许多扩展，比如<strong>服务发现</strong>和<strong>基于Java 8异步DSL</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Apache Curator is a Java&#x2F;JVM client library for [Apache ZooKeeper](https:&#x2F;&#x2F;zookeeper.apache.org&#x2F;), a distributed coordination service.</span><br><span class="line"></span><br><span class="line">Apache Curator includes a high-level API framework and utilities to make using Apache ZooKeeper much easier and more reliable. It also includes recipes for common use cases and extensions such as service discovery and a Java 8 asynchronous DSL.</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>用官方的介绍来说就是：guava之于java就像curator之于zookeeper </p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="ZK-版本支持"><a href="#ZK-版本支持" class="headerlink" title="ZK 版本支持"></a>ZK 版本支持</h1><p>Curator 目前最新的版本为 5.X 的版本，已经不支持 ZK 的 3.4.X 以及之前的版本，阅读源码之前经过认真考虑，最终选择了 ZK的 <strong>3.5.10</strong> 版本。</p>
+<blockquote>
+<p>5.X 对于 Curator 做了不少破坏性的改动，不兼容的原因如下：</p>
+<ul>
+<li>旧的ListenerContainer类已经被移除，以避免Guava类泄漏。</li>
+<li>ConnectionHandlingPolicy和相关类已被删除</li>
+<li>Reaper和ChildReaper类/recipes已被删除。您应该改用 ZooKeeper 容器节点。</li>
+<li>newPersistentEphemeralNode()和newPathChildrenCache()已从GroupMember中移除。</li>
+<li>ServiceCacheBuilder&lt; T&gt; executorService(CloseableExecutorService executorService)已从ServiceCacheBuilder中移除。</li>
+<li>ServiceProviderBuilder&lt; T&gt; executorService(CloseableExecutorService executorService)已从ServiceProviderBuilder中移除。</li>
+<li>static boolean shouldRetry(int rc)已从RetryLoop中移除。</li>
+<li>static boolean isRetryException(Throwable exception)已从RetryLoop中移除。</li>
+</ul>
+</blockquote>
+<h1 id="官网地址"><a href="#官网地址" class="headerlink" title="官网地址"></a>官网地址</h1><p><span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcv" title="https://curator.apache.org/">Apache Curator<i class="fa fa-external-link"></i></span></p>
+<h2 id="下载地址"><a href="#下载地址" class="headerlink" title="下载地址"></a>下载地址</h2><p>Curator Maven 相关地址：<span class="exturl" data-url="aHR0cHM6Ly9tdm5yZXBvc2l0b3J5LmNvbS9hcnRpZmFjdC9vcmcuYXBhY2hlLmN1cmF0b3I=" title="https://mvnrepository.com/artifact/org.apache.curator">https://mvnrepository.com/artifact/org.apache.curator<i class="fa fa-external-link"></i></span></p>
+<p>Curator jar包下载地址：<span class="exturl" data-url="aHR0cHM6Ly9jd2lraS5hcGFjaGUub3JnL2NvbmZsdWVuY2UvZGlzcGxheS9DVVJBVE9SL1JlbGVhc2Vz" title="https://cwiki.apache.org/confluence/display/CURATOR/Releases">https://cwiki.apache.org/confluence/display/CURATOR/Releases<i class="fa fa-external-link"></i></span></p>
+<h1 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h1><h2 id="ZK-集群部署"><a href="#ZK-集群部署" class="headerlink" title="ZK 集群部署"></a>ZK 集群部署</h2><p>学习之前需要使用ZK搭建集群环境，方便Debug的时候调试代码。这部分搭建过程放到另一篇文章：</p>
+<p>[[【Zookeeper】基于3台linux虚拟机搭建zookeeper集群]]</p>
+<h2 id="Maven依赖引入"><a href="#Maven依赖引入" class="headerlink" title="Maven依赖引入"></a>Maven依赖引入</h2><p>下面是对应的Zookeeper和Curator的版本选择。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">curator.version</span>&gt;</span>4.3.0<span class="tag">&lt;/<span class="name">curator.version</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">zookeeper.version</span>&gt;</span>3.5.10<span class="tag">&lt;/<span class="name">zookeeper.version</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-framework<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;curator.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-recipes<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;curator.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;zookeeper.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="构建入门实例"><a href="#构建入门实例" class="headerlink" title="构建入门实例"></a>构建入门实例</h2><p>Curator 最为核心和强大并且常用功能是分布式锁。</p>
+<p>在入门demo中可以看到整个 Curator 依靠 <strong>CuratorFrameworkFactory</strong> 构建，使用 Curator 进行分布式加锁解锁操作，只需要为所连接的ZooKeeper集群提供一个CuratorFramework对象即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy)</span><br></pre></td></tr></table></figure>
+
+<p>上面的方法将会使用默认值创建与ZooKeeper集群的连接，调用放只需要关注使用到的重试策略。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>)</span><br><span class="line">CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);</span><br><span class="line">client.start();</span><br></pre></td></tr></table></figure>
+
+<p>从参数值可以大致了解到，这里使用的策略是指数递增间隔的方式尝试重试时间，并且指定重试三次。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>);  </span><br><span class="line">CuratorFramework client =  </span><br><span class="line">        CuratorFrameworkFactory.newClient(<span class="string">"192.168.0.1;192.168.0.2;192.168.0.3"</span>, retryPolicy);  </span><br><span class="line">client.start();  </span><br><span class="line"><span class="comment">// 此处就获取到 zk的一个连接实例。  </span></span><br><span class="line"><span class="comment">//.....</span></span><br></pre></td></tr></table></figure>
+
+<p>拥有了 <strong>CuratorFramework</strong> 实例之后，就可以直接通过 API 调用操作ZK。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.create().forPath(<span class="string">"/my/path"</span>, myData)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这样的直接调用还有个好处是client实例如果碰到网络抖动等情况会自动重试，重试过程不需要开发者自己实现。</p>
+</blockquote>
+<h2 id="可重入锁（公平锁）案例代码"><a href="#可重入锁（公平锁）案例代码" class="headerlink" title="可重入锁（公平锁）案例代码"></a>可重入锁（公平锁）案例代码</h2><p>下面是官网可重入锁的Demo使用代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">InterProcessMutex lock = <span class="keyword">new</span> InterProcessMutex(client, lockPath);</span><br><span class="line"><span class="keyword">if</span> ( lock.acquire(maxWait, waitUnit) ) </span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">try</span> </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// do some work inside of the critical section here</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">finally</span></span><br><span class="line">    &#123;</span><br><span class="line">        lock.release();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里改造一下即可简单使用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>);  </span><br><span class="line">CuratorFramework client =  </span><br><span class="line">        CuratorFrameworkFactory.newClient(<span class="string">"192.168.0.1,192.168.0.2,192.168.0.3"</span>, retryPolicy);  </span><br><span class="line">client.start();  </span><br><span class="line"><span class="comment">// 此处就获取到 zk的一个连接实例。  </span></span><br><span class="line"><span class="comment">//.....  </span></span><br><span class="line">client.create().forPath(<span class="string">"/my/path"</span>, <span class="string">"Test"</span>.getBytes());  </span><br><span class="line">InterProcessMutex lock = <span class="keyword">new</span> InterProcessMutex(client, <span class="string">"/test/myLock"</span>);  </span><br><span class="line">lock.acquire();  </span><br><span class="line"><span class="keyword">try</span> &#123;  </span><br><span class="line">    <span class="comment">// do some work inside of the critical section here  </span></span><br><span class="line">    Thread.sleep(<span class="number">3000</span>);  </span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">    lock.release();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>整个Demo案例代码比较简单，下面直接开始介绍初始化过程。</p>
+<p>本文主要介绍和<strong>Curator初始化</strong>、内部的<strong>通知机制</strong>以及<strong>会话管理</strong>部分。</p>
+<h1 id="初始化过程流程图"><a href="#初始化过程流程图" class="headerlink" title="初始化过程流程图"></a>初始化过程流程图</h1><p>初始化过程流程图全图如下。下面将会一步步拆解这幅图是如何拼凑的。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/Curator%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.drawio.png" alt="Curator 源码分析.drawio.png"></p>
+<blockquote>
+<p>Drawio 源文件和图片地址如下：<br>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMThQb01qa3AxMUx6dG1OQjNYZ1owcXc/cHdkPTRidWc=" title="https://pan.baidu.com/s/18PoMjkp11LztmNB3XgZ0qw?pwd=4bug">https://pan.baidu.com/s/18PoMjkp11LztmNB3XgZ0qw?pwd=4bug<i class="fa fa-external-link"></i></span><br>    提取码：4bug </p>
+</blockquote>
+<h1 id="初始化源码分析"><a href="#初始化源码分析" class="headerlink" title="初始化源码分析"></a>初始化源码分析</h1><h2 id="CuratorFramework-初始化过程"><a href="#CuratorFramework-初始化过程" class="headerlink" title="CuratorFramework 初始化过程"></a>CuratorFramework 初始化过程</h2><h3 id="初始化过程流程图-1"><a href="#初始化过程流程图-1" class="headerlink" title="初始化过程流程图"></a>初始化过程流程图</h3><p>CuratorFramework 初始化过程为下面截图这一部分，红色部分为个人认为相对比较重要的对象和变量。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230708120150.png" alt="image.png"></p>
+<h3 id="CuratorFrameworkFactory-newClient-代码分析"><a href="#CuratorFrameworkFactory-newClient-代码分析" class="headerlink" title="CuratorFrameworkFactory.newClient() 代码分析"></a>CuratorFrameworkFactory.newClient() 代码分析</h3><p>下面通过<code>CuratorFrameworkFactory.newClient()</code>一步步探究整个初始化过程。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>);  </span><br><span class="line">CuratorFramework client =  </span><br><span class="line">        CuratorFrameworkFactory.newClient(<span class="string">"192.168.19.100:2181,192.168.19.101:2181,192.168.19.102:2181"</span>, retryPolicy);</span><br></pre></td></tr></table></figure>
+
+<p>在获取分布式锁之前，我们需要先连接ZK集群，整个过程通过两行代码完成。</p>
+<p>首先，我们需要确定连接ZK的重试策略，接着通过<code>CuratorFrameworkFactory</code>构建<code>Curator</code> 实例，<code>Curator</code>内部根据ZK原生客户端做了一层封装，开发者使用过程中不需要关注。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>);  </span><br><span class="line">CuratorFramework client =  CuratorFrameworkFactory.newClient(<span class="string">"192.168.0.1,192.168.0.2,192.168.0.3"</span>, retryPolicy);</span><br></pre></td></tr></table></figure>
+
+<p>上面是简单的模板代码。<strong>ExponentialBackoffRetry</strong> 构建重试策略为按照指数增长重试时间，比如第一次1秒，第二次2秒，第三次4秒，第四次8秒….. </p>
+<p>接着是利用<code>CuratorFrameworkFactory</code>构建实例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> newClient(connectString, DEFAULT_SESSION_TIMEOUT_MS, DEFAULT_CONNECTION_TIMEOUT_MS, retryPolicy);</span><br></pre></td></tr></table></figure>
+
+<p>这里强调一下两个常量 <strong>DEFAULT_SESSION_TIMEOUT_MS</strong> （默认的会话超时时间）、<strong>DEFAULT_CONNECTION_TIMEOUT_MS</strong>（默认的连接超时时间），作用是传入重试策略时候填写默认参数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_SESSION_TIMEOUT_MS</span><br><span class="line">    = Integer.getInteger(<span class="string">"curator-default-session-timeout"</span>, <span class="number">60</span> * <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_CONNECTION_TIMEOUT_MS = Integer.getInteger(<span class="string">"curator-default-connection-timeout"</span>, <span class="number">15</span> * <span class="number">1000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>我们进一步进入构造方法，这里用了建造者模式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> builder().  </span><br><span class="line">    connectString(connectString).  </span><br><span class="line">    sessionTimeoutMs(sessionTimeoutMs).  </span><br><span class="line">    connectionTimeoutMs(connectionTimeoutMs).  </span><br><span class="line">    retryPolicy(retryPolicy).  </span><br><span class="line">    build();</span><br></pre></td></tr></table></figure>
+
+<p><code>build()</code>工作完成之后，后续的调用实际上调用的是<strong>CuratorFrameworkImpl</strong>实例，注意这里把<strong>CuratorFrameworkFactory</strong>的<strong>this</strong>引用逸出给<strong>CuratorFrameworkImpl</strong>对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="keyword">new</span> CuratorFrameworkImpl(<span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>CuratorFrameworkImpl</code> 构造方法的内容比较多，这里在源码对于相对重要的组件进行标注，这里的<strong>CuratorZookeeperClient</strong>这个对象，相当于ZK原生客户端的封装对象，Curator的很多质量都是由它来完成调用的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">CuratorFrameworkImpl</span><span class="params">(CuratorFrameworkFactory.Builder builder)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    ZookeeperFactory localZookeeperFactory = makeZookeeperFactory(builder.getZookeeperFactory());  </span><br><span class="line">    <span class="keyword">this</span>.client = <span class="keyword">new</span> CuratorZookeeperClient  </span><br><span class="line">        (  </span><br><span class="line">            localZookeeperFactory,  </span><br><span class="line">            builder.getEnsembleProvider(),  </span><br><span class="line">            builder.getSessionTimeoutMs(),  </span><br><span class="line">            builder.getConnectionTimeoutMs(),  </span><br><span class="line">            builder.getWaitForShutdownTimeoutMs(),  </span><br><span class="line">            <span class="keyword">new</span> Watcher()  </span><br><span class="line">            &#123;  </span><br><span class="line">                <span class="meta">@Override</span>  </span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent watchedEvent)</span>  </span></span><br><span class="line"><span class="function">                </span>&#123;  </span><br><span class="line">                    CuratorEvent event = <span class="keyword">new</span> CuratorEventImpl(CuratorFrameworkImpl.<span class="keyword">this</span>, CuratorEventType.WATCHED, watchedEvent.getState().getIntValue(), unfixForNamespace(watchedEvent.getPath()), <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, watchedEvent, <span class="keyword">null</span>, <span class="keyword">null</span>);  </span><br><span class="line">                    processEvent(event);  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;,  </span><br><span class="line">            builder.getRetryPolicy(),  </span><br><span class="line">            builder.canBeReadOnly(),  </span><br><span class="line">            builder.getConnectionHandlingPolicy()  </span><br><span class="line">        );  </span><br><span class="line">  <span class="comment">//用于判断连接断开和连接超时的状态，设置curator的连接状态，并通过connectionStateManager触发连接事件状态通知</span></span><br><span class="line">    internalConnectionHandler = <span class="keyword">new</span> StandardInternalConnectionHandler();</span><br><span class="line">     </span><br><span class="line">    <span class="comment">//接收事件的通知。后台线程操作事件和连接状态事件会触发 </span></span><br><span class="line">    listeners = <span class="keyword">new</span> ListenerContainer&lt;CuratorListener&gt;();  </span><br><span class="line">    </span><br><span class="line">    <span class="comment">//当后台线程发生异常或者handler发生异常的时候会触发</span></span><br><span class="line">    unhandledErrorListeners = <span class="keyword">new</span> ListenerContainer&lt;UnhandledErrorListener&gt;();  </span><br><span class="line">    <span class="comment">//后台线程执行的操作队列</span></span><br><span class="line">    backgroundOperations = <span class="keyword">new</span> DelayQueue&lt;OperationAndData&lt;?&gt;&gt;();  </span><br><span class="line">    forcedSleepOperations = <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;();  </span><br><span class="line">    <span class="comment">//命名空间</span></span><br><span class="line">    namespace = <span class="keyword">new</span> NamespaceImpl(<span class="keyword">this</span>, builder.getNamespace());  </span><br><span class="line"></span><br><span class="line"><span class="comment">//线程工厂方法，初始化后台线程池时会使用</span></span><br><span class="line">    threadFactory = getThreadFactory(builder);  </span><br><span class="line"></span><br><span class="line">maxCloseWaitMs = builder.getMaxCloseWaitMs();  </span><br><span class="line"></span><br><span class="line"><span class="comment">//负责连接状态变化时的通知</span></span><br><span class="line">    connectionStateManager = <span class="keyword">new</span> ConnectionStateManager(<span class="keyword">this</span>, builder.getThreadFactory(), builder.getSessionTimeoutMs(), builder.getConnectionHandlingPolicy().getSimulatedSessionExpirationPercent(), builder.getConnectionStateListenerDecorator());  </span><br><span class="line">    compressionProvider = builder.getCompressionProvider();  </span><br><span class="line">    aclProvider = builder.getAclProvider();  </span><br><span class="line">    </span><br><span class="line">    <span class="comment">//CuratorFrameworkImpl的状态，调用start方法之前为 LATENT，调用start方法之后为 STARTED ,调用close()方法之后为STOPPEDstate = new AtomicReference&lt;CuratorFrameworkState&gt;(CuratorFrameworkState.LATENT);  </span></span><br><span class="line">    useContainerParentsIfAvailable = builder.useContainerParentsIfAvailable(); </span><br><span class="line">    <span class="comment">//错误连接策略 </span></span><br><span class="line">    connectionStateErrorPolicy = Preconditions.checkNotNull(builder.getConnectionStateErrorPolicy(), <span class="string">"errorPolicy cannot be null"</span>);  </span><br><span class="line">    schemaSet = Preconditions.checkNotNull(builder.getSchemaSet(), <span class="string">"schemaSet cannot be null"</span>);  </span><br><span class="line">    zk34CompatibilityMode = builder.isZk34CompatibilityMode();  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">byte</span>[] builderDefaultData = builder.getDefaultData();  </span><br><span class="line">    defaultData = (builderDefaultData != <span class="keyword">null</span>) ? Arrays.copyOf(builderDefaultData, builderDefaultData.length) : <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>];  </span><br><span class="line">    authInfos = buildAuths(builder);  </span><br><span class="line">    </span><br><span class="line">  <span class="comment">//有保障的执行删除操作，其实是不断尝试直到删除成功，通过递归调用实现</span></span><br><span class="line">    failedDeleteManager = <span class="keyword">new</span> FailedDeleteManager(<span class="keyword">this</span>);  </span><br><span class="line">    </span><br><span class="line">    <span class="comment">//有保障的执行删除watch操作</span></span><br><span class="line">    failedRemoveWatcherManager = <span class="keyword">new</span> FailedRemoveWatchManager(<span class="keyword">this</span>);  </span><br><span class="line">    </span><br><span class="line">    namespaceFacadeCache = <span class="keyword">new</span> NamespaceFacadeCache(<span class="keyword">this</span>);  </span><br><span class="line">    </span><br><span class="line">  <span class="comment">//服务端可用节点的检测器，第一次连接和重连成功之后都会触发重新获取服务端列表</span></span><br><span class="line">    ensembleTracker = zk34CompatibilityMode ? <span class="keyword">null</span> : <span class="keyword">new</span> EnsembleTracker(<span class="keyword">this</span>, builder.getEnsembleProvider());  </span><br><span class="line">  </span><br><span class="line">    runSafeService = makeRunSafeService(builder);</span><br></pre></td></tr></table></figure>
+
+<p><code>newClient</code>的目的是构建ZK连接实例，包括一系列附加核心组件：后台操作、连接事件、异常监控、容器，命名空间、负载均衡等等。</p>
+<h2 id="CuratorZookeeperClient-初始化过程"><a href="#CuratorZookeeperClient-初始化过程" class="headerlink" title="CuratorZookeeperClient 初始化过程"></a>CuratorZookeeperClient 初始化过程</h2><h3 id="CuratorZookeeperClient-初始化过程流程图"><a href="#CuratorZookeeperClient-初始化过程流程图" class="headerlink" title="CuratorZookeeperClient 初始化过程流程图"></a>CuratorZookeeperClient 初始化过程流程图</h3><p>CuratorZookeeperClient 初始化过程图如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230708120426.png" alt="image.png"></p>
+<h3 id="CuratorZookeeperClient-初始化代码分析"><a href="#CuratorZookeeperClient-初始化代码分析" class="headerlink" title="CuratorZookeeperClient 初始化代码分析"></a>CuratorZookeeperClient 初始化代码分析</h3><p>上面提到，<code>CuratorFrameworkImp</code>l的初始化过程中，有一段比较重要的<code>CuratorZookeeperClient</code>客户端初始化过程，下面就来看看这个初始化过程干了啥。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">CuratorZookeeperClient</span><span class="params">(ZookeeperFactory zookeeperFactory, EnsembleProvider ensembleProvider,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">int</span> sessionTimeoutMs, <span class="keyword">int</span> connectionTimeoutMs, <span class="keyword">int</span> waitForShutdownTimeoutMs, Watcher watcher,</span></span></span><br><span class="line"><span class="function"><span class="params">            RetryPolicy retryPolicy, <span class="keyword">boolean</span> canBeReadOnly, ConnectionHandlingPolicy connectionHandlingPolicy)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// StandardConnectionHandler当收到Disconnect事件后，如果在规定时间内没有重连到服务器，则会主动触发Expired事件</span></span><br><span class="line">        <span class="keyword">this</span>.connectionHandlingPolicy = connectionHandlingPolicy;</span><br><span class="line">        <span class="keyword">if</span> ( sessionTimeoutMs &lt; connectionTimeoutMs )</span><br><span class="line">        &#123;</span><br><span class="line">            log.warn(String.format(<span class="string">"session timeout [%d] is less than connection timeout [%d]"</span>, sessionTimeoutMs, connectionTimeoutMs));</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="comment">// 重连策略</span></span><br><span class="line">        retryPolicy = Preconditions.checkNotNull(retryPolicy, <span class="string">"retryPolicy cannot be null"</span>);</span><br><span class="line">        ensembleProvider = Preconditions.checkNotNull(ensembleProvider, <span class="string">"ensembleProvider cannot be null"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.connectionTimeoutMs = connectionTimeoutMs;</span><br><span class="line">        <span class="keyword">this</span>.waitForShutdownTimeoutMs = waitForShutdownTimeoutMs;</span><br><span class="line">        <span class="comment">// //curator注册到原生客户端上的defaultWatcher,会收到和连接状态有关的事件通知等，负责超时重连</span></span><br><span class="line">        state = <span class="keyword">new</span> ConnectionState(zookeeperFactory, ensembleProvider, sessionTimeoutMs, connectionTimeoutMs, watcher, tracer, canBeReadOnly, connectionHandlingPolicy);</span><br><span class="line"></span><br><span class="line">		<span class="comment">//  重试策略设置</span></span><br><span class="line">        setRetryPolicy(retryPolicy);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>ConnectionState</strong>是<code>Curator</code>注册到原生客户端上的<strong>defaultWatcher</strong>，它会收到和连接状态有关的事件通知等，负责超时重连操作等。</p>
+<p>再来看下<code>ConnectionState</code>的构造方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ConnectionState(ZookeeperFactory zookeeperFactory, EnsembleProvider ensembleProvider, <span class="keyword">int</span> sessionTimeoutMs, <span class="keyword">int</span> connectionTimeoutMs, Watcher parentWatcher, AtomicReference&lt;TracerDriver&gt; tracer, <span class="keyword">boolean</span> canBeReadOnly, ConnectionHandlingPolicy connectionHandlingPolicy)  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="keyword">this</span>.ensembleProvider = ensembleProvider;  </span><br><span class="line">    <span class="keyword">this</span>.sessionTimeoutMs = sessionTimeoutMs;  </span><br><span class="line">    <span class="keyword">this</span>.connectionTimeoutMs = connectionTimeoutMs;  </span><br><span class="line">    <span class="keyword">this</span>.tracer = tracer;  </span><br><span class="line">    <span class="keyword">this</span>.connectionHandlingPolicy = connectionHandlingPolicy;  </span><br><span class="line">    <span class="keyword">if</span> ( parentWatcher != <span class="keyword">null</span> )  </span><br><span class="line">    &#123;  </span><br><span class="line">	    <span class="comment">// 因为defaultWatcher只能有一个，通过parentWatchers可实现defaultWatcher接到事件通知时parentWatchers的回调</span></span><br><span class="line">        parentWatchers.offer(parentWatcher);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    handleHolder = <span class="keyword">new</span> HandleHolder(zookeeperFactory, <span class="keyword">this</span>, ensembleProvider, sessionTimeoutMs, canBeReadOnly);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>parentWatchers</strong> 使用了并发安全队列 <strong>ConcurrentLinkedQueue</strong>，这部分属于JDK并发编程的基础内容，这个队列的作用如下：</p>
+<blockquote>
+<p><strong>ConcurrentLinkedQueue</strong>：一个基于链接节点的<strong>无界线程安全队列</strong>。此队列按照 FIFO（<strong>先进先出</strong>）原则对元素进行排序。队列的<strong>头部</strong> 是队列中<strong>时间最长的元素</strong>。队列的尾部 是队列中时间最短的元素。<strong>新的元素插入到队列的尾部</strong>，队列获取操作从队列头部获得元素。当多个线程共享访问一个公共 collection 时，ConcurrentLinkedQueue 是一个恰当的选择。此队列不允许使用 null 元素。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Queue&lt;Watcher&gt; parentWatchers = <span class="keyword">new</span> ConcurrentLinkedQueue&lt;Watcher&gt;();</span><br></pre></td></tr></table></figure>
+
+<h2 id="ConnectionStateManager-初始化过程"><a href="#ConnectionStateManager-初始化过程" class="headerlink" title="ConnectionStateManager 初始化过程"></a>ConnectionStateManager 初始化过程</h2><h3 id="ConnectionStateManager-初始化过程流程图"><a href="#ConnectionStateManager-初始化过程流程图" class="headerlink" title="ConnectionStateManager 初始化过程流程图"></a>ConnectionStateManager 初始化过程流程图</h3><p><strong>ConnectionStateManager</strong> 主要是持有<code>Client</code>引用，通过连接状态管理工程创建构建监听器，以及构建只允许一个线程执行的线程池。</p>
+<blockquote>
+<p>Curator 的设计记录是一个客户端永远只有一个线程负责工作。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230704210542.png" alt="image.png"></p>
+<h3 id="ConnectionStateManager-初始化代码分析"><a href="#ConnectionStateManager-初始化代码分析" class="headerlink" title="ConnectionStateManager 初始化代码分析"></a>ConnectionStateManager 初始化代码分析</h3><p>在<code>Curator</code>框架初始化代码中包含了 <strong>ConnectionStateManager</strong> 初始化，它主要负责状态维护和连接状态变更通知。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//负责连接状态变化时的通知</span></span><br><span class="line">connectionStateManager = <span class="keyword">new</span> ConnectionStateManager(<span class="keyword">this</span>, builder.getThreadFactory(), builder.getSessionTimeoutMs(), builder.getConnectionHandlingPolicy().getSimulatedSessionExpirationPercent(), builder.getConnectionStateListenerManagerFactory());</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，如果要监听状态改变，需要注册一个监听器。相关的注册方式在“”部分进行详细介绍，这里先看下相关的成员变量以及初始化方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//连接状态事件通知队列</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> BlockingQueue&lt;ConnectionState&gt; eventQueue = <span class="keyword">new</span> ArrayBlockingQueue&lt;ConnectionState&gt;(QUEUE_SIZE);</span><br><span class="line"></span><br><span class="line"><span class="comment">//需要通知的listeners </span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> UnaryListenerManager&lt;ConnectionStateListener&gt; listeners;</span><br><span class="line"></span><br><span class="line"><span class="comment">//ConnectionStateManager的运行状态 </span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> AtomicReference&lt;State&gt; state = <span class="keyword">new</span> AtomicReference&lt;State&gt;(State.LATENT);</span><br></pre></td></tr></table></figure>
+
+<p><strong>ConnectionStateManager#ConnectionStateManager</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">Params:</span></span><br><span class="line"><span class="comment">client – the client </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">threadFactory – thread factory to use or null for a default </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">sessionTimeoutMs – the ZK session timeout in milliseconds </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">sessionExpirationPercent – percentage of negotiated session timeout to use when simulating a session timeout. 0 means don't simulate at all </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">managerFactory – manager factory to use</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ConnectionStateManager</span><span class="params">(CuratorFramework client, ThreadFactory threadFactory, <span class="keyword">int</span> sessionTimeoutMs, <span class="keyword">int</span> sessionExpirationPercent, ConnectionStateListenerManagerFactory managerFactory)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="keyword">this</span>.client = client;  </span><br><span class="line">    <span class="keyword">this</span>.sessionTimeoutMs = sessionTimeoutMs;  </span><br><span class="line">    <span class="keyword">this</span>.sessionExpirationPercent = sessionExpirationPercent;  </span><br><span class="line">    <span class="keyword">if</span> ( threadFactory == <span class="keyword">null</span> )  </span><br><span class="line">    &#123;  </span><br><span class="line">        threadFactory = ThreadUtils.newThreadFactory(<span class="string">"ConnectionStateManager"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">//事件队列处理线程池</span></span><br><span class="line">    service = Executors.newSingleThreadExecutor(threadFactory);  </span><br><span class="line">    <span class="comment">// 构建监听器队列</span></span><br><span class="line">    listeners = managerFactory.newManager(client);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="CuratorFrameworkImpl-启动过程"><a href="#CuratorFrameworkImpl-启动过程" class="headerlink" title="CuratorFrameworkImpl 启动过程"></a>CuratorFrameworkImpl 启动过程</h2><p><code>CuratorFrameworkImpl</code>启动过程的主要工作如下：</p>
+<ol>
+<li>启动 <strong>ConnectionStateManager</strong>，同时负责连接事件的通知准备。</li>
+<li>启动 <strong>CuratorZookeeperClient</strong> ，建立服务端会话连接。</li>
+<li>启动一个单线程线程池，这个线程负责监听执行后台任务队列，不断从任务队列取出元素并且执行。</li>
+</ol>
+<h3 id="CuratorFrameworkImpl-启动过程流程图"><a href="#CuratorFrameworkImpl-启动过程流程图" class="headerlink" title="CuratorFrameworkImpl 启动过程流程图"></a>CuratorFrameworkImpl 启动过程流程图</h3><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230705073357.png" alt="image.png"></p>
+<h3 id="客户端连接-client-start"><a href="#客户端连接-client-start" class="headerlink" title="客户端连接 client.start();"></a>客户端连接 client.start();</h3><p>调用<code>start</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.start();</span><br></pre></td></tr></table></figure>
+
+<p><code>client.start();</code>内部逻辑如下，这个方法的代码都比较简单，具体可以参考注释理解。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    log.info(<span class="string">"Starting"</span>);  </span><br><span class="line">    <span class="comment">// 使用CAS把当前的运行状态切换为 STARTED，状态切换之后不可逆</span></span><br><span class="line">    <span class="comment">// LATENT:CuratorFramework.start() has not yet been called</span></span><br><span class="line">    <span class="comment">// STARTED: CuratorFramework.start() has been called</span></span><br><span class="line">    <span class="keyword">if</span> ( !state.compareAndSet(CuratorFrameworkState.LATENT, CuratorFrameworkState.STARTED) )  </span><br><span class="line">    &#123;  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Cannot be started more than once"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">try</span>  </span><br><span class="line">    &#123;  </span><br><span class="line">	    <span class="comment">// ordering dependency - must be called before client.start()  </span></span><br><span class="line">	    <span class="comment">// 顺序依赖 - 必须在 client.start()之前调用。 </span></span><br><span class="line">        connectionStateManager.start(); </span><br><span class="line">		<span class="comment">// 构建连接监听器，监听异常连接状态</span></span><br><span class="line">        <span class="keyword">final</span> ConnectionStateListener listener = <span class="keyword">new</span> ConnectionStateListener()  </span><br><span class="line">        &#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stateChanged</span><span class="params">(CuratorFramework client, ConnectionState newState)</span>  </span></span><br><span class="line"><span class="function">            </span>&#123;  </span><br><span class="line">	            <span class="comment">// CONNECTED：为第一次成功连接到服务器而发送。注意：对于任何一个CuratorFramework实例只会收到其中一条信息。</span></span><br><span class="line">	            </span><br><span class="line">	            <span class="comment">// RECONNECTED：一个暂停的、丢失的或只读的连接已被重新建立</span></span><br><span class="line">	            <span class="comment">// RECONNECTED：A suspended, lost, or read-only connection has been re-established</span></span><br><span class="line">	            <span class="comment">// 如果已经连接或者正在重连</span></span><br><span class="line">                <span class="keyword">if</span> ( ConnectionState.CONNECTED == newState || ConnectionState.RECONNECTED == newState )  </span><br><span class="line">                &#123;  </span><br><span class="line">                    logAsErrorConnectionErrors.set(<span class="keyword">true</span>);  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">doNotDecorate</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function">            </span>&#123;  </span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;;  </span><br><span class="line">		<span class="comment">// 注册监听器</span></span><br><span class="line">        <span class="keyword">this</span>.getConnectionStateListenable().addListener(listener);  </span><br><span class="line">		<span class="comment">// 全局启动开发设置为true，ConnectionState 状态更新</span></span><br><span class="line">        client.start();  </span><br><span class="line">		<span class="comment">// 构建线程池</span></span><br><span class="line">        executorService = Executors.newSingleThreadScheduledExecutor(threadFactory);         <span class="comment">// 执行具备返回值的Callable 任务</span></span><br><span class="line">        executorService.submit(<span class="keyword">new</span> Callable&lt;Object&gt;()  </span><br><span class="line">        &#123;  </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> Object <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception  </span></span><br><span class="line"><span class="function">            </span>&#123;  </span><br><span class="line">	            <span class="comment">// 关键部分：挂起后台操作</span></span><br><span class="line">                backgroundOperationsLoop();  </span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;            </span><br><span class="line">			&#125;  </span><br><span class="line">        &#125;);  </span><br><span class="line">		  </span><br><span class="line">        <span class="keyword">if</span> ( ensembleTracker != <span class="keyword">null</span> )  </span><br><span class="line">        &#123;  </span><br><span class="line">            ensembleTracker.start();  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">        log.info(schemaSet.toDocumentation());  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">catch</span> ( Exception e )  </span><br><span class="line">    &#123;  </span><br><span class="line">        ThreadUtils.checkInterrupted(e);  </span><br><span class="line">        handleBackgroundOperationException(<span class="keyword">null</span>, e);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过CAS操作将当前状态更新为 <strong>STARTED</strong>，同时根据<code>if</code>逻辑可以得知<code>start()</code>方法不允许重复调用，这和 JDK的 Thread 设计思路比较相似，Thread 同样只允许执行一次<code>start()</code>方法。</p>
+<p>CAS 操作成功则构建连接监听器监听异常连接状态，监听器中会判断当前客户端是否已经连接或者正在重连，如果是则设置<strong>logAsErrorConnectionErrors=true</strong>。</p>
+<p>我们继续看关键部分<code>backgroundOperationsLoop();</code>。</p>
+<h3 id="后台轮询操作指令-backgroundOperationsLoop"><a href="#后台轮询操作指令-backgroundOperationsLoop" class="headerlink" title="后台轮询操作指令 backgroundOperationsLoop()"></a>后台轮询操作指令 <code>backgroundOperationsLoop()</code></h3><p><code>backgroundOperationsLoop()</code>方法，根据名称得知这是一个后台循环，后台任务的整体流程如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">backgroundOperationsLoop</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="keyword">try</span>  </span><br><span class="line">    &#123;  </span><br><span class="line">        <span class="keyword">while</span> ( state.get() == CuratorFrameworkState.STARTED )  </span><br><span class="line">        &#123;  </span><br><span class="line">            OperationAndData&lt;?&gt; operationAndData;  </span><br><span class="line">            <span class="keyword">try</span>            </span><br><span class="line">            &#123;  </span><br><span class="line">                operationAndData = backgroundOperations.take();  </span><br><span class="line">                <span class="keyword">if</span> ( debugListener != <span class="keyword">null</span> )  </span><br><span class="line">                &#123;  </span><br><span class="line">                    debugListener.listen(operationAndData);  </span><br><span class="line">                &#125;  </span><br><span class="line">                <span class="comment">// 执行后台操作</span></span><br><span class="line">                performBackgroundOperation(operationAndData);  </span><br><span class="line">            &#125;  </span><br><span class="line">            <span class="keyword">catch</span> ( InterruptedException e )  </span><br><span class="line">            &#123;  </span><br><span class="line">	            <span class="comment">// 在这里中断异常会被吞掉。</span></span><br><span class="line">                <span class="comment">// swallow the interrupt as it's only possible from either a background  </span></span><br><span class="line">                <span class="comment">// operation and, thus, doesn't apply to this loop or the instance                // is being closed in which case the while test will get it            &#125;  </span></span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">finally</span>  </span><br><span class="line">    &#123;  </span><br><span class="line">        log.info(<span class="string">"backgroundOperationsLoop exiting"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>OperationAndData</code> 实现了 Delayed 接口用于实现阻塞队列延迟重试。</p>
+</blockquote>
+<p>上面的处理逻辑如下：</p>
+<ol>
+<li>判断当前是否为<code>STARTED</code>状态，一直循环。</li>
+<li>从阻塞队列<strong>BlockingQueue</strong>当中弹出操作指令对象，在初始化代码中可以得知是一个<code>DelayQueue</code> 延迟并发安全阻塞队列，<code>OperationAndData</code> 对象毫无疑问实现了<code>Delayed</code>接口。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">backgroundOperations = <span class="keyword">new</span> DelayQueue&lt;OperationAndData&lt;?&gt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>判断Debug 监听器是否存在，如果存在则监听<code>OperationAndData</code>。</li>
+<li>执行后台操作<code>performBackgroundOperation</code>，它的工作是从阻塞队列不断获取数据操作<code>OperationAndData</code> 对象调用<code>callPerformBackgroundOperation</code>方法执行。</li>
+<li>如果无法正常连接ZK集群，此时会走else分支并且进入重连判断逻辑。如果符合条件，则添加到阻塞队列的当中等待下一次重试。（注意这里是<strong>主动重试，同步操作</strong>）</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">performBackgroundOperation</span><span class="params">(OperationAndData&lt;?&gt; operationAndData)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> ( !operationAndData.isConnectionRequired() || client.isConnected() )</span><br><span class="line">            &#123;</span><br><span class="line">                operationAndData.callPerformBackgroundOperation();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">	            <span class="comment">// 允许重连或者超时这样的情况发生</span></span><br><span class="line">                client.getZooKeeper();  <span class="comment">// important - allow connection resets, timeouts, etc. to occur</span></span><br><span class="line">		</span><br><span class="line">				<span class="comment">// 如果连接超时，则跑出 CuratorConnectionLossException 异常</span></span><br><span class="line">                <span class="keyword">if</span> ( operationAndData.getElapsedTimeMs() &gt;= client.getConnectionTimeoutMs() )</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> CuratorConnectionLossException();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 如果没有超时，则推入到 forcedSleepOperations 强制睡眠后等待重连</span></span><br><span class="line">                sleepAndQueueOperation(operationAndData);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> ( Throwable e )</span><br><span class="line">        &#123;</span><br><span class="line">	        <span class="comment">// 检查线程中断</span></span><br><span class="line">            ThreadUtils.checkInterrupted(e);</span><br><span class="line"></span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * Fix edge case reported as CURATOR-52. ConnectionState.checkTimeouts() throws KeeperException.ConnectionLossException</span></span><br><span class="line"><span class="comment">             * when the initial (or previously failed) connection cannot be re-established. This needs to be run through the retry policy</span></span><br><span class="line"><span class="comment">             * and callbacks need to get invoked, etc.</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">             <span class="comment">/*</span></span><br><span class="line"><span class="comment">             修复报告为CURATOR-52的边缘案例。当初始（或之前失败的）连接无法重新建立时，ConnectionState.checkTimeouts()会抛出KeeperException.ConnectionLossException。这需要通过重试策略运行，回调需要被调用，等等。</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">             <span class="comment">// 连接丢失异常处理</span></span><br><span class="line">            <span class="keyword">if</span> ( e <span class="keyword">instanceof</span> CuratorConnectionLossException )</span><br><span class="line">            &#123;</span><br><span class="line">                WatchedEvent watchedEvent = <span class="keyword">new</span> WatchedEvent(Watcher.Event.EventType.None, Watcher.Event.KeeperState.Disconnected, <span class="keyword">null</span>);</span><br><span class="line">                CuratorEvent event = <span class="keyword">new</span> CuratorEventImpl(<span class="keyword">this</span>, CuratorEventType.WATCHED, KeeperException.Code.CONNECTIONLOSS.intValue(), <span class="keyword">null</span>, <span class="keyword">null</span>, operationAndData.getContext(), <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, watchedEvent, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">                <span class="comment">// 如果重连次数</span></span><br><span class="line">                <span class="keyword">if</span> ( checkBackgroundRetry(operationAndData, event) )</span><br><span class="line">                &#123;</span><br><span class="line">	                <span class="comment">// 推送到backgroundOperations队列尝试重连</span></span><br><span class="line">                    queueOperation(operationAndData);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">	                <span class="comment">// 放弃重连</span></span><br><span class="line">                    logError(<span class="string">"Background retry gave up"</span>, e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">	            <span class="comment">// 否则需要处理后台操作异常</span></span><br><span class="line">                handleBackgroundOperationException(operationAndData, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里顺带介绍下后台决定是否重试的判断逻辑，主要是根据用户传输的重试策略执行对应的重试逻辑判断，比较经典的<strong>策略模式</strong>实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.getRetryPolicy().allowRetry(operationAndData.getThenIncrementRetryCount(), operationAndData.getElapsedTimeMs(), operationAndData)</span><br></pre></td></tr></table></figure>
+
+<h3 id="operationAndData-callPerformBackgroundOperation-后台任务执行"><a href="#operationAndData-callPerformBackgroundOperation-后台任务执行" class="headerlink" title="operationAndData.callPerformBackgroundOperation() 后台任务执行"></a>operationAndData.callPerformBackgroundOperation() 后台任务执行</h3><p><strong>operationAndData</strong> 继承了<strong>DelayQueue</strong>，运用多态特性拥有不同实现，内部只有一行代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">callPerformBackgroundOperation</span><span class="params">()</span> <span class="keyword">throws</span> Exception  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    operation.performBackgroundOperation(<span class="keyword">this</span>);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>operation.performBackgroundOperation(this);  对应 <strong>BackgroundOperation#performBackgroundOperation</strong></p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230708125752.png" alt="image.png"></p>
+<p><strong>BackgroundOperation</strong> 后台操作有很多具体的实现，对应了ZK常见操作。传递的<code>this</code>就是 <code>operationAndData</code> 对象。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230703204542.png" alt="image.png"></p>
+<h2 id="会话管理"><a href="#会话管理" class="headerlink" title="会话管理"></a>会话管理</h2><ol>
+<li>Client 连接状态都是通过 <strong>ConnectionState</strong> 进行管理的，它会负责尝试超时重连的操作。</li>
+<li><strong>ConnectionStateManager</strong> 会负责连接状态的改变和通知。</li>
+<li><strong>ConnectionHandlingPolicy</strong>  则对应了连接超时策略的触发。</li>
+</ol>
+<p>在后台轮询队列操作指令对象过程中会在状态改变的时候尝试重连，客户端重连必然要通知到对应的监听器，那么 <strong>Curator</strong> 是如何进行客户端 <strong>会话状态通知</strong>以及<strong>会话超时重连</strong>的？</p>
+<h3 id="连接事件监听和状态变更-ConnectionState-process"><a href="#连接事件监听和状态变更-ConnectionState-process" class="headerlink" title="连接事件监听和状态变更 ConnectionState#process"></a>连接事件监听和状态变更 ConnectionState#process</h3><p>从<code>ConnectionState#process</code>的代码可以得知，连接状态相关的事件类型为<code>Watcher.Event.EventType.None</code>，会通知到所有的Wathcer。</p>
+<p>其中<code>ConnectionState</code>作为 <strong>defaultWatcher</strong> ，它的事件回调如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent event)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> ( LOG_EVENTS )  </span><br><span class="line">    &#123;  </span><br><span class="line">        log.debug(<span class="string">"ConnectState watcher: "</span> + event);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> ( event.getType() == Watcher.Event.EventType.None )  </span><br><span class="line">    &#123;  </span><br><span class="line">    <span class="comment">//isConnected：客户当前的连接状态，true表示已连接（SyncConnected 和 ConnectedReadOnly 状态）</span></span><br><span class="line">        <span class="keyword">boolean</span> wasConnected = isConnected.get(); </span><br><span class="line">        <span class="comment">// 根据 org.apache.zookeeper.Watcher.Event.KeeperState 进行状态判断。 </span></span><br><span class="line">        <span class="keyword">boolean</span> newIsConnected = checkState(event.getState(), wasConnected);  </span><br><span class="line">        <span class="keyword">if</span> ( newIsConnected != wasConnected )  </span><br><span class="line">        &#123;  </span><br><span class="line">	        <span class="comment">// /如果连接状态发生改变，则更新</span></span><br><span class="line">            isConnected.set(newIsConnected);  </span><br><span class="line">            connectionStartMs = System.currentTimeMillis();  </span><br><span class="line">            <span class="keyword">if</span> ( newIsConnected )  </span><br><span class="line">            &#123;  </span><br><span class="line">                </span><br><span class="line">			<span class="comment">//重连，更新会话超时协商时间</span></span><br><span class="line">			<span class="comment">// NegotiatedSessionTimeoutMs（协商会话超时）。</span></span><br><span class="line">			                lastNegotiatedSessionTimeoutMs.set(handleHolder.getNegotiatedSessionTimeoutMs());  </span><br><span class="line">                log.debug(<span class="string">"Negotiated session timeout: "</span> + lastNegotiatedSessionTimeoutMs.get());  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">	<span class="comment">// 通知parentWatchers, 注意初始化的时候其实传入了一个parentWatcher,会调用CuratorFrameworkImpl.processEvent</span></span><br><span class="line">    <span class="keyword">for</span> ( Watcher parentWatcher : parentWatchers )  </span><br><span class="line">    &#123;  </span><br><span class="line">        OperationTrace trace = <span class="keyword">new</span> OperationTrace(<span class="string">"connection-state-parent-process"</span>, tracer.get(), getSessionId());  </span><br><span class="line">        parentWatcher.process(event);  </span><br><span class="line">        trace.commit();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后一段注释提到可以看到遍历<code>parentWatchers</code>并且调用<code>process</code>方法。这里实际上默认会有个Watcher，那就是在初始化的时候默认会注册一个Watch作为parentWatcher传入。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.client = <span class="keyword">new</span> CuratorZookeeperClient  </span><br><span class="line">      (  </span><br><span class="line">          localZookeeperFactory,  </span><br><span class="line">          builder.getEnsembleProvider(),  </span><br><span class="line">          builder.getSessionTimeoutMs(),  </span><br><span class="line">          builder.getConnectionTimeoutMs(),  </span><br><span class="line">          builder.getWaitForShutdownTimeoutMs(),  </span><br><span class="line">          <span class="keyword">new</span> Watcher()  </span><br><span class="line">          &#123;  </span><br><span class="line">              <span class="meta">@Override</span>  </span><br><span class="line">              <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent watchedEvent)</span>  </span></span><br><span class="line"><span class="function">              </span>&#123;  </span><br><span class="line">                  CuratorEvent event = <span class="keyword">new</span> CuratorEventImpl(CuratorFrameworkImpl.<span class="keyword">this</span>, CuratorEventType.WATCHED, watchedEvent.getState().getIntValue(), unfixForNamespace(watchedEvent.getPath()), <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, watchedEvent, <span class="keyword">null</span>, <span class="keyword">null</span>);  </span><br><span class="line">                  <span class="comment">// 注意初始化的时候其实传入了一个parentWatcher,会调用CuratorFrameworkImpl.processEvent</span></span><br><span class="line">                  processEvent(event);  </span><br><span class="line">              &#125;  </span><br><span class="line">          &#125;,  </span><br><span class="line">          builder.getRetryPolicy(),  </span><br><span class="line">          builder.canBeReadOnly(),  </span><br><span class="line">          builder.getConnectionHandlingPolicy()  </span><br><span class="line">      );</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706215011.png" alt="image.png"></p>
+<p>这部分通知事件回调在下文会再次提到，这里简单有关印象即可。</p>
+<h3 id="连接状态检查和处理-ConnectionState-checkState"><a href="#连接状态检查和处理-ConnectionState-checkState" class="headerlink" title="连接状态检查和处理 ConnectionState#checkState"></a>连接状态检查和处理 ConnectionState#checkState</h3><p>连接状态检查和处理在<code>ConnectionState#checkState</code>方法中进行。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> newIsConnected = checkState(event.getState(), wasConnected);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">checkState</span><span class="params">(Event.KeeperState state, <span class="keyword">boolean</span> wasConnected)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="keyword">boolean</span> isConnected = wasConnected;  </span><br><span class="line">    <span class="keyword">boolean</span> checkNewConnectionString = <span class="keyword">true</span>;  </span><br><span class="line">    <span class="keyword">switch</span> ( state )  </span><br><span class="line">    &#123;  </span><br><span class="line">    <span class="keyword">default</span>:  </span><br><span class="line">    <span class="keyword">case</span> Disconnected:  </span><br><span class="line">    &#123;  </span><br><span class="line">        isConnected = <span class="keyword">false</span>;  </span><br><span class="line">        <span class="keyword">break</span>;    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">case</span> SyncConnected:  </span><br><span class="line">    <span class="keyword">case</span> ConnectedReadOnly:  </span><br><span class="line">    &#123;  </span><br><span class="line">        isConnected = <span class="keyword">true</span>;  </span><br><span class="line">        <span class="keyword">break</span>;    &#125;  </span><br><span class="line">	<span class="comment">// 访问权限异常</span></span><br><span class="line">    <span class="keyword">case</span> AuthFailed:  </span><br><span class="line">    &#123;  </span><br><span class="line">        isConnected = <span class="keyword">false</span>;  </span><br><span class="line">        log.error(<span class="string">"Authentication failed"</span>);  </span><br><span class="line">        <span class="keyword">break</span>;    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">case</span> Expired:  </span><br><span class="line">    &#123;  </span><br><span class="line">        isConnected = <span class="keyword">false</span>;  </span><br><span class="line">        checkNewConnectionString = <span class="keyword">false</span>;  </span><br><span class="line">        handleExpiredSession();  </span><br><span class="line">        <span class="keyword">break</span>;    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">case</span> SaslAuthenticated:  </span><br><span class="line">    &#123;  </span><br><span class="line">        <span class="comment">// NOP  </span></span><br><span class="line">        <span class="keyword">break</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">// the session expired is logged in handleExpiredSession, so not log here  </span></span><br><span class="line">    <span class="comment">// 会话过期被记录在handleExpiredSession中，所以不记录在这里。 </span></span><br><span class="line">    <span class="keyword">if</span> (state != Event.KeeperState.Expired) &#123;  </span><br><span class="line">        <span class="keyword">new</span> EventTrace(state.toString(), tracer.get(), getSessionId()).commit();  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> ( checkNewConnectionString )  </span><br><span class="line">    &#123;  </span><br><span class="line">	    <span class="comment">//如果服务端列表发生变化，则更新</span></span><br><span class="line">        String newConnectionString = handleHolder.getNewConnectionString();  </span><br><span class="line">        <span class="keyword">if</span> ( newConnectionString != <span class="keyword">null</span> )  </span><br><span class="line">        &#123;  </span><br><span class="line">            handleNewConnectionString(newConnectionString);  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> isConnected;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面根据不同连接状态判断连接是否异常， 返回结果为<strong>true</strong>则表示连接是正常的，当会话超时过期<code>Expired</code>时，会调用<code>handleExpiredSession</code>进行<code>reset</code>操作（会话<strong>被动重连</strong>），这里对于非连接超时的状态进行时间追踪。</p>
+<blockquote>
+<p>注意重连策略 <strong>RetryPolicy</strong>这个策略在主动和被动重连中均会调用。</p>
+</blockquote>
+<h3 id="parentWatchers-注册和回调"><a href="#parentWatchers-注册和回调" class="headerlink" title="parentWatchers 注册和回调"></a>parentWatchers 注册和回调</h3><p>发生状态变更的方法最后部分是通知所有的parentWatchers，下面来看看这个循环干了什么事情。</p>
+<p>再次强调初始化的时候传入了一个 <strong>parentWatcher</strong>，会调用<code>CuratorFrameworkImpl.processEvent</code> 方法，现在来看看这部分是如何注册和回调的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通知parentWatchers,注意初始化的时候其实传入了一个parentWatcher,会调用CuratorFrameworkImpl.processEvent</span></span><br><span class="line">    <span class="keyword">for</span> ( Watcher parentWatcher : parentWatchers )  </span><br><span class="line">    &#123;  </span><br><span class="line">        OperationTrace trace = <span class="keyword">new</span> OperationTrace(<span class="string">"connection-state-parent-process"</span>, tracer.get(), getSessionId());  </span><br><span class="line">        parentWatcher.process(event);  </span><br><span class="line">        trace.commit();  </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们直接看看这个默认的Watcher回调<code>CuratorFrameworkImpl#processEvent(event)</code> 相关代码逻辑。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Watcher()  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent watchedEvent)</span>  </span></span><br><span class="line"><span class="function">    </span>&#123;  </span><br><span class="line">        CuratorEvent event = <span class="keyword">new</span> CuratorEventImpl(CuratorFrameworkImpl.<span class="keyword">this</span>, CuratorEventType.WATCHED, watchedEvent.getState().getIntValue(), unfixForNamespace(watchedEvent.getPath()), <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, watchedEvent, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">        <span class="comment">// 处理事件  </span></span><br><span class="line">        processEvent(event);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<p><code>processEvent(event)</code>相关逻辑如下，首先对于状态变更判断，状态如果出现变更则通知到所有注册在 <strong>CuratorListener</strong> 上的监听器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processEvent</span><span class="params">(<span class="keyword">final</span> CuratorEvent curatorEvent)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> ( curatorEvent.getType() == CuratorEventType.WATCHED )  </span><br><span class="line">    &#123;  </span><br><span class="line">	    <span class="comment">//状态转换</span></span><br><span class="line">        validateConnection(curatorEvent.getWatchedEvent().getState());  </span><br><span class="line">    &#125;  </span><br><span class="line">	  <span class="comment">//通知所有注册的CuratorListener</span></span><br><span class="line">    listeners.forEach(<span class="keyword">new</span> Function&lt;CuratorListener, Void&gt;()  </span><br><span class="line">    &#123;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> Void <span class="title">apply</span><span class="params">(CuratorListener listener)</span>  </span></span><br><span class="line"><span class="function">        </span>&#123;  </span><br><span class="line">            <span class="keyword">try</span>  </span><br><span class="line">            &#123;  </span><br><span class="line">                OperationTrace trace = client.startAdvancedTracer(<span class="string">"EventListener"</span>);  </span><br><span class="line">                <span class="comment">// 接收回调事件</span></span><br><span class="line">                listener.eventReceived(CuratorFrameworkImpl.<span class="keyword">this</span>, curatorEvent);  </span><br><span class="line">                trace.commit();  </span><br><span class="line">            &#125;  </span><br><span class="line">            <span class="keyword">catch</span> ( Exception e )  </span><br><span class="line">            &#123;  </span><br><span class="line">                ThreadUtils.checkInterrupted(e);  </span><br><span class="line">                logError(<span class="string">"Event listener threw exception"</span>, e);  </span><br><span class="line">            &#125;  </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>validateConnection</code> 负责连接状态的转换代码。</p>
+<p><strong>CuratorFrameworkImpl#validateConnection</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">validateConnection</span><span class="params">(Watcher.Event.KeeperState state)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.Disconnected )  </span><br><span class="line">    &#123;  </span><br><span class="line">        internalConnectionHandler.suspendConnection(<span class="keyword">this</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.Expired )  </span><br><span class="line">    &#123;  </span><br><span class="line">        connectionStateManager.addStateChange(ConnectionState.LOST);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.SyncConnected )  </span><br><span class="line">    &#123;  </span><br><span class="line">        internalConnectionHandler.checkNewConnection(<span class="keyword">this</span>);  </span><br><span class="line">        connectionStateManager.addStateChange(ConnectionState.RECONNECTED);  </span><br><span class="line">        unSleepBackgroundOperations();  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.ConnectedReadOnly )  </span><br><span class="line">    &#123;  </span><br><span class="line">        internalConnectionHandler.checkNewConnection(<span class="keyword">this</span>);  </span><br><span class="line">        connectionStateManager.addStateChange(ConnectionState.READ_ONLY);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到实际的状态变更是依靠 <strong>ConnectionStateManager</strong> 组件负责的，<strong>ZK的原生客户端状态和Curator包装的状态对应</strong>表如下：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706220450.png" alt="image.png"></p>
+<p>此外还需要注意每一个 <code>if</code> 判断的最后一行代码中有一个添加 <strong>ConnectionState</strong> 的操作，这个操作的意义是通知所有注册到 <code>listeners</code>的<code>ConnectionStateListener</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">connectionStateManager.addStateChange(ConnectionState.READ_ONLY);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>至于怎么通知的会在下文介绍。</p>
+</blockquote>
+<h2 id="通知机制"><a href="#通知机制" class="headerlink" title="通知机制"></a>通知机制</h2><p>通知是干什么？其实就是在事件发生的时候，及时回调注册的<strong>Listenrner监听器</strong>对应的回调函数。Curator 针对不同组件设计了不同的监听器注册和回调。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自定义监听器 CuratorListener</span></span><br><span class="line">client.getCuratorListenable().addListener((_fk, e) -&gt; &#123;</span><br><span class="line">	<span class="keyword">if</span> (e.getType().equals(CuratorEventType.WATCHED)) &#123;</span><br><span class="line">		log.info(<span class="string">"测试"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br><span class="line">ConnectionStateListener connectionStateListener = (client1, newState) -&gt; &#123;</span><br><span class="line">	<span class="comment">//Some details</span></span><br><span class="line">	log.info(<span class="string">"newState =&gt; "</span>+ newState);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>可以注册的监听器方式如下：</p>
+<ul>
+<li>一次性 Watch 通知</li>
+<li>注册 CuratorListener 通知</li>
+<li>注册 ConnectionStateListener 通知</li>
+<li>注册 UnhandledErrorListener 通知</li>
+<li>后台线程操作完成时的回调通知</li>
+<li>缓存机制，多次注册</li>
+</ul>
+<h3 id="一次性-Watch-通知"><a href="#一次性-Watch-通知" class="headerlink" title="一次性 Watch 通知"></a>一次性 Watch 通知</h3><p>每次都需要反复通过下面的方法重新注册。这里涉及到 NodeCache 的相关组件，由于目前并没有介绍相关的前置代码，这里暂时跳过介绍。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.checkExists().creatingParentContainersIfNeeded().usingWatcher(watcher).inBackground(backgroundCallback).forPath(path);</span><br></pre></td></tr></table></figure>
+
+<h3 id="注册-CuratorListener-通知"><a href="#注册-CuratorListener-通知" class="headerlink" title="注册 CuratorListener 通知"></a>注册 CuratorListener 通知</h3><p>实现方式很简单，就是把监听器注册到<code>CuratorFrameworkImpl.listeners</code>这个容器当中，后台线程完成操作通知该监听器容器的所有监听器。</p>
+<p>比如异步的方式在ZK上面创建路径会触发<strong>CuratorEventType.CREATE</strong>事件，还有就是连接状态事件触发的时候<strong>parentWatcher</strong>也会回调这些listeners，比如下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * connect ZK, register watchers</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> CuratorFramework <span class="title">mkClient</span><span class="params">(Map conf, List&lt;String&gt; servers, Object port,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 String root, <span class="keyword">final</span> WatcherCallBack watcher)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    CuratorFramework fk = Utils.newCurator(conf, servers, port, root);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 自定义监听器 CuratorListener</span></span><br><span class="line">    fk.getCuratorListenable().addListener(<span class="keyword">new</span> CuratorListener() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eventReceived</span><span class="params">(CuratorFramework _fk, CuratorEvent e)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (e.getType().equals(CuratorEventType.WATCHED)) &#123;</span><br><span class="line">                WatchedEvent event = e.getWatchedEvent();</span><br><span class="line"></span><br><span class="line">                watcher.execute(event.getState(), event.getType(), event.getPath());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    fk.start();</span><br><span class="line">    <span class="keyword">return</span> fk;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>CuratorFrameworkImpl#processEvent</strong></p>
+<p><code>processEvent</code> 方法总会进行注册的 <strong>CuratorListener</strong> 回调操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processEvent</span><span class="params">(<span class="keyword">final</span> CuratorEvent curatorEvent)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ( curatorEvent.getType() == CuratorEventType.WATCHED )</span><br><span class="line">        &#123;</span><br><span class="line">            validateConnection(curatorEvent.getWatchedEvent().getState());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        listeners.forEach(<span class="keyword">new</span> Function&lt;CuratorListener, Void&gt;()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Void <span class="title">apply</span><span class="params">(CuratorListener listener)</span></span></span><br><span class="line"><span class="function">            </span>&#123;</span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    OperationTrace trace = client.startAdvancedTracer(<span class="string">"EventListener"</span>);</span><br><span class="line">                    listener.eventReceived(CuratorFrameworkImpl.<span class="keyword">this</span>, curatorEvent);</span><br><span class="line">                    trace.commit();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> ( Exception e )</span><br><span class="line">                &#123;</span><br><span class="line">                    ThreadUtils.checkInterrupted(e);</span><br><span class="line">                    logError(<span class="string">"Event listener threw exception"</span>, e);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体回调则是有各种执行构建实现器完成的，这一块深究比较复杂，这里有个概念后续有需要查看相关实现即可。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230708111456.png" alt="image.png"></p>
+<h3 id="注册-ConnectionStateListener-通知"><a href="#注册-ConnectionStateListener-通知" class="headerlink" title="注册 ConnectionStateListener 通知"></a>注册 ConnectionStateListener 通知</h3><p>如果添加 <strong>ConnectionStateListener</strong> 监听器，则在连接状态发生改变时，会收到通知。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ConnectionStateListener connectionStateListener = <span class="keyword">new</span> ConnectionStateListener()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stateChanged</span><span class="params">(CuratorFramework client, ConnectionState newState)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">          <span class="comment">//Some details</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">client.getConnectionStateListenable().addListener(connectionStateListener);</span><br></pre></td></tr></table></figure>
+
+<p>ConnectionStateListener 监听器的事件回调发生在<strong>ConnectionStateManager</strong>当中，但是前面我们只介绍了如何初始化，下面扩展介绍回调<code>ConnectionStateListener</code>的部分</p>
+<h4 id="ConnectionStateManager-如何回调-ConnectionStateListener？"><a href="#ConnectionStateManager-如何回调-ConnectionStateListener？" class="headerlink" title="ConnectionStateManager 如何回调 ConnectionStateListener？"></a>ConnectionStateManager 如何回调 ConnectionStateListener？</h4><p><strong>CuratorFrameworkImpl#validateConnection</strong></p>
+<p>上面讲解<strong>会话机制</strong>的时候，提到了最后有一个添加 <strong>ConnectionState</strong> 的操作，这里将介绍收到 <strong>ConnectionState</strong> 变更之后如何回调注册在自己身上的监听器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">validateConnection</span><span class="params">(Watcher.Event.KeeperState state)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">	<span class="comment">// ......</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.Expired )  </span><br><span class="line">    &#123;  </span><br><span class="line">        connectionStateManager.addStateChange(ConnectionState.LOST);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.SyncConnected )  </span><br><span class="line">    &#123;  </span><br><span class="line">        unSleepBackgroundOperations();  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.ConnectedReadOnly )  </span><br><span class="line">    &#123;  </span><br><span class="line">        connectionStateManager.addStateChange(ConnectionState.READ_ONLY);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体处理在下面这个方法中完成。</p>
+<p><strong>ConnectionStateManager#processEvents</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processEvents</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> ( state.get() == State.STARTED )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">int</span> useSessionTimeoutMs = getUseSessionTimeoutMs();</span><br><span class="line">                <span class="keyword">long</span> elapsedMs = startOfSuspendedEpoch == <span class="number">0</span> ? useSessionTimeoutMs / <span class="number">2</span> : System.currentTimeMillis() - startOfSuspendedEpoch;</span><br><span class="line">                <span class="keyword">long</span> pollMaxMs = useSessionTimeoutMs - elapsedMs;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">final</span> ConnectionState newState = eventQueue.poll(pollMaxMs, TimeUnit.MILLISECONDS);</span><br><span class="line">                <span class="keyword">if</span> ( newState != <span class="keyword">null</span> )</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">if</span> ( listeners.isEmpty() )</span><br><span class="line">                    &#123;</span><br><span class="line">                        log.warn(<span class="string">"There are no ConnectionStateListeners registered."</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">					<span class="comment">// 关键部分，当出现状态变更进行回调监听器通知</span></span><br><span class="line">                    listeners.forEach(listener -&gt; listener.stateChanged(client, newState));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> ( sessionExpirationPercent &gt; <span class="number">0</span> )</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">synchronized</span>(<span class="keyword">this</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        checkSessionExpiration();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> ( InterruptedException e )</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// swallow the interrupt as it's only possible from either a background</span></span><br><span class="line">                <span class="comment">//  吞下中断，因为它只可能来自后台操作</span></span><br><span class="line">                </span><br><span class="line">                <span class="comment">// operation and, thus, doesn't apply to this loop or the instance</span></span><br><span class="line">                <span class="comment">// is being closed in which case the while test will get it</span></span><br><span class="line">                <span class="comment">// 如果实例在关闭有可能走到这一块代码</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面内容重要的其实就一行代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listeners.forEach(listener -&gt; listener.stateChanged(client, newState));</span><br></pre></td></tr></table></figure>
+
+<p>这个<strong>processEvents</strong>是怎么回调的？其实在之前画的 <strong>CuratorFrameworkImpl</strong> 启动过程流程图中就有展示。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230706222022.png" alt="image.png"></p>
+<p><strong>ConnectionStateManager</strong> 当中有一个 <strong>ExecutorService</strong> 线程池，翻看代码可以得知他的实现是 <strong>SingleThreadScheduledExecutor</strong>，这里含义明显就是单独开启一个线程轮询这一段代码检查 <strong>listener</strong>，状态变更通知注册在 <strong>ConnectionStateManager</strong> 上的监听器。</p>
+<h3 id="注册-UnhandledErrorListener-通知"><a href="#注册-UnhandledErrorListener-通知" class="headerlink" title="注册 UnhandledErrorListener 通知"></a>注册 UnhandledErrorListener 通知</h3><p>同理注册到<code>CuratorFrameworkImpl.unhandledErrorListeners</code>当中，当后台线程操作发生异常或者handler发生异常的时候会触发。</p>
+<p><strong>注册方式</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * connect ZK, register watchers</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> CuratorFramework <span class="title">mkClient</span><span class="params">(Map conf, List&lt;String&gt; servers, Object port,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 String root, <span class="keyword">final</span> WatcherCallBack watcher)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    CuratorFramework fk = Utils.newCurator(conf, servers, port, root);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 自定义监听器 UnhandledErrorListener</span></span><br><span class="line">   fk.getUnhandledErrorListenable().addListener(<span class="keyword">new</span> UnhandledErrorListener() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unhandledError</span><span class="params">(String msg, Throwable error)</span> </span>&#123;</span><br><span class="line">            String errmsg = <span class="string">"Unrecoverable zookeeper error, halting process: "</span> + msg;</span><br><span class="line">            LOG.error(errmsg, error);</span><br><span class="line">            JStormUtils.halt_process(<span class="number">1</span>, <span class="string">"Unrecoverable zookeeper error"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">   </span><br><span class="line">    fk.start();</span><br><span class="line">    <span class="keyword">return</span> fk;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>如何触发？</strong></p>
+<p>触发的相关代码在<code>CuratorFrameworkImpl#logError</code>方法中，注意这里的<code>apply</code>方法处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">logError</span><span class="params">(String reason, <span class="keyword">final</span> Throwable e)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">	<span class="comment">// 省略其他无关代码</span></span><br><span class="line">    unhandledErrorListeners.forEach(<span class="keyword">new</span> Function&lt;UnhandledErrorListener, Void&gt;()  </span><br><span class="line">    &#123;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> Void <span class="title">apply</span><span class="params">(UnhandledErrorListener listener)</span>  </span></span><br><span class="line"><span class="function">        </span>&#123;  </span><br><span class="line">            listener.unhandledError(localReason, e);  </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;        </span><br><span class="line">            &#125;  </span><br><span class="line">    &#125;);  </span><br><span class="line"></span><br><span class="line">	<span class="comment">// 省略无关代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="后台线程操作完成时的回调通知"><a href="#后台线程操作完成时的回调通知" class="headerlink" title="后台线程操作完成时的回调通知"></a>后台线程操作完成时的回调通知</h3><p>对于不同操作比如 <code>setData</code>，可以通过链式调用的方式传入回调函数 callback，操作完成之后会执行回调函数完成回调操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setDataAsyncWithCallback</span><span class="params">(CuratorFramework client, BackgroundCallback callback, String path, <span class="keyword">byte</span>[] payload)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">       <span class="comment">// this is another method of getting notification of an async completion</span></span><br><span class="line">       client.setData().inBackground(callback).forPath(path, payload);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="缓存机制，多次注册"><a href="#缓存机制，多次注册" class="headerlink" title="缓存机制，多次注册"></a>缓存机制，多次注册</h3><p>Curator的缓存机制是一块比较大的部头，Curator 的缓存方式包括：</p>
+<ul>
+<li>Path Cache</li>
+<li>Node Cache </li>
+<li>Tree Cache</li>
+</ul>
+<p>缓存在使用之前会和服务端的节点数据进行对比，当数据不一致时，会通过watch机制触发回调刷新本地缓存，同时再次注册Watch，每次重连会注册新的 Watcher，保证 Watcher永远不丢失。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>通过通知机制和会话管理两个部分，我们了解到：</p>
+<ul>
+<li><strong>客户端通知</strong>是同步完成。</li>
+<li><code>connectionStateManager.listeners</code>是由<strong>内部的线程池</strong>做异步通知</li>
+<li><code>CuratorFrameworkImpl.listeners</code> 对于连接状态的通知，与watcher通知线程为<strong>同步</strong>，由后台线程通知时为<strong>异步</strong>。</li>
+<li>watcher注册过多可能导致重连之后watcher丢失。</li>
+</ul>
+<h2 id="回顾初始化过程"><a href="#回顾初始化过程" class="headerlink" title="回顾初始化过程"></a>回顾初始化过程</h2><p>Curator框架实现CuratorFrameworkImpl启动时，首先启动连接状态管理器<strong>ConnectionStateManager</strong>， 然后再启动客户端<strong>CuratorZookeeperClient</strong>。</p>
+<p>构造Curator框架实现CuratorFrameworkImpl初始化动客户端CuratorZookeeperClient，注意在这里会默认传入一个Watcher，用于处理CuratorEvent。)。 </p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717113221.png" alt="image.png"></p>
+<p>CuratorZookeeperClient启动过程，关键点是在启动连接状态ConnectionState（在构造CuratorZookeeperClient，初始化连接状态，并将内部Watcher传给连接状态）。 </p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717112918.png" alt="image.png"></p>
+<p>连接状态实现了观察者Watcher，在连接状态建立时，调用客户端CuratorZookeeperClient传入的Watcher，处理相关事件。而这个Watcher是在现CuratorFrameworkImpl初始化动客户端CuratorZookeeperClient时 传入的。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717113503.png" alt="image.png"></p>
+<p><strong>客户端观察者的实际处理业务逻辑在CuratorFrameworkImpl实现</strong>，也就是<code>processEvent</code>方法，processEvent主要处理逻辑为，遍历CuratorFrameworkImpl内部的监听器容器内的监听器处理相关CuratorEvent 事件。这个CuratorEvent事件，是由原生WatchedEvent事件包装而来。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230717113536.png" alt="image.png"></p>
+<p>启动连接状态管理器<strong>ConnectionStateManager</strong>，主要是使用连接状态监听器容器（UnaryListenerManager&lt; ConnectionStateListener&gt;）<strong>Listenabler</strong>（之前版本叫 <strong>ListenerContainer</strong>）中的监听器。</p>
+<p><strong>ConnectionStateManager</strong>中监听器触发具体工作是消费连接状态事件队列<strong>BlockingQueue</strong>中事件。这里<strong>BlockingQueue</strong>里面存放的是ConnectionState状态变更之后【offer】的节点。</p>
+<p>这部分又回到【注册 ConnectionStateListener 通知】部分，状态变更之后最后一段有一个<code>connectionStateManager.addStateChange(XXXX);</code>的小动作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">validateConnection</span><span class="params">(Watcher.Event.KeeperState state)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">	<span class="comment">// ......</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.Expired )  </span><br><span class="line">    &#123;  </span><br><span class="line">        connectionStateManager.addStateChange(ConnectionState.LOST);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.SyncConnected )  </span><br><span class="line">    &#123;  </span><br><span class="line">        unSleepBackgroundOperations();  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( state == Watcher.Event.KeeperState.ConnectedReadOnly )  </span><br><span class="line">    &#123;  </span><br><span class="line">        connectionStateManager.addStateChange(ConnectionState.READ_ONLY);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过代码下探，最终回到下面的部分：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">postState</span><span class="params">(ConnectionState state)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       log.info(<span class="string">"State change: "</span> + state);</span><br><span class="line"></span><br><span class="line">       notifyAll();</span><br><span class="line"></span><br><span class="line">       <span class="keyword">while</span> ( !eventQueue.offer(state) )</span><br><span class="line">       &#123;</span><br><span class="line">           eventQueue.poll();</span><br><span class="line">           log.warn(<span class="string">"ConnectionStateManager queue full - dropping events to make room"</span>);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>@since 4.2.0 return type has changed from ListenerContainer to Listenable</p>
+</blockquote>
+<h1 id="写到最后"><a href="#写到最后" class="headerlink" title="写到最后"></a>写到最后</h1><p>本节介绍了Curator的基础使用，从源码角度分析了Curator 组件的初始化过程，并且简单分析会话管理和通知机制的相关源码调用。</p>
+<p>下面是本文涉及到的源码讲解汇总的一副总图。个人源码分析过程如果有存在错误或者疑问欢迎反馈和讨论。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/Curator%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.drawio.png" alt="Curator 源码分析.drawio.png"></p>
+<p>最后是整个demo代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CuratorTestExample</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>);</span><br><span class="line">        CuratorFramework client =</span><br><span class="line">                CuratorFrameworkFactory.newClient(<span class="string">"192.168.19.100:2181,192.168.19.101:2181,192.168.19.102:2181"</span>, retryPolicy);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 连接ZK,开启连接</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 自定义监听器 CuratorListener</span></span><br><span class="line">        client.getCuratorListenable().addListener((_fk, e) -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (e.getType().equals(CuratorEventType.WATCHED)) &#123;</span><br><span class="line">                log.info(<span class="string">"测试"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;);</span><br><span class="line">        ConnectionStateListener connectionStateListener = (client1, newState) -&gt; &#123;</span><br><span class="line">            <span class="comment">//Some details</span></span><br><span class="line">            log.info(<span class="string">"newState =&gt; "</span>+ newState);</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">// 11:31:17.026 [Curator-ConnectionStateManager-0] INFO com.zxd.interview.zkcurator.CuratorTestExample - newState =&gt; CONNECTED</span></span><br><span class="line">        client.getConnectionStateListenable().addListener(connectionStateListener);</span><br><span class="line">        client.start();</span><br><span class="line">        <span class="comment">// 此处就获取到 zk的一个连接实例。</span></span><br><span class="line">        <span class="comment">//.....</span></span><br><span class="line">        <span class="comment">// 创建znode，如果有必要需要创建父目录</span></span><br><span class="line">        client.create().creatingParentsIfNeeded().withProtection().forPath(<span class="string">"/my/path"</span>, <span class="string">"Test"</span>.getBytes());</span><br><span class="line">        InterProcessMutex lock = <span class="keyword">new</span> InterProcessMutex(client, <span class="string">"/my/path"</span>);</span><br><span class="line">        lock.acquire();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// do some work inside of the critical section here</span></span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.release();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h1><p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8xMzUzMzQ3NjA=" title="https://zhuanlan.zhihu.com/p/135334760">ZK客户端Curator使用详解 - 知乎 (zhihu.com)<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jbG91ZC50ZW5jZW50LmNvbS9kZXZlbG9wZXIvYXJ0aWNsZS8xNjQ4OTc2P2FyZWFTb3VyY2U9MTA2MDA1LjE0" title="https://cloud.tencent.com/developer/article/1648976?areaSource=106005.14">https://cloud.tencent.com/developer/article/1648976?areaSource=106005.14<i class="fa fa-external-link"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kb25hbGRoYW4uZ2l0aHViLmlvL3pvb2tlZXBlci8yMDE4LzA2LzI5L2N1cmF0b3IlRTclOUIlQUUlRTUlQkQlOTUlRTclOUIlOTElRTUlOTAlQUMuaHRtbA==" title="https://donaldhan.github.io/zookeeper/2018/06/29/curator%E7%9B%AE%E5%BD%95%E7%9B%91%E5%90%AC.html">Curator目录监听 | Ravitn Blog (donaldhan.github.io)<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/08/10/curatorsource1/" title="【Zookeeper】Apach Curator 框架源码分析：初始化过程（一）【Ver 4.3.0】">https://whitestore.top/2023/08/10/curatorsource1/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Zookeeper/" rel="tag"># Zookeeper</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/10/effectivelambda/" rel="prev" title="【Java】Effective Lambda Expressions in Java">
+      <i class="fa fa-chevron-left"></i> 【Java】Effective Lambda Expressions in Java
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/08/10/curatorsource2/" rel="next" title="【Zookeeper】Apach Curator 框架源码分析：后台构造器和节点操作相关源码分析（二）【Ver 4.3.0】">
+      【Zookeeper】Apach Curator 框架源码分析：后台构造器和节点操作相关源码分析（二）【Ver 4.3.0】 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZK-版本支持"><span class="nav-number">2.</span> <span class="nav-text">ZK 版本支持</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#官网地址"><span class="nav-number">3.</span> <span class="nav-text">官网地址</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#下载地址"><span class="nav-number">3.1.</span> <span class="nav-text">下载地址</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#快速开始"><span class="nav-number">4.</span> <span class="nav-text">快速开始</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ZK-集群部署"><span class="nav-number">4.1.</span> <span class="nav-text">ZK 集群部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven依赖引入"><span class="nav-number">4.2.</span> <span class="nav-text">Maven依赖引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建入门实例"><span class="nav-number">4.3.</span> <span class="nav-text">构建入门实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可重入锁（公平锁）案例代码"><span class="nav-number">4.4.</span> <span class="nav-text">可重入锁（公平锁）案例代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#初始化过程流程图"><span class="nav-number">5.</span> <span class="nav-text">初始化过程流程图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#初始化源码分析"><span class="nav-number">6.</span> <span class="nav-text">初始化源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CuratorFramework-初始化过程"><span class="nav-number">6.1.</span> <span class="nav-text">CuratorFramework 初始化过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化过程流程图-1"><span class="nav-number">6.1.1.</span> <span class="nav-text">初始化过程流程图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CuratorFrameworkFactory-newClient-代码分析"><span class="nav-number">6.1.2.</span> <span class="nav-text">CuratorFrameworkFactory.newClient() 代码分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CuratorZookeeperClient-初始化过程"><span class="nav-number">6.2.</span> <span class="nav-text">CuratorZookeeperClient 初始化过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CuratorZookeeperClient-初始化过程流程图"><span class="nav-number">6.2.1.</span> <span class="nav-text">CuratorZookeeperClient 初始化过程流程图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CuratorZookeeperClient-初始化代码分析"><span class="nav-number">6.2.2.</span> <span class="nav-text">CuratorZookeeperClient 初始化代码分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ConnectionStateManager-初始化过程"><span class="nav-number">6.3.</span> <span class="nav-text">ConnectionStateManager 初始化过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ConnectionStateManager-初始化过程流程图"><span class="nav-number">6.3.1.</span> <span class="nav-text">ConnectionStateManager 初始化过程流程图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConnectionStateManager-初始化代码分析"><span class="nav-number">6.3.2.</span> <span class="nav-text">ConnectionStateManager 初始化代码分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CuratorFrameworkImpl-启动过程"><span class="nav-number">6.4.</span> <span class="nav-text">CuratorFrameworkImpl 启动过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CuratorFrameworkImpl-启动过程流程图"><span class="nav-number">6.4.1.</span> <span class="nav-text">CuratorFrameworkImpl 启动过程流程图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端连接-client-start"><span class="nav-number">6.4.2.</span> <span class="nav-text">客户端连接 client.start();</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后台轮询操作指令-backgroundOperationsLoop"><span class="nav-number">6.4.3.</span> <span class="nav-text">后台轮询操作指令 backgroundOperationsLoop()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#operationAndData-callPerformBackgroundOperation-后台任务执行"><span class="nav-number">6.4.4.</span> <span class="nav-text">operationAndData.callPerformBackgroundOperation() 后台任务执行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话管理"><span class="nav-number">6.5.</span> <span class="nav-text">会话管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接事件监听和状态变更-ConnectionState-process"><span class="nav-number">6.5.1.</span> <span class="nav-text">连接事件监听和状态变更 ConnectionState#process</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接状态检查和处理-ConnectionState-checkState"><span class="nav-number">6.5.2.</span> <span class="nav-text">连接状态检查和处理 ConnectionState#checkState</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#parentWatchers-注册和回调"><span class="nav-number">6.5.3.</span> <span class="nav-text">parentWatchers 注册和回调</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通知机制"><span class="nav-number">6.6.</span> <span class="nav-text">通知机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一次性-Watch-通知"><span class="nav-number">6.6.1.</span> <span class="nav-text">一次性 Watch 通知</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册-CuratorListener-通知"><span class="nav-number">6.6.2.</span> <span class="nav-text">注册 CuratorListener 通知</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册-ConnectionStateListener-通知"><span class="nav-number">6.6.3.</span> <span class="nav-text">注册 ConnectionStateListener 通知</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ConnectionStateManager-如何回调-ConnectionStateListener？"><span class="nav-number">6.6.3.1.</span> <span class="nav-text">ConnectionStateManager 如何回调 ConnectionStateListener？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册-UnhandledErrorListener-通知"><span class="nav-number">6.6.4.</span> <span class="nav-text">注册 UnhandledErrorListener 通知</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后台线程操作完成时的回调通知"><span class="nav-number">6.6.5.</span> <span class="nav-text">后台线程操作完成时的回调通知</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存机制，多次注册"><span class="nav-number">6.6.6.</span> <span class="nav-text">缓存机制，多次注册</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">6.7.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回顾初始化过程"><span class="nav-number">6.8.</span> <span class="nav-text">回顾初始化过程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写到最后"><span class="nav-number">7.</span> <span class="nav-text">写到最后</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐阅读"><span class="nav-number">8.</span> <span class="nav-text">推荐阅读</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

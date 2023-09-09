@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="新HTTPClient API介绍">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Java】Exploring the New HTTP Client in Java">
+<meta property="og:url" content="https://whitestore.top/2023/08/10/httpclientjdk11/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="新HTTPClient API介绍">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-10T08:49:34.000Z">
+<meta property="article:modified_time" content="2023-09-09T00:53:49.934Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="httpclient">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://whitestore.top/2023/08/10/httpclientjdk11/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Java】Exploring the New HTTP Client in Java | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/08/10/httpclientjdk11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Java】Exploring the New HTTP Client in Java
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-08-10 16:49:34" itemprop="dateCreated datePublished" datetime="2023-08-10T16:49:34+08:00">2023-08-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/08/10/httpclientjdk11/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/08/10/httpclientjdk11/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>24k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
+            <div class="post-description">新HTTPClient API介绍</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="探索-Java-中的新-HTTP-客户端"><a href="#探索-Java-中的新-HTTP-客户端" class="headerlink" title="探索 Java 中的新 HTTP 客户端"></a>探索 Java 中的新 HTTP 客户端</h1><h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtOS1odHRwLWNsaWVudA==" title="https://www.baeldung.com/java-9-http-client">https://www.baeldung.com/java-9-http-client<i class="fa fa-external-link"></i></span></p>
+<h2 id="1-Overview"><a href="#1-Overview" class="headerlink" title="1. Overview"></a><a href="https://www.baeldung.com/java-9-http-client#introduction" target="_blank" rel="noopener"><strong>1. Overview</strong></a></h2><p>In this tutorial, we’ll explore Java 11’s standardization of <strong>HTTP client API that implements HTTP/2 and Web Socket.</strong></p>
+<p>本文讲讨论Java 11 的新HTTP客户端API是如何实现 HTTP/2 和 WebSocket的。</p>
+<p>It aims to replace the legacy <em><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vZW4vamF2YS9qYXZhc2UvMTcvZG9jcy9hcGkvamF2YS5iYXNlL2phdmEvbmV0L0h0dHBVUkxDb25uZWN0aW9uLmh0bWw=" title="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/HttpURLConnection.html">HttpUrlConnection<i class="fa fa-external-link"></i></span></em> class that has been present in the JDK since the very early years of Java.</p>
+<p>它旨在取代自 Java 诞生之初就存在于 JDK 中的传统<em><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vZW4vamF2YS9qYXZhc2UvMTcvZG9jcy9hcGkvamF2YS5iYXNlL2phdmEvbmV0L0h0dHBVUkxDb25uZWN0aW9uLmh0bWw=" title="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/HttpURLConnection.html">HttpUrlConnection<i class="fa fa-external-link"></i></span></em> 类。</p>
+<a id="more"></a>
+
+<blockquote>
+<p>It aims to …. 旨在</p>
+</blockquote>
+<p>Until very recently, Java provided only the <em>HttpURLConnection</em> API, which is low-level and isn’t known for being feature-rich and user-friendly.</p>
+<p>在旧版本中，Java 提供 <em>HttpURLConnection</em> API，该 API 是低级的，并不以功能丰富和用户友好而著称。</p>
+<p>Therefore, some widely used third-party libraries were commonly used, such as <span class="exturl" data-url="aHR0cHM6Ly9oYy5hcGFjaGUub3JnL2h0dHBjb21wb25lbnRzLWNsaWVudC1nYS8=" title="https://hc.apache.org/httpcomponents-client-ga/">Apache HttpClient<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly9lY2xpcHNlLmRldi9qZXR0eS9kb2N1bWVudGF0aW9uL2pldHR5LTkvaW5kZXguaHRtbCNodHRwLWNsaWVudC1hcGk=" title="https://eclipse.dev/jetty/documentation/jetty-9/index.html#http-client-api">Jetty<i class="fa fa-external-link"></i></span> and Spring’s <span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL3Jlc3QtdGVtcGxhdGU=" title="https://www.baeldung.com/rest-template">RestTemplate<i class="fa fa-external-link"></i></span>.</p>
+<p>所以，我们通常都会使用 类似   <span class="exturl" data-url="aHR0cHM6Ly9oYy5hcGFjaGUub3JnL2h0dHBjb21wb25lbnRzLWNsaWVudC1nYS8=" title="https://hc.apache.org/httpcomponents-client-ga/">Apache HttpClient<i class="fa fa-external-link"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly9lY2xpcHNlLmRldi9qZXR0eS9kb2N1bWVudGF0aW9uL2pldHR5LTkvaW5kZXguaHRtbCNodHRwLWNsaWVudC1hcGk=" title="https://eclipse.dev/jetty/documentation/jetty-9/index.html#http-client-api">Jetty<i class="fa fa-external-link"></i></span> 或者 Spring’s <span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL3Jlc3QtdGVtcGxhdGU=" title="https://www.baeldung.com/rest-template">RestTemplate<i class="fa fa-external-link"></i></span> 这样的第三方库作为替代。</p>
+<h2 id="Further-reading-（相关阅读）"><a href="#Further-reading-（相关阅读）" class="headerlink" title="Further reading:（相关阅读）"></a>Further reading:（相关阅读）</h2><h2 id="Posting-with-Java-HttpClient"><a href="#Posting-with-Java-HttpClient" class="headerlink" title="Posting with Java HttpClient"></a><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaHR0cGNsaWVudC1wb3N0" title="https://www.baeldung.com/java-httpclient-post">Posting with Java HttpClient<i class="fa fa-external-link"></i></span></h2><p>From Java 9 onwards, the new <em>HttpClient</em> API provides both a synchronous and asynchronous modern web client. We look at how it can be used to make requests.</p>
+<p>从 Java 9 开始，新的 <em>HttpClient</em> API 提供了<strong>同步</strong>和<strong>异步</strong>的现代 Web 客户端。我们来看看如何使用它来发出请求。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaHR0cGNsaWVudC1wb3N0" title="https://www.baeldung.com/java-httpclient-post">Read more<i class="fa fa-external-link"></i></span> →</p>
+<h2 id="Java-HttpClient-With-SSL"><a href="#Java-HttpClient-With-SSL" class="headerlink" title="Java HttpClient With SSL"></a><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaHR0cGNsaWVudC1zc2w=" title="https://www.baeldung.com/java-httpclient-ssl">Java HttpClient With SSL<i class="fa fa-external-link"></i></span></h2><p>Learn how to use the Java HttpClient to connect to HTTPS URLs and also find out how to bypass certificate verification in non-production environments.</p>
+<p>了解如何使用 Java HttpClient 连接 HTTPS URL，以及如何在非生产环境中绕过证书验证。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaHR0cGNsaWVudC1zc2w=" title="https://www.baeldung.com/java-httpclient-ssl">Read more<i class="fa fa-external-link"></i></span> →</p>
+<h2 id="Adding-Parameters-to-Java-HttpClient-Requests"><a href="#Adding-Parameters-to-Java-HttpClient-Requests" class="headerlink" title="Adding Parameters to Java HttpClient Requests"></a><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaHR0cGNsaWVudC1yZXF1ZXN0LXBhcmFtZXRlcnM=" title="https://www.baeldung.com/java-httpclient-request-parameters">Adding Parameters to Java HttpClient Requests<i class="fa fa-external-link"></i></span></h2><p>Different examples of HTTPClient core Java.</p>
+<p>HTTPClient core Java 的不同示例。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtaHR0cGNsaWVudC1yZXF1ZXN0LXBhcmFtZXRlcnM=" title="https://www.baeldung.com/java-httpclient-request-parameters">Read more<i class="fa fa-external-link"></i></span> →</p>
+<h2 id="2-Background"><a href="#2-Background" class="headerlink" title="2. Background"></a><a href="https://www.baeldung.com/java-9-http-client#introduction-1" target="_blank" rel="noopener"><strong>2. Background</strong></a></h2><p>The change was implemented as a part of JEP 321.</p>
+<p>所有的改变均实现自<strong>JEP 321</strong>。 </p>
+<h3 id="2-1-Major-Changes-as-Part-of-JEP-321"><a href="#2-1-Major-Changes-as-Part-of-JEP-321" class="headerlink" title="2.1. Major Changes as Part of JEP 321"></a><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtOS1odHRwLWNsaWVudCMxLW1ham9yLWNoYW5nZXMtYXMtcGFydC1vZi1qZXAtMzIx" title="https://www.baeldung.com/java-9-http-client#1-major-changes-as-part-of-jep-321">2.1. Major Changes as Part of JEP 321<i class="fa fa-external-link"></i></span></h3><ol>
+<li>The incubated HTTP API from Java 9 is now officially incorporated into the Java SE API. The new <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vZW4vamF2YS9qYXZhc2UvMTcvZG9jcy9hcGkvamF2YS5uZXQuaHR0cC9qYXZhL25ldC9odHRwL3BhY2thZ2Utc3VtbWFyeS5odG1s" title="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/package-summary.html">HTTP APIs<i class="fa fa-external-link"></i></span> can be found in <strong>java.net.HTTP.*</strong></li>
+</ol>
+<p>Java 9 中孵化的 HTTP API 现已正式纳入 Java SE API。新的 <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vZW4vamF2YS9qYXZhc2UvMTcvZG9jcy9hcGkvamF2YS5uZXQuaHR0cC9qYXZhL25ldC9odHRwL3BhY2thZ2Utc3VtbWFyeS5odG1s" title="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/package-summary.html">HTTP APIs<i class="fa fa-external-link"></i></span> 可在 <strong>java.net.HTTP.</strong> 中找到。</p>
+<ol start="2">
+<li>The newer version of the HTTP protocol is designed to improve the overall performance of sending requests by a client and receiving responses from the server. This is achieved by introducing a number of changes such as stream multiplexing, header compression and push promises.</li>
+</ol>
+<p>较新版本的 HTTP 协议旨在提高客户端发送请求和服务器接收响应的整体性能。这是通过引入流<strong>多路复用</strong>、报头压缩和推送承诺来实现的。</p>
+<ol start="3">
+<li>As of Java 11, <strong>the API is now fully asynchronous (the previous HTTP/1.1 implementation was blocking).</strong> Asynchronous calls are implemented using <em>CompletableFuture</em>.The <em>CompletableFuture</em> implementation takes care of applying each stage once the previous one has finished, so this whole flow is asynchronous.</li>
+</ol>
+<p>从 Java 11 开始，<strong>应用程序接口现在是完全异步的（以前的 HTTP/1.1 实现是阻塞的）。</strong> 异步调用是使用 <em>CompletableFuture</em> 实现的。</p>
+<ol start="4">
+<li>The new HTTP client API provides a standard way to perform HTTP network operations with support for modern Web features such as HTTP/2, without the need to add third-party dependencies.</li>
+</ol>
+<p>新的 HTTP 客户端 API 提供了执行 HTTP 网络操作的标准方法，支持 HTTP/2 等现代网络功能，无需添加第三方依赖性。</p>
+<ol start="5">
+<li>The new APIs provide native support for HTTP 1.1/2 WebSocket. The core classes and interface providing the core functionality include:</li>
+</ol>
+<p>新的应用程序接口为 <code>HTTP 1.1/2</code> WebSocket 提供本地支持。提供核心功能的核心类和接口包括</p>
+<ul>
+<li><p>The <em>HttpClient</em> class, <em>java.net.http.HttpClient</em></p>
+</li>
+<li><p>The <em>HttpRequest</em> class, <em>java.net.http.HttpRequest</em></p>
+</li>
+<li><p>The <em>HttpResponse</em>&lt; T &gt; interface, <em>java.net.http.HttpResponse</em></p>
+</li>
+<li><p>The <em>WebSocket</em> interface, <em>java.net.http.WebSocket</em></p>
+</li>
+<li><p><em>HttpClient</em> 类， <em>java.net.http.HttpClient</em> 。</p>
+</li>
+<li><p><em>HttpRequest</em> 类，<em>java.net.http.HttpRequest</em></p>
+</li>
+<li><p>接口<em>HttpResponse</em>&lt; T &gt;,  <em>java.net.http.HttpResponse</em></p>
+</li>
+<li><p><em>WebSocket</em> 接口，<em>java.net.http.WebSocket</em> &lt; T &gt;。</p>
+<h3 id="2-2-Problems-With-the-Pre-Java-11-HTTP-Client"><a href="#2-2-Problems-With-the-Pre-Java-11-HTTP-Client" class="headerlink" title="2.2. Problems With the Pre-Java 11 HTTP Client"></a><a href="https://www.baeldung.com/java-9-http-client#2-problems-with-the-pre-java-11-http-client" target="_blank" rel="noopener"><strong>2.2. Problems With the Pre-Java 11 HTTP Client</strong></a></h3></li>
+</ul>
+<p>The existing <em>HttpURLConnection</em> API and its implementation had numerous problems:</p>
+<p>现有的 <em>HttpURLConnection</em> API 及其实现存在许多问题：</p>
+<ul>
+<li><p>URLConnection API was designed with multiple protocols that are now no longer functioning (FTP, gopher, etc.).</p>
+</li>
+<li><p>The API predates HTTP/1.1 and is too abstract.</p>
+</li>
+<li><p>It works in blocking mode only (i.e., one thread per request/response).</p>
+</li>
+<li><p>It is very hard to maintain.</p>
+</li>
+<li><p>URLConnection API 在设计时使用了多个现已失效的协议（FTP、gopher 等）。</p>
+</li>
+<li><p>该 API 早于 HTTP/1.1，过于抽象。</p>
+</li>
+<li><p>只能在阻塞模式下工作（即每个请求/响应只有一个线程）。</p>
+</li>
+<li><p>很难维护。</p>
+<h2 id="3-HTTP-Client-API-Overview"><a href="#3-HTTP-Client-API-Overview" class="headerlink" title="3. HTTP Client API Overview"></a><a href="https://www.baeldung.com/java-9-http-client#api" target="_blank" rel="noopener"><strong>3. HTTP Client API Overview</strong></a></h2></li>
+</ul>
+<p>Unlike <em>HttpURLConnection</em>, HTTP Client provides synchronous and asynchronous request mechanisms.</p>
+<p>与 <em>HttpURLConnection</em> 不同，HTTP 客户端提供同步和异步请求机制。</p>
+<p>The API consists of three core classes:</p>
+<p>API 由三个核心类组成：</p>
+<ul>
+<li><p><em>HttpRequest</em> represents the request to be sent via the <em>HttpClient</em>.</p>
+</li>
+<li><p><em>HttpClient</em> behaves as a container for configuration information common to multiple requests.</p>
+</li>
+<li><p><em>HttpResponse</em> represents the result of an <em>HttpRequest</em> call.</p>
+</li>
+<li><p><em>HttpRequest</em> 表示要通过 <em>HttpClient</em> 发送的请求。</p>
+</li>
+<li><p><em>HttpClient</em> 是多个请求所共有的配置信息的容器。</p>
+</li>
+<li><p><em>HttpResponse</em> 表示 <em>HttpRequest</em> 调用的结果。</p>
+</li>
+</ul>
+<p>We’ll examine each of them in more details in the following sections. First, let’s focus on a request.</p>
+<p>我们将在下面的章节中对它们逐一进行详细介绍。首先，我们来关注一个请求。</p>
+<h2 id="4-HttpRequest"><a href="#4-HttpRequest" class="headerlink" title="4. HttpRequest"></a><a href="https://www.baeldung.com/java-9-http-client#requests" target="_blank" rel="noopener"><strong>4. <em>HttpRequest</em></strong></a></h2><p><em>HttpRequest</em> is an object that represents the request we want to send. New instances can be created using <em>HttpRequest.Builder.</em></p>
+<p><em>HttpRequest</em> 是一个对象，代表我们要发送的请求。可以使用 <em>HttpRequest.Builder.</em> 创建新实例。</p>
+<p>We can get it by calling <em>HttpRequest.newBuilder()</em>. <em>Builder</em> class provides a bunch of methods that we can use to configure our request.</p>
+<p>我们可以通过调用 <em>HttpRequest.newBuilder()</em> 来获取它。 <em>Builder</em> 类提供了许多方法，我们可以用它们来配置我们的请求。</p>
+<p>We’ll cover the most important ones.</p>
+<p>我们将介绍最重要的几项。</p>
+<p>Note: In JDK 16, there is a new <em>HttpRequest.newBuilder(HttpRequest request, BiPredicate&lt;String,​String&gt; filter)</em> method, which creates a <em>Builder</em> whose initial state is copied from an existing <em>HttpRequest</em>.</p>
+<blockquote>
+<p>注意：在JDK16， 有一个新的 <em>HttpRequest.newBuilder(HttpRequest request, BiPredicate&lt;String,String&gt; filter)</em>  方法，用于创建一个_Builder_，其初始状态是从现有的_HttpRequest_复制而来。</p>
+</blockquote>
+<p>This builder can be used to build an <em>HttpRequest</em>, equivalent to the original, while allowing amendment of the request state prior to construction, for example, removing headers:</p>
+<p>该构建器可用于构建一个 _HttpRequest_，等同于原始请求，同时允许在构建之前修改请求状态，例如删除头信息：</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest.newBuilder(request, <span class="function"><span class="params">(name, value)</span> -&gt;</span> !name.equalsIgnoreCase(<span class="string">"Foo-Bar"</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="4-1-Setting-URI"><a href="#4-1-Setting-URI" class="headerlink" title="4.1. Setting URI"></a><a href="https://www.baeldung.com/java-9-http-client#1-setting-uri" target="_blank" rel="noopener"><strong>4.1. Setting <em>URI</em></strong></a></h3><p>The first thing we have to do when creating a request is to provide the URL.</p>
+<p>创建请求时，我们要做的第一件事就是提供 URL。</p>
+<p>We can do that in two ways — using the constructor for <em>Builder</em> with <em>URI</em> parameter or calling method <em>uri(URI)</em> on the <em>Builder</em> instance:</p>
+<p>我们可以通过两种方法实现这一目的：使用 <em>URI</em> 参数的 <em>Builder</em> 构造函数，或者调用 <em>Builder</em> 实例上的 <em>uri(URI)</em> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest.newBuilder(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get"</span>))</span><br><span class="line"> </span><br><span class="line">HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get"</span>))</span><br></pre></td></tr></table></figure>
+
+<p>The last thing we have to configure to create a basic request is an HTTP method.</p>
+<p>创建基本请求的最后一项配置是 HTTP 方法。</p>
+<h3 id="4-2-Specifying-the-HTTP-Method"><a href="#4-2-Specifying-the-HTTP-Method" class="headerlink" title="4.2. Specifying the HTTP Method"></a><a href="https://www.baeldung.com/java-9-http-client#2-specifying-the-http-method" target="_blank" rel="noopener"><strong>4.2. Specifying the HTTP Method</strong></a></h3><p>We can define the HTTP method that our request will use by calling one of the methods from <em>Builder</em>:</p>
+<p>我们可以通过调用 <em>Builder</em> 中的一个方法来定义请求将使用的 HTTP 方法：</p>
+<ul>
+<li><em>GET()</em></li>
+<li><em>POST(BodyPublisher body)</em></li>
+<li><em>PUT(BodyPublisher body)</em></li>
+<li><em>DELETE()</em></li>
+</ul>
+<p>We’ll cover <em>BodyPublisher</em> in detail, later.</p>
+<p>稍后我们将详细介绍 <em>BodyPublisher</em> 的内容。</p>
+<p>Now let’s just create <strong>a very simple GET request example</strong>:</p>
+<p>现在，让我们创建<strong>个非常简单的 GET 请求示例</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get"</span>))</span><br><span class="line">  .GET()</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+
+<p>This request has all parameters required by <em>HttpClient</em>.</p>
+<p>该请求包含 <em>HttpClient</em> 要求的所有参数。</p>
+<p>However, we sometimes need to add additional parameters to our request. Here are some important ones:</p>
+<p>不过，有时我们需要在请求中添加其他参数。下面是一些重要的参数：</p>
+<ul>
+<li><p>The version of the HTTP protocol</p>
+</li>
+<li><p>Headers</p>
+</li>
+<li><p>A timeout</p>
+</li>
+<li><p>HTTP 协议的版本</p>
+</li>
+<li><p>标题</p>
+</li>
+<li><p>超时</p>
+<h3 id="4-3-Setting-HTTP-Protocol-Version"><a href="#4-3-Setting-HTTP-Protocol-Version" class="headerlink" title="4.3. Setting HTTP Protocol Version"></a><a href="https://www.baeldung.com/java-9-http-client#3-setting-http-protocol-version" target="_blank" rel="noopener"><strong>4.3. Setting HTTP Protocol Version</strong></a></h3></li>
+</ul>
+<p>The API fully leverages the HTTP/2 protocol and uses it by default, but we can define which version of the protocol we want to use:</p>
+<p>该应用程序接口完全利用 HTTP/2 协议，并默认使用该协议，但我们可以定义要使用的协议版本：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get"</span>))</span><br><span class="line">  .version(HttpClient.Version.HTTP_2)</span><br><span class="line">  .GET()</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+
+<p><strong>Important to mention here is that the client will fall back to, e.g., HTTP/1.1 if HTTP/2 isn’t supported.</strong></p>
+<p><strong>这里需要指出的是，如果不支持 HTTP/2，客户端将退回到 HTTP/1.1 等协议。</strong></p>
+<h3 id="4-4-Setting-Headers"><a href="#4-4-Setting-Headers" class="headerlink" title="4.4. Setting Headers"></a><a href="https://www.baeldung.com/java-9-http-client#4-setting-headers" target="_blank" rel="noopener"><strong>4.4. Setting Headers</strong></a></h3><p>In case we want to add additional headers to our request, we can use the provided builder methods.</p>
+<p>如果我们想在请求中添加其他标头，可以使用提供的构建器方法。</p>
+<p>We can do that by either passing all headers as key-value pairs to the <em>headers()</em> method or by using <em>header()</em> method for the single key-value header:</p>
+<p>为此，我们可以将所有标头作为键值对传递给 <em>headers()</em> 方法，或者使用 <em>header()</em> 方法来处理单个键值标头：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get"</span>))</span><br><span class="line">  .headers(<span class="string">"key1"</span>, <span class="string">"value1"</span>, <span class="string">"key2"</span>, <span class="string">"value2"</span>)</span><br><span class="line">  .GET()</span><br><span class="line">  .build();</span><br><span class="line"></span><br><span class="line">HttpRequest request2 = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get"</span>))</span><br><span class="line">  .header(<span class="string">"key1"</span>, <span class="string">"value1"</span>)</span><br><span class="line">  .header(<span class="string">"key2"</span>, <span class="string">"value2"</span>)</span><br><span class="line">  .GET()</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+
+<p>The last useful method we can use to customize our request is a <em>timeout()</em>.</p>
+<p>我们可以用来定制请求的最后一个有用方法是 <em>timeout()</em> 。</p>
+<h3 id="4-5-Setting-a-Timeout"><a href="#4-5-Setting-a-Timeout" class="headerlink" title="4.5. Setting a Timeout"></a><a href="https://www.baeldung.com/java-9-http-client#5-setting-a-timeout" target="_blank" rel="noopener"><strong>4.5. Setting a Timeout</strong></a></h3><p>Let’s now define the amount of time we want to wait for a response.</p>
+<p>现在我们来定义等待响应的时间。</p>
+<p>If the set time expires, a <em>HttpTimeoutException</em> will be thrown. The default timeout is set to infinity.</p>
+<p>如果设定的时间已过，就会抛出一个 <em>HttpTimeoutException</em> 异常。默认超时设置为无穷大。</p>
+<p>The timeout can be set with the <em>Duration</em> object by calling method <em>timeout()</em> on the builder instance:</p>
+<p>可以通过调用构建器实例上的 <em>timeout()</em> 方法，使用 <em>Duration</em> 对象设置超时时间：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get"</span>))</span><br><span class="line">  .timeout(Duration.of(<span class="number">10</span>, SECONDS))</span><br><span class="line">  .GET()</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-Setting-a-Request-Body"><a href="#5-Setting-a-Request-Body" class="headerlink" title="5. Setting a Request Body"></a><a href="https://www.baeldung.com/java-9-http-client#setting-a-request-body" target="_blank" rel="noopener"><strong>5. Setting a Request Body</strong></a></h2><p>We can add a body to a request by using the request builder methods: <em>POST(BodyPublisher body)</em>, <em>PUT(BodyPublisher body)</em> and <em>DELETE()</em>.</p>
+<p>我们可以使用请求生成器方法为请求添加正文： <em>POST(BodyPublisher body)<em>、</em>PUT(BodyPublisher body)</em>  和 _DELETE()_。</p>
+<p>The new API provides a number of <em>BodyPublisher</em> implementations out-of-the-box that simplify passing the request body:</p>
+<p>新的 API 提供了许多开箱即用的 <em>BodyPublisher</em> 实现，简化了请求正文的传递：</p>
+<ul>
+<li><p><em>StringProcessor</em> – reads body from a <em>String</em>, created with <em>HttpRequest.BodyPublishers.ofString</em></p>
+</li>
+<li><p><em>InputStreamProcessor</em> – reads body from an <em>InputStream</em>, created with <em>HttpRequest.BodyPublishers.ofInputStream</em></p>
+</li>
+<li><p><em>ByteArrayProcessor</em> – reads body from a byte array, created with <em>HttpRequest.BodyPublishers.ofByteArray</em></p>
+</li>
+<li><p><em>FileProcessor</em> – reads body from a file at the given path, created with <em>HttpRequest.BodyPublishers.ofFile</em></p>
+</li>
+<li><p><em>StringProcessor</em> - 从 <em>String</em> 中读取正文，使用 <em>HttpRequest.BodyPublishers.ofString</em> 创建。</p>
+</li>
+<li><p><em>InputStreamProcessor</em> - 从 <em>InputStream</em> 中读取正文，使用 <em>HttpRequest.BodyPublishers.ofInputStream</em> 创建。</p>
+</li>
+<li><p><em>ByteArrayProcessor</em> - 从字节数组中读取正文，使用 <em>HttpRequest.BodyPublishers.ofByteArray</em> 创建。</p>
+</li>
+<li><p><em>FileProcessor</em> - 从指定路径的文件中读取正文，使用 <em>HttpRequest.BodyPublishers.ofFile</em> 创建。</p>
+</li>
+</ul>
+<p>In case we don’t need a body, we can simply pass in an <em>HttpRequest.BodyPublishers.__noBody()</em>:</p>
+<p>如果不需要正文，我们只需传入 <em>HttpRequest.BodyPublishers. __noBody()</em>  即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/post"</span>))</span><br><span class="line">  .POST(HttpRequest.BodyPublishers.noBody())</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+
+<p>Note: In JDK 16, there’s a new <em>HttpRequest.BodyPublishers.concat(BodyPublisher…)</em> method that helps us building a request body from the concatenation of the request bodies published by a sequence of publishers. The request body published by a <em>concatenation publisher</em> is logically equivalent to the request body that would have been published by concatenating all the bytes of each publisher in sequence.</p>
+<blockquote>
+<p>注：在 JDK 16 中，有一个新的 <em>HttpRequest.BodyPublishers.concat(BodyPublisher…)</em> 方法，可以帮助我们通过串联一系列发布者发布的请求体来构建请求体。由 <em>concatenation 发布者</em> 发布的请求正文在逻辑上等同于按顺序连接每个发布者的所有字节后发布的请求正文。</p>
+</blockquote>
+<h3 id="5-1-StringBodyPublisher"><a href="#5-1-StringBodyPublisher" class="headerlink" title="5.1. StringBodyPublisher"></a><a href="https://www.baeldung.com/java-9-http-client#1-stringbodypublisher" target="_blank" rel="noopener"><strong>5.1. <em>StringBodyPublisher</em></strong></a></h3><p>Setting a request body with any <em>BodyPublishers</em> implementation is very simple and intuitive.</p>
+<p>使用任何 <em>BodyPublishers</em> 实现来设置请求正文都非常简单直观。</p>
+<p>For example, if we want to pass a simple <em>String</em> as a body, we can use <em>StringBodyPublishers</em>.</p>
+<p>例如，如果我们想传递一个简单的 <em>String</em> 作为正文，我们可以使用 _StringBodyPublishers_。</p>
+<p>As we already mentioned, this object can be created with a factory method <em>ofString()</em> — it takes just a <em>String</em> object as an argument and creates a body from it:</p>
+<p>正如我们已经提到的，可以使用工厂方法 <em>ofString()</em> 创建该对象 – 该方法只接受一个 <em>String</em> 对象作为参数，并从中创建一个正文：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/post"</span>))</span><br><span class="line">  .headers(<span class="string">"Content-Type"</span>, <span class="string">"text/plain;charset=UTF-8"</span>)</span><br><span class="line">  .POST(HttpRequest.BodyPublishers.ofString(<span class="string">"Sample request body"</span>))</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+<h3 id="5-2-InputStreamBodyPublisher"><a href="#5-2-InputStreamBodyPublisher" class="headerlink" title="5.2. InputStreamBodyPublisher"></a><a href="https://www.baeldung.com/java-9-http-client#2-inputstreambodypublisher" target="_blank" rel="noopener"><strong>5.2. <em>InputStreamBodyPublisher</em></strong></a></h3><p>To do that, the <em>InputStream</em> has to be passed as a <em>Supplier</em> (to make its creation lazy), so it’s a little bit different than <em>StringBodyPublishers</em>.</p>
+<p>要做到这一点，必须将 <em>InputStream</em> 作为 <em>Supplier</em> 传递（变为懒加载），因此它与 <em>StringBodyPublishers</em> 有点不同。</p>
+<p>However, this is also quite straightforward:</p>
+<p>不过，这也很简单明了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[] sampleData = <span class="string">"Sample request body"</span>.getBytes();</span><br><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/post"</span>))</span><br><span class="line">  .headers(<span class="string">"Content-Type"</span>, <span class="string">"text/plain;charset=UTF-8"</span>)</span><br><span class="line">  .POST(HttpRequest.BodyPublishers</span><br><span class="line">   .ofInputStream(() -&gt; <span class="keyword">new</span> ByteArrayInputStream(sampleData)))</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+
+<p>Notice how we used a simple <em>ByteArrayInputStream</em> here. Of course, that can be any <em>InputStream</em> implementation.</p>
+<p>请注意我们在这里使用了一个简单的 <em>ByteArrayInputStream</em> 。当然，这可以是任何 <em>InputStream</em> 的实现。</p>
+<h3 id="5-3-ByteArrayProcessor"><a href="#5-3-ByteArrayProcessor" class="headerlink" title="5.3. ByteArrayProcessor"></a><a href="https://www.baeldung.com/java-9-http-client#3-bytearrayprocessor" target="_blank" rel="noopener"><strong>5.3. <em>ByteArrayProcessor</em></strong></a></h3><p>We can also use <em>ByteArrayProcessor</em> and pass an array of bytes as the parameter:</p>
+<p>我们还可以使用 <em>ByteArrayProcessor</em> 并将字节数组作为参数传递：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[] sampleData = <span class="string">"Sample request body"</span>.getBytes();</span><br><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/post"</span>))</span><br><span class="line">  .headers(<span class="string">"Content-Type"</span>, <span class="string">"text/plain;charset=UTF-8"</span>)</span><br><span class="line">  .POST(HttpRequest.BodyPublishers.ofByteArray(sampleData))</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-4-FileProcessor"><a href="#5-4-FileProcessor" class="headerlink" title="5.4. FileProcessor"></a><a href="https://www.baeldung.com/java-9-http-client#4-fileprocessor" target="_blank" rel="noopener"><strong>5.4. <em>FileProcessor</em></strong></a></h3><p>To work with a File, we can make use of the provided <em>FileProcessor</em>.、</p>
+<p>要处理文件，我们可以使用所提供的 _FileProcessor_。</p>
+<p>Its factory method takes a path to the file as a parameter and creates a body from the content:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/post"</span>))</span><br><span class="line">  .headers(<span class="string">"Content-Type"</span>, <span class="string">"text/plain;charset=UTF-8"</span>)</span><br><span class="line">  .POST(HttpRequest.BodyPublishers.fromFile(</span><br><span class="line">    Paths.get(<span class="string">"src/test/resources/sample.txt"</span>)))</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+
+<p>We’ve covered how to create <em>HttpRequest</em> and how to set additional parameters in it.</p>
+<p>我们已经介绍了如何创建 <em>HttpRequest</em> 以及如何在其中设置附加参数。</p>
+<p>Now it’s time to take a deeper look at <em>HttpClient</em> class, which is responsible for sending requests and receiving responses.</p>
+<p>现在是深入了解 <em>HttpClient</em> 类的时候了，它负责发送请求和接收响应。</p>
+<h2 id="6-HttpClient"><a href="#6-HttpClient" class="headerlink" title="6. HttpClient"></a><a href="https://www.baeldung.com/java-9-http-client#requests-1" target="_blank" rel="noopener"><strong>6. <em>HttpClient</em></strong></a></h2><p>All requests are sent using <em>HttpClient</em>, which can be instantiated using the <em>HttpClient.newBuilder()</em> method or by calling <em>HttpClient.newHttpClient()</em>.</p>
+<p>所有请求都是通过 <em>HttpClient</em> 发送的，可以使用 <em>HttpClient.newBuilder()</em> 方法或调用 <em>HttpClient.newHttpClient()</em> 来实例化 _HttpClient。</p>
+<p>It provides a lot of useful and self-describing methods we can use to handle our request/response.</p>
+<p>它提供了许多有用的自描述方法，我们可以用它们来处理请求/响应。</p>
+<p>Let’s cover some of these here.</p>
+<p>下面我们就来介绍其中的一些方法。</p>
+<h3 id="6-1-Handling-Response-Body"><a href="#6-1-Handling-Response-Body" class="headerlink" title="6.1. Handling Response Body"></a><a href="https://www.baeldung.com/java-9-http-client#1-handling-response-body" target="_blank" rel="noopener"><strong>6.1. Handling Response Body</strong></a></h3><p>Similar to the fluent methods for creating publishers, there are methods dedicated to creating handlers for common body types:</p>
+<p>与创建发布器的流畅方法类似，也有一些方法专门用于为常见的主体类型创建处理程序：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BodyHandlers.ofByteArray</span><br><span class="line">BodyHandlers.ofString</span><br><span class="line">BodyHandlers.ofFile</span><br><span class="line">BodyHandlers.discarding</span><br><span class="line">BodyHandlers.replacing</span><br><span class="line">BodyHandlers.ofLines</span><br><span class="line">BodyHandlers.fromLineSubscriber</span><br></pre></td></tr></table></figure>
+
+<p>Pay attention to the usage of the new <em>BodyHandlers</em> factory class.</p>
+<p>请注意新的 <em>BodyHandlers</em> 工厂类的用法。</p>
+<p>Before Java 11, we had to do something like this:</p>
+<p>在 Java 11 之前，我们不得不这样做：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandler.asString());</span><br></pre></td></tr></table></figure>
+
+<p>And we can now simplify it:</p>
+<p>现在我们可以将其简化：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HttpResponse&lt;String&gt; response = client.send(request, BodyHandlers.ofString());</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-Setting-a-Proxy"><a href="#6-2-Setting-a-Proxy" class="headerlink" title="6.2. Setting a Proxy"></a><a href="https://www.baeldung.com/java-9-http-client#2-setting-a-proxy" target="_blank" rel="noopener"><strong>6.2. Setting a Proxy</strong></a></h3><p>We can define a proxy for the connection by just calling <em>proxy()</em> method on a <em>Builder</em> instance:</p>
+<p>我们只需在 <em>Builder</em> 实例上调用 <em>proxy()</em> 方法，就能为连接定义一个代理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HttpResponse&lt;String&gt; response = HttpClient</span><br><span class="line">  .newBuilder()</span><br><span class="line">  .proxy(ProxySelector.getDefault())</span><br><span class="line">  .build()</span><br><span class="line">  .send(request, BodyHandlers.ofString());</span><br></pre></td></tr></table></figure>
+
+<p>In our example, we used the default system proxy.</p>
+<p>在我们的示例中，我们使用了默认的系统代理。</p>
+<h3 id="6-3-Setting-the-Redirect-Policy"><a href="#6-3-Setting-the-Redirect-Policy" class="headerlink" title="6.3. Setting the Redirect Policy"></a><a href="https://www.baeldung.com/java-9-http-client#3-setting-the-redirect-policy" target="_blank" rel="noopener"><strong>6.3. Setting the Redirect Policy</strong></a></h3><p>Sometimes the page we want to access has moved to a different address.</p>
+<p>有时，我们想要访问的页面已经转移到了不同的地址。</p>
+<p>In that case, we’ll receive HTTP status code 3xx, usually with the information about new URI. <strong><em>HttpClient</em> can redirect the request to the new URI automatically if we set the appropriate redirect policy.</strong></p>
+<p>在这种情况下，我们会收到 HTTP 状态代码 <strong>3xx</strong>，其中通常包含有关新 URI 的信息。 <strong>如果我们设置了适当的重定向策略，</strong><em>HttpClient</em> 就能自动将请求重定向到新的 URI。</p>
+<p>We can do it with the <em>followRedirects()</em> method on <em>Builder</em>:</p>
+<p>我们可以通过 <em>Builder</em> 上的 <em>followRedirects()</em> 方法来实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HttpResponse&lt;String&gt; response = HttpClient.newBuilder()</span><br><span class="line">  .followRedirects(HttpClient.Redirect.ALWAYS)</span><br><span class="line">  .build()</span><br><span class="line">  .send(request, BodyHandlers.ofString());</span><br></pre></td></tr></table></figure>
+
+<p>All policies are defined and described in enum <em>HttpClient.Redirect</em>.</p>
+<p>所有策略都在枚举 <em>HttpClient.Redirect</em> 中定义和描述。</p>
+<h3 id="6-4-Setting-Authenticator-for-a-Connection"><a href="#6-4-Setting-Authenticator-for-a-Connection" class="headerlink" title="6.4. Setting Authenticator for a Connection"></a><a href="https://www.baeldung.com/java-9-http-client#4-setting-authenticator-for-a-connection" target="_blank" rel="noopener"><strong>6.4. Setting <em>Authenticator</em> for a Connection</strong></a></h3><p>An <em>Authenticator</em> is an object that negotiates credentials (HTTP authentication) for a connection.</p>
+<p>验证器是一个为连接协商凭证（HTTP 验证）的对象。</p>
+<p>It provides different authentication schemes (such as basic or digest authentication).</p>
+<p>它提供不同的验证方案（如基本验证或摘要验证）。</p>
+<p>In most cases, authentication requires username and password to connect to a server.</p>
+<p>在大多数情况下，身份验证需要用户名和密码才能连接服务器。</p>
+<p>We can use <em>PasswordAuthentication</em> class, which is just a holder of these values:</p>
+<p>我们可以使用 <em>PasswordAuthentication</em> 类，它只是这些值的持有者：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">HttpResponse&lt;String&gt; response = HttpClient.newBuilder()</span><br><span class="line">  .authenticator(<span class="keyword">new</span> Authenticator() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> PasswordAuthentication <span class="title">getPasswordAuthentication</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> PasswordAuthentication(</span><br><span class="line">        <span class="string">"username"</span>, </span><br><span class="line">        <span class="string">"password"</span>.toCharArray());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).build()</span><br><span class="line">  .send(request, BodyHandlers.ofString());</span><br></pre></td></tr></table></figure>
+
+<p>Here we passed the username and password values as a plaintext. Of course, this would have to be different in a production scenario.</p>
+<p>在这里，我们以明文形式传递用户名和密码值。当然，这在生产场景中必须有所不同。</p>
+<p>Note that not every request should use the same username and password. The <em>Authenticator</em> class provides a number of <em>getXXX</em> (e.g., <em>getRequestingSite()</em>) methods that can be used to find out what values should be provided.</p>
+<blockquote>
+<p>请注意，并非每个请求都应使用相同的用户名和密码。<em>Authenticator</em> 类提供了许多 _getXXX_（例如 _getRequestingSite()_）方法，可用于查找应提供哪些值。</p>
+</blockquote>
+<p>Now we’re going to explore one of the most useful features of new <em>HttpClient</em> — asynchronous calls to the server.</p>
+<p>现在，我们将探索新_HttpClient_最有用的功能之一–<strong>对服务器的异步调用</strong>。</p>
+<h3 id="6-5-Send-Requests-–-Sync-vs-Async"><a href="#6-5-Send-Requests-–-Sync-vs-Async" class="headerlink" title="6.5. Send Requests – Sync vs Async"></a><a href="https://www.baeldung.com/java-9-http-client#5-send-requests---sync-vs-async" target="_blank" rel="noopener"><strong>6.5. Send Requests – Sync vs Async</strong></a></h3><p>New <em>HttpClient</em> provides two possibilities for sending a request to a server:</p>
+<p>新的 <em>HttpClient</em> 提供了两种向服务器发送请求的可能性：</p>
+<ul>
+<li><p><strong><em>send(…)</em> – synchronously</strong> (blocks until the response comes)</p>
+</li>
+<li><p><strong><em>sendAsync(…)</em> – asynchronously</strong> (doesn’t wait for the response, non-blocking)</p>
+</li>
+<li><p><strong><em>send(…)</em>-同步</strong>（阻塞直到响应到来）</p>
+</li>
+<li><p><strong><em>sendAsync(…)</em>-异步</strong>（不等待响应，非阻塞）。</p>
+</li>
+</ul>
+<p>Up until now, the <em>send(.</em>..) method naturally waits for a response:</p>
+<p>到目前为止，<em>send(.</em>..) 方法一直在等待响应：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HttpResponse&lt;String&gt; response = HttpClient.newBuilder()</span><br><span class="line">  .build()</span><br><span class="line">  .send(request, BodyHandlers.ofString());</span><br></pre></td></tr></table></figure>
+
+<p>This call returns an <em>HttpResponse</em> object, and we’re sure that the next instruction from our application flow will be run only when the response is already here.</p>
+<p>该调用会返回一个 <em>HttpResponse</em> 对象，我们可以确信，只有当响应已经存在时，应用流程的下一条指令才会运行。</p>
+<p>However, it has a lot of drawbacks especially when we are processing large amounts of data.</p>
+<p>不过，这种方法有很多缺点，尤其是在处理大量数据时。</p>
+<p>So, now we can use <em>sendAsync(.</em>..) method — which returns  <em>CompletableFeature&lt; HttpResponse&gt;</em>  — <strong>to process a request asynchronously</strong>:</p>
+<p>因此，现在我们可以使用<em>sendAsync(.</em>..)方法（该方法返回_CompletableFeature&lt; HttpResponse&gt;_）<strong>异步处理请求</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;HttpResponse&lt;String&gt;&gt; response = HttpClient.newBuilder()</span><br><span class="line">  .build()</span><br><span class="line">  .sendAsync(request, HttpResponse.BodyHandlers.ofString());</span><br></pre></td></tr></table></figure>
+
+<p>The new API can also deal with multiple responses, and stream the request and response bodies:</p>
+<p>新的应用程序接口还可以处理多个响应，并对请求和响应体进行流式处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">List&lt;URI&gt; targets = Arrays.asList(</span><br><span class="line">  <span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get?foo1=bar1"</span>),</span><br><span class="line">  <span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get?foo2=bar2"</span>));</span><br><span class="line">HttpClient client = HttpClient.newHttpClient();</span><br><span class="line">List&lt;CompletableFuture&lt;String&gt;&gt; futures = targets.stream()</span><br><span class="line">  .map(target -&gt; client</span><br><span class="line">    .sendAsync(</span><br><span class="line">      HttpRequest.newBuilder(target).GET().build(),</span><br><span class="line">      HttpResponse.BodyHandlers.ofString())</span><br><span class="line">    .thenApply(response -&gt; response.body()))</span><br><span class="line">  .collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-6-Setting-Executor-for-Asynchronous-Calls"><a href="#6-6-Setting-Executor-for-Asynchronous-Calls" class="headerlink" title="6.6. Setting Executor for Asynchronous Calls"></a><a href="https://www.baeldung.com/java-9-http-client#6-setting-executor-for-asynchronous-calls" target="_blank" rel="noopener"><strong>6.6. Setting <em>Executor</em> for Asynchronous Calls</strong></a></h3><p>We can also define an <em>Executor</em> that provides threads to be used by asynchronous calls.</p>
+<p>我们还可以定义一个 <em>Executor</em> 来提供线程供异步调用使用。</p>
+<p>This way we can, for example, limit the number of threads used for processing requests:</p>
+<p>例如，这样我们就可以限制用于处理请求的线程数量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ExecutorService executorService = Executors.newFixedThreadPool(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">CompletableFuture&lt;HttpResponse&lt;String&gt;&gt; response1 = HttpClient.newBuilder()</span><br><span class="line">  .executor(executorService)</span><br><span class="line">  .build()</span><br><span class="line">  .sendAsync(request, HttpResponse.BodyHandlers.ofString());</span><br><span class="line"></span><br><span class="line">CompletableFuture&lt;HttpResponse&lt;String&gt;&gt; response2 = HttpClient.newBuilder()</span><br><span class="line">  .executor(executorService)</span><br><span class="line">  .build()</span><br><span class="line">  .sendAsync(request, HttpResponse.BodyHandlers.ofString());</span><br></pre></td></tr></table></figure>
+
+<p>By default, the <em>HttpClient</em> uses executor <em>java.util.concurrent.Executors.newCachedThreadPool()</em>.</p>
+<p>默认情况下，<em>HttpClient</em> 使用执行器 _java.util.concurrent.Executors.newCachedThreadPool()_。</p>
+<h3 id="6-7-Defining-a-CookieHandler"><a href="#6-7-Defining-a-CookieHandler" class="headerlink" title="6.7. Defining a CookieHandler"></a><a href="https://www.baeldung.com/java-9-http-client#7-defining-a-cookiehandler" target="_blank" rel="noopener"><strong>6.7. Defining a <em>CookieHandler</em></strong></a></h3><p>With new API and builder, it’s straightforward to set a <em>CookieHandler</em> for our connection. We can use builder method <em>cookieHandler(CookieHandler cookieHandler)</em> to define client-specific <em>CookieHandler</em>.</p>
+<p>有了新的 API 和构建器，为连接设置 <em>CookieHandler</em> 就变得简单易行了。</p>
+<p>我们可以使用构建器方法 <em>cookieHandler(CookieHandler cookieHandler)</em> 来定义客户端特定的 _CookieHandler_。</p>
+<p>Let’s define <em>CookieManager (_a concrete implementation of _CookieHandler</em> that separates the storage of cookies from the policy surrounding accepting and rejecting cookies) that doesn’t allow to accept cookies at all:</p>
+<p>让我们定义  <em>CookieManager_（ _CookieHandler</em> 的具体实现，它将 Cookie 的存储与接受和拒绝 Cookie 的策略分离开来），它完全不接受 Cookie：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HttpClient.newBuilder()</span><br><span class="line">  .cookieHandler(<span class="keyword">new</span> CookieManager(<span class="keyword">null</span>, CookiePolicy.ACCEPT_NONE))</span><br><span class="line">  .build();</span><br></pre></td></tr></table></figure>
+
+<p>In case our <em>CookieManager</em> allows cookies to be stored, we can access them by checking <em>CookieHandler</em> from our <em>HttpClient</em>:</p>
+<p>如果 <em>CookieManager</em> 允许存储 cookie，我们就可以通过检查 <em>HttpClient</em> 中的 <em>CookieHandler</em> 来访问它们：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">((CookieManager) httpClient.cookieHandler().get()).getCookieStore()</span><br></pre></td></tr></table></figure>
+
+<p>Now let’s focus on the last class from Http API — the <em>HttpResponse</em>.</p>
+<p>现在，让我们来关注 Http API 的最后一个类–_HttpResponse_。</p>
+<h2 id="7-HttpResponse-Object"><a href="#7-HttpResponse-Object" class="headerlink" title="7. HttpResponse Object"></a><a href="https://www.baeldung.com/java-9-http-client#requests-2" target="_blank" rel="noopener"><strong>7. <em>HttpResponse</em> Object</strong></a></h2><p>The <em>HttpResponse</em> class represents the response from the server. It provides a number of useful methods, but these are the two most important:</p>
+<p><em>HttpResponse</em> 类表示来自服务器的响应。它提供了许多有用的方法，但其中最重要的有两个：</p>
+<ul>
+<li><p><em>statusCode()</em> returns status code (type <em>int</em>) for a response (<em>HttpURLConnection</em> class contains possible values).</p>
+</li>
+<li><p><em>body()</em> returns a body for a response (return type depends on the response <em>BodyHandler</em> parameter passed to the <em>send()</em> method).</p>
+</li>
+<li><p><em>statusCode()</em> 返回响应的状态代码（注意类型 <em>int_）（_HttpURLConnection</em> 类包含可能的值）。</p>
+</li>
+<li><p><em>body()</em> 返回响应的正文（返回类型取决于传递给 <em>send()</em> 方法的响应 <em>BodyHandler</em> 参数）。</p>
+</li>
+</ul>
+<p>The response object has other useful methods that we’ll cover such as <em>uri()</em>, <em>headers()</em>, <em>trailers()</em> and <em>version()</em>.</p>
+<p>响应对象还有其他有用的方法，如 <em>uri()<em>、</em>headers()<em>、</em>trailers()</em> 和 _version()_。</p>
+<h3 id="7-1-URI-of-Response-Object"><a href="#7-1-URI-of-Response-Object" class="headerlink" title="7.1. URI of Response Object"></a><a href="https://www.baeldung.com/java-9-http-client#1-uri-of-response-object" target="_blank" rel="noopener"><strong>7.1. <em>URI</em> of Response Object</strong></a></h3><p>The method <em>uri()</em> on the response object returns the <em>URI</em> from which we received the response.</p>
+<p>响应对象上的 <em>uri()</em> 方法会返回我们收到响应的 <em>URI</em> 地址。</p>
+<p>Sometimes it can be different than <em>URI</em> in the request object because a redirection may occur:</p>
+<p>有时它可能与请求对象中的 <em>URI</em> 不同，因为可能会发生重定向：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">assertThat(request.uri()</span><br><span class="line">  .toString(), equalTo(<span class="string">"http://stackoverflow.com"</span>));</span><br><span class="line">assertThat(response.uri()</span><br><span class="line">  .toString(), equalTo(<span class="string">"https://stackoverflow.com/"</span>));</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-Headers-from-Response"><a href="#7-2-Headers-from-Response" class="headerlink" title="7.2. Headers from Response"></a><a href="https://www.baeldung.com/java-9-http-client#2-headers-from-response" target="_blank" rel="noopener"><strong>7.2. Headers from Response</strong></a></h3><p>We can obtain headers from the response by calling method <em>headers()</em> on a response object:</p>
+<p>我们可以通过调用响应对象上的 <em>headers()</em> 方法来获取响应的标题：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HttpResponse&lt;String&gt; response = HttpClient.newHttpClient()</span><br><span class="line">  .send(request, HttpResponse.BodyHandlers.ofString());</span><br><span class="line">HttpHeaders responseHeaders = response.headers();</span><br></pre></td></tr></table></figure>
+
+<p>It returns <em>HttpHeaders</em> object, which represents a read-only view of HTTP Headers.</p>
+<p>它返回 <em>HttpHeaders</em> 对象，该对象表示 HTTP 头信息的只读视图。</p>
+<p>It has some useful methods that simplify searching for headers value.</p>
+<p>它有一些有用的方法，可以简化头信息值的搜索。</p>
+<h3 id="7-3-Version-of-the-Response"><a href="#7-3-Version-of-the-Response" class="headerlink" title="7.3. Version of the Response"></a><a href="https://www.baeldung.com/java-9-http-client#3-version-of-the-response" target="_blank" rel="noopener"><strong>7.3. Version of the Response</strong></a></h3><p>The method <em>version()</em> defines which version of HTTP protocol was used to talk with a server.</p>
+<p>方法 <em>version()</em> 定义了与服务器通信时使用的 HTTP 协议版本。</p>
+<p><strong>Remember that even if we define that we want to use HTTP/2, the server can answer via HTTP/1.1.</strong></p>
+<p><strong>请记住，即使我们定义要使用 HTTP/2，服务器也可以通过 HTTP/1.1 进行应答</strong>。</p>
+<p>The version in which the server answered is specified in the response:</p>
+<p>响应中指定了服务器应答的版本：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">  .uri(<span class="keyword">new</span> URI(<span class="string">"https://postman-echo.com/get"</span>))</span><br><span class="line">  .version(HttpClient.Version.HTTP_2)</span><br><span class="line">  .GET()</span><br><span class="line">  .build();</span><br><span class="line">HttpResponse&lt;String&gt; response = HttpClient.newHttpClient()</span><br><span class="line">  .send(request, HttpResponse.BodyHandlers.ofString());</span><br><span class="line">assertThat(response.version(), equalTo(HttpClient.Version.HTTP_1_1));</span><br></pre></td></tr></table></figure>
+
+<h2 id="8-Handling-Push-Promises-in-HTTP-2"><a href="#8-Handling-Push-Promises-in-HTTP-2" class="headerlink" title="8. Handling Push Promises in HTTP/2"></a><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtOS1odHRwLWNsaWVudCNoYW5kbGluZy1wdXNoLXByb21pc2VzLWluLWh0dHAy" title="https://www.baeldung.com/java-9-http-client#handling-push-promises-in-http2">8. Handling Push Promises in HTTP/2<i class="fa fa-external-link"></i></span></h2><p>New <em>HttpClient</em> supports push promises through <em>PushPromiseHandler</em> interface_._ </p>
+<p>新的 <em>HttpClient</em> 通过 <em>PushPromiseHandler</em> 接口支持推送承诺。</p>
+<p><strong>It allows the server to “push” content to the client additional resources while requesting the primary resource, saving more roundtrip and as a result improves performance in page rendering.</strong></p>
+<p><strong>它允许服务器在请求主要资源的同时向客户端 “推送 “附加资源内容，从而节省了更多的往返时间，并因此提高了页面渲染的性能。</strong></p>
+<p>It is really the multiplexing feature of HTTP/2 that allows us to forget about resource bundling. For each resource, the server sends a special request, known as a push promise to the client.</p>
+<p>实际上，正是 HTTP/2 的多路复用功能让我们忘记了资源捆绑。对于每个资源，服务器都会向客户端发送一个特殊请求，即推送承诺。</p>
+<p>Push promises received, if any, are handled by the given <em>PushPromiseHandler</em>. A null valued <em>PushPromiseHandler</em> rejects any push promises.</p>
+<p>收到的推送承诺（如果有）将由给定的 <em>PushPromiseHandler</em> 处理。空值_PushPromiseHandler_将拒绝任何推送承诺。</p>
+<p>The <em>HttpClient</em> has an overloaded <strong>sendAsync</strong> method that allows us to handle such promises, as shown below.</p>
+<p>如下所示，<em>HttpClient</em> 有一个重载的 <strong>sendAsync</strong> 方法，允许我们处理此类承诺。</p>
+<p>Let’s first create a <em>PushPromiseHandler</em>:</p>
+<p>让我们先创建一个 <em>PushPromiseHandler</em> ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> PushPromiseHandler&lt;String&gt; <span class="title">pushPromiseHandler</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (HttpRequest initiatingRequest, </span><br><span class="line">        HttpRequest pushPromiseRequest, </span><br><span class="line">        Function&lt;HttpResponse.BodyHandler&lt;String&gt;, </span><br><span class="line">        CompletableFuture&lt;HttpResponse&lt;String&gt;&gt;&gt; acceptor) -&gt; &#123;</span><br><span class="line">        acceptor.apply(BodyHandlers.ofString())</span><br><span class="line">            .thenAccept(resp -&gt; &#123;</span><br><span class="line">                System.out.println(<span class="string">" Pushed response: "</span> + resp.uri() + <span class="string">", headers: "</span> + resp.headers());</span><br><span class="line">            &#125;);</span><br><span class="line">        System.out.println(<span class="string">"Promise request: "</span> + pushPromiseRequest.uri());</span><br><span class="line">        System.out.println(<span class="string">"Promise request: "</span> + pushPromiseRequest.headers());</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Next, let’s use <em>sendAsync</em> method to handle this push promise:</p>
+<p>接下来，让我们使用 <em>sendAsync</em> 方法来处理这个推送承诺：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">httpClient.sendAsync(pageRequest, BodyHandlers.ofString(), pushPromiseHandler())</span><br><span class="line">    .thenAccept(pageResponse -&gt; &#123;</span><br><span class="line">        System.out.println(<span class="string">"Page response status code: "</span> + pageResponse.statusCode());</span><br><span class="line">        System.out.println(<span class="string">"Page response headers: "</span> + pageResponse.headers());</span><br><span class="line">        String responseBody = pageResponse.body();</span><br><span class="line">        System.out.println(responseBody);</span><br><span class="line">    &#125;)</span><br><span class="line">    .join();</span><br></pre></td></tr></table></figure>
+
+<h2 id="9-Conclusion"><a href="#9-Conclusion" class="headerlink" title="9. Conclusion"></a><a href="https://www.baeldung.com/java-9-http-client#conclusion" target="_blank" rel="noopener"><strong>9. Conclusion</strong></a></h2><p>In this article, we explored the Java 11 <em>HttpClient</em> API that standardized the incubating HttpClient introduced in Java 9 with more powerful changes.</p>
+<p>在本文中，我们探讨了 Java 11 <em>HttpClient</em> API，它对 Java 9 中引入的孵化 HttpClient 进行了标准化，并做出了更强大的更改。</p>
+<p>这篇文章讨论了JDK11全新的HTTP API，</p>
+<p>The complete code used can be found <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2V1Z2VucC90dXRvcmlhbHMvdHJlZS9tYXN0ZXIvY29yZS1qYXZhLW1vZHVsZXMvY29yZS1qYXZhLTEx" title="https://github.com/eugenp/tutorials/tree/master/core-java-modules/core-java-11">over on GitHub<i class="fa fa-external-link"></i></span>.</p>
+<p>使用的完整代码可在 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2V1Z2VucC90dXRvcmlhbHMvdHJlZS9tYXN0ZXIvY29yZS1qYXZhLW1vZHVsZXMvY29yZS1qYXZhLTEx" title="https://github.com/eugenp/tutorials/tree/master/core-java-modules/core-java-11">GitHub<i class="fa fa-external-link"></i></span> 上找到。</p>
+<p>In the examples, we’ve used sample REST endpoints provided by <em><span class="exturl" data-url="aHR0cHM6Ly9wb3N0bWFuLWVjaG8uY29t" title="https://postman-echo.com">https://postman-echo.com<i class="fa fa-external-link"></i></span></em>.</p>
+<p>在示例中，我们使用了 <em><span class="exturl" data-url="aHR0cHM6Ly9wb3N0bWFuLWVjaG8uY29t" title="https://postman-echo.com">https://postman-echo.com<i class="fa fa-external-link"></i></span></em> 提供的 REST 端点示例。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/08/10/httpclientjdk11/" title="【Java】Exploring the New HTTP Client in Java">https://whitestore.top/2023/08/10/httpclientjdk11/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/10/linuxperformance/" rel="prev" title="【Linux】Linux Performance">
+      <i class="fa fa-chevron-left"></i> 【Linux】Linux Performance
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/08/10/literallywhy/" rel="next" title="【English】literally 到底是什么意思，为什么美国人老把 literally 挂嘴边？">
+      【English】literally 到底是什么意思，为什么美国人老把 literally 挂嘴边？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#探索-Java-中的新-HTTP-客户端"><span class="nav-number">1.</span> <span class="nav-text">探索 Java 中的新 HTTP 客户端</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原文"><span class="nav-number">2.</span> <span class="nav-text">原文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Overview"><span class="nav-number">2.1.</span> <span class="nav-text">1. Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Further-reading-（相关阅读）"><span class="nav-number">2.2.</span> <span class="nav-text">Further reading:（相关阅读）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Posting-with-Java-HttpClient"><span class="nav-number">2.3.</span> <span class="nav-text">Posting with Java HttpClient</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-HttpClient-With-SSL"><span class="nav-number">2.4.</span> <span class="nav-text">Java HttpClient With SSL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adding-Parameters-to-Java-HttpClient-Requests"><span class="nav-number">2.5.</span> <span class="nav-text">Adding Parameters to Java HttpClient Requests</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Background"><span class="nav-number">2.6.</span> <span class="nav-text">2. Background</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Major-Changes-as-Part-of-JEP-321"><span class="nav-number">2.6.1.</span> <span class="nav-text">2.1. Major Changes as Part of JEP 321</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Problems-With-the-Pre-Java-11-HTTP-Client"><span class="nav-number">2.6.2.</span> <span class="nav-text">2.2. Problems With the Pre-Java 11 HTTP Client</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-HTTP-Client-API-Overview"><span class="nav-number">2.7.</span> <span class="nav-text">3. HTTP Client API Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-HttpRequest"><span class="nav-number">2.8.</span> <span class="nav-text">4. HttpRequest</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Setting-URI"><span class="nav-number">2.8.1.</span> <span class="nav-text">4.1. Setting URI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-Specifying-the-HTTP-Method"><span class="nav-number">2.8.2.</span> <span class="nav-text">4.2. Specifying the HTTP Method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-Setting-HTTP-Protocol-Version"><span class="nav-number">2.8.3.</span> <span class="nav-text">4.3. Setting HTTP Protocol Version</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-Setting-Headers"><span class="nav-number">2.8.4.</span> <span class="nav-text">4.4. Setting Headers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-Setting-a-Timeout"><span class="nav-number">2.8.5.</span> <span class="nav-text">4.5. Setting a Timeout</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Setting-a-Request-Body"><span class="nav-number">2.9.</span> <span class="nav-text">5. Setting a Request Body</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-StringBodyPublisher"><span class="nav-number">2.9.1.</span> <span class="nav-text">5.1. StringBodyPublisher</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-InputStreamBodyPublisher"><span class="nav-number">2.9.2.</span> <span class="nav-text">5.2. InputStreamBodyPublisher</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-ByteArrayProcessor"><span class="nav-number">2.9.3.</span> <span class="nav-text">5.3. ByteArrayProcessor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-FileProcessor"><span class="nav-number">2.9.4.</span> <span class="nav-text">5.4. FileProcessor</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-HttpClient"><span class="nav-number">2.10.</span> <span class="nav-text">6. HttpClient</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-Handling-Response-Body"><span class="nav-number">2.10.1.</span> <span class="nav-text">6.1. Handling Response Body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-Setting-a-Proxy"><span class="nav-number">2.10.2.</span> <span class="nav-text">6.2. Setting a Proxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-Setting-the-Redirect-Policy"><span class="nav-number">2.10.3.</span> <span class="nav-text">6.3. Setting the Redirect Policy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-Setting-Authenticator-for-a-Connection"><span class="nav-number">2.10.4.</span> <span class="nav-text">6.4. Setting Authenticator for a Connection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-Send-Requests-–-Sync-vs-Async"><span class="nav-number">2.10.5.</span> <span class="nav-text">6.5. Send Requests – Sync vs Async</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-6-Setting-Executor-for-Asynchronous-Calls"><span class="nav-number">2.10.6.</span> <span class="nav-text">6.6. Setting Executor for Asynchronous Calls</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-7-Defining-a-CookieHandler"><span class="nav-number">2.10.7.</span> <span class="nav-text">6.7. Defining a CookieHandler</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-HttpResponse-Object"><span class="nav-number">2.11.</span> <span class="nav-text">7. HttpResponse Object</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-URI-of-Response-Object"><span class="nav-number">2.11.1.</span> <span class="nav-text">7.1. URI of Response Object</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-Headers-from-Response"><span class="nav-number">2.11.2.</span> <span class="nav-text">7.2. Headers from Response</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-Version-of-the-Response"><span class="nav-number">2.11.3.</span> <span class="nav-text">7.3. Version of the Response</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-Handling-Push-Promises-in-HTTP-2"><span class="nav-number">2.12.</span> <span class="nav-text">8. Handling Push Promises in HTTP&#x2F;2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-Conclusion"><span class="nav-number">2.13.</span> <span class="nav-text">9. Conclusion</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

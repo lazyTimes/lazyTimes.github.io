@@ -197,7 +197,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/07/06/openfeigncloud/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/01/28/huigu1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -211,7 +211,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/06/openfeigncloud/" class="post-title-link" itemprop="url">Spring Cloud openFeign学习【3.0.2版本】</a>
+            <a href="/2022/01/28/huigu1/" class="post-title-link" itemprop="url">深入理解JVM - 阶段总结与回顾（一）</a>
         </h2>
 
         <div class="post-meta">
@@ -221,14 +221,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-07-06 23:11:40" itemprop="dateCreated datePublished" datetime="2021-07-06T23:11:40+08:00">2021-07-06</time>
+              <time title="创建时间：2022-01-28 23:29:51" itemprop="dateCreated datePublished" datetime="2022-01-28T23:29:51+08:00">2022-01-28</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -236,7 +236,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">java-java基础</span></a>
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
                 </span>
             </span>
 
@@ -249,8 +249,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/07/06/openfeigncloud/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/06/openfeigncloud/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/01/28/huigu1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/28/huigu1/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -260,16 +260,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>34k</span>
+              <span>2.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>31 分钟</span>
+              <span>3 分钟</span>
             </span>
-            <div class="post-description">源码阅读</div>
+            <div class="post-description">jvm阶段总结和处理</div>
 
         </div>
       </header>
@@ -280,10 +280,32 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Spring-Cloud-openFeign学习【3-0-2版本】"><a href="#Spring-Cloud-openFeign学习【3-0-2版本】" class="headerlink" title="Spring Cloud openFeign学习【3.0.2版本】"></a>Spring Cloud openFeign学习【3.0.2版本】</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    内容分为openFeign大致的使用和源码的个人解读，里面参考了不少其他优秀博客作者的内容，很多地方基本算是拾人牙慧了，不过还是顺着源码读了一遍加深理解。</p>
+          <h1 id="深入理解JVM-阶段总结与回顾（一）"><a href="#深入理解JVM-阶段总结与回顾（一）" class="headerlink" title="深入理解JVM - 阶段总结与回顾（一）"></a>深入理解JVM - 阶段总结与回顾（一）</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这篇文章不写新内容，而是回顾之前的文章内容。</p>
+<h1 id="为什么开设专栏"><a href="#为什么开设专栏" class="headerlink" title="为什么开设专栏"></a>为什么开设专栏</h1><p>​    开设这个专栏的目的毫无疑问是给个人的成长做一个记录和归档，因为这段时间下来发现学东西一定要系统并且有目的循序渐进的学才有更快的成长，JVM的内容和细节是学不完的，所以要清楚学这个东西的作用是什么很关键，个人学这个东西无非就是为了面试以及了解底层原理，同时本着书到用时方恨少的原则编写专栏。</p>
+<h1 id="系列文章阶段总结："><a href="#系列文章阶段总结：" class="headerlink" title="系列文章阶段总结："></a>系列文章阶段总结：</h1><p>​    专栏地址：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vY29sdW1uLzY5Nzk1MzA1NzAzNTUzNDMzNjg=" title="https://juejin.cn/column/6979530570355343368">深入理解JVM虚拟机<i class="fa fa-external-link"></i></span></p>
+<p>​    第一篇：<a href="juejin.cn/post/6979529931952750623">深入理解JVM虚拟机 - JVM的初步了解</a></p>
+<p>​    系列的开篇，在第一篇专栏我们需要了解JVM到底是个什么东西，他对于JAVA开发者而言的重要意义，同时我们编写的代码是如何通过JVM运行并且实现我们想要的效果的，重点在于JAVA加载到JVM的工作流程。</p>
+<p>​    这里也讲述了JVM的双亲委派模型和Tomcat的双亲委派模型是如何打破他的，类加载器也是JVM的一个核心内容。</p>
+<p>​    第二篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTcxMDc3NTk2NjI0NzE1ODEz" title="https://juejin.cn/post/6971077596624715813">深入理解JVM虚拟机 - 虚拟机的发展历史<i class="fa fa-external-link"></i></span></p>
+<p>​    基本就是《深入理解JVM虚拟机》的笔记了，当然很多博客也介绍了。</p>
+<p>​    第三篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTgzMDYyOTk2NjI0ODY3MzM2" title="https://juejin.cn/post/6983062996624867336">深入理解JVM - 分代的基本概念<i class="fa fa-external-link"></i></span></p>
+<p>​    讲述了JVM的传统分代模型的特点，以及新生代和老年代的划分，重点是新生代如何进入老年代，需要的条件以及相关的参数设置也是面试高频点。最后介绍了JVM的调优参数。</p>
+<p>​    第四篇：<a href="juejin.cn/post/6970557978831388709">深入理解JVM虚拟机 - jvm的对象分配策略</a></p>
+<p>​    这篇文章个人认为值得关注的点是实际的JVM测试结果和书里面不一样！同时可以发现新版本当中的Parnew会在连续分配大对象的时候让对象直接进入老年代，真的很奇怪！还是建议学这些东西一定自己尝试，花点时间换来的收益是你意向不到的！</p>
+<p>​    第五篇：<a href="juejin.cn/post/6984356543470764068">深入理解JVM - 垃圾回收算法</a></p>
+<p>​    和标题一样，介绍JVM的垃圾回收算法以及新生代老年代是如何运用算法进行回收的，需要注意的是这些垃圾算法没有好坏之分，一切看实际垃圾收集器开发者的设计理念。比如CMS还是典型的标记-清除，但是到了G1就是标记整理了。</p>
+<p>​    第六篇：<a href="juejin.cn/post/6985036085390737415">深入理解JVM - CMS收集器</a></p>
+<p>​    讲述CMS收集器的手机细节，以及CMS的好搭档ParNew的一些处理细节，CMS+ParNew相信还是多数公司的首选垃圾收集器。毕竟不是谁都有那么庞大的用户量或者大项目这种。</p>
+<p>​    第七篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTg1MTc0NjM5Mjk1MDcwMjIy" title="https://juejin.cn/post/6985174639295070222">深入理解JVM - 实战老年代优化<i class="fa fa-external-link"></i></span></p>
+<p>​    无需多介绍，内容和标题类似。</p>
+<p>​    第八篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTg3MjI0Nzc5ODI0NTYyMjA2" title="https://juejin.cn/post/6987224779824562206">深入理解JVM - G1收集器<i class="fa fa-external-link"></i></span></p>
+<p>​    功能和使用看似都十分简单，然而内含的原理十分复杂，主要也是讲解G1收集器的一些功能和细节点。</p>
+<p>​    同时是否需要研究原理这就看个人需求了，当然多懂点总是好事。</p>
+<p>​    第九篇：<span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC82OTg3OTYxNDA1OTQ1MTUxNTAy" title="https://juejin.cn/post/6987961405945151502">深入理解JVM - G1调优简述<i class="fa fa-external-link"></i></span></p>
+<p>​    感觉完全是水了一篇，可以不看，因为个人目前没遇到需要用上G1去调优的场景（=-=）</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/07/06/openfeigncloud/#more" rel="contents">
+              <a class="btn" href="/2022/01/28/huigu1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -307,7 +329,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/07/06/xmindipad/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/01/28/yueliang/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -321,7 +343,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/06/xmindipad/" class="post-title-link" itemprop="url">【ipad】xmind使用快捷键技巧</a>
+            <a href="/2022/01/28/yueliang/" class="post-title-link" itemprop="url">《月亮与六便士》读书笔记</a>
         </h2>
 
         <div class="post-meta">
@@ -331,14 +353,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-07-06 22:40:37" itemprop="dateCreated datePublished" datetime="2021-07-06T22:40:37+08:00">2021-07-06</time>
+              <time title="创建时间：2022-01-28 23:29:41" itemprop="dateCreated datePublished" datetime="2022-01-28T23:29:41+08:00">2022-01-28</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -346,7 +368,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
                 </span>
             </span>
 
@@ -359,8 +381,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/07/06/xmindipad/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/06/xmindipad/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/01/28/yueliang/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/28/yueliang/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -370,16 +392,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>112</span>
+              <span>2.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
-            <div class="post-description">ipad技巧</div>
+            <div class="post-description">月亮与6便士的读书笔记</div>
 
         </div>
       </header>
@@ -390,14 +412,274 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="【ipad】xmind使用快捷键技巧"><a href="#【ipad】xmind使用快捷键技巧" class="headerlink" title="【ipad】xmind使用快捷键技巧"></a>【ipad】xmind使用快捷键技巧</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210519142029.png" alt=""></p>
-<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><ol>
-<li>k380键盘按键在空格的左边（比较反人类）</li>
-<li>向上大箭头代表了<code>Shirft</code>键</li>
-</ol>
+          <h1 id="《月亮与六便士》读书笔记"><a href="#《月亮与六便士》读书笔记" class="headerlink" title="《月亮与六便士》读书笔记"></a>《月亮与六便士》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我不知道上了多少次“经典必读”这四个字的当了，这本书看完我是无感的，里面的有些描述甚至让我反感，而看这本书的理由也很简单，一方面毫无疑问是被广告吸引了，另一方面，它出现在多多的百亿补贴上面看着还挺便宜。</p>
+<h1 id="资源链接："><a href="#资源链接：" class="headerlink" title="资源链接："></a>资源链接：</h1><p>如果不想被我的观点影响，请上网找找书的评价然后自己翻翻书，这本书也算是经典读物了，应该有不少人知道名字但是没看过。</p>
 <blockquote>
-<p>个人在今年买了一个ipad进行笔记记录和学习，这里记录的主要是一些比较简单和实用方便的技巧和内容，不定时更新</p>
+<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMVA5QnZwbzBzU29kSFRDVjFXbUNycmc=" title="https://pan.baidu.com/s/1P9Bvpo0sSodHTCV1WmCrrg">https://pan.baidu.com/s/1P9Bvpo0sSodHTCV1WmCrrg<i class="fa fa-external-link"></i></span><br>提取码：dn69<br>–来自百度网盘超级会员V6的分享</p>
 </blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/01/28/yueliang/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2022/01/28/mycms/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/01/28/mycms/" class="post-title-link" itemprop="url">深入理解JVM - CMS收集器</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-28 23:24:18" itemprop="dateCreated datePublished" datetime="2022-01-28T23:24:18+08:00">2022-01-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/01/28/mycms/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/28/mycms/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+            <div class="post-description">垃圾收集器的使用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="深入理解JVM-CMS收集器"><a href="#深入理解JVM-CMS收集器" class="headerlink" title="深入理解JVM - CMS收集器"></a>深入理解JVM - CMS收集器</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    上一节我们讲解分代和垃圾回收算法，这一节我们来讲解老年代重要的垃圾收集器：cms收集器。这一节的内容同样比较多。</p>
+<p>​    这一节主要围绕着十分常用的CMS垃圾收集器进行讲解。</p>
+<p>​    </p>
+<h1 id="前文回顾"><a href="#前文回顾" class="headerlink" title="前文回顾"></a>前文回顾</h1><p>​    上一篇文章我们讲解分代的基础理论，同时讲解了新生代和老年代各自的算法复制算法和标记整理算法，之后我们总结了新生代进入老年代的条件，在最后我们介绍的引用类型，同时进行了练习的提问和相关的解答。</p>
+<p>​    </p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ol>
+<li>讲述cms收集器之前，简单了解他的黄金搭档ParNew</li>
+<li>讲解cms收集器的参数，以及核心的运行步骤部分。</li>
+<li>讲解CMS收集器运行过程的一些细节以及CMS的参数的意义。</li>
+<li>整理小部分常见的JVM问题</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/01/28/mycms/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/12/25/g1tiaoyou/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/25/g1tiaoyou/" class="post-title-link" itemprop="url">深入理解JVM - G1调优简述</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-25 12:11:01" itemprop="dateCreated datePublished" datetime="2021-12-25T12:11:01+08:00">2021-12-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/25/g1tiaoyou/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/25/g1tiaoyou/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">G1调优的大致思路</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="深入理解JVM-G1调优简述"><a href="#深入理解JVM-G1调优简述" class="headerlink" title="深入理解JVM - G1调优简述"></a>深入理解JVM - G1调优简述</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    G1收集器是一个不太好调优的收集器，因为他不能像固定分代的收集器那样可以自己想划分多少就划分多少，更多的分配动作是由收集器动作，由于region是一块块的，同时自动增长也是由G1控制，好像确实不太好调优。</p>
+<p>​    这篇文章更多的是提供调优的一个大致方向，更多的内容需要后续介绍JVM的工具进行讲解。</p>
+<h1 id="案例实战"><a href="#案例实战" class="headerlink" title="案例实战"></a>案例实战</h1><p>​    这次使用一个在线的教育平台作为案例解释G1是如何进行优化的。</p>
+<p>​    在线教育平台的压力来自于哪里？首先孩子白天需要上学同时家长也需要上班，所以白天的访问量不会很大，同时主要的业务也不在在线教育平台处理。但是一旦到了晚上，机器的压力就上来了，同时孩子也会在线进行听课上课，这时候用户量会暴增，会有上万人同时在线听课。这时候可以发现在线教育平台的压力在于直播，而直播的流量高峰在于课堂的互动环节，为什么是互动环节呢，因为孩子不喜欢枯燥的课堂，为了带动课堂氛围，课堂中的游戏一定是活跃气氛的关键，也是系统压力的核心，这时系统需要记录各种数据，比如活动时长，得分，积分奖励等等，同时也会出现大量的对象分配，为了保证直播的流畅，系统要求十分低的延迟响应时间。</p>
+<p>​    所以最终的结论是：在线教育平台大概在直播的互动环节压力会倍增，系统要求十分低的延迟响应时间。</p>
+<p>​    经过了上面的情况分析，我们假设<strong>单台机器每秒大概有600个请求</strong>，假设每一个请求占用10KB，则是6000KB的大小占用也就是最终6M左右的内存占用。同时部署在一个4核心8G的系统上面。</p>
+<blockquote>
+<p>同样的，这种案例也只是模拟和假设，具体情况受到各种因素的限制，切勿过于深究细节。</p>
+</blockquote>
+<h1 id="如何分析系统"><a href="#如何分析系统" class="headerlink" title="如何分析系统"></a>如何分析系统</h1><h2 id="传统的分代概念"><a href="#传统的分代概念" class="headerlink" title="传统的分代概念"></a>传统的分代概念</h2><p>​    我们用传统分代的概念部署一下这个系统，根据每一秒的请求为6M的对象大小，同时根据系统4核心8的配置，那么给JVM的内存大概是4G，我们知道直播的互动环节产生的积分，奖励，计算等对象基本都是朝生夕死的小对象，所以我们不太需要给老年代过大的空间，所以出去方法区和虚拟机线程栈的内存，我们给大约会给新生代3G和老年代1G左右的内容。</p>
+<p>​    如果每秒产生6M的对象，那么一分钟就是300多M，按照默认的新生代配比8：1：1则Eden区域大概为2.4G的大小，survior区域为两个300M的大小空间。一分钟300M，那么基本上8分钟左右新生代就会满，此时假设有300M左右对象存活进入Survior区域，这时候Survior区域虽然可以装的下，但是由于超过了50%的配比，最终还是有约150M的对象进入老年代。</p>
+<p>​    这时候再推算，老年代每8分钟进入150M的对象，大约40分钟左右就会整个系统停顿一次，这个停顿时间还是乐观估计，因为系统不可能只运作这一块的内容，单单是推算直播互动这一块就会产生这样的效果，可想而知加上整个系统的其他模块，<strong>实际上5、6分钟可能会停顿一次！！！</strong>这样肯定是不行的，试想下你玩游戏隔几分钟就停一下，对于小孩子来说突然卡一下导致丢分最后成绩不佳孩子又哭又闹，家长这时候不用想肯定会大量的投诉，被骂也不远了……</p>
+<h2 id="使用G1收集器"><a href="#使用G1收集器" class="headerlink" title="使用G1收集器"></a>使用G1收集器</h2><p>​    我们接着使用G1的收集器进行替换，系统部署在一个4核心8G的系统上面，假设机器在JVM上分配4G给堆，新生代默认初始化比例为5%，最大占比为60%，JAVA线程堆栈为1M，则大约开启几百个线程需要200，300M的空间，而方法区占用256M够用。</p>
+<p>​    在上一节在文章中介绍过，可以把G1的工作机制想象成收盘子，但是放到系统上就很头疼了，<strong>G1什么时候回来收垃圾是我们无法预测的！！</strong>这里就需要通过一些辅助手段，同时这部分的监控操作需要工具和日志进行解读，所以将会放到后续的专门一篇文章进行解读。</p>
+<h3 id="如何计算Region的占用和大小："><a href="#如何计算Region的占用和大小：" class="headerlink" title="如何计算Region的占用和大小："></a>如何计算Region的占用和大小：</h3><p>​    按照4096M/2048 每个region是2M，如果按照新生代初始为5%，则根据参数5%新生代的大小为100个Region左右，4G的内存机器结果可以得出新生代初始200M左右的内存占用大小</p>
+<h3 id="至关重要的参数："><a href="#至关重要的参数：" class="headerlink" title="至关重要的参数："></a>至关重要的参数：</h3><p>​    <strong>-XX:MaxGCPauseMills</strong> 参数：默认值为200，代表了200MS，表示最大的停顿时间为200MS。</p>
+<p>​    如果使用G1收集器，这个参数直接影响了整个JVM系统的性能，如果这个数值过大，会导致垃圾收集的时间过长而导致前台卡顿，也容易导致新生代来不及触发垃圾回收就满了，或者导致老年代内存无法及时的回收。</p>
+<h3 id="多久会触发新生代回收操作"><a href="#多久会触发新生代回收操作" class="headerlink" title="多久会触发新生代回收操作"></a>多久会触发新生代回收操作</h3><p>​    根据之前的说明，<strong>新生代最大可以使用60%的空间</strong>，同时也说明了新生代使用复制算法，根据8:1:1的规则，大概到达新生代的80%左右就会触发垃圾的回收操作？这种做法显然不符合G1基于全堆以及混合回收的操作。所以不能用固定大小的回收思路思考g1的回收操作。</p>
+<p>​    正确做法：    G1会根据200MS的要求，定时去判定当前的新生代是否可以符合200MS的收集操作要求，大意就是当新生代的垃圾回收需要耗时200MS的时候，就会触发新生代的回收。</p>
+<p>​    这里也可以直接按照之前的理解餐厅的服务员定时过来收盘子的操作理解新生代多久进行一次回收操作。</p>
+<h3 id="如何优化："><a href="#如何优化：" class="headerlink" title="如何优化："></a>如何优化：</h3><p>​    上面的讨论几点之后，这就头疼了，这要这么优化？这时我们需要用上一些压测的工具以及GC日志和内存分析工具来考虑了，但是也不要让GC挺多停顿时间预设值太大了导致GC停顿时间太长，应该给个合理的值。</p>
+<h3 id="Mixed-gc如何优化？"><a href="#Mixed-gc如何优化？" class="headerlink" title="Mixed gc如何优化？"></a>Mixed gc如何优化？</h3><p>​    既然新生代的优化都已经很麻烦了，更不用说老年代回收了。而老年代的回收本身也没有了Old GC，取而代之的是Mixed GC，所以需要小心对待，我们从根本上还是需要防止让对象进入到老年代不断扩展导致mixed gc，这更加需要关注时间停顿模型这个参数。</p>
+<h2 id="最终分析"><a href="#最终分析" class="headerlink" title="最终分析"></a>最终分析</h2><p>​    新生代：</p>
+<ol>
+<li>由于是复制算法，所以需要从根本上处理的话依然需要控制新生代的存活对象进入survior的大小，同时控制在50%以内。尽量避免GC之后对象直接进入老年代。另外60%的新生代空间通常也不用怎么调整，除非业务对象频繁创建新生代会产生大量对象才需要考虑。</li>
+<li>新生代有一个参数是存活对象大于85%的时候不需要进行拷贝，这个值如果设置小一点可能会提高回收效率，但是有可能造成大量的短命对象进入老年代的风险。</li>
+</ol>
+<p>​    老年代：</p>
+<ol>
+<li>按照G1的最后一个步骤，垃圾回收和系统回交替8次，同时在回到5%的region的时候停止收集，这个参数其实可以适当调大一些：G1HeapWastePercent</li>
+<li>45%的老年代占用触发垃圾回收的机制，这个参数也不需要大改，因为JDK设置这个参数肯定是经过了很多测试和考量之后的结果。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>​    这一篇更多的是提供优化思路，JVM调优没有万金油的解决方案，特别是G1收集器这种算法细节十分复杂的收集器，调优需要更多的精力和时间测试调优效果。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>​    下一篇章会做一个整个系列到目前为止的小节，温故而知新，人的遗忘曲线更加需要我们反复的巩固知识和内容。</p>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
       
     </div>
@@ -417,7 +699,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/07/06/feibaoli/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/12/25/g1garbage/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -431,7 +713,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/06/feibaoli/" class="post-title-link" itemprop="url">《非暴力沟通》读书笔记</a>
+            <a href="/2021/12/25/g1garbage/" class="post-title-link" itemprop="url">深入理解JVM - G1收集器</a>
         </h2>
 
         <div class="post-meta">
@@ -441,14 +723,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-07-06 22:40:21" itemprop="dateCreated datePublished" datetime="2021-07-06T22:40:21+08:00">2021-07-06</time>
+              <time title="创建时间：2021-12-25 12:07:37" itemprop="dateCreated datePublished" datetime="2021-12-25T12:07:37+08:00">2021-12-25</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -456,7 +738,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
                 </span>
             </span>
 
@@ -469,8 +751,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/07/06/feibaoli/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/06/feibaoli/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/12/25/g1garbage/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/25/g1garbage/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -480,16 +762,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.2k</span>
+              <span>6.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>6 分钟</span>
             </span>
-            <div class="post-description">描述信息</div>
+            <div class="post-description">G1收集器也是JDK9服务端默认的垃圾收集器</div>
 
         </div>
       </header>
@@ -500,10 +782,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="《非暴力沟通》读书笔记"><a href="#《非暴力沟通》读书笔记" class="headerlink" title="《非暴力沟通》读书笔记"></a>《非暴力沟通》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    不知道为什么这本书总是让我想到印度战神甘地，对于他当初的非暴力不合作观点印象深刻。而看这本书的契机毫无疑问是“沟通”这两个字，无论从事何种职业，人际交往无疑是极为重要的，特别是人情关系复杂的中国。而这本书的大致内容就是告诉你如何把话说的更好。简单理解就是把低情商容易让人反感的话转化思维变成高情商更容易让人理解并且听着舒服的话，如果用更简单的话来说，就是学习如何换位思考。</p>
+          <h1 id="深入理解JVM-G1收集器"><a href="#深入理解JVM-G1收集器" class="headerlink" title="深入理解JVM - G1收集器"></a>深入理解JVM - G1收集器</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    上一篇通过案例说明了老年代的常见优化和处理方式，这一节来看下目前最为热门的G1收集器，G1收集器也是JDK9服务端默认的垃圾收集器，虽然JDK9在现在看来还不是十分的普及，但是学习这个垃圾收集器是十分重要也是十分必要的。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/07/06/feibaoli/#more" rel="contents">
+              <a class="btn" href="/2021/12/25/g1garbage/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -527,7 +809,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/06/02/note20/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/12/25/zuoyouchengxiao/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -541,7 +823,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/06/02/note20/" class="post-title-link" itemprop="url">jmeter压力测试学习</a>
+            <a href="/2021/12/25/zuoyouchengxiao/" class="post-title-link" itemprop="url">《卓有成效的管理者》读书笔记</a>
         </h2>
 
         <div class="post-meta">
@@ -551,14 +833,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-06-02 17:52:09" itemprop="dateCreated datePublished" datetime="2021-06-02T17:52:09+08:00">2021-06-02</time>
+              <time title="创建时间：2021-12-25 12:03:01" itemprop="dateCreated datePublished" datetime="2021-12-25T12:03:01+08:00">2021-12-25</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -566,7 +848,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">java-java基础</span></a>
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
                 </span>
             </span>
 
@@ -579,8 +861,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/06/02/note20/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/06/02/note20/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/12/25/zuoyouchengxiao/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/25/zuoyouchengxiao/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -590,16 +872,16 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>13k</span>
+              <span>3.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>11 分钟</span>
+              <span>3 分钟</span>
             </span>
-            <div class="post-description">学习如何使用jmeter压力测试</div>
+            <div class="post-description">实际看了一下发现还不错的一本书</div>
 
         </div>
       </header>
@@ -610,10 +892,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><p>jmeter 作为实操性的软件，更注重练习，理论作为参考掌握即可，不需要去具体的纠结</p>
+          <h1 id="《卓有成效的管理者》读书笔记"><a href="#《卓有成效的管理者》读书笔记" class="headerlink" title="《卓有成效的管理者》读书笔记"></a>《卓有成效的管理者》读书笔记</h1><p>[TOC]</p>
+<h1 id="资源地址"><a href="#资源地址" class="headerlink" title="资源地址"></a>资源地址</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1ofjDGOVNZkSJ7tJ2X1fOJA </span><br><span class="line">提取码：41dv </span><br><span class="line">--来自百度网盘超级会员V6的分享</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    知道这本书的名字是从网上的思维导图里面看到的，实际看了一下发现还不错的一本书，这篇笔记就来看一下这本书的读书笔记。</p>
+<p>​    </p>
+<h1 id="推荐语"><a href="#推荐语" class="headerlink" title="推荐语"></a>推荐语</h1><p>​    虽然你可能不是管理者，但是这本书依然对你有用，明白什么样的领导是好领导，跟对人和做对事永远是最重要的事情。</p>
+<h1 id="个人评价"><a href="#个人评价" class="headerlink" title="个人评价"></a>个人评价</h1><p>​    4星。可能很多人会觉得这本书可能跟自己压根没有关系，然而管理人员是一门很深的学问，如果你要当过组长或者带领过其他人，相信这本书给你的感受是完全不一样的。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/06/02/note20/#more" rel="contents">
+              <a class="btn" href="/2021/12/25/zuoyouchengxiao/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -637,7 +926,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/05/20/note/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/10/16/laoniandai/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -651,7 +940,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/05/20/note/" class="post-title-link" itemprop="url">《劝学篇》读书笔记</a>
+            <a href="/2021/10/16/laoniandai/" class="post-title-link" itemprop="url">深入理解JVM - 实战老年代优化</a>
         </h2>
 
         <div class="post-meta">
@@ -661,14 +950,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-05-20 23:04:51" itemprop="dateCreated datePublished" datetime="2021-05-20T23:04:51+08:00">2021-05-20</time>
+              <time title="创建时间：2021-10-16 20:37:19" itemprop="dateCreated datePublished" datetime="2021-10-16T20:37:19+08:00">2021-10-16</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -676,7 +965,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
                 </span>
             </span>
 
@@ -689,8 +978,232 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/05/20/note/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/20/note/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/10/16/laoniandai/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/16/laoniandai/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">VM优化中老年代的FULL GC</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="深入理解JVM-实战老年代优化"><a href="#深入理解JVM-实战老年代优化" class="headerlink" title="深入理解JVM - 实战老年代优化"></a>深入理解JVM - 实战老年代优化</h1><p>[TOC]</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    通过前面的文章可以了解到JVM优化中老年代的FULL GC对于系统以及垃圾收集器的行为有着十分大的影响，比如CMS并发标记或者回收撑不住的时候要暂停用户线程并且呼叫serrial收集器帮忙进行单线程的高效回收的动作，但是也伴随着”漫长”的stop world时间。</p>
+<p>​    综上所述，老年代的优化是JVM优化的一个核心知识点，所以这一节就来讲解如何优化老年代的回收，尽量让对象在新生代回收而不是在老年代进行回收。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/16/laoniandai/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/10/16/lajihuishou/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/16/lajihuishou/" class="post-title-link" itemprop="url">深入理解JVM - 分代与垃圾回收</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-16 20:29:01" itemprop="dateCreated datePublished" datetime="2021-10-16T20:29:01+08:00">2021-10-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/10/16/lajihuishou/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/16/lajihuishou/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+            <div class="post-description">这一期讲述垃圾回收的算法</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="深入理解JVM-垃圾回收算法"><a href="#深入理解JVM-垃圾回收算法" class="headerlink" title="深入理解JVM - 垃圾回收算法"></a>深入理解JVM - 垃圾回收算法</h1><h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>​    这一期讲述垃圾回收的算法。我们根据分代的理念讲述一下JVM是使用什么算法对于不同分代的对象进行垃圾回收的的，同样内容十分基础，但是对于学习JVM后续的内容十分重要。</p>
+<h1 id="前文回顾"><a href="#前文回顾" class="headerlink" title="前文回顾"></a>前文回顾</h1><p>​    在上一节当中，我们看到了JVM当中堆将分为新生代和老年代，对象优先在新生代分配，以及新生代在长期存活并且满足条件之后进入老年代，介绍了新生代的Minor Gc和老年代的<strong>Full GC</strong>，最后，我们用下面的一张图了解到一个对象分配的大致流程，以及JVM的内存核心参数配置以及方法区的回收条件等。</p>
+<p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210708074839.png" alt="对象分配的细节"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/16/lajihuishou/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/10/16/mysqlbizhi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/16/mysqlbizhi/" class="post-title-link" itemprop="url">《MySQL必知必会》读书笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-16 20:21:39" itemprop="dateCreated datePublished" datetime="2021-10-16T20:21:39+08:00">2021-10-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/10/16/mysqlbizhi/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/16/mysqlbizhi/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -709,7 +1222,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>3 分钟</span>
             </span>
-            <div class="post-description">请输入描述信息</div>
+            <div class="post-description">一次完整的MYSQL学习和读书笔记内容</div>
 
         </div>
       </header>
@@ -720,10 +1233,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="《劝学篇》读书笔记"><a href="#《劝学篇》读书笔记" class="headerlink" title="《劝学篇》读书笔记"></a>《劝学篇》读书笔记</h1><h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>​    只能说不愧是日本“一万元”头像上的人物，在日本确实称得上伟人了。很难想象作为一个明治时期刚刚启蒙的日本会有如此超前的思想。这本书写了很多当时超前的内容，指出来很多的毛病到现在依然可以看到很多现实缩影。部分内容和观点甚至是永远受用…..</p>
+          <h1 id="《MySQL必知必会》读书笔记"><a href="#《MySQL必知必会》读书笔记" class="headerlink" title="《MySQL必知必会》读书笔记"></a>《MySQL必知必会》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    第一次完整的技术书籍的读书笔记，这本书200多页，看起来轻松又简单，当然因为内容本身非常基础的缘故，这本书我也只是翻了一遍，等接触到具体内容的时候可以拿起来再看看，看这本书的意义就在于此。</p>
+<h1 id="资源链接："><a href="#资源链接：" class="headerlink" title="资源链接："></a>资源链接：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1RnsH_-HjTCgKOKlxWg4dTg </span><br><span class="line">提取码：6nta </span><br><span class="line">--来自百度网盘超级会员V6的分享</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/05/20/note/#more" rel="contents">
+              <a class="btn" href="/2021/10/16/mysqlbizhi/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -747,7 +1261,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/05/20/jieyan/">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/08/17/weixiguan/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -761,7 +1275,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/05/20/jieyan/" class="post-title-link" itemprop="url">《这本书能帮助你戒烟》读书笔记</a>
+            <a href="/2021/08/17/weixiguan/" class="post-title-link" itemprop="url">《微习惯》读书笔记</a>
         </h2>
 
         <div class="post-meta">
@@ -771,14 +1285,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-05-20 23:02:54" itemprop="dateCreated datePublished" datetime="2021-05-20T23:02:54+08:00">2021-05-20</time>
+              <time title="创建时间：2021-08-17 22:56:05" itemprop="dateCreated datePublished" datetime="2021-08-17T22:56:05+08:00">2021-08-17</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -799,8 +1313,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/05/20/jieyan/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/20/jieyan/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/08/17/weixiguan/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/17/weixiguan/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -810,7 +1324,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.4k</span>
+              <span>2.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -819,7 +1333,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>2 分钟</span>
             </span>
-            <div class="post-description">不管你能不能成功,这本书都很有帮助</div>
+            <div class="post-description">微习惯</div>
 
         </div>
       </header>
@@ -830,459 +1344,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="《这本书能帮助你戒烟》读书笔记"><a href="#《这本书能帮助你戒烟》读书笔记" class="headerlink" title="《这本书能帮助你戒烟》读书笔记"></a>《这本书能帮助你戒烟》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这本书是在论坛上一位小伙伴误以为我抽烟给我推荐的，然后其实我虽然会抽烟但是并不会吸烟（过嘴不过肺）。吸这玩意我也不能理解为什么会让人上瘾。这本书没有买实体书，甚至连笔记都没有做，因为我没有烟瘾也不喜欢吸烟。<strong>如果你真的有烟瘾，建议你坚持一下看完这本书</strong>。</p>
-<p>​    这里也感谢一下这位陌生网友，对陌生人的共情心是十分美好的品质。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/05/20/jieyan/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/05/20/zhangda/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/20/zhangda/" class="post-title-link" itemprop="url">《为什么长大》读书笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-20 23:01:32" itemprop="dateCreated datePublished" datetime="2021-05-20T23:01:32+08:00">2021-05-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/05/20/zhangda/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/20/zhangda/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-            <div class="post-description">人为什么会成长</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《为什么长大》读书笔记"><a href="#《为什么长大》读书笔记" class="headerlink" title="《为什么长大》读书笔记"></a>《为什么长大》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    我不太能看懂哲学类的书，看完之后我通常都会去看看书评，然后就是“哦”的一声，看完之后再回去看一遍书，但是看着书评和书友的感受之后重新看这本书，感觉我又似乎看懂了一点点作者想要表达什么，还是挺开心的。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/05/20/zhangda/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/05/20/yanquan/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/20/yanquan/" class="post-title-link" itemprop="url">《炎拳》读书笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-20 22:57:38" itemprop="dateCreated datePublished" datetime="2021-05-20T22:57:38+08:00">2021-05-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/05/20/yanquan/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/20/yanquan/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-            <div class="post-description">什么是炎拳,对他使用炎拳</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《炎拳》读书笔记"><a href="#《炎拳》读书笔记" class="headerlink" title="《炎拳》读书笔记"></a>《炎拳》读书笔记</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210510114029.png" alt=""></p>
-<h1 id="资源链接："><a href="#资源链接：" class="headerlink" title="资源链接："></a>资源链接：</h1><p>​    之前的笔记都没有记录链接，这次先把链接放出来，由于使用超高清的分辨率扫描，文件体积十分庞大，<strong>请用WIFI下载</strong>（好像有4、5个G）</p>
-<blockquote>
-<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMUdUYXNrNU1UUFVqcllXeFVFSnNzVFE=" title="https://pan.baidu.com/s/1GTask5MTPUjrYWxUEJssTQ">https://pan.baidu.com/s/1GTask5MTPUjrYWxUEJssTQ<i class="fa fa-external-link"></i></span><br>提取码：kkn5<br>复制这段内容后打开百度网盘手机App，操作更方便哦–来自百度网盘超级会员V6的分享</p>
+          <h1 id="《微习惯》读书笔记"><a href="#《微习惯》读书笔记" class="headerlink" title="《微习惯》读书笔记"></a>《微习惯》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    《微习惯》这本书算是老外对于“不积跬步无以至千里”这句话的个人经验讲解。</p>
+<h1 id="资源链接："><a href="#资源链接：" class="headerlink" title="资源链接："></a>资源链接：</h1><blockquote>
+<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMVc3aFdnaXh5Q2x6MVdDSjB3ZmJQNUE=" title="https://pan.baidu.com/s/1W7hWgixyClz1WCJ0wfbP5A">https://pan.baidu.com/s/1W7hWgixyClz1WCJ0wfbP5A<i class="fa fa-external-link"></i></span><br>提取码：c1ki<br>–来自百度网盘超级会员V6的分享</p>
 </blockquote>
-<p>​
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/05/20/yanquan/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/05/20/weichushi/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/20/weichushi/" class="post-title-link" itemprop="url">《给未出世的你 致2025年的世界》读书笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-20 22:55:41" itemprop="dateCreated datePublished" datetime="2021-05-20T22:55:41+08:00">2021-05-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/05/20/weichushi/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/20/weichushi/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-            <div class="post-description">《给未出世的你 致2025年的世界》读书笔记</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《给未出世的你-致2025年的世界》读书笔记"><a href="#《给未出世的你-致2025年的世界》读书笔记" class="headerlink" title="《给未出世的你 致2025年的世界》读书笔记"></a>《给未出世的你 致2025年的世界》读书笔记</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这是一份送给“一零后”的成人礼。1999年世纪之交，七十四岁的雅卡尔写下这封信，期待未出世的重孙在自己百年诞辰的2025年，打开它。</p>
-<p>​    令人惊讶的是，书中的预言到现在基本全然实现，并且当智能手机以惊人的速度普及的现代，这个预言似乎来得更早了。</p>
-<p>​    这本书适合给青少年看，适合给每一个懵懂无知并且处在迷茫徘徊的年代的读物。然而作为一个成年人，依然可以从书中诚挚的语言感动。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/05/20/weichushi/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2021/05/20/bunuli/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/20/bunuli/" class="post-title-link" itemprop="url">《不努力好像也没关系》读书笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-20 22:51:42" itemprop="dateCreated datePublished" datetime="2021-05-20T22:51:42+08:00">2021-05-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/05/20/bunuli/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/20/bunuli/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-            <div class="post-description">人生需要拼搏,也需要休息</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="《不努力好像也没关系》读书笔记"><a href="#《不努力好像也没关系》读书笔记" class="headerlink" title="《不努力好像也没关系》读书笔记"></a>《不努力好像也没关系》读书笔记</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20210410191647.png" alt=""></p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​    这本书算是一本彻底的标题党的书，内容虽然和书名的意思差不多，但是由于作者是个日本人，很多东西只要看看就好。我从这本书中学到的内容并不算很多，更多的是一种感慨。这本书是那种口袋书，比较适合地铁上放松的时候看看。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/05/20/bunuli/#more" rel="contents">
+              <a class="btn" href="/2021/08/17/weixiguan/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1305,7 +1373,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1371,20 +1439,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">210</span>
+          <span class="site-state-item-count">232</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1418,6 +1486,13 @@
   </div>
 
       </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
         <div class="back-to-top motion-element">
           <i class="fa fa-arrow-up"></i>
           <span>0%</span>
@@ -1450,13 +1525,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1.5m</span>
+    <span title="站点总字数">1.9m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">23:01</span>
+    <span title="站点阅读时长">28:45</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>

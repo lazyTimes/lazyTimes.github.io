@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Netty聊天系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《跟闪电侠学Netty》阅读笔记 - 聊天系统实现">
+<meta property="og:url" content="https://whitestore.top/2023/07/11/nettychatimpl/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Netty聊天系统">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/%E3%80%8A%E8%B7%9F%E9%97%AA%E7%94%B5%E4%BE%A0%E5%AD%A6Netty%E3%80%8B%20-%20%E8%81%8A%E5%A4%A9%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230629143232.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230710214033.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230710214215.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230711112329.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230711121733.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230629165658.png">
+<meta property="article:published_time" content="2023-07-11T08:50:48.000Z">
+<meta property="article:modified_time" content="2023-07-16T06:24:10.829Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Netty">
+<meta property="article:tag" content="聊天">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/%E3%80%8A%E8%B7%9F%E9%97%AA%E7%94%B5%E4%BE%A0%E5%AD%A6Netty%E3%80%8B%20-%20%E8%81%8A%E5%A4%A9%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/07/11/nettychatimpl/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《跟闪电侠学Netty》阅读笔记 - 聊天系统实现 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/07/11/nettychatimpl/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《跟闪电侠学Netty》阅读笔记 - 聊天系统实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-07-11 16:50:48" itemprop="dateCreated datePublished" datetime="2023-07-11T16:50:48+08:00">2023-07-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:24:10" itemprop="dateModified" datetime="2023-07-16T14:24:10+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/07/11/nettychatimpl/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/11/nettychatimpl/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>26k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>24 分钟</span>
+            </span>
+            <div class="post-description">Netty聊天系统</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本部分整合聊天系统有关的章节，内容主要是介绍关键功能的实现逻辑和部分代码实现为主，建议读者先看看作者的博客项目，切换到不同的分支看看各个细节功能如何实现。这里仅仅记录一些个人学习过程的重点部分。</p>
+<h1 id="思维导图"><a href="#思维导图" class="headerlink" title="思维导图"></a>思维导图</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cubXVidS5jb20vZG9jLzFkdW5OXzdMdXps" title="https://www.mubu.com/doc/1dunN_7Luzl">https://www.mubu.com/doc/1dunN_7Luzl<i class="fa fa-external-link"></i></span></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/%E3%80%8A%E8%B7%9F%E9%97%AA%E7%94%B5%E4%BE%A0%E5%AD%A6Netty%E3%80%8B%20-%20%E8%81%8A%E5%A4%A9%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0.png" alt="《跟闪电侠学Netty》 - 聊天系统实现.png"></p>
+<h1 id="项目代码"><a href="#项目代码" class="headerlink" title="项目代码"></a>项目代码</h1><p>作者的仓库代码地址：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xpZ2h0bmluZ01hbi9mbGFzaC1uZXR0eQ==" title="https://github.com/lightningMan/flash-netty">https://github.com/lightningMan/flash-netty<i class="fa fa-external-link"></i></span></p>
+<a id="more"></a>
+
+<h1 id="通信协议设计和自定义编解码实现"><a href="#通信协议设计和自定义编解码实现" class="headerlink" title="通信协议设计和自定义编解码实现"></a>通信协议设计和自定义编解码实现</h1><h2 id="什么是通信协议？"><a href="#什么是通信协议？" class="headerlink" title="什么是通信协议？"></a>什么是通信协议？</h2><p>基于TCP通信均为二进制协议，底层都是通过字节进行传输的。在通信协议当中规定数据传输的每一个字节含义。</p>
+<h2 id="通信过程"><a href="#通信过程" class="headerlink" title="通信过程"></a>通信过程</h2><ol>
+<li>客户端转换数据为二进制。  </li>
+<li>网络传输给服务端。</li>
+<li>服务端根据协议规则读取二进制数据。  </li>
+<li>服务端处理数据返回响应结果给客户端。  </li>
+</ol>
+<h2 id="聊天系统的通信协议数据对象设计"><a href="#聊天系统的通信协议数据对象设计" class="headerlink" title="聊天系统的通信协议数据对象设计"></a>聊天系统的通信协议数据对象设计</h2><p>在聊天系统当中通信协议的设计如下。</p>
+<h3 id="4字节魔数"><a href="#4字节魔数" class="headerlink" title="4字节魔数"></a>4字节魔数</h3><p>比如Java的字节码<code>CafeBabe</code>，用于快速识别是否自定义协议，也可以方便快速提取数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAGIC_NUMBER = <span class="number">0x12345678</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-字节版本号"><a href="#1-字节版本号" class="headerlink" title="1 字节版本号"></a>1 字节版本号</h3><p>类似TCP的IPV4还是IPV6。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * 协议版本  </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="meta">@JSONField</span>(deserialize = <span class="keyword">false</span>, serialize = <span class="keyword">false</span>)  </span><br><span class="line"><span class="keyword">private</span> Byte version = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-字节序列化算法"><a href="#1-字节序列化算法" class="headerlink" title="1 字节序列化算法"></a>1 字节序列化算法</h3><p>使用1个字节来标识算法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * 序列化算法定义  </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SerializerAlgorithm</span> </span>&#123;  </span><br><span class="line">    <span class="comment">/**  </span></span><br><span class="line"><span class="comment">     * json 序列化  </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="keyword">byte</span> JSON = <span class="number">1</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-字节指令"><a href="#1-字节指令" class="headerlink" title="1 字节指令"></a>1 字节指令</h3><p>一个字节最多表示256种指令。注意在设计上指令和版本号进行绑定关联，实现不同版本之间的指令兼容，提高程序的健壮性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Packet</span> </span>&#123;  </span><br><span class="line">    <span class="comment">/**  </span></span><br><span class="line"><span class="comment">     * 协议版本  </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="meta">@JSONField</span>(deserialize = <span class="keyword">false</span>, serialize = <span class="keyword">false</span>)  </span><br><span class="line">    <span class="keyword">private</span> Byte version = <span class="number">1</span>;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@JSONField</span>(serialize = <span class="keyword">false</span>)  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> Byte <span class="title">getCommand</span><span class="params">()</span></span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4字节数据长度"><a href="#4字节数据长度" class="headerlink" title="4字节数据长度"></a>4字节数据长度</h3><p>数据长度是必要的，主要用于字节流这种连续不断的数据形式进行切割。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">byteBuf.writeInt(bytes.length);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>int 基本数据类型在Java中默认占4个字节，这4个字节用来存储字节数组的长度。</p>
+</blockquote>
+<h3 id="N字节数据"><a href="#N字节数据" class="headerlink" title="N字节数据"></a>N字节数据</h3><p>数据部分。</p>
+<h2 id="如何实现JAVA对象二进制互相转化？"><a href="#如何实现JAVA对象二进制互相转化？" class="headerlink" title="如何实现JAVA对象二进制互相转化？"></a>如何实现JAVA对象二进制互相转化？</h2><p>所谓互转对应了网络 Socket IO 的<code>input/output</code>中的数据转化部分，实体数据转为字节流这个过程我们通常叫做<strong>编码</strong>，反之则是解码。</p>
+<p>无论是编码还是解码，都是依赖Netty自定义的 <strong>MessageToMessageCodec</strong>实现。聊天系统的编码和解码工作都是依赖 <strong>PacketCodecHandler</strong> 完成的。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ChannelHandler</span>.Sharable  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PacketCodecHandler</span> <span class="keyword">extends</span> <span class="title">MessageToMessageCodec</span>&lt;<span class="title">ByteBuf</span>, <span class="title">Packet</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> PacketCodecHandler INSTANCE = <span class="keyword">new</span> PacketCodecHandler();  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">PacketCodecHandler</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">decode</span><span class="params">(ChannelHandlerContext ctx, ByteBuf byteBuf, List&lt;Object&gt; out)</span> </span>&#123;  </span><br><span class="line">        out.add(PacketCodec.INSTANCE.decode(byteBuf));  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">encode</span><span class="params">(ChannelHandlerContext ctx, Packet packet, List&lt;Object&gt; out)</span> </span>&#123;  </span><br><span class="line">        ByteBuf byteBuf = ctx.channel().alloc().ioBuffer();  </span><br><span class="line">        PacketCodec.INSTANCE.encode(byteBuf, packet);  </span><br><span class="line">        out.add(byteBuf);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>自定义逻辑处理器，在 Netty Server 中需要注册到 <strong>pipeline</strong> 当中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">    NioEventLoopGroup boosGroup = <span class="keyword">new</span> NioEventLoopGroup();  </span><br><span class="line">    NioEventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup();  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">final</span> ServerBootstrap serverBootstrap = <span class="keyword">new</span> ServerBootstrap();  </span><br><span class="line">    serverBootstrap  </span><br><span class="line">            .group(boosGroup, workerGroup)  </span><br><span class="line">            .channel(NioServerSocketChannel<span class="class">.<span class="keyword">class</span>)  </span></span><br><span class="line"><span class="class">            .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_BACKLOG</span>, 1024)  </span></span><br><span class="line"><span class="class">            .<span class="title">childOption</span>(<span class="title">ChannelOption</span>.<span class="title">SO_KEEPALIVE</span>, <span class="title">true</span>)  </span></span><br><span class="line"><span class="class">            .<span class="title">childOption</span>(<span class="title">ChannelOption</span>.<span class="title">TCP_NODELAY</span>, <span class="title">true</span>)  </span></span><br><span class="line"><span class="class">            .<span class="title">childHandler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">NioSocketChannel</span>&gt;() </span>&#123;  </span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(NioSocketChannel ch)</span> </span>&#123;  </span><br><span class="line">	                <span class="comment">//......</span></span><br><span class="line">                    ch.pipeline().addLast(PacketCodecHandler.INSTANCE); </span><br><span class="line">		            <span class="comment">// ......</span></span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;);  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    bind(serverBootstrap, PORT);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里解释下为什么<code>PacketCodecHandler</code>要被注解标记为“<strong>Sharable</strong>”，因为编码和解码可能在多个<code>handler</code>中用到，为了提高效率，这里通过共享减少实例的创建。</p>
+<blockquote>
+<p>下文也会介绍这个单例模式的优化点。</p>
+</blockquote>
+<p>带着疑问我们再看看<code>@ChannelHandler.Sharable</code>这个注解的源码解释。</p>
+<blockquote>
+<p>Indicates that the same instance of the annotated ChannelHandler can be added to one or more ChannelPipelines multiple times without a race condition.<br>    If this annotation is not specified, you have to create a new handler instance every time you add it to a pipeline because it has unshared state such as member variables.<br>    This annotation is provided for documentation purpose, just like the JCIP annotations </p>
+</blockquote>
+<p>上面的内容翻译过来就是：</p>
+<p>被注解的<code>Sharable</code>的同一个<strong>ChannelHandler</strong>实例，可以被多次添加到一个或多个<code>ChannelPipeline</code>中，并且可以确保不会出现竞争情况。如果没有指定这个注解，那么每次就创建新的Channel都需要使用新的Handler实例。在有不共享的状态，如成员变量时候，就不能用这个注解。</p>
+<p>简单来说<code>@ChannelHandler.Sharable</code>实现了Netty中的”Bean”单例和共享。</p>
+<h2 id="实战部分"><a href="#实战部分" class="headerlink" title="实战部分"></a>实战部分</h2><h3 id="数据编码过程（思路）"><a href="#数据编码过程（思路）" class="headerlink" title="数据编码过程（思路）"></a>数据编码过程（思路）</h3><p>下面是数据解码的基本编写思路。</p>
+<ol>
+<li>添加编码器。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ch.pipeline().addLast(<span class="keyword">new</span> PacketEncoder());</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>往<code>ByteBuf</code>逐个写字段，实现编码过程。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PacketEncoder</span> <span class="keyword">extends</span> <span class="title">MessageToByteEncoder</span>&lt;<span class="title">Packet</span>&gt; </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">encode</span><span class="params">(ChannelHandlerContext ctx, Packet packet, ByteBuf out)</span> </span>&#123;  </span><br><span class="line">        PacketCodec.INSTANCE.encode(out, packet);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>完整的自定义协议：<strong>PacketCodec#encode</strong>。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">encode</span><span class="params">(ByteBuf byteBuf, Packet packet)</span> </span>&#123;  </span><br><span class="line">    <span class="comment">// 1. 序列化 java 对象  </span></span><br><span class="line">    <span class="keyword">byte</span>[] bytes = Serializer.DEFAULT.serialize(packet);  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 2. 实际编码过程  </span></span><br><span class="line">    byteBuf.writeInt(MAGIC_NUMBER);  </span><br><span class="line">    byteBuf.writeByte(packet.getVersion());  </span><br><span class="line">    byteBuf.writeByte(Serializer.DEFAULT.getSerializerAlgorithm());  </span><br><span class="line">    byteBuf.writeByte(packet.getCommand());  </span><br><span class="line">    byteBuf.writeInt(bytes.length);  </span><br><span class="line">    byteBuf.writeBytes(bytes);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="解码数据过程（思路）"><a href="#解码数据过程（思路）" class="headerlink" title="解码数据过程（思路）"></a>解码数据过程（思路）</h3><p>下面是数据解码的基本编写思路：</p>
+<ol>
+<li>在handler当中添加自定义逻辑处理器。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.handler(<span class="keyword">new</span> ChannelInitializer&lt;SocketChannel&gt;() &#123;  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span> </span>&#123;</span><br><span class="line">		ch.pipeline().addLast(<span class="keyword">new</span> PacketDecoder());</span><br><span class="line">	&#125;  </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>定义解码逻辑处理器。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PacketDecoder</span> <span class="keyword">extends</span> <span class="title">MessageToMessageDecoder</span>&lt;<span class="title">ByteBuf</span>&gt; </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">decode</span><span class="params">(ChannelHandlerContext ctx, ByteBuf in, List out)</span> </span>&#123;  </span><br><span class="line">        out.add(PacketCodec.INSTANCE.decode(in));  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面定义具体的解码过程：</p>
+<ul>
+<li>跳过魔数。</li>
+<li>跳过协议版本号  。</li>
+<li>读取序列化算法。</li>
+<li>读取指令，数据包，算法标识等自定义协议的基本内容。</li>
+<li>根据数据长度。</li>
+<li>取出数据。</li>
+</ul>
+<p><strong>PacketCodec#decode</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Packet <span class="title">decode</span><span class="params">(ByteBuf byteBuf)</span> </span>&#123;  </span><br><span class="line">    <span class="comment">// 跳过 magic number    byteBuf.skipBytes(4);  </span></span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 跳过版本号  </span></span><br><span class="line">    byteBuf.skipBytes(<span class="number">1</span>);  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 序列化算法  </span></span><br><span class="line">    <span class="keyword">byte</span> serializeAlgorithm = byteBuf.readByte();  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 指令  </span></span><br><span class="line">    <span class="keyword">byte</span> command = byteBuf.readByte();  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 数据包长度  </span></span><br><span class="line">    <span class="keyword">int</span> length = byteBuf.readInt();  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[length];  </span><br><span class="line">    byteBuf.readBytes(bytes);  </span><br><span class="line">  </span><br><span class="line">    Class&lt;? extends Packet&gt; requestType = getRequestType(command);  </span><br><span class="line">    Serializer serializer = getSerializer(serializeAlgorithm);  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (requestType != <span class="keyword">null</span> &amp;&amp; serializer != <span class="keyword">null</span>) &#123;  </span><br><span class="line">        <span class="keyword">return</span> serializer.deserialize(requestType, bytes);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><h3 id="JSON序列化方式之外其他序列化方式如何实现？"><a href="#JSON序列化方式之外其他序列化方式如何实现？" class="headerlink" title="JSON序列化方式之外其他序列化方式如何实现？"></a>JSON序列化方式之外其他序列化方式如何实现？</h3><h4 id="Java原生序列化"><a href="#Java原生序列化" class="headerlink" title="Java原生序列化"></a>Java原生序列化</h4><ul>
+<li>类实现 Serializable 接口  </li>
+<li>具体底层由ObjectOutputStream和ObjectInputStream实现  </li>
+</ul>
+<h4 id="Hessian"><a href="#Hessian" class="headerlink" title="Hessian"></a>Hessian</h4><ul>
+<li>Hessian 是动态类型、二进制、紧凑的，并且可跨语言移植的一种序列化框架  </li>
+<li>Hessian 协议要比 JDK、JSON 更加紧凑，性能上要比 JDK、JSON 序列化高效很多，而且生成的字节数也更小  </li>
+</ul>
+<h4 id="Protobuf"><a href="#Protobuf" class="headerlink" title="Protobuf"></a>Protobuf</h4><ul>
+<li>谷歌实现的混合语言数据标准  </li>
+<li>轻便、高效的结构化数据存储格式  </li>
+<li>支持 Java、Python、C++、Go 等语言  </li>
+<li>要求定义 IDL（Interface description language），并且使用对应语言的IDL生成序列化工具类</li>
+</ul>
+<h4 id="Thrift"><a href="#Thrift" class="headerlink" title="Thrift"></a>Thrift</h4><ul>
+<li>Facebook于2007年开发的跨语言的rpc服框架  </li>
+<li>通过Thrift的编译环境生成各种语言类型的接口文件</li>
+</ul>
+<h3 id="序列化和编码都是JAVA对象封装二进制过程，两者的联系和区别"><a href="#序列化和编码都是JAVA对象封装二进制过程，两者的联系和区别" class="headerlink" title="序列化和编码都是JAVA对象封装二进制过程，两者的联系和区别"></a>序列化和编码都是JAVA对象封装二进制过程，两者的联系和区别</h3><p>总结起来就是一句话：<strong>序列化是目标，编码是方法</strong>。网上有一张图非常直观的展示了两者的区别。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230629143232.png" alt="序列化和编码都是JAVA对象封装二进制过程，两者的联系和区别"></p>
+<h4 id="两者的联系和区别"><a href="#两者的联系和区别" class="headerlink" title="两者的联系和区别"></a>两者的联系和区别</h4><p><strong>编码</strong>：信息从一种形式或格式转换为另一种形式的过程，目的是方便传输协议通信。</p>
+<p><strong>序列化</strong>：“序列化”其实本身也是“信息从一种形式或格式转换为另一种形式的过程”，只不过这个表现形式直观具体，序列化也常常用于表达一个对象的状态。</p>
+<h2 id="聊天系统的Netty细节优化"><a href="#聊天系统的Netty细节优化" class="headerlink" title="聊天系统的Netty细节优化"></a>聊天系统的Netty细节优化</h2><p>优化部分是聊天系统的精髓，也是使用Netty实践非常有价值的指导和参考，所以优先把优化部分放到前面介绍。</p>
+<h2 id="1-使用共享Handler"><a href="#1-使用共享Handler" class="headerlink" title="1. 使用共享Handler"></a>1. 使用共享Handler</h2><h3 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h3><p>在旧版本代码中，每个新连接每次通过 <strong>ChannelInitializer</strong> 调用，都会产生9个指令对象都被new一遍操作，但是可以看到其实很多处理器内部是没有任何 “状态”的，<strong>对于无状态的业务处理器就可以使用单例模式封装</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">serverBootstrap</span><br><span class="line">                .childHandler(<span class="keyword">new</span> ChannelInitializer&lt;NioSocketChannel&gt;() &#123;</span><br><span class="line">                    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(NioSocketChannel ch)</span> </span>&#123;</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> Spliter());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> PacketDecoder());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> LoginRequestHandler());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> AuthHandler());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> MessageRequestHandler());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> CreateGroupRequestHandler());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> JoinGroupRequestHandler());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> QuitGroupRequestHandler());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> ListGroupMembersRequestHandler());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> GroupMessageRequestHandler());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> LogoutRequestHandler());</span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> PacketEncoder());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="优化手段"><a href="#优化手段" class="headerlink" title="优化手段"></a>优化手段</h3><ul>
+<li>通过加入注解 <code>@ChannelHandler.Shareble</code>，表示这个 handler 是支持多个 channel 共享的，否则会报错。</li>
+<li>发布静态<strong>final</strong>的<strong>不可变对象</strong>来实现单例，编译器优化。  </li>
+<li>最后还可以压缩Handler，把编码和解码过程放到一个Handler和公用的Handler放到一个Handller处理（比如请求指令分发解析处理）。</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>主要的注意事项如下：</p>
+<ul>
+<li>并不是所有的Handler都可以单例  </li>
+<li><strong>Spliter</strong> 不是单例的，因为它需要对每个数据做拆包处理。</li>
+</ul>
+<h2 id="2-缩短事件传播路径"><a href="#2-缩短事件传播路径" class="headerlink" title="2. 缩短事件传播路径"></a>2. 缩短事件传播路径</h2><h3 id="问题分析-1"><a href="#问题分析-1" class="headerlink" title="问题分析"></a>问题分析</h3><ul>
+<li>首先，指令的<strong>decode</strong>必须要在最前面前面，因为涉及后面的命令解析，所以这个Handler是无法“压缩”的。</li>
+<li>但是如果把每个命令<strong>decode</strong>之后再传播到每个命令事件，但是对应的事件又不做任何处理，那么会浪费很多次多余的命令判断。</li>
+<li>根本目的：<strong>缩短事件传播链条</strong>，事件传播链尽可能短。</li>
+</ul>
+<h3 id="优化手段-1"><a href="#优化手段-1" class="headerlink" title="优化手段"></a>优化手段</h3><p>优化手段实际上也很简单，那就是 <strong>使用统一Handler</strong>。</p>
+<p>通常的做法如下：</p>
+<ol>
+<li>该Handler只做判断，不做任何状态存储，使用单例优化。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> IMHandler INSTANCE = <span class="keyword">new</span> IMHandler();</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>聊天系统中利用HashMap存储所有的命令处理Handler，这里个人顺带指定下初始化大小优化一下。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">IMHandler</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    handlerMap = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">7</span>);  </span><br><span class="line">  </span><br><span class="line">    handlerMap.put(MESSAGE_REQUEST, MessageRequestHandler.INSTANCE);  </span><br><span class="line">    handlerMap.put(CREATE_GROUP_REQUEST, CreateGroupRequestHandler.INSTANCE);  </span><br><span class="line">    handlerMap.put(JOIN_GROUP_REQUEST, JoinGroupRequestHandler.INSTANCE);  </span><br><span class="line">    handlerMap.put(QUIT_GROUP_REQUEST, QuitGroupRequestHandler.INSTANCE);  </span><br><span class="line">    handlerMap.put(LIST_GROUP_MEMBERS_REQUEST, ListGroupMembersRequestHandler.INSTANCE);  </span><br><span class="line">    handlerMap.put(GROUP_MESSAGE_REQUEST, GroupMessageRequestHandler.INSTANCE);  </span><br><span class="line">    handlerMap.put(LOGOUT_REQUEST, LogoutRequestHandler.INSTANCE);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>回调<code>channelRead0</code> 实际上就是委托给map中的元素对应的指令处理器处理。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span>  </span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, Packet packet)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">    handlerMap.get(packet.getCommand()).channelRead(ctx, packet);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过一个统一的处理器包括多个静态单例处理器，有效减少JVM内存开销，单例也可以减少对象实例化的开销。</p>
+<h2 id="3-事件传播源调整"><a href="#3-事件传播源调整" class="headerlink" title="3. 事件传播源调整"></a>3. 事件传播源调整</h2><h3 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h3><p>如果你的 outBound 类型的 handler 较多，在写数据的时候能用 <code>ctx.writeAndFlush()</code> 就用这个方法， 不要用 <code>ctx.channel().writeAndFlush()</code>。</p>
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>究其原因是<strong>ctx.writeAndFlush()</strong> 会绕过所有不需要处理的其他Outbound类型。<code>ctx.writeAndFlush()</code> 是从 pipeline 链中的<strong>当前节点开始往前找到第一个 outBound 类型向前传播</strong>的，如果这个对象不需要其他outBound的handler处理就可以用这个方法。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230710214033.png" alt="ctx.writeAndFlush()"></p>
+<p>而<strong>ctx.channel().writeAndFlush()</strong> 表现则不同，它是从pipeline 链中的<strong>最后一个</strong> outBound 类型的 handler 开始，把对象往前进行传播，从图中就可以看到， outBound 的处理器越多，就会产生越多“无用”操作。</p>
+<p>当然如果确定后面的 outBound 需要如此处理，那么就可以用这个方法。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230710214215.png" alt="ctx.channel().writeAndFlush()"></p>
+<h3 id="相关问题"><a href="#相关问题" class="headerlink" title="相关问题"></a>相关问题</h3><ul>
+<li>writeAndFlush为什么可以缩短事件传播路径？  </li>
+<li>它是如何实现OutBound类型的事件传播缩短的?</li>
+</ul>
+<h2 id="4-减少阻塞主线程的操作【重要】"><a href="#4-减少阻塞主线程的操作【重要】" class="headerlink" title="4. 减少阻塞主线程的操作【重要】"></a>4. 减少阻塞主线程的操作【重要】</h2><p>Netty中容易被忽视，却是非常重要的一个概念。那就是 <strong>一个Channel的其中一个Handler阻塞，会导致所有其他绑定的Channel一起被拖慢</strong>。</p>
+<p>比如只要有一个 <code>channel</code>的一个 <code>handler</code> 中的 <code>channelRead0()</code> 方法阻塞了 NIO 线程，最终都会拖慢绑定在该 NIO 线程上的其他所有的 channel</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Channel&gt; channelList = 已有数据可读的 channel</span><br><span class="line"><span class="keyword">for</span> (Channel channel in channelist) &#123;</span><br><span class="line">   <span class="keyword">for</span> (ChannelHandler handler in channel.pipeline()) &#123;</span><br><span class="line">       handler.channelRead0();</span><br><span class="line">   &#125;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的操作如果for循环某次出现卡顿，这不仅仅拖慢一个客户端，而是拖慢所有客户端。</p>
+<p>所以Netty进行客户端处理的时候一般设计为非阻塞模式，或者会使用 <strong>业务线程池</strong> 去预防这种情况。业务线程池的实现方式更为常见，也就是Netty中一套线程池，实际处理过程中再委派给自定义的业务线程池单开线程处理。这样就实现了非阻塞异步执行任务的目的。</p>
+<p>需要注意引入业务线程池会增加系统复杂度，也会增加线上调试难度，所以做好链路追踪十分重要。</p>
+<h2 id="5-如何准确统计时长？"><a href="#5-如何准确统计时长？" class="headerlink" title="5. 如何准确统计时长？"></a>5. 如何准确统计时长？</h2><p>错误做法：在一个线程的头尾加入时间差计算得出执行时长结果。</p>
+<p>正确做法：使用<strong>writeAndFlush+addListener</strong> 的方式判断 <code>futrue.isDone</code> 之后才计算  </p>
+<p>原因：<strong>writeAndFlush</strong> 在非NIO线程中它是一个异步操作，其他操作由第一个任务队列异步执行。 </p>
+<p>关键点：<strong>writeAndFlush</strong> 真正执行完成才算是完成处理，监听它完成处理的回调动作才能算出准确执行时长。</p>
+<h2 id="优化小结"><a href="#优化小结" class="headerlink" title="优化小结"></a>优化小结</h2><ul>
+<li>如果Handler多例但是无状态，完全可以改为单例模式 。</li>
+<li>尽可能减少Handler的臃肿，防止调用链路过长。</li>
+<li>Handler的耗时操作要交给线程池开启新线程处理，一个耗时操作不只影响单个Channel。建议业务线程池单独开新线程方式优化，但是需要注意和线程绑定的相关参数处理问题 。</li>
+<li>耗时统计，writeAndFlush属于异步任务。</li>
+</ul>
+<h1 id="实现登录"><a href="#实现登录" class="headerlink" title="实现登录"></a>实现登录</h1><h2 id="处理流程图"><a href="#处理流程图" class="headerlink" title="处理流程图"></a>处理流程图</h2><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230711112329.png" alt="处理流程图"></p>
+<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><ul>
+<li>目标客户端和服务端分别启动Netty服务。</li>
+<li>客户端发送登录请求指令，服务端解码之后根据传输结果校验，根据校验结果构建登录请求响应指令LoginResponsePacket。</li>
+<li>通过ctx.writeAndFlush(loginResponsePacket); 回送响应结果给客户端。<ul>
+<li>登录校验成功，通过SessionUtil添加session信息  </li>
+</ul>
+</li>
+<li>客户端登录成功之后，构建请求指令对象，设置参数，通过Netty发送到服务端 。</li>
+<li>服务端收到请求进行验证，并且构建相对应的响应指令结果对象。</li>
+</ul>
+<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><p>下面是大致的实现步骤：</p>
+<ol>
+<li>添加 <strong>LoginRequestHandler</strong> 登录逻辑处理器在Server端。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ch.pipeline().addLast(LoginRequestHandler.INSTANCE);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="meta">@ChannelHandler</span>.Sharable  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginRequestHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">LoginRequestPacket</span>&gt; </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> LoginRequestHandler INSTANCE = <span class="keyword">new</span> LoginRequestHandler();  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">LoginRequestHandler</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, LoginRequestPacket loginRequestPacket)</span> </span>&#123;  </span><br><span class="line">        LoginResponsePacket loginResponsePacket = <span class="keyword">new</span> LoginResponsePacket();  </span><br><span class="line">        loginResponsePacket.setVersion(loginRequestPacket.getVersion());  </span><br><span class="line">        loginResponsePacket.setUserName(loginRequestPacket.getUserName());  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">if</span> (valid(loginRequestPacket)) &#123;  </span><br><span class="line">            loginResponsePacket.setSuccess(<span class="keyword">true</span>);  </span><br><span class="line">            String userId = IDUtil.randomId();  </span><br><span class="line">            loginResponsePacket.setUserId(userId);  </span><br><span class="line">            System.out.println(<span class="string">"["</span> + loginRequestPacket.getUserName() + <span class="string">"]登录成功"</span>);  </span><br><span class="line">            SessionUtil.bindSession(<span class="keyword">new</span> Session(userId, loginRequestPacket.getUserName()), ctx.channel());  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            loginResponsePacket.setReason(<span class="string">"账号密码校验失败"</span>);  </span><br><span class="line">            loginResponsePacket.setSuccess(<span class="keyword">false</span>);  </span><br><span class="line">            System.out.println(<span class="keyword">new</span> Date() + <span class="string">": 登录失败!"</span>);  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 登录响应  </span></span><br><span class="line">        ctx.writeAndFlush(loginResponsePacket);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">valid</span><span class="params">(LoginRequestPacket loginRequestPacket)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelInactive</span><span class="params">(ChannelHandlerContext ctx)</span> </span>&#123;  </span><br><span class="line">        SessionUtil.unBindSession(ctx.channel());  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>在客户端同样添加<strong>Handler</strong>，<code>LoginResponseHandler</code>，LoginResponseHandler的处理逻辑如下。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ch.pipeline().addLast(LoginResponseHandler.INSTANCE);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginResponseHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">LoginResponsePacket</span>&gt; </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, LoginResponsePacket loginResponsePacket)</span> </span>&#123;  </span><br><span class="line">        String userId = loginResponsePacket.getUserId();  </span><br><span class="line">        String userName = loginResponsePacket.getUserName();  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">if</span> (loginResponsePacket.isSuccess()) &#123;  </span><br><span class="line">            System.out.println(<span class="string">"["</span> + userName + <span class="string">"]登录成功，userId 为: "</span> + loginResponsePacket.getUserId());  </span><br><span class="line">            SessionUtil.bindSession(<span class="keyword">new</span> Session(userId, userName), ctx.channel());  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            System.out.println(<span class="string">"["</span> + userName + <span class="string">"]登录失败，原因："</span> + loginResponsePacket.getReason());  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelInactive</span><span class="params">(ChannelHandlerContext ctx)</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"客户端连接被关闭!"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端登录成功或者失败，如何把失败或者成功标识绑定在客户端连接？ 服务端如何高效判定客户端重新登录？</p>
+<p>在聊天系统中实现比较简单粗暴。服务端高效判断的方法是在<code>ConcurrentHashMap</code>，Map当中存储用户的ID，如果登录成功则存储到此Map中，服务端也只需要判断Map元素即可高效判断是否登录。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Map&lt;String, Channel&gt; userIdChannelMap = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="热插拔客户端是否登录验证"><a href="#热插拔客户端是否登录验证" class="headerlink" title="热插拔客户端是否登录验证"></a>热插拔客户端是否登录验证</h2><p>首先校验是否登录部分封装到工具类当中，实现比较简单。</p>
+<p><strong>SessionUtil</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">hasLogin</span><span class="params">(Channel channel)</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> getSession(channel) != <span class="keyword">null</span>;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Session <span class="title">getSession</span><span class="params">(Channel channel)</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> channel.attr(Attributes.SESSION).get();  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AttributeKey&lt;Session&gt; SESSION = AttributeKey.newInstance("session");</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>AuthHandler</strong></p>
+<p>实现热插拔的思路是<strong>判断是否登录，统一通过该调用链条完成</strong>，AuthHandler本身作为<strong>单独处理器</strong>封装判断登录校验逻辑。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Overridepublic</span> <span class="function"><span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"><span class="keyword">if</span> (!SessionUtil.hasLogin(ctx.channel())) &#123;</span><br><span class="line">        ctx.channel().close();    </span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        ctx.pipeline().remove(<span class="keyword">this</span>);        </span><br><span class="line">        <span class="keyword">super</span>.channelRead(ctx, msg);    </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="实现双端收发消息"><a href="#实现双端收发消息" class="headerlink" title="实现双端收发消息"></a>实现双端收发消息</h1><h2 id="客户端处理"><a href="#客户端处理" class="headerlink" title="客户端处理"></a>客户端处理</h2><p>客户端成功登录之后，下一步是实现客户端和服务端互相发送数据。客户端收消息处理器如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 收消息处理器  </span></span><br><span class="line">ch.pipeline().addLast(<span class="keyword">new</span> MessageResponseHandler());</span><br></pre></td></tr></table></figure>
+
+<p><strong>MessageResponseHandler</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageResponseHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">MessageResponsePacket</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, MessageResponsePacket messageResponsePacket)</span> </span>&#123;  </span><br><span class="line">        String fromUserId = messageResponsePacket.getFromUserId();  </span><br><span class="line">        String fromUserName = messageResponsePacket.getFromUserName();  </span><br><span class="line">        System.out.println(fromUserId + <span class="string">":"</span> + fromUserName + <span class="string">" -&gt; "</span> + messageResponsePacket  </span><br><span class="line">                .getMessage());  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="服务端处理"><a href="#服务端处理" class="headerlink" title="服务端处理"></a>服务端处理</h2><p>因为是通用组件，服务端这里封装到 <strong>IMHandler</strong> 通用组件当中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">handlerMap.put(MESSAGE_REQUEST, MessageRequestHandler.INSTANCE);</span><br></pre></td></tr></table></figure>
+
+<p><strong>MessageRequestHandler</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ChannelHandler</span>.Sharable  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageRequestHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">MessageRequestPacket</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> MessageRequestHandler INSTANCE = <span class="keyword">new</span> MessageRequestHandler();  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">MessageRequestHandler</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, MessageRequestPacket messageRequestPacket)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">long</span> begin = System.currentTimeMillis();  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 1.拿到消息发送方的会话信息  </span></span><br><span class="line">        Session session = SessionUtil.getSession(ctx.channel());  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 2.通过消息发送方的会话信息构造要发送的消息  </span></span><br><span class="line">        MessageResponsePacket messageResponsePacket = <span class="keyword">new</span> MessageResponsePacket();  </span><br><span class="line">        messageResponsePacket.setFromUserId(session.getUserId());  </span><br><span class="line">        messageResponsePacket.setFromUserName(session.getUserName());  </span><br><span class="line">        messageResponsePacket.setMessage(messageRequestPacket.getMessage());  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 3.拿到消息接收方的 channel        Channel toUserChannel = SessionUtil.getChannel(messageRequestPacket.getToUserId());  </span></span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 4.将消息发送给消息接收方  </span></span><br><span class="line">        <span class="keyword">if</span> (toUserChannel != <span class="keyword">null</span> &amp;&amp; SessionUtil.hasLogin(toUserChannel)) &#123;  </span><br><span class="line">            toUserChannel.writeAndFlush(messageResponsePacket).addListener(future -&gt; &#123;  </span><br><span class="line">                <span class="keyword">if</span> (future.isDone()) &#123;  </span><br><span class="line">  </span><br><span class="line">                &#125;  </span><br><span class="line">  </span><br><span class="line">            &#125;);  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            System.err.println(<span class="string">"["</span> + session.getUserId() + <span class="string">"] 不在线，发送失败!"</span>);  </span><br><span class="line">  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>实现双端收发消息小结内容如下：</p>
+<ol>
+<li>定义收发消息Java对象，对于消息进行收发。</li>
+<li>学习 <code>Channel</code> 的 <code>attr</code> 的实际用法，可以给Channel绑定属性并且设置某些状态，内部实际也是通过Map维护的，所以不需要用户外部自己在自定义去维护。</li>
+<li>如何在控制台当中获取消息并且发送到服务端。</li>
+<li>服务端回传消息给客户端。</li>
+</ol>
+<h1 id="ChannelPipleline-和-ChannelHandler-概念"><a href="#ChannelPipleline-和-ChannelHandler-概念" class="headerlink" title="ChannelPipleline 和 ChannelHandler 概念"></a>ChannelPipleline 和 ChannelHandler 概念</h1><p>本部分是补充部分。主要介绍 Pipeline 和ChannelHanlder构成和一些基础概念。理解这一点之前需要先理解Channel这个概念。</p>
+<h2 id="ChannelPipleline-和-ChannelHandler-构成图"><a href="#ChannelPipleline-和-ChannelHandler-构成图" class="headerlink" title="ChannelPipleline 和 ChannelHandler 构成图"></a>ChannelPipleline 和 ChannelHandler 构成图</h2><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230711121733.png" alt="ChannelPipleline 和 ChannelHandler 构成图"></p>
+<h2 id="Channel-概念理解"><a href="#Channel-概念理解" class="headerlink" title="Channel 概念理解"></a>Channel 概念理解</h2><p><strong>一个客户端连接对应一个Channel，这个Channel可以类比BIO当中的传统概念Socket套接字。</strong></p>
+<blockquote>
+<p>A nexus to a network socket or a component which is capable of I/O operations such as read, write, connect, and bind.</p>
+</blockquote>
+<p>一个网络套接字的节点或一个能够进行（网络）I/O操作的组件，如读、写、连接和绑定。</p>
+<h2 id="ChannelPipeline"><a href="#ChannelPipeline" class="headerlink" title="ChannelPipeline"></a>ChannelPipeline</h2><p>源码对于 ChannelPipeline 的定义如下：</p>
+<blockquote>
+<p>A list of ChannelHandlers which handles or intercepts inbound events and outbound operations of a Channel. ChannelPipeline implements an advanced form of the Intercepting Filter pattern to give a user full control over how an event is handled and how the ChannelHandlers in a pipeline interact with each other.</p>
+</blockquote>
+<p>源码中还有一个直观的设计图。</p>
+<p>下图描述了I/O事件在ChannelPipeline中是如何被ChannelHandlers处理的。一个I/O事件由 ChannelInboundHandler 或 ChannelOutboundHandler处理，并通过调用ChannelHandlerContext中定义的事件传播方法，如ChannelHandlerContext.fireChannelRead(Object)和ChannelHandlerContext.write(Object)，转发给其最接近的处理程序。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230629165658.png" alt="ChannelInboundHandler"></p>
+<p><code>ChannelPipeline</code> 的核心如下：</p>
+<ul>
+<li>处理或拦截一个Channel的入站事件和出站操作的链表。</li>
+<li>通过责任链模式的设计，可以完全自定义处理逻辑和<code>ChannelHandler</code>之间互相通信的逻辑。</li>
+</ul>
+<h2 id="ChannelContext"><a href="#ChannelContext" class="headerlink" title="ChannelContext"></a>ChannelContext</h2><p><strong>ChannelHandler与Channel和ChannelPipeline之间的映射关系</strong>，由<code>ChannelHandlerContext</code>进⾏维护，根据其名称Context也可以看到存储更为丰富的信息。</p>
+<blockquote>
+<p>Enables a ChannelHandler to interact with its ChannelPipeline and other handlers.</p>
+</blockquote>
+<p>使得ChannelHandler能够与它的ChannelPipeline和其他处理程序互动。</p>
+<ul>
+<li><code>ChannelContext</code>可以获取整个<code>Channel</code>的信息。</li>
+<li>获取所有的上下文。</li>
+<li>逻辑处理器ChannelHandler定义处理逻辑。</li>
+</ul>
+<h2 id="ChannelHanlder"><a href="#ChannelHanlder" class="headerlink" title="ChannelHanlder"></a>ChannelHanlder</h2><p><code>ChannelHanlder</code> 包含两种理解。</p>
+<p>第一种：可以理解为socket连接，客户端和服务端连接的时候会创建一个channel。 负责基本的IO操作，例如：<code>bind()</code>、<code>connect()</code>、<code>read()</code>、<code>write()</code>。 </p>
+<p>第二种：Netty的Channel接口所提供的API，大大减少了Socket类复杂性。</p>
+<p>因为Channel连接过程中存在双端 <code>input/output</code>，所以 <code>ChannelHandler</code> 也分类为 <code>ChannelInboundHandler</code> 和 <code>ChannelOutboundHandler</code>。</p>
+<h3 id="ChannelInboundHandler"><a href="#ChannelInboundHandler" class="headerlink" title="ChannelInboundHandler"></a>ChannelInboundHandler</h3><ul>
+<li>读取的逻辑抽象 。 </li>
+<li><code>channelRead</code> 是最重要的方法 。</li>
+<li>配合<code>ByteBuf</code>使用进行<code>buf.read</code>推进读指针移动 。</li>
+</ul>
+<h3 id="ChannelOutboundHandler"><a href="#ChannelOutboundHandler" class="headerlink" title="ChannelOutboundHandler"></a>ChannelOutboundHandler</h3><ul>
+<li>对应写出的逻辑抽象 。 </li>
+<li>核心方法是 <code>write</code>，<code>writeAndFlush</code> 。 </li>
+</ul>
+<h3 id="适配器"><a href="#适配器" class="headerlink" title="适配器"></a>适配器</h3><p>在使用过程中还存在对应的适配器。</p>
+<ul>
+<li><code>ChannelOutboundHandlerAdapter</code>（注意处理顺序和添加addLast的顺序相反）</li>
+<li><code>ChannelInboundHandlerAdapter</code></li>
+</ul>
+<h1 id="客户端和服务端的-SimpleChannelInboundHandler-ChannelInboundHandlerAdapter-简化"><a href="#客户端和服务端的-SimpleChannelInboundHandler-ChannelInboundHandlerAdapter-简化" class="headerlink" title="客户端和服务端的 SimpleChannelInboundHandler/ChannelInboundHandlerAdapter 简化"></a>客户端和服务端的 SimpleChannelInboundHandler/ChannelInboundHandlerAdapter 简化</h1><p>整个聊天系统大部分的指令判断逻辑是重复的，下面介绍如何通过 SImpleChannelInboundHandler/ChannelInboundHandlerAdapter 简化指令的处理逻辑。</p>
+<blockquote>
+<p><a href="https://netty.io/4.0/api/io/netty/channel/ChannelInboundHandlerAdapter.html" target="_blank" rel="noopener" title="class in io.netty.channel"><code>ChannelInboundHandlerAdapter</code></a> which allows to explicit only handle a specific type of messages. For example here is an implementation which only handle <code>String</code> messages.</p>
+</blockquote>
+<p><strong>ChannelInboundHandlerAdapter</strong>  允许明确地只处理特定类型的消息。而<code>SimpleChannelInboundHandler</code>提供了一个模板，作用是把处理逻辑不变的内容写好在 <code>channelRead(ctx,msg)</code> 中，并且在里面调用<code>channelRead0</code> ，这样处理之后就可以通过抽象方法实现传递到子类中去了。</p>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><p><code>SimpleChannelInboundHandler</code>和<code>ChannelInboundHandlerAdapter</code>这两个类使用上不太好区分，下面再补充介绍一下如何正确对待使用两者。</p>
+<p><code>ChannelInboundHandlerAdapter</code> 需要覆盖的方法是<strong>channelRead</strong>，特点是<strong>不会自动释放消息</strong>，需要调用<strong>ctx.fireChannelRead(msg)</strong> 向后续链条处理器传递消息，也就是需要手动通过责任链的方式传递给下位处理器。<br>​<br><code>SimpleChannelInboundHandler</code> 是 <code>ChannelInboundHandlerAdapter</code> 的子类，<strong>做了额外的处理，会自动释放消息</strong>，如果还需要继续传递消息，需调用一次 <strong>ReferenceCountUtil.retain(msg)</strong>。需注意<code>SimpleChannelInboundHandler</code>也需要调用<code>ctx.fireChannelRead(msg)</code>来触发链条中下一处理器处理。</p>
+<p><code>ChannelInboundHandlerAdapter</code>通常用于处于链条中间的某些环节处理，对数据进行某些处理，如数据验证，需要将消息继续传递。<br>​<br><code>SimpleChannelInboundHandler</code>则比较适合链条最后一个环节，该环节处理完后，后续不再需要该消息，因此可以自动释放。</p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><p>在聊天系统中统一处理的Handler继承了SimpleChannelInboundHandler，重写<code>channelRead0</code>方法，主要对于解码之后的操作指令和通用Map进行匹配，如果匹配则分发到具体的逻辑处理器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ChannelHandler</span>.Sharable  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IMHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">Packet</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> IMHandler INSTANCE = <span class="keyword">new</span> IMHandler();  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> Map&lt;Byte, SimpleChannelInboundHandler&lt;? extends Packet&gt;&gt; handlerMap;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">IMHandler</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        handlerMap = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">7</span>);  </span><br><span class="line">  </span><br><span class="line">        handlerMap.put(MESSAGE_REQUEST, MessageRequestHandler.INSTANCE);  </span><br><span class="line">        handlerMap.put(CREATE_GROUP_REQUEST, CreateGroupRequestHandler.INSTANCE);  </span><br><span class="line">        handlerMap.put(JOIN_GROUP_REQUEST, JoinGroupRequestHandler.INSTANCE);  </span><br><span class="line">        handlerMap.put(QUIT_GROUP_REQUEST, QuitGroupRequestHandler.INSTANCE);  </span><br><span class="line">        handlerMap.put(LIST_GROUP_MEMBERS_REQUEST, ListGroupMembersRequestHandler.INSTANCE);  </span><br><span class="line">        handlerMap.put(GROUP_MESSAGE_REQUEST, GroupMessageRequestHandler.INSTANCE);  </span><br><span class="line">        handlerMap.put(LOGOUT_REQUEST, LogoutRequestHandler.INSTANCE);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, Packet packet)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        handlerMap.get(packet.getCommand()).channelRead(ctx, packet);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="客户端和服务端单聊"><a href="#客户端和服务端单聊" class="headerlink" title="客户端和服务端单聊"></a>客户端和服务端单聊</h1><h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
+<li>输入用户名，服务端随机分配ID，这里省去通过账号和密码注册过程 。</li>
+<li>多个客户端登录，用 userId 空格 消息的方式单聊。</li>
+</ul>
+<h2 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h2><ol>
+<li><p>使用工具类把UserId和Channel绑定为Session。</p>
+<ul>
+<li>Session的信息包含用户ID以及名称 ，后续可以扩展更多的字段。</li>
+</ul>
+</li>
+<li><p>使用<code>SessionUtil</code>工具类操作Session，通过Session贮存当前会话信息。</p>
+<ul>
+<li>这里用的<strong>ConcurrentHashMap</strong>实现并发安全</li>
+<li>ConcurrentHashMap为<strong>userId -&gt; Channel</strong>的映射Map。</li>
+<li>用户登录的时候，需要把Session塞入Map。</li>
+<li>当用户断开<code>Channel</code>连接退出的时候，需要移除Session信息  </li>
+</ul>
+</li>
+<li><p>服务端接受消息并且转发（这里Netty类似转发手机信号的基站）</p>
+<ul>
+<li>获取会话信息。</li>
+<li>构造发给客户端的对象<code>MessageResponse</code>。</li>
+<li>消息接收方标识获取对应<code>Channel</code>。</li>
+<li>如果目标用户登录则发送消息，如果对方不在线，则控制台打印警告信息。</li>
+</ul>
+</li>
+</ol>
+<p>具体的代码在前面的收发消息中有提到过，这里重复展示一遍。</p>
+<p><strong>MessageResponseHandler</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageResponseHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">MessageResponsePacket</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, MessageResponsePacket messageResponsePacket)</span> </span>&#123;  </span><br><span class="line">        String fromUserId = messageResponsePacket.getFromUserId();  </span><br><span class="line">        String fromUserName = messageResponsePacket.getFromUserName();  </span><br><span class="line">        System.out.println(fromUserId + <span class="string">":"</span> + fromUserName + <span class="string">" -&gt; "</span> + messageResponsePacket  </span><br><span class="line">                .getMessage());  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>MessageRequestHandler</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ChannelHandler</span>.Sharable  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageRequestHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">MessageRequestPacket</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> MessageRequestHandler INSTANCE = <span class="keyword">new</span> MessageRequestHandler();  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">MessageRequestHandler</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, MessageRequestPacket messageRequestPacket)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">long</span> begin = System.currentTimeMillis();  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 1.拿到消息发送方的会话信息  </span></span><br><span class="line">        Session session = SessionUtil.getSession(ctx.channel());  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 2.通过消息发送方的会话信息构造要发送的消息  </span></span><br><span class="line">        MessageResponsePacket messageResponsePacket = <span class="keyword">new</span> MessageResponsePacket();  </span><br><span class="line">        messageResponsePacket.setFromUserId(session.getUserId());  </span><br><span class="line">        messageResponsePacket.setFromUserName(session.getUserName());  </span><br><span class="line">        messageResponsePacket.setMessage(messageRequestPacket.getMessage());  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 3.拿到消息接收方的 channel        Channel toUserChannel = SessionUtil.getChannel(messageRequestPacket.getToUserId());  </span></span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 4.将消息发送给消息接收方  </span></span><br><span class="line">        <span class="keyword">if</span> (toUserChannel != <span class="keyword">null</span> &amp;&amp; SessionUtil.hasLogin(toUserChannel)) &#123;  </span><br><span class="line">            toUserChannel.writeAndFlush(messageResponsePacket).addListener(future -&gt; &#123;  </span><br><span class="line">                <span class="keyword">if</span> (future.isDone()) &#123;  </span><br><span class="line">  </span><br><span class="line">                &#125;  </span><br><span class="line">  </span><br><span class="line">            &#125;);  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            System.err.println(<span class="string">"["</span> + session.getUserId() + <span class="string">"] 不在线，发送失败!"</span>);  </span><br><span class="line">  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="群聊发起和通知"><a href="#群聊发起和通知" class="headerlink" title="群聊发起和通知"></a>群聊发起和通知</h1><p>下面两个小节围绕群聊实现介绍。整个群聊和单聊实现类似，都是通过标识获取Channel，为了方面多个成员管理，设计 <code>ChannelGroup</code> 完成<code>Channel</code>的批量操作。</p>
+<h2 id="预期效果"><a href="#预期效果" class="headerlink" title="预期效果"></a>预期效果</h2><ol>
+<li>三位用户依次登录。</li>
+<li>控制台输入 createGroup 指令，提示创建群聊需要 userId 列表，之后以英文逗号分隔userId。</li>
+<li>群聊创建成功之后，所有群聊成员收到加入成功消息。</li>
+</ol>
+<h2 id="创建群聊实现"><a href="#创建群聊实现" class="headerlink" title="创建群聊实现"></a>创建群聊实现</h2><p>主要逻辑如下：</p>
+<ol>
+<li>创建一个 channel 分组。</li>
+<li>筛选出待加入群聊的用户的 channel 和 userName。</li>
+<li>创建群聊创建结果的响应。</li>
+<li>给每个客户端发送拉群通知</li>
+<li>保存群组相关的信息。</li>
+</ol>
+<p>其中存储群的相关信息利用了<code>ConcurrentHashMap</code>实现，和Session的会话信息存储方式类似，<strong>ChannelGroup</strong>对象负责封装多个Channel的信息，模拟群聊中的“群”。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="meta">@ChannelHandler</span>.Sharable  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CreateGroupRequestHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">CreateGroupRequestPacket</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> CreateGroupRequestHandler INSTANCE = <span class="keyword">new</span> CreateGroupRequestHandler();  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">CreateGroupRequestHandler</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, CreateGroupRequestPacket createGroupRequestPacket)</span> </span>&#123;  </span><br><span class="line">        List&lt;String&gt; userIdList = createGroupRequestPacket.getUserIdList();  </span><br><span class="line">  </span><br><span class="line">        List&lt;String&gt; userNameList = <span class="keyword">new</span> ArrayList&lt;&gt;();  </span><br><span class="line">        <span class="comment">// 1. 创建一个 channel 分组  </span></span><br><span class="line">        ChannelGroup channelGroup = <span class="keyword">new</span> DefaultChannelGroup(ctx.executor());  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 2. 筛选出待加入群聊的用户的 channel 和 userName        for (String userId : userIdList) &#123;  </span></span><br><span class="line">            Channel channel = SessionUtil.getChannel(userId);  </span><br><span class="line">            <span class="keyword">if</span> (channel != <span class="keyword">null</span>) &#123;  </span><br><span class="line">                channelGroup.add(channel);  </span><br><span class="line">                userNameList.add(SessionUtil.getSession(channel).getUserName());  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 3. 创建群聊创建结果的响应  </span></span><br><span class="line">        String groupId = IDUtil.randomId();  </span><br><span class="line">        CreateGroupResponsePacket createGroupResponsePacket = <span class="keyword">new</span> CreateGroupResponsePacket();  </span><br><span class="line">        createGroupResponsePacket.setSuccess(<span class="keyword">true</span>);  </span><br><span class="line">        createGroupResponsePacket.setGroupId(groupId);  </span><br><span class="line">        createGroupResponsePacket.setUserNameList(userNameList);  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 4. 给每个客户端发送拉群通知  </span></span><br><span class="line">        channelGroup.writeAndFlush(createGroupResponsePacket);  </span><br><span class="line">  </span><br><span class="line">        System.out.print(<span class="string">"群创建成功，id 为 "</span> + createGroupResponsePacket.getGroupId() + <span class="string">", "</span>);  </span><br><span class="line">        System.out.println(<span class="string">"群里面有："</span> + createGroupResponsePacket.getUserNameList());  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 5. 保存群组相关的信息  </span></span><br><span class="line">        SessionUtil.bindChannelGroup(groupId, channelGroup);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端处理部分则是简单的打印创建群聊成功的信息，实现比较简单这里不再贴出相关代码。</p>
+<h1 id="群聊成员管理实现"><a href="#群聊成员管理实现" class="headerlink" title="群聊成员管理实现"></a>群聊成员管理实现</h1><h2 id="设计流程和实现思路"><a href="#设计流程和实现思路" class="headerlink" title="设计流程和实现思路"></a>设计流程和实现思路</h2><h3 id="设计流程"><a href="#设计流程" class="headerlink" title="设计流程"></a>设计流程</h3><ol>
+<li>加入群聊，控制台输出创建成功消息。</li>
+<li>控制台输入joinGroup 之后输入群ID，加入群聊，控制台显示加入群成功。</li>
+<li>控制台输入 listGroupMembers 然后输入群ID，展示群成员。</li>
+<li>quitGroup 输入群ID，进行退群</li>
+<li>控制台输入joinGroup 之后输入群ID显示对应成员不在，则退群成功。</li>
+</ol>
+<h3 id="实现思路-1"><a href="#实现思路-1" class="headerlink" title="实现思路"></a>实现思路</h3><ol>
+<li>在控制台中加入群加入的命令处理器。</li>
+<li>服务端处理群聊请求。</li>
+<li>客户端处理加群响应.</li>
+<li>群聊退出实现。</li>
+</ol>
+<h2 id="在控制台中加入群加入的命令处理器"><a href="#在控制台中加入群加入的命令处理器" class="headerlink" title="在控制台中加入群加入的命令处理器"></a>在控制台中加入群加入的命令处理器</h2><p><strong>JoinGroupConsoleCommand</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JoinGroupConsoleCommand</span> <span class="keyword">implements</span> <span class="title">ConsoleCommand</span> </span>&#123;  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exec</span><span class="params">(Scanner scanner, Channel channel)</span> </span>&#123;  </span><br><span class="line">        JoinGroupRequestPacket joinGroupRequestPacket = <span class="keyword">new</span> JoinGroupRequestPacket();  </span><br><span class="line">  </span><br><span class="line">        System.out.print(<span class="string">"输入 groupId，加入群聊："</span>);  </span><br><span class="line">        String groupId = scanner.next();  </span><br><span class="line">  </span><br><span class="line">        joinGroupRequestPacket.setGroupId(groupId);  </span><br><span class="line">        channel.writeAndFlush(joinGroupRequestPacket);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="服务端处理群聊请求"><a href="#服务端处理群聊请求" class="headerlink" title="服务端处理群聊请求"></a>服务端处理群聊请求</h2><p>服务端处理群聊请求：</p>
+<ol>
+<li>构建Channel分区，把处在同一个分组的Channel放到一个List当中存储  </li>
+<li>如果群聊构建成功，则构建创建成功响应结果 。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ChannelHandler</span>.Sharable  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JoinGroupRequestHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">JoinGroupRequestPacket</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> JoinGroupRequestHandler INSTANCE = <span class="keyword">new</span> JoinGroupRequestHandler();  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">JoinGroupRequestHandler</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, JoinGroupRequestPacket requestPacket)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 1. 获取群对应的 channelGroup，然后将当前用户的 channel 添加进去  </span></span><br><span class="line">        String groupId = requestPacket.getGroupId();  </span><br><span class="line">        ChannelGroup channelGroup = SessionUtil.getChannelGroup(groupId);  </span><br><span class="line">        channelGroup.add(ctx.channel());  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 2. 构造加群响应发送给客户端  </span></span><br><span class="line">        JoinGroupResponsePacket responsePacket = <span class="keyword">new</span> JoinGroupResponsePacket();  </span><br><span class="line">  </span><br><span class="line">        responsePacket.setSuccess(<span class="keyword">true</span>);  </span><br><span class="line">        responsePacket.setGroupId(groupId);  </span><br><span class="line">        ctx.writeAndFlush(responsePacket);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="客户端处理加群响应"><a href="#客户端处理加群响应" class="headerlink" title="客户端处理加群响应"></a>客户端处理加群响应</h2><p>简单打印加群的响应消息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JoinGroupResponseHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">JoinGroupResponsePacket</span>&gt; </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, JoinGroupResponsePacket responsePacket)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">if</span> (responsePacket.isSuccess()) &#123;  </span><br><span class="line">            System.out.println(<span class="string">"加入群["</span> + responsePacket.getGroupId() + <span class="string">"]成功!"</span>);  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            System.err.println(<span class="string">"加入群["</span> + responsePacket.getGroupId() + <span class="string">"]失败，原因为："</span> + responsePacket.getReason());  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="群聊退出实现"><a href="#群聊退出实现" class="headerlink" title="群聊退出实现"></a>群聊退出实现</h2><p>群聊退出主要是获取群对应的 channelGroup，然后将当前用户的 channel 移除，之后构建退群的响应信息回传客户端即可。</p>
+<p><strong>QuitGroupRequestHandler</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ChannelHandler</span>.Sharable  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">QuitGroupRequestHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">QuitGroupRequestPacket</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> QuitGroupRequestHandler INSTANCE = <span class="keyword">new</span> QuitGroupRequestHandler();  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">QuitGroupRequestHandler</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, QuitGroupRequestPacket requestPacket)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 1. 获取群对应的 channelGroup，然后将当前用户的 channel 移除  </span></span><br><span class="line">        String groupId = requestPacket.getGroupId();  </span><br><span class="line">        ChannelGroup channelGroup = SessionUtil.getChannelGroup(groupId);  </span><br><span class="line">        channelGroup.remove(ctx.channel());  </span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 2. 构造退群响应发送给客户端  </span></span><br><span class="line">        QuitGroupResponsePacket responsePacket = <span class="keyword">new</span> QuitGroupResponsePacket();  </span><br><span class="line">  </span><br><span class="line">        responsePacket.setGroupId(requestPacket.getGroupId());  </span><br><span class="line">        responsePacket.setSuccess(<span class="keyword">true</span>);  </span><br><span class="line">        ctx.writeAndFlush(responsePacket);  </span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="心跳检测"><a href="#心跳检测" class="headerlink" title="心跳检测"></a>心跳检测</h1><h2 id="网络问题"><a href="#网络问题" class="headerlink" title="网络问题"></a>网络问题</h2><h3 id="假死"><a href="#假死" class="headerlink" title="假死"></a>假死</h3><p>TCP层面来看，服务端收到4次握手包或者RST包才算真正断开连接，如果中途应用程序并没有捕获到，此时是认为这条连接存在的。</p>
+<h3 id="假死引发问题"><a href="#假死引发问题" class="headerlink" title="假死引发问题"></a>假死引发问题</h3><ul>
+<li>客户端发送数据超时无响应，影响体验。</li>
+<li>浪费CPU和内存资源，性能下滑。</li>
+</ul>
+<h3 id="假死原因"><a href="#假死原因" class="headerlink" title="假死原因"></a>假死原因</h3><ul>
+<li>公网丢包，网络抖动 。</li>
+<li>应用程序阻塞无法读写 。</li>
+<li>客户端或者服务端设别故障，网卡，机房故障。</li>
+</ul>
+<p>为了解决上面的问题，通常会使用心跳检测机制定期检测每个<code>Channel</code>连接是否存活。</p>
+<h2 id="服务端心跳检测实现"><a href="#服务端心跳检测实现" class="headerlink" title="服务端心跳检测实现"></a>服务端心跳检测实现</h2><ol>
+<li>通过<code>IdleStateHandler</code>自带<code>Handler</code>实现</li>
+<li>继承类，然后开启定时任务</li>
+<li>触发假死该<code>Handler</code>回调<code>channelIdle</code> 方法</li>
+</ol>
+<h2 id="客户端预判和防御假死"><a href="#客户端预判和防御假死" class="headerlink" title="客户端预判和防御假死"></a>客户端预判和防御假死</h2><ol>
+<li>新建<code>Handler</code>。</li>
+<li>开启定时线程。</li>
+<li>组装心跳包。</li>
+<li>发送心跳。</li>
+<li>服务端简单开发接受和识别心跳包的Handler，之后回送收到心跳包消息即可。</li>
+</ol>
+<h2 id="注意事项-1"><a href="#注意事项-1" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li>心跳检测<strong>Handler</strong>插入到整个<strong>Pipeline</strong>最前面，因为如果连接实际已经断开后续的所有处理均无意义。</li>
+<li>假死不一定“死”，防止服务端误判，客户端也需要措施防止假死和预判假死，这就是客户端预判的含义。</li>
+</ul>
+<h2 id="思考-1"><a href="#思考-1" class="headerlink" title="思考"></a>思考</h2><ol>
+<li>IdleHandler 可否单例？</li>
+<li>断开链接之后重新连接登录</li>
+</ol>
+<h3 id="IdleHandler-可否单例？"><a href="#IdleHandler-可否单例？" class="headerlink" title="IdleHandler 可否单例？"></a>IdleHandler 可否单例？</h3><p>答案是<strong>不能</strong>。因为它并不是无状态的，并且每个Channel都有各自的连接状态。</p>
+<h3 id="断开链接之后重新连接登录"><a href="#断开链接之后重新连接登录" class="headerlink" title="断开链接之后重新连接登录"></a>断开链接之后重新连接登录</h3><p>通过额外的线程定时轮循所有的连接的活跃性，如果发现其中有死连接，则执行重连。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>熟悉聊天系统对于后续的源码分析十分有意义，项目的整体构建比较简单，个人在笔记中将重点部分做了一个梳理。</p>
+<h1 id="文章参考"><a href="#文章参考" class="headerlink" title="文章参考"></a>文章参考</h1><p><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vYm9vay9tLzY4NDQ3MzM3MzgxMTk1OTM5OTEvc2VjdGlvbi82ODQ0NzMzNzM4MjkxNTc2ODQwP3N1aWQ9MjA0MDMwMDQxNDE4NzQxNg==" title="https://juejin.cn/book/m/6844733738119593991/section/6844733738291576840?suid=2040300414187416">https://juejin.cn/book/m/6844733738119593991/section/6844733738291576840?suid=2040300414187416<i class="fa fa-external-link"></i></span></p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/07/11/nettychatimpl/" title="《跟闪电侠学Netty》阅读笔记 - 聊天系统实现">https://whitestore.top/2023/07/11/nettychatimpl/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Netty/" rel="tag"># Netty</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/09/netty_live/" rel="prev" title="《跟闪电侠学Netty》阅读笔记 - ChannelHandler 生命周期">
+      <i class="fa fa-chevron-left"></i> 《跟闪电侠学Netty》阅读笔记 - ChannelHandler 生命周期
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/07/14/spring-total/" rel="next" title="【Spring】Spring 事务机制的个人总结">
+      【Spring】Spring 事务机制的个人总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思维导图"><span class="nav-number">2.</span> <span class="nav-text">思维导图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#项目代码"><span class="nav-number">3.</span> <span class="nav-text">项目代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#通信协议设计和自定义编解码实现"><span class="nav-number">4.</span> <span class="nav-text">通信协议设计和自定义编解码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是通信协议？"><span class="nav-number">4.1.</span> <span class="nav-text">什么是通信协议？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通信过程"><span class="nav-number">4.2.</span> <span class="nav-text">通信过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聊天系统的通信协议数据对象设计"><span class="nav-number">4.3.</span> <span class="nav-text">聊天系统的通信协议数据对象设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4字节魔数"><span class="nav-number">4.3.1.</span> <span class="nav-text">4字节魔数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-字节版本号"><span class="nav-number">4.3.2.</span> <span class="nav-text">1 字节版本号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-字节序列化算法"><span class="nav-number">4.3.3.</span> <span class="nav-text">1 字节序列化算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-字节指令"><span class="nav-number">4.3.4.</span> <span class="nav-text">1 字节指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4字节数据长度"><span class="nav-number">4.3.5.</span> <span class="nav-text">4字节数据长度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#N字节数据"><span class="nav-number">4.3.6.</span> <span class="nav-text">N字节数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何实现JAVA对象二进制互相转化？"><span class="nav-number">4.4.</span> <span class="nav-text">如何实现JAVA对象二进制互相转化？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实战部分"><span class="nav-number">4.5.</span> <span class="nav-text">实战部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据编码过程（思路）"><span class="nav-number">4.5.1.</span> <span class="nav-text">数据编码过程（思路）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解码数据过程（思路）"><span class="nav-number">4.5.2.</span> <span class="nav-text">解码数据过程（思路）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思考"><span class="nav-number">4.6.</span> <span class="nav-text">思考</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSON序列化方式之外其他序列化方式如何实现？"><span class="nav-number">4.6.1.</span> <span class="nav-text">JSON序列化方式之外其他序列化方式如何实现？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Java原生序列化"><span class="nav-number">4.6.1.1.</span> <span class="nav-text">Java原生序列化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hessian"><span class="nav-number">4.6.1.2.</span> <span class="nav-text">Hessian</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Protobuf"><span class="nav-number">4.6.1.3.</span> <span class="nav-text">Protobuf</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Thrift"><span class="nav-number">4.6.1.4.</span> <span class="nav-text">Thrift</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#序列化和编码都是JAVA对象封装二进制过程，两者的联系和区别"><span class="nav-number">4.6.2.</span> <span class="nav-text">序列化和编码都是JAVA对象封装二进制过程，两者的联系和区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#两者的联系和区别"><span class="nav-number">4.6.2.1.</span> <span class="nav-text">两者的联系和区别</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聊天系统的Netty细节优化"><span class="nav-number">4.7.</span> <span class="nav-text">聊天系统的Netty细节优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-使用共享Handler"><span class="nav-number">4.8.</span> <span class="nav-text">1. 使用共享Handler</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题分析"><span class="nav-number">4.8.1.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化手段"><span class="nav-number">4.8.2.</span> <span class="nav-text">优化手段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意事项"><span class="nav-number">4.8.3.</span> <span class="nav-text">注意事项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-缩短事件传播路径"><span class="nav-number">4.9.</span> <span class="nav-text">2. 缩短事件传播路径</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题分析-1"><span class="nav-number">4.9.1.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化手段-1"><span class="nav-number">4.9.2.</span> <span class="nav-text">优化手段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-事件传播源调整"><span class="nav-number">4.10.</span> <span class="nav-text">3. 事件传播源调整</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关键点"><span class="nav-number">4.10.1.</span> <span class="nav-text">关键点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原因"><span class="nav-number">4.10.2.</span> <span class="nav-text">原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相关问题"><span class="nav-number">4.10.3.</span> <span class="nav-text">相关问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-减少阻塞主线程的操作【重要】"><span class="nav-number">4.11.</span> <span class="nav-text">4. 减少阻塞主线程的操作【重要】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-如何准确统计时长？"><span class="nav-number">4.12.</span> <span class="nav-text">5. 如何准确统计时长？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化小结"><span class="nav-number">4.13.</span> <span class="nav-text">优化小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现登录"><span class="nav-number">5.</span> <span class="nav-text">实现登录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#处理流程图"><span class="nav-number">5.1.</span> <span class="nav-text">处理流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现思路"><span class="nav-number">5.2.</span> <span class="nav-text">实现思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现步骤"><span class="nav-number">5.3.</span> <span class="nav-text">实现步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#热插拔客户端是否登录验证"><span class="nav-number">5.4.</span> <span class="nav-text">热插拔客户端是否登录验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现双端收发消息"><span class="nav-number">6.</span> <span class="nav-text">实现双端收发消息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端处理"><span class="nav-number">6.1.</span> <span class="nav-text">客户端处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端处理"><span class="nav-number">6.2.</span> <span class="nav-text">服务端处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">6.3.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ChannelPipleline-和-ChannelHandler-概念"><span class="nav-number">7.</span> <span class="nav-text">ChannelPipleline 和 ChannelHandler 概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ChannelPipleline-和-ChannelHandler-构成图"><span class="nav-number">7.1.</span> <span class="nav-text">ChannelPipleline 和 ChannelHandler 构成图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Channel-概念理解"><span class="nav-number">7.2.</span> <span class="nav-text">Channel 概念理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ChannelPipeline"><span class="nav-number">7.3.</span> <span class="nav-text">ChannelPipeline</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ChannelContext"><span class="nav-number">7.4.</span> <span class="nav-text">ChannelContext</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ChannelHanlder"><span class="nav-number">7.5.</span> <span class="nav-text">ChannelHanlder</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ChannelInboundHandler"><span class="nav-number">7.5.1.</span> <span class="nav-text">ChannelInboundHandler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ChannelOutboundHandler"><span class="nav-number">7.5.2.</span> <span class="nav-text">ChannelOutboundHandler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#适配器"><span class="nav-number">7.5.3.</span> <span class="nav-text">适配器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#客户端和服务端的-SimpleChannelInboundHandler-ChannelInboundHandlerAdapter-简化"><span class="nav-number">8.</span> <span class="nav-text">客户端和服务端的 SimpleChannelInboundHandler&#x2F;ChannelInboundHandlerAdapter 简化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#区别"><span class="nav-number">8.1.</span> <span class="nav-text">区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用"><span class="nav-number">8.2.</span> <span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#客户端和服务端单聊"><span class="nav-number">9.</span> <span class="nav-text">客户端和服务端单聊</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#目标"><span class="nav-number">9.1.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现过程"><span class="nav-number">9.2.</span> <span class="nav-text">实现过程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#群聊发起和通知"><span class="nav-number">10.</span> <span class="nav-text">群聊发起和通知</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#预期效果"><span class="nav-number">10.1.</span> <span class="nav-text">预期效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建群聊实现"><span class="nav-number">10.2.</span> <span class="nav-text">创建群聊实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#群聊成员管理实现"><span class="nav-number">11.</span> <span class="nav-text">群聊成员管理实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设计流程和实现思路"><span class="nav-number">11.1.</span> <span class="nav-text">设计流程和实现思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#设计流程"><span class="nav-number">11.1.1.</span> <span class="nav-text">设计流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现思路-1"><span class="nav-number">11.1.2.</span> <span class="nav-text">实现思路</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在控制台中加入群加入的命令处理器"><span class="nav-number">11.2.</span> <span class="nav-text">在控制台中加入群加入的命令处理器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端处理群聊请求"><span class="nav-number">11.3.</span> <span class="nav-text">服务端处理群聊请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端处理加群响应"><span class="nav-number">11.4.</span> <span class="nav-text">客户端处理加群响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#群聊退出实现"><span class="nav-number">11.5.</span> <span class="nav-text">群聊退出实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#心跳检测"><span class="nav-number">12.</span> <span class="nav-text">心跳检测</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络问题"><span class="nav-number">12.1.</span> <span class="nav-text">网络问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#假死"><span class="nav-number">12.1.1.</span> <span class="nav-text">假死</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#假死引发问题"><span class="nav-number">12.1.2.</span> <span class="nav-text">假死引发问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#假死原因"><span class="nav-number">12.1.3.</span> <span class="nav-text">假死原因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端心跳检测实现"><span class="nav-number">12.2.</span> <span class="nav-text">服务端心跳检测实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端预判和防御假死"><span class="nav-number">12.3.</span> <span class="nav-text">客户端预判和防御假死</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意事项-1"><span class="nav-number">12.4.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思考-1"><span class="nav-number">12.5.</span> <span class="nav-text">思考</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IdleHandler-可否单例？"><span class="nav-number">12.5.1.</span> <span class="nav-text">IdleHandler 可否单例？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#断开链接之后重新连接登录"><span class="nav-number">12.5.2.</span> <span class="nav-text">断开链接之后重新连接登录</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">13.</span> <span class="nav-text">写在最后</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文章参考"><span class="nav-number">14.</span> <span class="nav-text">文章参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

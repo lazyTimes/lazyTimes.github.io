@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="个人笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Java】《2小时搞定多线程》个人笔记">
+<meta property="og:url" content="https://whitestore.top/2023/06/15/duoxianc/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="个人笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614103411.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614103429.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614103436.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614104422.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614103724.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614144457.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614151000.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614151120.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614151150.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614152742.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614152836.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614152816.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614152845.png">
+<meta property="article:published_time" content="2023-06-15T13:23:48.000Z">
+<meta property="article:modified_time" content="2023-06-15T13:25:00.300Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="个人笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614103411.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/06/15/duoxianc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Java】《2小时搞定多线程》个人笔记 | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/06/15/duoxianc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Java】《2小时搞定多线程》个人笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-06-15 21:23:48 / 修改时间：21:25:00" itemprop="dateCreated datePublished" datetime="2023-06-15T21:23:48+08:00">2023-06-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/06/15/duoxianc/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/06/15/duoxianc/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+            <div class="post-description">个人笔记</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>基于慕课网站上的一个一元钱课程《2小时搞定多线程》的 个人笔记。</p>
+<h1 id="线程的起源"><a href="#线程的起源" class="headerlink" title="线程的起源"></a>线程的起源</h1><p>我们先来看看网络中关于线程起源的说明，理解线程的来龙去脉对于掌握多线程有一定帮助。</p>
+<p>此部分内容整理自下面两篇网络博客：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cDovL2MuYmlhbmNoZW5nLm5ldC90aHJlYWQvd2hhdC1pcy10aHJlYWQuaHRtbA==" title="http://c.biancheng.net/thread/what-is-thread.html"># 线程是什么<i class="fa fa-external-link"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2Z1MTIzMTIzZnUvYXJ0aWNsZS9kZXRhaWxzLzg2NTMyMTg4" title="https://blog.csdn.net/fu123123fu/article/details/86532188"># 线程的起源<i class="fa fa-external-link"></i></span></li>
+</ul>
+<blockquote>
+<p>线程的起源与计算机的发展息息相关。早期的计算机系统是<strong>单指令模式</strong>，资源利用效率低下。当批处理模式即计算机的<strong>多指令模式</strong>出现后，计算机资源利用率得到有效提升，但这种模式又经常导致 <strong>CPU 陷入等待状态</strong>，无法得到充分利用，于是<strong>进程出现</strong>了。</p>
+</blockquote>
+<blockquote>
+<p>当用户对计算机发出一系列操作指令时，每个进程会将不同的操作储存起来，随时进行切换。但是<strong>进程的指令执行效率仍然不够快</strong>，无法在同一时刻执行多个任务。为了解决这一问题，技术人员又发明了线程。</p>
+</blockquote>
+<blockquote>
+<p>有了线程以后，每个操作指令对应的任务都能够被划分为多个<strong>子任务</strong>，由每一个单独的线程负责，而不同的线程可以<strong>同时运行</strong>，这样计算机的运行效率便得到进一步提升。</p>
+</blockquote>
+<p>我们可以把上面的几段内容做一个概括：</p>
+<ol>
+<li>单指令模式（类似计算器）。</li>
+<li>多指令模式（批处理）。</li>
+<li>批处理存在CPU等待情况，进程诞生。</li>
+<li>进程指令运行效率不满足需求，为了处理多任务线程诞生。</li>
+</ol>
+<a id="more"></a>
+
+<p>我们会发现这里存在一些不太清楚的概念，单指令是什么？多指令模式又是什么？为什么批处理存在CPU等待情况等等…..下面我们至上而下进行简单分析。</p>
+<h2 id="单指令模式（类似计算器）"><a href="#单指令模式（类似计算器）" class="headerlink" title="单指令模式（类似计算器）"></a>单指令模式（类似计算器）</h2><p>在计算机诞生的最早期，计算机属于政府和一些大型公司才有的”昂贵“仪器，受制各种因素限制，当时计算机只能完成一些类似”1+1“的指令操作，并且要完成这样的操作需要用户把程序写入到打孔卡（可以看作最早期的存储设备）并由专门操作人员完成执行，整个过程非常繁琐。</p>
+<p>受这样的工作模式限制，不管来多少个用户进行输入，也只能等待计算机管理人员拿到”指令“（物理意义上）完成执行。在”拿指令“和”执行“的间隙，整个计算机都是空闲不干活的，资源利用率极低。</p>
+<h2 id="多指令模式（批处理）"><a href="#多指令模式（批处理）" class="headerlink" title="多指令模式（批处理）"></a>多指令模式（批处理）</h2><p>随着CPU的执行效率提升以及对CPU资源利用率的要求提升，计算机管理员逐渐成为执行瓶颈，由此诞生了多指令模式。 多指令模式类似饭店点餐一次性下多个指令批量完成。为此人们设计了对应的批处理操作系统，由它代替计算机管理员完成任务的执行切换工作， </p>
+<p>批处理可以挨个执行多个指令，此时我们可以把整个计算机本身类比为”单进程“操作，所以批处理在某些情况下依然存在”闲置“的情况，比如4条指令中第3条需要访问IO设备，此时第4条指令哪怕和第3条没有任何关系也依然需要等待。</p>
+<h2 id="进程诞生"><a href="#进程诞生" class="headerlink" title="进程诞生"></a>进程诞生</h2><p>以上的工作模式被叫做”<strong>单道批处理操作系统</strong>“，后面为了解决等待问题，人们又设计了<strong>多道批处理操作系统</strong>（也叫多任务操作系统），它的改进优势如下：</p>
+<ul>
+<li>内存划分多个区域，每个区域存储一个程序。</li>
+<li>程序执行 I/O 操作时，操作系统会将 CPU 资源分配给其它等待执行的程序。</li>
+</ul>
+<p>由此”进程“的基础概念便诞生了，进程就是执行中的应用程序，操作系统会为每个进程分配独立的内存、空间和所需要的资源（IO设备，文件等）。</p>
+<h2 id="线程诞生"><a href="#线程诞生" class="headerlink" title="线程诞生"></a>线程诞生</h2><p>但是随着计算机软硬件的发展，人们发现像进程这种”指挥军队“的粒度代价很高并且难以控制，后面又提出了线程的概念。</p>
+<blockquote>
+<p>进程调度的一些问题：</p>
+<ul>
+<li>进程切换开销大。</li>
+<li>进程占用空间是独立的，实现进程通信难度很大。</li>
+<li>单个进程本身执行类似IO操作依然会出现等待情况。（只不过此时可以切换到其他进程）</li>
+</ul>
+</blockquote>
+<p>至此我们简单梳理了单指令模式到线程诞生的全过程。</p>
+<h1 id="线程和进程的关系"><a href="#线程和进程的关系" class="headerlink" title="线程和进程的关系"></a>线程和进程的关系</h1><p>线程包含于进程当中，<strong>进程是线程的集合</strong>。</p>
+<p>当操作系统运行时，至少有一个进程会启动，而这个进程中往往包含了多个线程。</p>
+<h1 id="线程和进程的区别"><a href="#线程和进程的区别" class="headerlink" title="线程和进程的区别"></a>线程和进程的区别</h1><p><strong>相同点</strong>如下：</p>
+<p>两者都生命周期是由一样的，线程会随着进程结束而一起结束。</p>
+<p><strong>不同点</strong>如下：</p>
+<ul>
+<li>起源不同：<strong>先有进程后有线程</strong>，早期CPU为了跟上外部操作，后续出现线程的概念来提高效率。</li>
+<li>概念不同：线程是CPU调度的<strong>最小单位</strong>，而进程是操作系统调度程序的<strong>独立单位</strong>。</li>
+<li>作用域不同：通常线程存在<strong>共享</strong>区域，但是在进程和进程之间内容<strong>不共享</strong>（除非使用类似IPC手段进行进程通信）。</li>
+<li>开销不同：进程之间通信需要内核辅助创建开销相对较大，而线程通信创建线程的开销很小。<ul>
+<li>线程创建终止时间比进程短。</li>
+<li>同一个进程内线程切换时间比进程短。</li>
+<li>同一个进程内线程可以互相共享文件资源和内存，并且不依赖内核就可以完成。</li>
+</ul>
+</li>
+<li><strong>拥有资源不同</strong>，线程在拥有进程大部分基本资源之外还有独立的内容。</li>
+<li>数量不同：同一个进程通常只有一个，而每个进程至少有一个线程。</li>
+</ul>
+<p>这里强调一下拥有资源不同的含义，<strong>线程共享内容</strong>包括：</p>
+<ol>
+<li><strong>进程代码段</strong>。</li>
+<li>进程公有资源（线程可以利用进程的共享资源简单通信）。</li>
+<li>进程打开的文件描述符。</li>
+<li>信号处理器。</li>
+<li>进程当前目录。</li>
+<li>进程ID进程组ID</li>
+</ol>
+<p>线程独有内容包括：</p>
+<ol>
+<li>寄存器的值</li>
+<li>线程ID</li>
+<li>线程名称</li>
+<li>线程堆栈</li>
+<li>错误返回号码</li>
+<li>线程信号屏蔽码</li>
+</ol>
+<h1 id="Java-和-多线程"><a href="#Java-和-多线程" class="headerlink" title="Java 和 多线程"></a>Java 和 多线程</h1><p>为了迎合时代需求，Java自诞生之初就天然支持多线程，<strong>Java的多线程实现是和内核线程一对一映射</strong>。</p>
+<h2 id="Jvm-天然多线程验证"><a href="#Jvm-天然多线程验证" class="headerlink" title="Jvm 天然多线程验证"></a>Jvm 天然多线程验证</h2><p>Jvm启动需要自动开启一些后台线程维持工作：</p>
+<ul>
+<li><strong>Finalize线程</strong>：处理部分对象的finalize操作。高版本jdk已经弃用此实现</li>
+<li><strong>Single signature</strong>：接收操作系统的信号量来进行一些操作，比如Kill的信号量接收强制关闭程序。</li>
+<li><strong>main 线程</strong>：也叫主线程，其他用户创建的线程都都叫做子线程</li>
+<li><strong>reference gc</strong>：垃圾回收线程，对象清理工作</li>
+</ul>
+<p>为了证明上面的理论，我们可以通过IDEA进行调试来验证答案。</p>
+<p>首先我们通过IDEA编写一个HelloWorld程序，当然为了方便这里个人直接拿了SpringBoot的Main启动代码进行验证。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterviewApplication</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        SpringApplication.run(InterviewApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们把Debug断点打在代码的第一行，然后Idea中直接Debug运行。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614103411.png" alt="image.png"></p>
+<p>通过下面的筛选功能，我们可以Debug中切换到其他的线程进行观察多线程执行情况。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614103429.png" alt="image.png"></p>
+<blockquote>
+<p>下面j结果使用为JDK11运行。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614103436.png" alt="image.png"></p>
+<p>除了上面这种观察方式之外，我们可以通过“Threads“视图界面观察所有线程的运行情况。以<strong>IDEA2022</strong>版本为例，打开”Threads“视图只需要在右上角点击小方块然后勾选“Threads”即可。</p>
+<blockquote>
+<p>下面结果使用JDK8运行。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614104422.png" alt="image.png"></p>
+<p>个人更喜欢上面的展现方式，平铺直叙告诉开发者当前断点内的线程运行情况。</p>
+<p>如果想要多线程Debug，可以鼠标右击断点，接着会出现相关提示切换到“Thread”,，在调试多线程代码的时候，这个操作会非常方便好用。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614103724.png" alt="image.png"></p>
+<p>通过上面的简单讲解可以证明Java天生就是多线程程序（哪怕只有一行代码）。</p>
+<h1 id="理解多线程"><a href="#理解多线程" class="headerlink" title="理解多线程"></a>理解多线程</h1><h2 id="多线程概念"><a href="#多线程概念" class="headerlink" title="多线程概念"></a>多线程概念</h2><p>一个进程中拥有多（≥2）个线程，线程之间相互协作、共同执行一个应用程序。</p>
+<blockquote>
+<p>现代概念中把仅有单个线程工作的应用程序成为单线程程序。</p>
+</blockquote>
+<h2 id="多线程目的"><a href="#多线程目的" class="headerlink" title="多线程目的"></a>多线程目的</h2><ul>
+<li>提高CPU处理效率。</li>
+<li>避免无效等待（IO过程可以别的事情）。</li>
+<li>提高用户体验，避免卡顿和缩短等待时间。<ul>
+<li>并行处理：提高性能，多个线程接收http请求。</li>
+<li>安卓开发：主线程只能绘制界面。线程不允许io或者网络请求，避免卡顿影响体验。</li>
+</ul>
+</li>
+<li>编程建模。</li>
+<li><strong>摩尔定律失效</strong>之后，CPU的频率逐渐达到瓶颈，根本处理器越来越接近纳米工艺，再往下原子设计无法突破物理极限。导致单核的性能主频提升已经越过临界点。<ul>
+<li>CPU由单核转为多核多线程，多线程利用越发重要。</li>
+</ul>
+</li>
+<li>阿姆达尔定律：处理器越多，处理效率越高，但是上限取决于<strong>串行部分的代码占比</strong>，占比越小性能越高。</li>
+</ul>
+<h2 id="阿姆达尔定律"><a href="#阿姆达尔定律" class="headerlink" title="阿姆达尔定律"></a>阿姆达尔定律</h2><p>在处理器运行单核速度放缓的今天，处理器开始追求多核心多线程，但是需要注意<strong>多线程的效率提升取决于代码能够用到多少并行性能</strong>。</p>
+<p>如果一个程序只能单核单线程串行运行，那么程序运行的时候多线程是没有任何意义的，如果代码支持一半并行一半串行，效率提升2倍，如果程序有95%支持并行，那就可以提升20倍性能。</p>
+<p>通过下面这个图，可以很直观的看到并行带来质的提升。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614144457.png" alt="image.png"></p>
+<h2 id="多线程局限"><a href="#多线程局限" class="headerlink" title="多线程局限"></a>多线程局限</h2><p>多线程的引入不可避免的带来更为复杂的情况。</p>
+<ul>
+<li>异构化任务很难高效并行。</li>
+<li>性能安全问题。<ul>
+<li>上下文切换。</li>
+<li>共享数据互相篡改幻读。</li>
+<li>缓存失效</li>
+</ul>
+</li>
+<li>线程安全问题。<ul>
+<li>编码设计逻辑漏洞等。</li>
+<li>活跃性问题（线程饥饿、死锁）。</li>
+<li>非原子操作问题（例如 i++）。</li>
+</ul>
+</li>
+</ul>
+<h2 id="多线程的生活案例"><a href="#多线程的生活案例" class="headerlink" title="多线程的生活案例"></a>多线程的生活案例</h2><p>这里列举生活中吃火锅的案例来理解多线程： </p>
+<ol>
+<li>大火锅一个人吃：单进程单线程串行执行。</li>
+<li>大火锅多人吃：单进程多线程。</li>
+<li>每人小火锅：多进程多线程。</li>
+<li>吃火锅底料：资源不足 。</li>
+</ol>
+<h1 id="并发和并行"><a href="#并发和并行" class="headerlink" title="并发和并行"></a>并发和并行</h1><h2 id="并发和并行的前提"><a href="#并发和并行的前提" class="headerlink" title="并发和并行的前提"></a>并发和并行的前提</h2><ul>
+<li><strong>CPU的飞速发展</strong>，比如 i7 出现多核多线程。</li>
+<li><strong>编程语言自身支持多线程</strong>，这一点很重要，比如Java天生具备多线程能力。<ul>
+<li>一对一映射内核线程。</li>
+<li>充分利用操作系统资源。</li>
+</ul>
+</li>
+<li><strong>操作系统本身</strong>：操作系统对于多线程的利用也很关键，操作系统通过编程语言的逻辑进行多线程。调度是性能影响的关键。</li>
+</ul>
+<h2 id="理清两者概念"><a href="#理清两者概念" class="headerlink" title="理清两者概念"></a>理清两者概念</h2><h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614151000.png" alt="利用超线程技术模拟多核并发"></p>
+<p>实际上包含了两种概念，第一种：并发存在<strong>程序“并发性”</strong>，第二种：多个任务的执行状态是“并发”的。</p>
+<blockquote>
+<p>这两种概念都有一个很好的比喻，也就是我们的<strong>大脑</strong>，我们大脑可以具备“并发性”，比如可以同时操作鼠标和键盘。另一个意义操作鼠标和键盘这两个动作是并发但不是并行的，同时画圆和画圈（需要经过一定的训练）可以看作是并行的。</p>
+</blockquote>
+<p>并发存在<strong>程序“并发性”</strong>：</p>
+<ul>
+<li>此时并发和并行的概念不在同一个维度。</li>
+<li>同一个时间可能有多个线程接替工作，给使用者的感受好像是在同时工作，比如边敲键盘，边操作鼠标，实际上是受到程序并发性的影响。</li>
+<li><strong>不同的部分在无序或者同时</strong>执行，但是最终结果不影响。</li>
+<li>无论单核还是多核心，<strong>只要能得出正确结果，就具备并发性</strong>。</li>
+<li><strong>这时候和多个任务执行状态的概念是不在一个维度上的，</strong> 而是更高维度。</li>
+</ul>
+<p><strong>多个任务的执行状态是“并发”的</strong>：</p>
+<ul>
+<li>这种情况下是逻辑上的“并行”，并不是真正的并行。</li>
+<li>重叠的时间段交替运行</li>
+<li>并发不一定并行</li>
+<li>并行一定并发</li>
+<li>并发，并发和并发的不同</li>
+</ul>
+<h3 id="并行"><a href="#并行" class="headerlink" title="并行"></a>并行</h3><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614151120.png" alt="image.png"></p>
+<p>并行的例子就是两个动作物理上同时发生，比如边打游戏，边接电话这两个动作可以同时进行。</p>
+<ul>
+<li>并行是多个核心可以在同一个时间线<strong>物理</strong>上同时工作</li>
+<li><strong>并行一定并发</strong></li>
+<li>依托于现代处理的发展</li>
+<li>多核能力强化</li>
+<li>编程语言支持多线程</li>
+</ul>
+<h3 id="两者关系"><a href="#两者关系" class="headerlink" title="两者关系"></a>两者关系</h3><p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614151150.png" alt="image.png"></p>
+<p>上面的图可以得出几个概念</p>
+<ul>
+<li>并发不一定并行</li>
+<li>并行一定并发</li>
+<li>并行和并发是并行包含在并发的概念里面，所以并行的前提是并发</li>
+</ul>
+<h2 id="提问：并发程序一定是并行的么？"><a href="#提问：并发程序一定是并行的么？" class="headerlink" title="提问：并发程序一定是并行的么？"></a>提问：并发程序一定是并行的么？</h2><p>结论：<strong>并发程序不一定并行，但是并行程序一定是并发的。</strong></p>
+<p>不一定，因为单核处理器通过快速的上下文切换也可以达到类似并行的效果，实际上是利用抢占式的系统调用和分片式的系统调用完成的。</p>
+<p>单核逻辑上同行运行叫做并发。上下文切换非常快，所以会认为是并行的。多核实现了物理上并行，核心和核心之间互相独立，可以真正意义上物理时间可以实现。</p>
+<p>比喻：是一个人操作多条流水线，好像每一个流水线都可以处理任务。多个人在流水线上，一个流水线挂了可以由别的流水线接收。</p>
+<blockquote>
+<p>并发继续拓展</p>
+<ul>
+<li>表面上多个任务执行状态。</li>
+<li>程序上的并发性也叫做并发。</li>
+</ul>
+</blockquote>
+<h1 id="高并发和多线程关系"><a href="#高并发和多线程关系" class="headerlink" title="高并发和多线程关系"></a>高并发和多线程关系</h1><p><strong>多线程是解决高并发问题的解决方案之一，但是多线程不是高并发的唯一办法。</strong></p>
+<p>比如redis操作数据就是单线程实现的（保证原子性非常简单），因为没有上下文切换十分高效，它没有用到多线程却页解决了数据库高并发的问题，分担压力。</p>
+<p>拓展：</p>
+<ul>
+<li>并行的程序执行效率取决于开发者的代码。</li>
+<li>取决于处理器的性能。</li>
+<li>操作系统的调度。</li>
+</ul>
+<h1 id="高并发的性能指标"><a href="#高并发的性能指标" class="headerlink" title="高并发的性能指标"></a>高并发的性能指标</h1><ul>
+<li><strong>QPS</strong>：每秒的查询数量，越高说明服务器可以承受的瞬间压力越大</li>
+<li><strong>带宽</strong>：决定了例如视频网站的服务质量。</li>
+<li><strong>PV（Page View）</strong>：也就是访问和点击量。</li>
+<li><strong>UV（Unique View）</strong>：表示单个用户访问的次数，是对于PV的访问量和点击率<ul>
+<li>UV一定会小于PV</li>
+</ul>
+</li>
+<li><strong>IP和UV</strong>：最大的区别是是否是同一个用户的操作决定，也就是Cookie<ul>
+<li>两个不同的指标</li>
+<li>第一个指标 IP：拨号上网IP变动<ul>
+<li>IP是每个人单独IP，但是访问者的Cookie是一样的</li>
+<li>IP+1，Uv不变</li>
+</ul>
+</li>
+<li>第二个指标 UV：局域网同一个账户多个人使用<ul>
+<li>IP可能没有变但是Cookie在切换</li>
+<li>IP没有变，UV+1</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>并发连接数</strong><ul>
+<li>某个时刻同时接受请求数量</li>
+</ul>
+</li>
+<li><strong>服务器平均等待时间</strong><ul>
+<li>处理一个请求所需时间。</li>
+</ul>
+</li>
+</ul>
+<h1 id="同步和异步-阻塞和非阻塞"><a href="#同步和异步-阻塞和非阻塞" class="headerlink" title="同步和异步/阻塞和非阻塞"></a>同步和异步/阻塞和非阻塞</h1><h2 id="同步和异步"><a href="#同步和异步" class="headerlink" title="同步和异步"></a>同步和异步</h2><p>区分关键点：被调用方的行为</p>
+<h3 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h3><p>强调的是被调用者（服务器）行为，不是请求方的行为。没有得到结果之前，服务端不返回任何结果。</p>
+<blockquote>
+<p>和阻塞的判断刚好相反。</p>
+</blockquote>
+<blockquote>
+<p>再次强调是被调用者（服务器）行为，不是请求方的行为。</p>
+</blockquote>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614152742.png" alt="image.png"></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614152836.png" alt="image.png"></p>
+<h3 id="异步"><a href="#异步" class="headerlink" title="异步"></a>异步</h3><p>调用之后服务端立刻返回结果（通常是一个通知）。</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614152816.png" alt="image.png"></p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20230614152845.png" alt="image.png"></p>
+<h3 id="案例：烧水壶、买书"><a href="#案例：烧水壶、买书" class="headerlink" title="案例：烧水壶、买书"></a>案例：烧水壶、买书</h3><p>烧水壶：传统的铁壶需要等待水烧开才会有结果，电水壶只需要理解返回启动结果即可，因为后续水烧开之后会断电并且提醒。</p>
+<p>买书：同步就是书店买书直到老板给出想要的书之前会一直被迫等待（被调用方的行为），网上买书下单之后直接通知结果过几天之后到货。</p>
+<h2 id="阻塞和非阻塞"><a href="#阻塞和非阻塞" class="headerlink" title="阻塞和非阻塞"></a>阻塞和非阻塞</h2><p>关键：对于调用者而言的服务端状态</p>
+<ul>
+<li>站在<strong>线程状态</strong>角度</li>
+<li>站在<strong>线程发出请求</strong>之后请求方的角度</li>
+</ul>
+<p>案例：烧水壶、买书</p>
+<p>烧水壶：阻塞就是看着水一直到烧开，非阻塞就是烧水的时候间隔一段时间看一眼。</p>
+<p>买书：<strong>阻塞</strong>就是拿到要买的书籍之前老老实实等待（调用方等待），<strong>非阻塞</strong>书店老板找书的过程中可以逛逛书店看看其他的书籍。</p>
+<h2 id="综合案例"><a href="#综合案例" class="headerlink" title="综合案例"></a>综合案例</h2><p>综合案例用洗衣服的案例来理解。</p>
+<h3 id="同步阻塞"><a href="#同步阻塞" class="headerlink" title="同步阻塞"></a>同步阻塞</h3><p>洗衣服丢到洗衣机，全程看着洗衣机洗完，洗好之后晾衣服。</p>
+<h3 id="同步非阻塞"><a href="#同步非阻塞" class="headerlink" title="同步非阻塞"></a>同步非阻塞</h3><p>把衣服丢到洗衣机洗，然后回客厅做其他事情，<strong>定时看看洗衣机是不是洗完了</strong>，洗好后再去晾衣服。（等待期间你可以做其他事情，比如用电脑刷剧看视频）。</p>
+<h3 id="异步阻塞"><a href="#异步阻塞" class="headerlink" title="异步阻塞"></a>异步阻塞</h3><p>把衣服丢到洗衣机洗，然后看着洗衣机洗完，洗好后再去晾衣服（没这个情况，几乎没这个说法，可以忽略）。</p>
+<h3 id="异步非阻塞"><a href="#异步非阻塞" class="headerlink" title="异步非阻塞"></a>异步非阻塞</h3><p>把衣服丢到洗衣机洗，然后回客厅做其他事情，洗衣机洗好后会自动去晾衣服，晾完成后放个音乐告诉你<strong>洗好衣服并晾好了</strong>。</p>
+<h1 id="常见问题汇总"><a href="#常见问题汇总" class="headerlink" title="常见问题汇总"></a>常见问题汇总</h1><h2 id="线程和进程的相同与不同点"><a href="#线程和进程的相同与不同点" class="headerlink" title="线程和进程的相同与不同点"></a>线程和进程的相同与不同点</h2><p>不同点：</p>
+<ul>
+<li>起源不同</li>
+<li>概念不同</li>
+<li>性能开销不同</li>
+<li>作用域不同</li>
+<li>拥有资源不同</li>
+<li>数量不同</li>
+</ul>
+<p>相同点：<strong>生命周期</strong></p>
+<h2 id="并发和并发"><a href="#并发和并发" class="headerlink" title="并发和并发"></a>并发和并发</h2><ul>
+<li>并发和高并发是一个包含关系（并行包含并发），一个程序并行意味着一定是并发，但是并发可以模拟出并行的效果。</li>
+<li>并发有两种概念，如果是程序“并发性”，则并行和并发不在一个维度，可以任务无论单核或者多核只要结果正确就具备并发性。另外一个程序<strong>具备并发性</strong>也算是并发的说法。</li>
+</ul>
+<h2 id="多线程的弊端"><a href="#多线程的弊端" class="headerlink" title="多线程的弊端"></a>多线程的弊端</h2><ul>
+<li>异构化任务无法用多线程完成的任务不如单线程高效。</li>
+<li>线程安全问题，比如共享变量互相覆盖。</li>
+<li>性能问题，比如上下文切换、缓存失效。</li>
+</ul>
+<h2 id="高并发是否意味着多线程"><a href="#高并发是否意味着多线程" class="headerlink" title="高并发是否意味着多线程"></a>高并发是否意味着多线程</h2><ul>
+<li>多线程仅仅是高并发的解决方案之一，两者是两个不同的概念，不能混为一谈。</li>
+<li>多线程不是唯一办法，但确实是主要办法。</li>
+</ul>
+<blockquote>
+<p>缓存、消息队列、锁是高并发的三架马车</p>
+</blockquote>
+<h2 id="同步、异步、阻塞、非阻塞"><a href="#同步、异步、阻塞、非阻塞" class="headerlink" title="同步、异步、阻塞、非阻塞"></a>同步、异步、阻塞、非阻塞</h2><p>从并发编程的角度对着四个概念进行再次整理。</p>
+<p>同步异步：和<strong>队列</strong>有关，事情能不能委托给其他人来办。<br>阻塞非阻塞：和<strong>锁的机制</strong>有关，做一个工作的时候能不能抽空干别的事情。</p>
+<p>洗衣机洗衣服：</p>
+<ul>
+<li>同步阻塞：开启洗衣机，并且全程盯着洗衣机工作。</li>
+<li>同步非阻塞，开启洗衣机，虽然还是要隔几分钟看洗衣机是否完成工作，但是期间可以干别的事情。</li>
+<li>异步阻塞：委托给洗衣机自己洗衣服，但是要全程盯着取出衣服最后把衣服晾了。</li>
+<li>异步非阻塞：告诉洗衣机自己洗衣服，工作完成之后洗衣机自动把衣服晾了，最后告知结果。</li>
+</ul>
+<h2 id="单核CPU上多线程的意义"><a href="#单核CPU上多线程的意义" class="headerlink" title="单核CPU上多线程的意义"></a>单核CPU上多线程的意义</h2><ul>
+<li>开启多个线程可以让耗时的任务交给后台处理，利用其他线程提供服务。</li>
+<li>程序不知道运行在单核还是多核，单核CPU也可以充分利用多线程提高资源利用率。</li>
+</ul>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/06/15/duoxianc/" title="【Java】《2小时搞定多线程》个人笔记">https://whitestore.top/2023/06/15/duoxianc/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/06/15/mysqlcharacter/" rel="prev" title="【Mysql】How to store UTF8 characters in MySQL">
+      <i class="fa fa-chevron-left"></i> 【Mysql】How to store UTF8 characters in MySQL
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/06/16/differencebetween/" rel="next" title="【Java】What s the difference between SoftReference and WeakReference in Java">
+      【Java】What s the difference between SoftReference and WeakReference in Java <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程的起源"><span class="nav-number">2.</span> <span class="nav-text">线程的起源</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单指令模式（类似计算器）"><span class="nav-number">2.1.</span> <span class="nav-text">单指令模式（类似计算器）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多指令模式（批处理）"><span class="nav-number">2.2.</span> <span class="nav-text">多指令模式（批处理）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程诞生"><span class="nav-number">2.3.</span> <span class="nav-text">进程诞生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程诞生"><span class="nav-number">2.4.</span> <span class="nav-text">线程诞生</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程和进程的关系"><span class="nav-number">3.</span> <span class="nav-text">线程和进程的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程和进程的区别"><span class="nav-number">4.</span> <span class="nav-text">线程和进程的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-和-多线程"><span class="nav-number">5.</span> <span class="nav-text">Java 和 多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Jvm-天然多线程验证"><span class="nav-number">5.1.</span> <span class="nav-text">Jvm 天然多线程验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#理解多线程"><span class="nav-number">6.</span> <span class="nav-text">理解多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程概念"><span class="nav-number">6.1.</span> <span class="nav-text">多线程概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程目的"><span class="nav-number">6.2.</span> <span class="nav-text">多线程目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阿姆达尔定律"><span class="nav-number">6.3.</span> <span class="nav-text">阿姆达尔定律</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程局限"><span class="nav-number">6.4.</span> <span class="nav-text">多线程局限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程的生活案例"><span class="nav-number">6.5.</span> <span class="nav-text">多线程的生活案例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#并发和并行"><span class="nav-number">7.</span> <span class="nav-text">并发和并行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#并发和并行的前提"><span class="nav-number">7.1.</span> <span class="nav-text">并发和并行的前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理清两者概念"><span class="nav-number">7.2.</span> <span class="nav-text">理清两者概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#并发"><span class="nav-number">7.2.1.</span> <span class="nav-text">并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并行"><span class="nav-number">7.2.2.</span> <span class="nav-text">并行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#两者关系"><span class="nav-number">7.2.3.</span> <span class="nav-text">两者关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提问：并发程序一定是并行的么？"><span class="nav-number">7.3.</span> <span class="nav-text">提问：并发程序一定是并行的么？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#高并发和多线程关系"><span class="nav-number">8.</span> <span class="nav-text">高并发和多线程关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#高并发的性能指标"><span class="nav-number">9.</span> <span class="nav-text">高并发的性能指标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#同步和异步-阻塞和非阻塞"><span class="nav-number">10.</span> <span class="nav-text">同步和异步&#x2F;阻塞和非阻塞</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#同步和异步"><span class="nav-number">10.1.</span> <span class="nav-text">同步和异步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#同步"><span class="nav-number">10.1.1.</span> <span class="nav-text">同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异步"><span class="nav-number">10.1.2.</span> <span class="nav-text">异步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#案例：烧水壶、买书"><span class="nav-number">10.1.3.</span> <span class="nav-text">案例：烧水壶、买书</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阻塞和非阻塞"><span class="nav-number">10.2.</span> <span class="nav-text">阻塞和非阻塞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#综合案例"><span class="nav-number">10.3.</span> <span class="nav-text">综合案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#同步阻塞"><span class="nav-number">10.3.1.</span> <span class="nav-text">同步阻塞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步非阻塞"><span class="nav-number">10.3.2.</span> <span class="nav-text">同步非阻塞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异步阻塞"><span class="nav-number">10.3.3.</span> <span class="nav-text">异步阻塞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异步非阻塞"><span class="nav-number">10.3.4.</span> <span class="nav-text">异步非阻塞</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见问题汇总"><span class="nav-number">11.</span> <span class="nav-text">常见问题汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#线程和进程的相同与不同点"><span class="nav-number">11.1.</span> <span class="nav-text">线程和进程的相同与不同点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发和并发"><span class="nav-number">11.2.</span> <span class="nav-text">并发和并发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程的弊端"><span class="nav-number">11.3.</span> <span class="nav-text">多线程的弊端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高并发是否意味着多线程"><span class="nav-number">11.4.</span> <span class="nav-text">高并发是否意味着多线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同步、异步、阻塞、非阻塞"><span class="nav-number">11.5.</span> <span class="nav-text">同步、异步、阻塞、非阻塞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单核CPU上多线程的意义"><span class="nav-number">11.6.</span> <span class="nav-text">单核CPU上多线程的意义</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

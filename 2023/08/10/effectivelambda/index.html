@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Effective Lambda Expressions">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Java】Effective Lambda Expressions in Java">
+<meta property="og:url" content="https://whitestore.top/2023/08/10/effectivelambda/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Effective Lambda Expressions">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-10T08:53:42.000Z">
+<meta property="article:modified_time" content="2023-09-09T00:53:49.934Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Lambda">
+<meta property="article:tag" content="Expressions">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://whitestore.top/2023/08/10/effectivelambda/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Java】Effective Lambda Expressions in Java | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/08/10/effectivelambda/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Java】Effective Lambda Expressions in Java
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-08-10 16:53:42" itemprop="dateCreated datePublished" datetime="2023-08-10T16:53:42+08:00">2023-08-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/08/10/effectivelambda/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/08/10/effectivelambda/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>48k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>43 分钟</span>
+            </span>
+            <div class="post-description">Effective Lambda Expressions</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h2><p><span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL0BidWJ1LnRyaXBhdGh5L2VmZmVjdGl2ZS1sYW1iZGEtZXhwcmVzc2lvbnMtaW4tamF2YS0yZDQwNjFkZGU3N2E=" title="https://medium.com/@bubu.tripathy/effective-lambda-expressions-in-java-2d4061dde77a">Effective Lambda Expressions in Java | by Bubu Tripathy | Medium<i class="fa fa-external-link"></i></span></p>
+<h2 id="Introductory"><a href="#Introductory" class="headerlink" title="Introductory"></a>Introductory</h2><p>Lambda expressions were introduced in Java 8 to allow functional programming in Java. They are a concise way to express functions that can be used as data and provide a more functional approach to programming. Lambda expressions can be used in a variety of ways, from simple expressions to complex functions. In this article, we will discuss 20 best practices of using lambda expressions in Java with examples for each.</p>
+<a id="more"></a>
+
+<p>Lambda 表达式在 Java 8 中引入，允许在 Java 中进行函数式编程。Lambda表达式是表达可用作数据的函数的一种简洁方式，并为编程提供了一种功能性更强的方法。Lambda表达式的使用方式多种多样，从简单的表达式到复杂的函数。在本文中，我们将讨论在Java中使用lambda表达式的20个最佳实践，并分别举例说明。</p>
+<h2 id="Use-Lambda-expressions-to-create-functional-Interfaces-使用Lambda表达式创建功能接口"><a href="#Use-Lambda-expressions-to-create-functional-Interfaces-使用Lambda表达式创建功能接口" class="headerlink" title="Use Lambda expressions to create functional Interfaces 使用Lambda表达式创建功能接口"></a>Use Lambda expressions to create functional Interfaces 使用Lambda表达式创建功能接口</h2><p>A functional interface is an interface that contains a single abstract method. Functional interfaces are used extensively in Java to represent functions and Lambdas.</p>
+<p>功能接口是一个包含单个抽象方法的接口。<strong>功能接口</strong>在Java中广泛用于表示函数和Lambdas。</p>
+<blockquote>
+<p>When using Lambda expressions to create functional interfaces, the Lambda expression is used to define the implementation of the abstract method. The Lambda expression takes the same parameters as the abstract method, and returns a value that represents the result of the method.</p>
+<p>当时用Lambda 表达式创建功能接口的时候，Lambda 表达式用于定义抽象方法实现。Lambda 表达式接受和抽象方法相同的参数，并且返回代表方法结果的值。</p>
+</blockquote>
+<p>Here is an example of using Lambda expressions to create a functional interface for a calculator:</p>
+<p>下面是使用Lambda 表达式来创建功能接口计算器的案例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span>  </span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Calculator</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">calculate</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LambdaDemo</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        Calculator add = (a, b) -&gt; a + b;  </span><br><span class="line">        Calculator subtract = (a, b) -&gt; a - b;  </span><br><span class="line">  </span><br><span class="line">        System.out.println(<span class="string">"10 + 5 = "</span> + add.calculate(<span class="number">10</span>, <span class="number">5</span>));  </span><br><span class="line">        System.out.println(<span class="string">"10 - 5 = "</span> + subtract.calculate(<span class="number">10</span>, <span class="number">5</span>));  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to define the implementation of the <code>calculate()</code> method of the Calculator interface. The <code>calculate()</code> method takes two integer values as input (a and b), and returns an integer value representing the result of the calculation.</p>
+<p>在这个例子中，我们使用Lambda 表达式定义Calculator 接口的 <code>calculate()</code> 方法的实现。<code>calculate()</code> 方法接收两个整型参数作为输入（a 和 b），并且返回一个整型结果代表计算结果</p>
+<p>Note that in this example, we are using the <em>@FunctionalInterface</em> annotation to indicate that the Calculator interface is a functional interface. This annotation is not strictly necessary, but it can help to clarify the intent of the interface.</p>
+<p>注意在这个例子中我们使用了 <strong>@FunctionalInterface</strong>  注解指定在 Calculator 接口的接口方法上面。这个注解严格上来来说是<strong>非必要</strong>的， 但它有助于明确界面的意图。</p>
+<h2 id="Use-the-right-syntax-for-Lambda-Expressions-为Lambda表达式使用正确的语法"><a href="#Use-the-right-syntax-for-Lambda-Expressions-为Lambda表达式使用正确的语法" class="headerlink" title="Use the right syntax for Lambda Expressions 为Lambda表达式使用正确的语法"></a>Use the right syntax for Lambda Expressions 为Lambda表达式使用正确的语法</h2><p>When using Lambda expressions in Java, it is important to use the correct syntax for defining and using them. The syntax of a Lambda expression consists of three parts: the parameter list, the arrow operator, and the body.</p>
+<p>在Java中使用Lambda表达式， 使用正确的语法定义和使用它们非常重要的。Lambda表达式的语法由三部分组成：<strong>参数列表</strong>、<strong>箭头操作符</strong>和<strong>主体</strong>。</p>
+<p>The parameter list [specifies] the input parameters that the Lambda expression will take. If there are no parameters, an empty parameter list must still be specified, as shown here:</p>
+<p>参数列表指定了Lambda表达式将使用的输入参数，如果没有任何参数，一个空的参数化列表依然必须被指定，它的表现形式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">() -&gt; System.out.println(<span class="string">"Hello, world!"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>The arrow operator separates the parameter list from the body of the Lambda expression. The arrow operator can be either a hyphen and greater-than symbol (-&gt;), or the word “goes to” written as an equals sign followed by a greater-than symbol (=&gt;).</p>
+<p>箭头操作符将参数列表与Lambda表达式的主体分开，箭头运算符可以是<code>-</code>字符和大于号组合(-&gt;)，也可以是等号和大于号组合(=&gt;)。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// hyphen and greater-than symbol  </span></span><br><span class="line">x -&gt; x * x</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// equals sign followed by a greater-than symbol  </span></span><br><span class="line">(x, y) =&gt; x + y</span><br></pre></td></tr></table></figure>
+
+<p>The body of the Lambda expression specifies the behavior of the expression. The body can be a single expression, or a block of statements enclosed in braces. If the body is a single expression, the braces are optional.</p>
+<p>Lambda 表达式的主体指定表达式的行为，主题可以是一个单独的表达式，也可以是用大括号括起来的语句块，如果主体是单个表达式，则大括号是可选的。</p>
+<p>函数表达式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// single expression  </span></span><br><span class="line">x -&gt; x * x</span><br></pre></td></tr></table></figure>
+
+<p>语句块</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// block of statements  </span></span><br><span class="line">(x, y) -&gt; &#123;  </span><br><span class="line">    <span class="keyword">int</span> sum = x + y;  </span><br><span class="line">    System.out.println(<span class="string">"The sum is: "</span> + sum);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>It is also important to use the correct type for Lambda expressions when they are assigned to variables or parameters. When a Lambda expression is assigned to a variable or parameter, the type of the variable or parameter must be a functional interface that is compatible with the Lambda expression.</p>
+<p>当Lambda表达式设置变量或者参数的时候，使用正确的类型也是十分重要。当一个Lambda 表达式设置了变量或者参数，变量或参数必须是与<strong>Lambda表达式兼容的功能接口</strong>。</p>
+<p>For example, the following Lambda expression:</p>
+<p>比如下面这个函数表达式的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(x, y) -&gt; x + y</span><br></pre></td></tr></table></figure>
+
+<p>can be assigned to a variable of type <em>IntBinaryOperator</em>:</p>
+<p>这里只能够设置变量类型为 <em>IntBinaryOperator</em> ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IntBinaryOperator add = (x, y) -&gt; x + y;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Use-Lambda-expressions-to-implement-Functional-Programming-使用-Lambda-表达式实现函数式编程"><a href="#Use-Lambda-expressions-to-implement-Functional-Programming-使用-Lambda-表达式实现函数式编程" class="headerlink" title="Use Lambda expressions to implement Functional Programming 使用 Lambda 表达式实现函数式编程"></a>Use Lambda expressions to implement Functional Programming 使用 Lambda 表达式实现函数式编程</h2><p>Functional programming is a programming paradigm that emphasizes the use of functions and functional composition to solve problems. In Java, Lambda expressions can be used to implement functional programming by creating and using functions as first-class objects.</p>
+<p>函数式编程是一种编程范式，强调使用函数和函数组合来解决问题。在Java中，可以使用Lambda表达式来实现函数式编程，将函数作为头等对象来创建和使用。</p>
+<blockquote>
+<p>Functions in functional programming are defined by their behavior, rather than their implementation. This means that a function can be treated as an object, and passed around as a parameter or returned as a result. This is where Lambda expressions come in — they allow us to define functions as expressions, and pass them around as objects.</p>
+<p>函数式编程当中行为是通过具体行为而不是实现定义的，也就是说函数可以是对象，并且把参数传递作为结果返回。Lambda表达式的强大之处就在于此，可以把函数作为表达式，并且把对应的对象进行传递。</p>
+</blockquote>
+<p>Here is an example of using Lambda expressions to implement functional programming in Java:</p>
+<p>下面是使用Lambda表达式使Java实现函数式编程。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FunctionalProgrammingDemo</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>);  </span><br><span class="line">        numbers.stream()  </span><br><span class="line">            .filter(n -&gt; n % <span class="number">2</span> == <span class="number">0</span>)  </span><br><span class="line">            .map(n -&gt; n * n)  </span><br><span class="line">            .forEach(System.out::println);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using Lambda expressions to implement functional programming in Java. The code first creates a list of integers, and then uses a stream to process the list using functional operations.</p>
+<p>在本示例中，我们使用Lambda表达式在Java中实现函数式编程。代码首先创建一个整数列表，然后使用<code>stream</code>的函数式操作来处理该列表。</p>
+<p>The filter() operation uses a Lambda expression to define a predicate that filters out all odd numbers from the list. The map() operation uses another Lambda expression to define a function that squares each even number in the list. Finally, the <em>forEach()</em> operation uses a method reference to print each squared even number to the console.</p>
+<p><code>filter()</code> 操作使用 Lambda 表达式定义一个<code>predicate</code>，<code>predicate</code>中定义了过滤列表所有奇数的操作，<code>map()</code>操作使用另一个Lambda表达式定义一个函数，该函数将列表中的每个元素求平方，最后使用 forEach 的方式，把每个处理之后的数据打印出来。</p>
+<p>By using Lambda expressions to implement functional programming, you can create more expressive and modular code, and solve problems in a more concise and efficient way. Lambda expressions provide a powerful and flexible way to implement functional programming in Java and are a key feature of the Stream API in Java 8 and later versions.</p>
+<p>使用函数表达式实现函数式编程，你可以创建更多更具表现力和模块化的代码，解决问你也会更加的简单高效，Lambda表达his提供一个强大并且流畅的方法在Java中实现函数式编程，这是Java 8及更高版本中流API的关键特性。</p>
+<h2 id="Use-Lambda-expressions-to-create-Anonymous-Classes-使用-Lambda-表达式创建匿名类"><a href="#Use-Lambda-expressions-to-create-Anonymous-Classes-使用-Lambda-表达式创建匿名类" class="headerlink" title="Use Lambda expressions to create Anonymous Classes 使用 Lambda 表达式创建匿名类"></a>Use Lambda expressions to create Anonymous Classes 使用 Lambda 表达式创建匿名类</h2><p>Anonymous classes are often used in Java to create objects with a specific behavior, such as event listeners or runnable tasks.</p>
+<p>在Java中，匿名类通常用于创建具有特定行为的对象，如事件监听器或可运行任务。</p>
+<p>Lambda expressions can be used to create anonymous classes in Java. When using Lambda expressions to create anonymous classes, the Lambda expression is used to define the behavior of the anonymous class.</p>
+<p>Lambda表达式可用于在Java中创建匿名类。使用Lambda表达式创建匿名类时，Lambda表达式用于定义匿名类的行为。</p>
+<p>Here is an example of using Lambda expressions to create an anonymous class that implements the Runnable interface:</p>
+<p>下面是一个使用Lambda表达式创建一个实现Runnable接口的匿名类的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnonymousClassDemo</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        Runnable runnable = () -&gt; &#123;  </span><br><span class="line">            System.out.println(<span class="string">"Hello from anonymous class!"</span>);  </span><br><span class="line">        &#125;;  </span><br><span class="line">        Thread thread = <span class="keyword">new</span> Thread(runnable);  </span><br><span class="line">        thread.start();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to create an anonymous class that implements the Runnable interface. The code first defines a Lambda expression that simply prints a message to the console. This Lambda expression is then used to create an anonymous class that implements the Runnable interface. Finally, the anonymous class is passed to a Thread object and started.</p>
+<p>在这个案例中，我们通过Lambda表达式创建Runnable的匿名类，代码首先定义了一个Lambda表达式，该表达式简单地向控制台打印一条消息。然后使用该Lambda表达式创建一个实现Runnable接口的匿名类。最后，匿名类被传递给Thread对象并启动。</p>
+<p>Note that in this example, we are using a Lambda expression with a block of statements enclosed in braces. This is because the Runnable interface has a single abstract method, run(), that takes no arguments and returns no value. Therefore, the Lambda expression must define the behavior of the run() method using a block of statements.</p>
+<p>请注意，在本示例中，我们使用的是一个Lambda表达式，其中的语句块用大括号括起来。这是因为<strong>Runnable接口只有一个抽象方法run()</strong>，它不需要参数也不返回值。因此，Lambda表达式必须使用语句块来定义run()方法的行为。</p>
+<h2 id="Use-Lambda-expressions-to-create-Event-Listeners-使用-Lambda-表达式创建事件监听器"><a href="#Use-Lambda-expressions-to-create-Event-Listeners-使用-Lambda-表达式创建事件监听器" class="headerlink" title="Use Lambda expressions to create Event Listeners 使用 Lambda 表达式创建事件监听器"></a>Use Lambda expressions to create Event Listeners 使用 Lambda 表达式创建事件监听器</h2><p>Event listeners are used in Java to handle events that occur in a user interface or other system. Events can include things like button clicks, mouse movements, and keyboard inputs.</p>
+<p>Java中的事件监听器用于处理用户界面或其他系统中发生的事件。</p>
+<p>事件包括按钮点击、鼠标移动和键盘输入等。</p>
+<blockquote>
+<p>When using Lambda expressions to implement event listeners, the Lambda expression is used to define the behavior that should be executed when the event occurs. The Lambda expression takes an event object as input, and performs some action based on the event.</p>
+<p>当我们使用Lambda表达式实现事件监听器，通常需要用于定义事件发生时应执行的行为。Lambda表达式接收一个事件对象作为输入，并且根据事件的执行某些操作。</p>
+</blockquote>
+<p>Here is an example of using Lambda expressions to implement an event listener for a button click:</p>
+<p>下面是一个使用 Lambda 表达式实现按钮点击事件监听器的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ButtonDemo</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        JButton button = <span class="keyword">new</span> JButton(<span class="string">"Click me!"</span>);  </span><br><span class="line">        button.addActionListener(event -&gt; System.out.println(<span class="string">"Button clicked!"</span>));  </span><br><span class="line">        JFrame frame = <span class="keyword">new</span> JFrame();  </span><br><span class="line">        frame.add(button);  </span><br><span class="line">        frame.pack();  </span><br><span class="line">        frame.setVisible(<span class="keyword">true</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to define the behavior that should be executed when the button is clicked. The addActionListener() method of the JButton class takes a ActionListener object as input, which is implemented as a Lambda expression in this case. The Lambda expression simply prints a message to the console when the button is clicked.</p>
+<p>在本示例中，我们使用Lambda表达式来定义点击按钮时应执行的行为。JButton类的addActionListener()方法将ActionListener对象作为输入，在本例中以Lambda表达式的形式实现。当按钮被点击时，Lambda表达式简单地向控制台打印一条消息。</p>
+<p>Note that in this example, we are using the “arrow” notation (-&gt;) to separate the parameter list from the body of the Lambda expression. The parameter list consists of a single event object, which represents the button click event. The body of the Lambda expression simply prints a message to the console.</p>
+<p>请注意，在本例中，我们使用了 “箭头 “符号 (-&gt;) 来分隔参数列表和 Lambda 表达式的主体。参数列表由单个字符串值组成，代表列表中的每个字符串。Lambda 表达式的主体只是将字符串打印到控制台。</p>
+<h2 id="Use-Lambda-expressions-to-Iterate-over-Collections-使用-Lambda-表达式遍历集合"><a href="#Use-Lambda-expressions-to-Iterate-over-Collections-使用-Lambda-表达式遍历集合" class="headerlink" title="Use Lambda expressions to Iterate over Collections 使用 Lambda 表达式遍历集合"></a>Use Lambda expressions to Iterate over Collections 使用 Lambda 表达式遍历集合</h2><p>Iterating over collections is a common operation in Java, and Lambda expressions can be used to simplify and streamline this process. When using Lambda expressions to iterate over collections, the Lambda expression is used to define the behavior that should be executed for each element in the collection.</p>
+<p>在 Java 中，遍历集合是一种常见操作，而 Lambda 表达式可用于简化和精简这一过程。使用 Lambda 表达式遍历集合时，Lambda 表达式用于定义应针对集合中的每个元素执行的行为。</p>
+<p>Here is an example of using Lambda expressions to iterate over a list of strings and print each string to the console:</p>
+<p>下面是一个使用 Lambda 表达式遍历字符串列表并将每个字符串打印到控制台的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; strings = Arrays.asList(<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>);  </span><br><span class="line">strings.forEach(s -&gt; System.out.println(s));</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using the forEach() method of the List interface to iterate over a list of strings. The forEach() method takes a Consumer object as input, which is implemented as a Lambda expression in this case. The Lambda expression simply prints each string to the console.</p>
+<p>在本示例中，我们使用 List 接口的 forEach() 方法遍历字符串列表。forEach()方法将Consumer对象作为输入，在本例中以Lambda表达式的形式实现。Lambda 表达式简单地将每个字符串打印到控制台。</p>
+<p>Note that in this example, we are using the “arrow” notation (-&gt;) to separate the parameter list from the body of the Lambda expression. The parameter list consists of a single string value, which represents each string in the list. The body of the Lambda expression simply prints the string to the console.</p>
+<p>请注意，在本例中，我们使用了 “箭头 “符号 (-&gt;) 来分隔参数列表和 Lambda 表达式的主体。参数列表由单个字符串值组成，代表列表中的每个字符串。Lambda 表达式的主体只是将字符串打印到控制台。</p>
+<p>Here is another example of using Lambda expressions to iterate over a map of key-value pairs and print each pair to the console:</p>
+<p>下面是另一个使用 Lambda 表达式遍历键值对映射并将每一对键值对打印到控制台的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();  </span><br><span class="line">map.put(<span class="string">"apple"</span>, <span class="number">1</span>);  </span><br><span class="line">map.put(<span class="string">"banana"</span>, <span class="number">2</span>);  </span><br><span class="line">map.put(<span class="string">"cherry"</span>, <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">map.forEach((k, v) -&gt; System.out.println(k + <span class="string">" -&gt; "</span> + v));</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using the <em>forEach()</em> method of the Map interface to iterate over a map of key-value pairs. The forEach() method takes a <em>BiConsumer</em> object as input, which is implemented as a Lambda expression in this case. The Lambda expression takes two parameters, a key and a value, and simply prints each key-value pair to the console.</p>
+<p>在本例中，我们使用 <code>Map</code> 接口的 <em>forEach()</em> 方法遍历键值对映射。forEach()方法将 <em>BiConsumer</em> 对象作为输入，在本例中是以 Lambda 表达式的形式实现的。</p>
+<p>Lambda 表达式接收两个参数，一个键和一个值，并简单地将每个键值对打印到控制台。</p>
+<p>Note that in this example, we are using the “arrow” notation (-&gt;) to separate the parameter list from the body of the Lambda expression. The parameter list consists of two values, a key and a value, which represent each key-value pair in the map. The body of the Lambda expression simply prints the key-value pair to the console.</p>
+<p>请注意，在这个示例中，我们使用了 “箭头 “符号 (-&gt;) 来分隔参数列表和 Lambda 表达式的主体。参数列表由两个值（一个 key 和一个 value）组成，分别代表 map 中的每个键值对。Lambda 表达式的主体只是将键值对打印到控制台。</p>
+<h2 id="Use-Lambda-expressions-to-Filter-Collections-使用-Lambda-表达式过滤集合"><a href="#Use-Lambda-expressions-to-Filter-Collections-使用-Lambda-表达式过滤集合" class="headerlink" title="Use Lambda expressions to Filter Collections 使用 Lambda 表达式过滤集合"></a>Use Lambda expressions to Filter Collections 使用 Lambda 表达式过滤集合</h2><p>Filtering collections is a common operation in Java, and Lambda expressions can be used to simplify and streamline this process. When using Lambda expressions to filter collections, the Lambda expression is used to define a predicate that selects which elements in the collection should be included or excluded.</p>
+<p>过滤集合是 Java 中的一种常见操作，而 Lambda 表达式可用于简化和精简这一过程。使用 Lambda 表达式过滤集合时，Lambda 表达式用于定义一个谓词，该谓词用于选择应包含或排除集合中的哪些元素。</p>
+<p>Here is an example of using Lambda expressions to filter a list of integers and create a new list that contains only the even numbers:</p>
+<p>下面是一个使用 Lambda 表达式过滤整数列表并创建一个只包含偶数的新列表的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>);  </span><br><span class="line">List&lt;Integer&gt; evenNumbers = numbers.stream()  </span><br><span class="line">                                    .filter(n -&gt; n % <span class="number">2</span> == <span class="number">0</span>)  </span><br><span class="line">                                    .collect(Collectors.toList());  </span><br><span class="line">System.out.println(evenNumbers);</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using the filter() method of the Stream interface to filter a list of integers. The filter() method takes a predicate as input, which is implemented as a Lambda expression in this case. The Lambda expression defines a predicate that tests whether a number is even or not by checking if its remainder is zero when divided by two.</p>
+<p>在本例中，我们使用流接口的 filter() 方法过滤整数列表。filter() 方法将一个谓词作为输入，在本例中以 Lambda 表达式的形式实现。Lambda 表达式定义了一个谓词，该谓词通过检查一个数字除以 2 后的余数是否为零来检验该数字是否为偶数。</p>
+<p>Note that in this example, we are using the “arrow” notation (-&gt;) to separate the parameter list from the body of the Lambda expression. The parameter list consists of a single integer value, which represents each element in the stream. The body of the Lambda expression is a boolean expression that defines the predicate.</p>
+<p>请注意，在这个示例中，我们使用了 “箭头 “符号 (-&gt;) 来分隔参数列表和 Lambda 表达式的主体。参数列表由单个整数值组成，代表流中的每个元素。Lambda 表达式的主体是定义谓词的布尔表达式。</p>
+<p>The filtered elements are then collected into a new list using the collect() method of the Stream interface, which takes a Collector object as input. The Collector object in this case is the toList() method of the Collectors class, which creates a new list of the filtered elements.</p>
+<p>然后，使用流接口的 collect() 方法将过滤后的元素收集到一个新的列表中，该方法将收集器对象作为输入。本例中的收集器对象是收集器类的 toList() 方法，它将创建一个包含过滤元素的新列表。</p>
+<h2 id="Use-Lambda-expressions-to-Sort-Collections-使用-Lambda-表达式对集合进行排序"><a href="#Use-Lambda-expressions-to-Sort-Collections-使用-Lambda-表达式对集合进行排序" class="headerlink" title="Use Lambda expressions to Sort Collections 使用 Lambda 表达式对集合进行排序"></a>Use Lambda expressions to Sort Collections 使用 Lambda 表达式对集合进行排序</h2><p>Sorting is the process of arranging the elements of a collection in a specific order. In Java, collections can be sorted using the <em>sorted()</em> method of the Stream API.</p>
+<p>排序是将集合中的元素按特定顺序排列的过程。在Java中，可以使用流API的 <em>sorted()</em> 方法对集合进行排序。 </p>
+<blockquote>
+<p>When using Lambda expressions to sort collections, the Lambda expression is used to define the <em>order</em> in which the elements should be sorted. </p>
+<p>使用 Lambda 表达式对集合进行排序时，Lambda 表达式用于定义元素的排序顺序。</p>
+<p>The Lambda expression takes two elements from the collection as input, and returns an integer value indicating their relative order. </p>
+<p>Lambda 表达式将集合中的两个元素作为输入，并返回一个整数值，表示它们的相对顺序。</p>
+<p>If the first element should come before the second element in the sorted collection, the Lambda expression returns a negative integer. </p>
+<p>如果在排序集合中，第一个元素应在第二个元素之前，则 Lambda 表达式会返回一个负整数。</p>
+<p>If the first element should come after the second element, the Lambda expression returns a positive integer. If the two elements are equal, the Lambda expression returns zero.</p>
+<p>如果第一个元素位于第二个元素之后，则 Lambda 表达式返回一个正整数。如果两个元素相等，则 Lambda 表达式返回 0。</p>
+</blockquote>
+<p>Here is an example of using Lambda expressions to sort a list of integers:</p>
+<p>下面是一个使用 Lambda 表达式对整数列表进行排序的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">3</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">9</span>, <span class="number">2</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">3</span>, <span class="number">5</span>);  </span><br><span class="line">List&lt;Integer&gt; sortedNumbers = numbers.stream().sorted().collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to sort the list of integers in ascending order. The sorted() method uses this Lambda expression to create a new stream that contains the elements of the original list in sorted order.</p>
+<p>在这个示例中，我们使用 Lambda 表达式按升序对整数列表进行排序。</p>
+<p>sorted()方法使用该Lambda表达式创建一个新的流，其中包含按排序顺序排列的原始列表元素。</p>
+<p>Note that in this example, we are not explicitly defining a Lambda expression for the sorted() method. This is because the default behavior of the sorted() method is to sort the elements in natural order. However, you can also provide a custom Lambda expression to the sorted() method to define a custom sort order.</p>
+<p>请注意，在这个示例中，我们没有为 sorted() 方法明确定义一个 Lambda 表达式。这是因为 sorted() 方法的默认行为是按自然顺序对元素进行排序。</p>
+<p>不过，您也可以为 sorted() 方法提供自定义 Lambda 表达式，以定义自定义排序顺序。</p>
+<p>Here is an example of using a Lambda expression to sort a list of strings in descending order:</p>
+<p>下面是一个使用 Lambda 表达式对字符串列表进行降序排序的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; words = Arrays.asList(<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>, <span class="string">"date"</span>, <span class="string">"elderberry"</span>);  </span><br><span class="line">List&lt;String&gt; sortedWords = words.stream().sorted((a, b) -&gt; b.compareTo(a)).collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to sort the list of strings in descending order. The Lambda expression takes two strings as input, and returns the result of comparing the second string to the first string using the <em>compareTo()</em> method of the String class.</p>
+<p>在本例中，我们使用 Lambda 表达式对字符串列表进行降序排序。Lambda 表达式将两个字符串作为输入，并使用 String 类的 <em>compareTo()</em> 方法返回第二个字符串与第一个字符串的比较结果。</p>
+<h2 id="Use-Lambda-expressions-to-Map-Collections"><a href="#Use-Lambda-expressions-to-Map-Collections" class="headerlink" title="Use Lambda expressions to Map Collections"></a>Use Lambda expressions to Map Collections</h2><p>Mapping is the process of transforming one collection into another. In Java, collections can be mapped using the map() method of the Stream API.</p>
+<p>Map是将一个集合转换成另一个集合的过程。在 Java 中，可以使用流 API 的 map() 方法对集合进行映射。</p>
+<blockquote>
+<p>When using Lambda expressions to map collections, the Lambda expression is used to define the transformation that should be applied to each element in the collection. The Lambda expression takes an element from the collection as input and returns a new value that represents the transformed element.</p>
+<p>使用 Lambda 表达式映射集合时，Lambda 表达式用于定义应用于集合中每个元素的转换。Lambda 表达式将集合中的元素作为输入，并返回一个代表转换后元素的新值。</p>
+</blockquote>
+<p>Here is an example of using Lambda expressions to map a list of strings to a list of integers:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; strings = Arrays.asList(<span class="string">"1"</span>, <span class="string">"2"</span>, <span class="string">"3"</span>, <span class="string">"4"</span>, <span class="string">"5"</span>);  </span><br><span class="line">List&lt;Integer&gt; integers = strings.stream().map(Integer::parseInt).collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to map the list of strings to a list of integers. The Lambda expression applies the parseInt() method of the Integer class to each string in the list, converting it to an integer value. The map() method then uses this Lambda expression to create a new stream that contains the transformed elements.</p>
+<p>在本例中，我们使用 Lambda 表达式将字符串列表映射为整数列表。Lambda 表达式对列表中的每个字符串应用 Integer 类的 parseInt() 方法，将其转换为整数值。然后，map() 方法使用此 Lambda 表达式创建一个包含转换后元素的新流。</p>
+<p>Note that in this example, we are using the method reference notation (::) to refer to the parseInt() method of the Integer class. This is a shorthand notation for a Lambda expression that simply calls a single method.</p>
+<p>请注意，在本例中，我们使用方法引用符号（::）来引用 Integer 类的 parseInt() 方法。这是一个 Lambda 表达式的简写符号，只需调用一个方法即可。</p>
+<p>Here is another example of using a Lambda expression to map a list of strings to a list of uppercase strings:</p>
+<p>下面是另一个使用 <code>Lambda</code> 表达式将字符串列表映射为大写字符串列表的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; words = Arrays.asList(<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>, <span class="string">"date"</span>, <span class="string">"elderberry"</span>);  </span><br><span class="line">List&lt;String&gt; uppercaseWords = words.stream().map(s -&gt; s.toUpperCase()).collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to map the list of strings to a list of uppercase strings. The Lambda expression applies the toUpperCase() method of the String class to each string in the list, converting it to an uppercase string. The map() method then uses this Lambda expression to create a new stream that contains the transformed elements.</p>
+<p>在本例中，我们使用 Lambda 表达式将字符串列表映射为大写字符串列表。Lambda 表达式将 String 类的 toUpperCase() 方法应用于列表中的每个字符串，将其转换为大写字符串。然后，map() 方法使用此 Lambda 表达式创建一个包含转换后元素的新流。</p>
+<h2 id="Use-Lambda-expressions-to-Reduce-Collections-使用-Lambda-表达式精简集合"><a href="#Use-Lambda-expressions-to-Reduce-Collections-使用-Lambda-表达式精简集合" class="headerlink" title="Use Lambda expressions to Reduce Collections 使用 Lambda 表达式精简集合"></a>Use Lambda expressions to Reduce Collections 使用 Lambda 表达式精简集合</h2><p>Reducing is the process of applying an operation to all the elements of a collection to produce a single result. In Java, collections can be reduced using the reduce() method of the Stream API.</p>
+<p><code>Reducing</code> 是对集合中的所有元素进行操作以产生单一结果的过程。在 Java 中，可以使用流 API 的 <code>reduce()</code>方法对集合进行还原。</p>
+<blockquote>
+<p>When using Lambda expressions to reduce collections, the Lambda expression is used to define the operation that should be applied to each element in the collection. The Lambda expression takes two arguments as input: an accumulator and an element from the collection. The accumulator is the result of the previous operation, or an initial value if this is the first operation. The Lambda expression returns a new value that represents the result of applying the operation to the accumulator and the current element.</p>
+<p>使用 Lambda 表达式还原集合时，Lambda 表达式用于定义应用于集合中每个元素的操作。Lambda 表达式将两个参数作为输入：累加器和集合中的一个元素。累加器是前一次操作的结果，如果是第一次操作，则是初始值。Lambda 表达式返回一个新值，该值代表对累加器和当前元素应用操作的结果。</p>
+</blockquote>
+<p>Here is an example of using Lambda expressions to reduce a list of integers to a single sum:</p>
+<p>下面是一个使用 Lambda 表达式将整数列表简化为单个和的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>);  </span><br><span class="line"><span class="keyword">int</span> sum = numbers.stream().reduce(<span class="number">0</span>, (a, b) -&gt; a + b);</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to reduce the list of integers to a single sum. The Lambda expression takes two integer values as input: an accumulator (initialized to zero in this case), and an element from the list. The Lambda expression adds the element to the accumulator, and returns the new value of the <em>accumulator</em>. The reduce() method then uses this Lambda expression to apply the operation to each element in the list, producing the final sum.</p>
+<p>在本例中，我们使用 Lambda 表达式将整数列表还原为单个和。Lambda 表达式将两个整数值作为输入：一个累加器（本例中初始化为零）和列表中的一个元素。Lambda 表达式将元素加到累加器中，并返回_accumulator_的新值。然后，reduce() 方法使用此 Lambda 表达式对列表中的每个元素进行运算，得出最终总和。</p>
+<p>Note that in this example, we are using the “arrow” notation (-&gt;) to separate the parameter list  from the body of the Lambda expression. The parameter list consists of two integer values: the accumulator and the current element from the list. The body of the Lambda expression adds the current element to the accumulator using the + operator.</p>
+<p>请注意，在本例中，我们使用了 “箭头 “符号 (-&gt;) 来分隔参数列表和 Lambda 表达式的主体。参数列表由两个整数值组成：累加器和列表中的当前元素。Lambda 表达式的主体使用 + 运算符将当前元素添加到累加器中。</p>
+<p>Here is another example of using a Lambda expression to reduce a list of strings to a single concatenated string:</p>
+<p>下面是另一个使用 Lambda 表达式将字符串列表缩减为单个连接字符串的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; words = Arrays.asList(<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>, <span class="string">"date"</span>, <span class="string">"elderberry"</span>);  </span><br><span class="line">String concatenated = words.stream().reduce(<span class="string">""</span>, (a, b) -&gt; a + b);</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to reduce the list of strings to a single concatenated string. The Lambda expression takes two string values as input: an accumulator (initialized to an empty string in this case), and an element from the list. The Lambda expression concatenates the element to the accumulator, and returns the new value of the accumulator. The reduce() method then uses this Lambda expression to apply the operation to each element in the list, producing the final concatenated string.</p>
+<p>在本例中，我们使用 Lambda 表达式将字符串列表还原为单个连接字符串。Lambda 表达式将两个字符串值作为输入：一个累加器（本例中初始化为空字符串）和列表中的一个元素。Lambda 表达式将元素连接到累加器，并返回累加器的新值。然后，reduce() 方法使用此 Lambda 表达式对列表中的每个元素进行操作，生成最终的连接字符串。</p>
+<h2 id="Use-Lambda-expressions-to-Group-Collections-使用-Lambda-表达式对集合进行分组"><a href="#Use-Lambda-expressions-to-Group-Collections-使用-Lambda-表达式对集合进行分组" class="headerlink" title="Use Lambda expressions to Group Collections  使用 Lambda 表达式对集合进行分组"></a>Use Lambda expressions to Group Collections  使用 Lambda 表达式对集合进行分组</h2><p>Grouping is the process of grouping the elements of a collection based on a common property or criterion. In Java, collections can be grouped using the <em>groupingBy()</em> method of the Collectors class.</p>
+<p>分组是根据共同属性或标准对集合中的元素进行分组的过程。在 Java 中，可以使用 Collectors 类的 <em>groupingBy()</em> 方法对集合进行分组。</p>
+<blockquote>
+<p>When using Lambda expressions to group collections, the Lambda expression is used to define the criterion that should be used to group the elements. The Lambda expression takes an element from the collection as input, and returns a value that represents the grouping criterion.</p>
+<p>使用 Lambda 表达式对集合进行分组时，Lambda 表达式用于定义对元素进行分组的标准。Lambda 表达式将集合中的元素作为输入，并返回一个代表分组标准的值。</p>
+</blockquote>
+<p>Here is an example of using Lambda expressions to group a list of words by their length:</p>
+<p>下面是一个使用 Lambda 表达式按单词长度分组的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; words = Arrays.asList(<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>, <span class="string">"date"</span>, <span class="string">"elderberry"</span>);  </span><br><span class="line">Map&lt;Integer, List&lt;String&gt;&gt; groups = words.stream().collect(Collectors.groupingBy(String::length));</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to group the list of words by their length. The groupingBy() method uses this Lambda expression to create a map that groups the words by their length. The key of each entry in the map is an integer value representing the length of the words, and the value of each entry is a list of words with that length.</p>
+<p>在本例中，我们使用 <code>Lambda</code> 表达式按单词长度对单词列表进行分组。<code>groupingBy()</code> 方法使用此 <code>Lambda</code> 表达式创建一个按单词长度分组的映射。映射中每个条目的键是代表单词长度的整数值，每个条目的值是具有该长度的单词列表。</p>
+<p>Note that in this example, we are using the method reference notation (::) to refer to the length() method of the String class. This is a shorthand notation for a Lambda expression that simply calls a single method.</p>
+<p>请注意，在本例中，我们使用方法引用符号（<code>::</code>）来引用 <code>String</code> 类的 <code>length()</code> 方法。这是简单调用单个方法的 Lambda 表达式的速记符号。</p>
+<p>Here is another example of using a Lambda expression to group a list of employees by their department:</p>
+<p>下面是另一个使用 Lambda 表达式按部门对员工列表进行分组的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Employee&gt; employees = Arrays.asList(  </span><br><span class="line">    <span class="keyword">new</span> Employee(<span class="string">"Alice"</span>, <span class="string">"Sales"</span>),  </span><br><span class="line">    <span class="keyword">new</span> Employee(<span class="string">"Bob"</span>, <span class="string">"Marketing"</span>),  </span><br><span class="line">    <span class="keyword">new</span> Employee(<span class="string">"Charlie"</span>, <span class="string">"Sales"</span>),  </span><br><span class="line">    <span class="keyword">new</span> Employee(<span class="string">"Dave"</span>, <span class="string">"Marketing"</span>),  </span><br><span class="line">    <span class="keyword">new</span> Employee(<span class="string">"Eve"</span>, <span class="string">"HR"</span>)  </span><br><span class="line">);  </span><br><span class="line"></span><br><span class="line">Map&lt;String, List&lt;Employee&gt;&gt; groups = employees.stream().collect(Collectors.groupingBy(Employee::getDepartment));</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to group the list of employees by their department. The groupingBy() method uses this Lambda expression to create a map that groups the employees by their department. The key of each entry in the map is a string value representing the department of the employees, and the value of each entry is a list of employees in that department.</p>
+<p>在本例中，我们使用 Lambda 表达式按部门对员工列表进行分组。groupingBy()方法使用此 Lambda 表达式创建了一个按部门对员工进行分组的映射。映射中每个条目的键是代表员工部门的字符串值，每个条目的值是该部门的员工列表。</p>
+<h2 id="Use-Lambda-expressions-to-Handle-Exceptions-使用-Lambda-表达式处理异常"><a href="#Use-Lambda-expressions-to-Handle-Exceptions-使用-Lambda-表达式处理异常" class="headerlink" title="Use Lambda expressions to Handle Exceptions 使用 Lambda 表达式处理异常"></a>Use Lambda expressions to Handle Exceptions 使用 Lambda 表达式处理异常</h2><p>Lambda expressions can be used to handle checked exceptions in Java. Checked exceptions are a type of exception that must be declared in a method’s signature or handled by the caller. When using Lambda expressions to handle checked exceptions, the Lambda expression is used to define the behavior that should be executed in case of an exception, while still allowing the checked exception to be propagated up to the caller.</p>
+<p>Lambda 表达式可用于处理 Java 中的校验异常。校验异常是一种必须在方法签名中声明或由调用者处理的异常类型。使用 Lambda 表达式处理校验异常时，Lambda 表达式用于定义异常情况下应执行的行为，同时仍允许将校验异常传播给调用者。</p>
+<p>Here is an example of using Lambda expressions to handle a checked exception when reading a file:</p>
+<p>下面是一个使用 Lambda 表达式处理读取文件时已检查异常的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; lines = <span class="keyword">null</span>;  </span><br><span class="line"><span class="keyword">try</span> (BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> FileReader(<span class="string">"file.txt"</span>))) &#123;  </span><br><span class="line">    lines = reader.lines()  </span><br><span class="line">                  .map(line -&gt; &#123;  </span><br><span class="line">                      <span class="keyword">try</span> &#123;  </span><br><span class="line">                          <span class="keyword">return</span> process(line);  </span><br><span class="line">                      &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                          <span class="keyword">throw</span> <span class="keyword">new</span> UncheckedIOException(e);  </span><br><span class="line">                      &#125;  </span><br><span class="line">                  &#125;)  </span><br><span class="line">                  .collect(Collectors.toList());  </span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">    e.printStackTrace();  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">process</span><span class="params">(String line)</span> <span class="keyword">throws</span> IOException </span>&#123;  </span><br><span class="line">    <span class="comment">// process the line  </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using a Lambda expression to handle a checked exception when processing each line of a file. The code first creates a <em>BufferedReader</em> object that reads from a file named “file.txt”. The lines from the file are then processed using the map() method of the Stream interface. The map() method takes a Function object as input, which is implemented as a Lambda expression in this case. The Lambda expression calls the process() method to process each line, and catches any IOException that may occur. If an IOException occurs, the Lambda expression throws an UncheckedIOException, which is a runtime exception that wraps the original checked exception.</p>
+<p>在本示例中，我们使用 Lambda 表达式来处理处理文件每一行时检查到的异常。代码首先创建了一个 <em>BufferedReader</em> 对象，用于读取名为 “file.txt “的文件。</p>
+<p>然后使用 Stream 接口的 map() 方法处理文件中的行。</p>
+<p>map() 方法将一个 Function 对象作为输入，在本例中实现为一个 Lambda 表达式。Lambda 表达式调用 process() 方法处理每一行，并捕获可能出现的任何 IOException。</p>
+<p>如果出现 IO 异常，Lambda 表达式会抛出一个未检查的 IO 异常，这是一个运行时异常，它封装了原始的已检查异常。</p>
+<p>Note that in this example, we are using a Lambda expression with a block of statements enclosed in braces. This is because the <em>process()</em> method throws an <em>IOException</em>, which must be caught or re-thrown by the Lambda expression.</p>
+<p>请注意，在这个示例中，我们使用的是一个 Lambda 表达式和一个用大括号括起来的语句块。这是因为 <em>process()</em> 方法会抛出一个<em>IOException_，而 Lambda 表达式必须捕获或重新抛出这个 _IOException</em> 。</p>
+<p>By using Lambda expressions to handle checked exceptions, you can create more concise and readable code, and handle exceptions with greater flexibility and modularity. Lambda expressions provide a powerful and flexible way to handle checked exceptions in Java, and can be used in a wide range of scenarios, such as file I/O, network communication, and database access.</p>
+<p>通过使用 <code>Lambda</code> 表达式来处理校验异常，您可以创建更简洁、更易读的代码，并以更大的灵活性和模块化来处理异常。Lambda 表达式为在 Java 中处理检查异常提供了一种强大而灵活的方法，可用于文件 I/O、网络通信和数据库访问等多种场景。</p>
+<h2 id="Use-Lambda-expressions-to-Handle-Null-Values-使用-Lambda-表达式处理空值"><a href="#Use-Lambda-expressions-to-Handle-Null-Values-使用-Lambda-表达式处理空值" class="headerlink" title="Use Lambda expressions to Handle Null Values 使用 Lambda 表达式处理空值"></a>Use Lambda expressions to Handle Null Values 使用 Lambda 表达式处理空值</h2><p>In Java, NullPointerExceptions (NPEs) can often occur when dealing with null values. Lambda expressions can be used to handle null values in a more concise and expressive way, and to prevent <em>NullPointerExceptions</em> from occurring. Here is an example of using Lambda expressions to handle null values when filtering a list of strings:</p>
+<p>在 Java 中，处理空值时经常会出现 <code>NullPointerException（NPE）</code>。可以使用 Lambda 表达式以更简洁、更具表现力的方式处理空值，并防止发生 <em>NullPointerException</em> 异常。下面是一个在过滤字符串列表时使用 Lambda 表达式处理空值的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = Arrays.asList(<span class="string">"apple"</span>, <span class="keyword">null</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>, <span class="keyword">null</span>);  </span><br><span class="line">List&lt;String&gt; filteredList = list.stream()  </span><br><span class="line">                                .filter(s -&gt; s != <span class="keyword">null</span>)  </span><br><span class="line">                                .collect(Collectors.toList());  </span><br><span class="line">System.out.println(filteredList);</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we are using the <em>filter()</em> method of the Stream interface to filter a list of strings. The filter() method takes a Predicate object as input, which is implemented as a Lambda expression in this case. The Lambda expression defines a predicate that tests whether a string is not null.</p>
+<p>在本例中，我们使用 Stream 接口的 <em>filter()</em> 方法过滤字符串列表。filter()方法将一个谓词对象作为输入，在本例中是以 Lambda 表达式的形式实现的。Lambda 表达式定义了一个谓词，用于测试字符串是否为空。</p>
+<p>Note that in this example, we are using the != operator to test for null values. This is because the null value is not equal to any other value, including null itself.</p>
+<p>请注意，在本例中，我们使用 != 操作符来测试空值。这是因为null值不等于任何其他值，包括null值本身。</p>
+<h2 id="Use-Lambda-expressions-to-perform-Parallel-Operations-使用-Lambda-表达式执行并行操作"><a href="#Use-Lambda-expressions-to-perform-Parallel-Operations-使用-Lambda-表达式执行并行操作" class="headerlink" title="Use Lambda expressions to perform Parallel Operations 使用 Lambda 表达式执行并行操作"></a>Use Lambda expressions to perform Parallel Operations 使用 Lambda 表达式执行并行操作</h2><p>Lambda expressions are anonymous functions in Java that can be used to perform a variety of operations, including parallel operations.</p>
+<p>Lambda 表达式是 Java 中的匿名函数（但是细节上和真正的匿名函数不一样），可用于执行各种操作，包括并行操作。</p>
+<blockquote>
+<p>Parallelism refers to the ability to perform multiple operations simultaneously, thereby reducing the amount of time it takes to complete a task. In Java, parallelism can be achieved using the Stream API and lambda expressions.</p>
+<p>并行性是指同时执行多个操作的能力，从而减少完成任务所需的时间。在 Java 中，可以使用流 API 和 lambda 表达式来实现并行性</p>
+</blockquote>
+<p>The Stream API provides a <em>parallelStream()</em> method that allows you to create parallel streams. Streams are collections of objects that can be processed sequentially or in parallel. By default, streams are processed sequentially, but you can use the <em>parallelStream()</em> method to process them in parallel.</p>
+<p>流 API 提供了一个 <em>parallelStream()</em> 方法，允许您创建并行流。</p>
+<p>流是可以按顺序或并行处理的对象集合。默认情况下，流是按顺序处理的，但您可以使用 <em>parallelStream()</em> 方法并行处理它们。</p>
+<p>To use lambda expressions to perform parallel operations, you first need to create a stream using the parallelStream() method. You can then use lambda expressions to define the operations that are performed on the elements of the stream. <strong>The Stream API will automatically split the stream into multiple substreams and distribute them across multiple threads, allowing the operations to be performed in parallel.</strong></p>
+<p>要使用 lambda 表达式执行并行操作，首先需要使用 parallelStream() 方法创建一个流。然后，就可以使用 lambda 表达式定义对流元素执行的操作。 **流 API 会自动将流拆分成多个子流，并将它们分配给多个线程，从而允许并行执行操作。</p>
+<p>Here’s an example of using lambda expressions to perform a parallel operation:</p>
+<p>下面是一个使用 lambda 表达式执行并行操作的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>);  </span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> sum = numbers.parallelStream()  </span><br><span class="line">                .filter(n -&gt; n % <span class="number">2</span> == <span class="number">0</span>)  </span><br><span class="line">                .mapToInt(n -&gt; n)  </span><br><span class="line">                .sum();</span><br></pre></td></tr></table></figure>
+
+<h2 id="Use-Lambda-expressions-to-create-Custom-Collectors-使用-Lambda-表达式创建自定义收集器"><a href="#Use-Lambda-expressions-to-create-Custom-Collectors-使用-Lambda-表达式创建自定义收集器" class="headerlink" title="Use Lambda expressions to create Custom Collectors  使用 Lambda 表达式创建自定义收集器"></a>Use Lambda expressions to create Custom Collectors  使用 Lambda 表达式创建自定义收集器</h2><p>A collector is an operation that can be performed on a stream to accumulate the elements of the stream into a final result. Collectors are used with the <em>collect()</em> method of the Stream interface.</p>
+<p>收集器是一种可在流上执行的操作，用于将流的元素累加为最终结果。收集器与流接口的 <em>collect()</em> 方法一起使用。</p>
+<blockquote>
+<p>Java provides a number of built-in collectors that perform common operations like grouping elements, counting elements, and calculating averages. However, you can also create your own custom collectors using lambda expressions.</p>
+<p>Java 提供了许多内置收集器，可执行分组元素、计数元素和计算平均值等常见操作。<br>不过，您也可以使用 lambda 表达式创建自己的自定义收集器。</p>
+</blockquote>
+<p>To create a custom collector using lambda expressions, you need to define a new class that implements the <em>Collector</em> interface. The Collector interface has four methods that you need to implement:</p>
+<p>要使用 lambda 表达式创建自定义收集器，需要定义一个实现 <em>Collector</em> 接口的新类。收集器接口有四个方法需要实现：</p>
+<ul>
+<li><p>The <em>supplier()</em> method returns a function that creates a new mutable result container.</p>
+</li>
+<li><p>The <em>accumulator()</em> method returns a function that adds an element to the result container.</p>
+</li>
+<li><p>The <em>combiner()</em> method returns a function that combines two result containers.</p>
+</li>
+<li><p>The <em>finisher()</em> method returns a function that performs a final transformation on the result container.</p>
+</li>
+<li><p>_supplier()_： 方法返回一个函数，用于创建一个新的可变结果容器。</p>
+</li>
+<li><p>_Accumulator()_：  方法返回一个将元素添加到结果容器的函数。</p>
+</li>
+<li><p>_combiner()_：方法返回一个将两个结果容器组合在一起的函数。</p>
+</li>
+<li><p>_finisher()_： 方法返回一个对结果容器执行最终转换的函数。</p>
+</li>
+</ul>
+<p>Here’s an example of creating a custom collector that calculates the average of a stream of integers:</p>
+<p>下面是一个创建自定义收集器的示例，用于计算整数流的平均值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public class AverageCollector implements Collector&lt;Integer, int[], Double&gt; &#123;  </span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> Supplier&lt;<span class="keyword">int</span>[]&gt; supplier() &#123;  </span><br><span class="line">        <span class="keyword">return</span> () -&gt; <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> BiConsumer&lt;<span class="keyword">int</span>[], Integer&gt; accumulator() &#123;  </span><br><span class="line">        <span class="keyword">return</span> (acc, val) -&gt; &#123;  </span><br><span class="line">            acc[<span class="number">0</span>] += val;  </span><br><span class="line">            acc[<span class="number">1</span>]++;  </span><br><span class="line">        &#125;;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> BinaryOperator&lt;<span class="keyword">int</span>[]&gt; combiner() &#123;  </span><br><span class="line">        <span class="keyword">return</span> (acc1, acc2) -&gt; &#123;  </span><br><span class="line">            acc1[<span class="number">0</span>] += acc2[<span class="number">0</span>];  </span><br><span class="line">            acc1[<span class="number">1</span>] += acc2[<span class="number">1</span>];  </span><br><span class="line">            <span class="keyword">return</span> acc1;  </span><br><span class="line">        &#125;;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> Function&lt;<span class="keyword">int</span>[], Double&gt; finisher() &#123;  </span><br><span class="line">        <span class="keyword">return</span> acc -&gt; ((<span class="keyword">double</span>) acc[<span class="number">0</span>]) / acc[<span class="number">1</span>];  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Set&lt;Characteristics&gt; <span class="title">characteristics</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> Collections.emptySet();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we define a new class called <em>AverageCollector</em> that implements the Collector interface. The <em>supplier()</em> method returns a function that creates a new integer array with two elements to store the sum and count of the elements in the stream. </p>
+<p>在本例中，我们定义了一个名为 <em>AverageCollector</em> 的新类，该类实现了收集器接口。<em>supplier()</em> 方法返回一个函数，用于创建一个包含两个元素的新整数数组，用于存储数据流中元素的总和与计数。</p>
+<p>The accumulator() method returns a function that adds each element to the sum and increments the count. The <em>combiner()</em> method returns a function that combines two integer arrays by adding their corresponding elements. The <em>finisher()</em> method returns a function that calculates the average by dividing the sum by the count. Finally, the <em>characteristics()</em> method returns an empty set because this collector does not have any special characteristics.</p>
+<p>累加器()方法返回一个将每个元素加到总和中并递增计数的函数。<em>combiner()</em> 方法返回一个函数，该函数通过将两个整数数组中的相应元素相加来合并两个数组。<em>finisher()</em> 方法返回一个函数，通过用总和除以计数来计算平均值。最后，<em>characteristics()</em> 方法返回空集，因为该收集器没有任何特殊特征。</p>
+<p>Once you’ve defined your custom collector, you can use it with the collect() method of the Stream interface like this:</p>
+<p>一旦定义了自定义收集器，就可以像这样将其与 Stream 接口的 collect() 方法结合使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> average = numbers.stream()  </span><br><span class="line">                        .collect(<span class="keyword">new</span> AverageCollector());</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we create a stream of integers and use the collect() method with our custom AverageCollector to calculate the average of the integers in the stream. The lambda expressions we defined in the AverageCollector class are used to perform the accumulation and transformation operations.</p>
+<p>在本例中，我们创建了一个整数流，并使用带有自定义 AverageCollector 的 collect() 方法计算流中整数的平均值。我们在 AverageCollector 类中定义的 lambda 表达式用于执行累加和转换操作。</p>
+<h2 id="Use-Lambda-expressions-to-create-Higher-order-Functions-使用-Lambda-表达式创建高阶函数"><a href="#Use-Lambda-expressions-to-create-Higher-order-Functions-使用-Lambda-表达式创建高阶函数" class="headerlink" title="Use Lambda expressions to create Higher-order Functions 使用 Lambda 表达式创建高阶函数"></a>Use Lambda expressions to create Higher-order Functions 使用 Lambda 表达式创建高阶函数</h2><p>A higher-order function is a function that takes one or more functions as arguments and/or returns a function as its result. Lambda expressions can be used to create functions that take other functions as arguments or return functions as results.</p>
+<p>高阶函数是将一个或多个函数作为参数和/或将一个函数作为结果返回的函数。Lambda 表达式可用于创建将其他函数作为参数或将函数作为结果返回的函数。</p>
+<blockquote>
+<p>To create a higher-order function using lambda expressions, you can define a method that takes a functional interface as a parameter or return value. A functional interface is an interface that has exactly one abstract method and is annotated with the @FunctionalInterface annotation.</p>
+<p>要使用 lambda 表达式创建高阶函数，可以定义一个将功能接口作为参数或返回值的方法。功能接口是一个拥有一个抽象方法并使用 @FunctionalInterface 注解的接口。</p>
+</blockquote>
+<p>Here’s an example of creating a higher-order function that takes a function as an argument:</p>
+<p>下面是一个创建以函数为参数的高阶函数的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span>  </span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">BinaryOperator</span>&lt;<span class="title">T</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="function">T <span class="title">apply</span><span class="params">(T t1, T t2)</span></span>;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">BinaryOperator&lt;T&gt; <span class="title">compose</span><span class="params">(BinaryOperator&lt;T&gt; op1, BinaryOperator&lt;T&gt; op2)</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> (x, y) -&gt; op1.apply(op2.apply(x, y), y);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we define a functional interface called <em>BinaryOperator</em> that has an <em>apply()</em> method that takes two arguments and returns a result. We then define a static method called <em>compose()</em> that takes two BinaryOperator functions as arguments and returns a new BinaryOperator function that composes the two input functions.</p>
+<p>在本例中，我们定义了一个名为 <em>BinaryOperator</em> 的函数接口，它有一个 <em>apply()</em> 方法，该方法接收两个参数并返回一个结果。然后，我们定义了一个名为 <em>compose()</em> 的静态方法，该方法接收两个 <strong>BinaryOperator</strong> 函数作为参数，并返回一个新的 <strong>BinaryOperator</strong> 函数，该函数将两个输入函数合成。</p>
+<p>The <em>compose()</em> method takes two BinaryOperator functions as arguments, op1 and op2. It then returns a new BinaryOperator function that applies op1 to the result of applying op2 to its arguments. The lambda expression (x, y) -&gt; op1.apply(op2.apply(x, y), y) defines the new BinaryOperator function. The first argument of the lambda expression (x) is the result of applying op2 to the original arguments, and the second argument (y) is the second original argument.</p>
+<p><em>compose()</em> 方法将 op1 和 op2 这两个二进制操作符函数作为参数。然后，它返回一个新的二进制操作符函数，该函数将 op1 应用于将 op2 应用于其参数的结果。lambda 表达式<code>(x, y) -&gt; op1.apply(op2.apply(x, y), y)</code> 定义了新的二元运算符函数。lambda 表达式的第一个参数 (x) 是将 op2 应用于原始参数的结果，第二个参数 (y) 是第二个原始参数。</p>
+<p>Here’s an example of using the compose() method to compose two BinaryOperator functions:</p>
+<p>下面是一个使用 <code>compose()</code> 方法组合两个 <code>BinaryOperator</code> 函数的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BinaryOperator&lt;Integer&gt; add = (x, y) -&gt; x + y;  </span><br><span class="line">BinaryOperator&lt;Integer&gt; multiply = (x, y) -&gt; x * y;  </span><br><span class="line"></span><br><span class="line">BinaryOperator&lt;Integer&gt; composed = compose(add, multiply);  </span><br><span class="line"></span><br><span class="line">System.out.println(composed.apply(<span class="number">2</span>, <span class="number">3</span>)); <span class="comment">// Output: 8</span></span><br></pre></td></tr></table></figure>
+
+<p>In this example, we define two BinaryOperator functions: add, which adds its two arguments, and multiply, which multiplies its two arguments. We then use the compose() method to create a new BinaryOperator function that first multiplies its arguments and then adds the result. We test the composed function by applying it to the values 2 and 3, which should result in 8.</p>
+<p>在本例中，我们定义了两个 BinaryOperator 函数：add 和 multiply，前者用于将两个参数相加，后者用于将两个参数相乘。然后，我们使用 compose() 方法创建一个新的 BinaryOperator 函数，首先乘以参数，然后将结果相加。我们对组成的函数进行测试，将其应用于数值 2 和 3，结果应为 8。</p>
+<p>Lambda expressions can also be used to create higher-order functions that return functions as results. Here’s an example of creating a higher-order function that returns a UnaryOperator function:</p>
+<p>Lambda 表达式还可用于创建高阶函数，将函数作为结果返回。下面是创建返回 UnaryOperator 函数的高阶函数的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span>  </span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">UnaryOperator</span>&lt;<span class="title">T</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="function">T <span class="title">apply</span><span class="params">(T t)</span></span>;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">UnaryOperator&lt;T&gt; <span class="title">addValue</span><span class="params">(T value)</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> x -&gt; x + value;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we define a functional interface called UnaryOperator that has an apply() method that takes one argument and returns a result. We then define a static method called addValue() that takes a value of type T and returns a new UnaryOperator function that adds the value to its argument.</p>
+<p>在本例中，我们定义了一个名为 UnaryOperator 的函数接口，它有一个 apply() 方法，该方法接收一个参数并返回一个结果。然后，我们定义了一个名为 addValue() 的静态方法，该方法接收一个 T 类型的值，并返回一个新的 UnaryOperator 函数，将值添加到其参数中。</p>
+<p>The addValue() method returns a lambda expression that defines the new UnaryOperator function. The lambda expression x -&gt; x + value takes one argument (x) and adds the value to it.</p>
+<p><code>addValue()</code> 方法返回一个 lambda 表达式，该表达式定义了新的 <code>UnaryOperator</code> 函数。lambda 表达式<code>x -&gt; x + value</code> 接收一个参数<code>（x）</code>并将值添加到参数中。</p>
+<p>Here’s an example of using the addValue() method to create a new UnaryOperator function:</p>
+<p>下面是一个使用 <code>addValue()</code> 方法创建新的 <code>UnaryOperator</code> 函数的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">UnaryOperator&lt;Integer&gt; add5 = addValue(<span class="number">5</span>);  </span><br><span class="line"></span><br><span class="line">System.out.println(add5.apply(<span class="number">2</span>)); <span class="comment">// Output: 7</span></span><br></pre></td></tr></table></figure>
+
+<p>In this example, we use the addValue() method to create a new UnaryOperator function that adds 5 to its argument. We assign the result to the add5 variable, which is now a function that adds 5 to its argument. We test the add5 function by applying it to the value 2, which should result in 7.</p>
+<p>在本例中，我们使用 addValue() 方法创建了一个新的 UnaryOperator 函数，将 5 添加到参数中。我们将结果赋值给 add5 变量，它现在是一个将 5 添入其参数的函数。我们对 add5 函数进行测试，将其应用于数值 2，结果应为 7。</p>
+<h2 id="Use-Lambda-expressions-to-create-Closures-使用-Lambda-表达式创建闭包"><a href="#Use-Lambda-expressions-to-create-Closures-使用-Lambda-表达式创建闭包" class="headerlink" title="Use Lambda expressions to create Closures 使用 Lambda 表达式创建闭包"></a>Use Lambda expressions to create Closures 使用 Lambda 表达式创建闭包</h2><p>A closure is a function that can access and modify variables in its enclosing scope. In other words, a closure “closes over” the variables in its enclosing scope and can use them as if they were local variables.</p>
+<p>闭包是一个可以访问和修改其外层作用域中变量的函数。换句话说，闭包 “关闭 “其外层作用域中的变量，并能像使用局部变量一样使用它们。</p>
+<blockquote>
+<p>To create a closure using lambda expressions, you can define a lambda expression that references a variable in its enclosing scope. The lambda expression will then capture the value of the variable at the time the lambda expression is created and use that value whenever it is called.</p>
+<p>要使用 lambda 表达式创建闭包，可以定义一个 lambda 表达式，在其外层作用域中引用一个变量。然后，在创建 lambda 表达式时，lambda 表达式将捕获变量的值，并在调用时使用该值。</p>
+</blockquote>
+<p>Here’s an example of creating a closure using a lambda expression:</p>
+<p>下面是一个使用 lambda 表达式创建闭包的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClosureExample</span> </span>&#123;  </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">int</span> x = <span class="number">5</span>;  </span><br><span class="line">        Runnable runnable = () -&gt; System.out.println(x);  </span><br><span class="line">        x = <span class="number">10</span>;  </span><br><span class="line">        runnable.run(); <span class="comment">// Output: 10  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we define a variable x with the value 5. We then define a lambda expression that references x and prints its value. Finally, we change the value of x to 10 and call the lambda expression.</p>
+<p>在本例中，我们定义了一个值为 5 的变量 x。然后，我们定义一个 lambda 表达式，引用 x 并打印其值。最后，我们将 x 的值改为 10 并调用 lambda 表达式。</p>
+<p>When the lambda expression is created, it captures the value of x, which is 5 at the time. When we call the lambda expression, it prints the value of x, which is now 10 because we changed its value after the lambda expression was created. The lambda expression “closes over” the variable x and uses it as if it were a local variable.</p>
+<p>创建 lambda 表达式时，它会捕捉 x 的值，当时的值是 5。当我们调用 lambda 表达式时，它会打印出 x 的值，现在是 10，因为我们在创建 lambda 表达式后更改了它的值。lambda 表达式 “关闭 “了变量 x，并像使用局部变量一样使用它。</p>
+<p>Here’s another example of creating a closure using a lambda expression:</p>
+<p>下面是另一个使用lambda表达式创建闭包的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClosureExample</span> </span>&#123;  </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>);  </span><br><span class="line">        <span class="keyword">int</span> sum = <span class="number">0</span>;  </span><br><span class="line">        numbers.forEach(n -&gt; sum += n);  </span><br><span class="line">        System.out.println(sum); <span class="comment">// Output: 15  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we define a list of integers and a variable sum with the initial value 0. We then use a lambda expression to iterate over the list and add each element to the sum variable. Finally, we print the value of sum.</p>
+<p>在本例中，我们定义了一个整数列表和一个初始值为 0 的变量 sum。然后，我们使用 lambda 表达式遍历列表，并将每个元素添加到 sum 变量中。最后，我们打印 sum 的值。</p>
+<p>The lambda expression “closes over” the variable sum and updates its value each time it is called. This allows us to calculate the sum of the list using a single lambda expression and a single variable, without the need for a separate loop or accumulator.</p>
+<p>lambda 表达式 “关闭 “变量 sum，并在每次调用时更新其值。这样，我们就可以使用单个 lambda 表达式和单个变量计算列表的总和，而无需单独的循环或累加器。</p>
+<h2 id="Use-Lambda-expressions-with-Method-References-在方法引用中使用-Lambda-表达式"><a href="#Use-Lambda-expressions-with-Method-References-在方法引用中使用-Lambda-表达式" class="headerlink" title="Use Lambda expressions with Method References 在方法引用中使用 Lambda 表达式"></a>Use Lambda expressions with Method References 在方法引用中使用 Lambda 表达式</h2><blockquote>
+<p>Method references allow you to refer to an existing method by name instead of defining a new lambda expression. This can make code more concise and readable, especially when working with simple functions.</p>
+<p>方法引用允许你通过通过引用一个现有方法，而不是重新定一个新的函数表达式。这会使得代码更加简洁并且可读，特别是在处理简单函数时。</p>
+</blockquote>
+<p>There are four types of method references in Java:</p>
+<ol>
+<li>Reference to a static method</li>
+<li>Reference to an instance method of a particular object</li>
+<li>Reference to an instance method of an arbitrary object of a particular type</li>
+<li>Reference to a constructor</li>
+</ol>
+<p>Java中有四种方法引用类型：</p>
+<ol>
+<li>静态方法引用</li>
+<li>对特定对象的实例方法的引用</li>
+<li>对特定类型的任意对象的实例方法的引用</li>
+<li>对构造函数的引用</li>
+</ol>
+<blockquote>
+<p>To use a method reference, you can replace the lambda expression with a reference to the method by name. The method reference syntax is similar to the lambda expression syntax, but with the method name and class name instead of the parameter list and arrow.</p>
+<p>使用方法引用，你可以使用引用的方法名称替换Lambda表达式，<strong>方法引用的语法与 lambda 表达式的语法类似</strong>，只是用方法名和类名代替了参数列表和箭头。</p>
+</blockquote>
+<p>Here’s an example of using a method reference to a static method:</p>
+<p>下面是使用静态方法引用的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MethodReferenceExample</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>);  </span><br><span class="line">        numbers.forEach(System.out::println);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>In this example, we define a list of integers and use the forEach() method to print each element to the console. Instead of using a lambda expression to define the action, we use a method reference to the static method System.out.println(). The double colon (::) operator is used to indicate that we want to reference a method instead of defining a new lambda expression.</p>
+<p>这个例子中，我们定义一个整型列表，使用<code>forEach()</code>方法打印到控制台，这里不需要使用Lambda表达式，而是直接使用静态方法<code>System.out.println()</code>的方法引用，<strong>双冒号（::）操作符用于表示我们要引用一个方法</strong>，而不是定义一个新的 lambda 表达式</p>
+<p>Here’s an example of using a method reference to an instance method of a particular object:</p>
+<p>下面是一个使用方法引用到特定对象的实例方法的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MethodReferenceExample</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        List&lt;String&gt; strings = Arrays.asList(<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>);  </span><br><span class="line">        strings.sort(String::compareToIgnoreCase);  </span><br><span class="line">        System.out.println(strings); <span class="comment">// Output: [apple, banana, cherry]  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>In this example, we define a list of strings and use the sort() method to sort the list in a case-insensitive manner. Instead of using a lambda expression to define the comparator function, we use a method reference to the compareToIgnoreCase() method of the String class.</p>
+<p>在这个案例中，我们定义字符串列表并且用 <code>sort()</code> 方法以不区分大小写的方式对列表进行排序，我们没有使用 lambda 表达式来定义比较器函数，而是使用了对 String 类的 compareToIgnoreCase() 方法的引用。</p>
+<p>Here’s an example of using a method reference to an instance method of an arbitrary object of a particular type:</p>
+<p>下面是一个示例，说明如何使用方法引用来引用特定类型的任意对象的实例方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MethodReferenceExample</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        List&lt;String&gt; strings = Arrays.asList(<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>);  </span><br><span class="line">        strings.forEach(String::toUpperCase);  </span><br><span class="line">        System.out.println(strings); <span class="comment">// Output: [apple, banana, cherry]  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>Here’s an example of using a method reference to a constructor:</p>
+<p>下面是一个将方法引用用于构造函数的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MethodReferenceExample</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        List&lt;String&gt; strings = Arrays.asList(<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>);  </span><br><span class="line">        List&lt;String&gt; copy = strings.stream()  </span><br><span class="line">                                   .map(String::<span class="keyword">new</span>)  </span><br><span class="line">                                   .collect(Collectors.toList());  </span><br><span class="line">        System.out.println(copy); <span class="comment">// Output: [apple, banana, cherry]  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>In this example, we define a list of strings and use the stream() method to create a stream of the strings. We then use the map() method to create a new stream of strings, each of which is created using the String constructor that takes a single argument. This constructor is referenced using a method reference to the String class constructor. Finally, we collect the new stream into a list and print the result.</p>
+<p>在这个例子中，我们定义包含字符串的列表并且使用stream 方法创建一个String 流，接着我们使用map方法创建一个新的String流，每个字符串都是使用String构造函数新创建的，该构造函数只需要一个参数。构造函数使用String类构造函数的方法引用。最后，我们将新的数据流收集到一个列表中并打印结果。</p>
+<h2 id="Use-Lambda-expressions-with-default-methods-in-Interfaces-在接口中使用带有默认方法的-Lambda-表达式"><a href="#Use-Lambda-expressions-with-default-methods-in-Interfaces-在接口中使用带有默认方法的-Lambda-表达式" class="headerlink" title="Use Lambda expressions with default methods in Interfaces 在接口中使用带有默认方法的 Lambda 表达式"></a>Use Lambda expressions with default methods in Interfaces 在接口中使用带有默认方法的 Lambda 表达式</h2><p>Default methods were introduced in Java 8 to allow interfaces to define a default implementation for a method. This allows interfaces to evolve over time without breaking existing implementations.</p>
+<p>Default 默认方法是 Java 8 的新特性之一，主要是允许接口定义默认方法并且实现自己的逻辑，这使得接口可以在不破坏现有实现的情况下随着时间的推移而发展。</p>
+<blockquote>
+<p>Lambda expressions can be used with default methods in interfaces by providing an implementation for the default method in the lambda expression. This allows the lambda expression to be used as an implementation of the interface, even if the interface defines a default method.</p>
+<p><strong>通过在 lambda 表达式中为缺省方法提供实现，lambda 表达式可以与接口中的缺省方法一起使用。</strong> 即使接口定义了缺省方法，也可以将 lambda 表达式用作接口的实现。</p>
+</blockquote>
+<p>Here’s an example of using a lambda expression with a default method in an interface:</p>
+<p>下面是一个使用Lambda表达式和使用静态方法接口的例子。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span>  </span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Calculator</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span>;  </span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">int</span> <span class="title">subtract</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> add(x, -y);  </span><br><span class="line"></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultMethodExample</span> </span>&#123;  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">    Calculator calculator = (x, y) -&gt; x + y;  </span><br><span class="line">    System.out.println(calculator.add(<span class="number">2</span>, <span class="number">3</span>)); <span class="comment">// Output: 5  </span></span><br><span class="line">    System.out.println(calculator.subtract(<span class="number">2</span>, <span class="number">3</span>)); <span class="comment">// Output: -1  </span></span><br><span class="line">&#125;  </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>In this example, we define a functional interface called Calculator that has an add() method and a default subtract() method. The subtract() method calls the add() method to perform the subtraction.</p>
+<p>上面例子中我们定义<code>Calculator</code>接口和静态方法<code>subtract</code>和接口方法<code>add()</code>,<code>subtract</code>方法内部会调用<code>add()</code>方法实现减法操作。</p>
+<p>We then define a lambda expression that implements the add() method of the Calculator interface. We can use this lambda expression as an implementation of the interface, even though the interface defines a default method.</p>
+<p>我们接着使用Lambda表达式定义一个实现了Calculator 接口的<code>add()</code>方法的实现类，我们可以使用这个lambda表达式作为接口的实现，尽管接口定义了一个<strong>缺省方法</strong>。</p>
+<h2 id="Use-Lambda-expressions-with-the-Optional-Class-与可选类一起使用-Lambda-表达式"><a href="#Use-Lambda-expressions-with-the-Optional-Class-与可选类一起使用-Lambda-表达式" class="headerlink" title="Use Lambda expressions with the Optional Class 与可选类一起使用 Lambda 表达式"></a>Use Lambda expressions with the Optional Class 与可选类一起使用 Lambda 表达式</h2><p>The Optional class was introduced in Java 8 to help prevent null pointer exceptions by providing a container object that may or may not contain a value. Optional provides a set of methods for working with potentially null values in a safer and more concise way.</p>
+<p><strong>Optional</strong> 是Java8 当中引入的类，它提供一个可能包含或者不包含值的容器预防控制针异常，Optional提供了一组方法，用于以更安全、更简洁的方式处理潜在的空值。</p>
+<blockquote>
+<p>Lambda expressions can be used with the Optional class to define custom behavior for cases where a value is present or absent. Optional provides several methods for working with values, including map(), flatMap(), filter(), ifPresent(), and orElse(). These methods can be used with lambda expressions to define custom behavior for these cases.</p>
+<p>Lambda 是可以和 Optional 类一起使用，在值存在或不存在的情况下定义自定义行为，比如map(), flatMap(), filter(), ifPresent(), and orElse() 等方法，可以和 Lambda一起使用</p>
+</blockquote>
+<p>Here’s an example of using a lambda expression with the map() method of the Optional class:</p>
+<p>下面是使用Optional.map() 方法的简单案例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; optional = Optional.of(<span class="string">"hello"</span>);  </span><br><span class="line">Optional&lt;Integer&gt; result = optional.map(s -&gt; s.length());  </span><br><span class="line">System.out.println(result.get()); <span class="comment">// Output: 5</span></span><br></pre></td></tr></table></figure>
+
+<p>In this example, we create an Optional object that contains the string “hello”. We then use the map() method to apply a lambda expression that returns the length of the string. The result of the map() method is an Optional object that contains the result of the lambda expression. We can then use the get() method to retrieve the value from the Optional object and print it to the console.</p>
+<p>例子中创建一个内容为“hello”的Optional对象，接着使用 map() 函数应用一个返回字符串长度的lambda表达式。map() 结果是包含Lambda表达式结果的可选对象，我们使用get() 方法从 Optional 对象中获取值。</p>
+<p>Here’s an example of using a lambda expression with the filter() method of the Optional class:</p>
+<p>下面是使用<code>Optional.filter()</code>的另一个案例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; optional = Optional.of(<span class="string">"hello"</span>);  </span><br><span class="line">Optional&lt;String&gt; result = optional.filter(s -&gt; s.length() &gt; <span class="number">5</span>);  </span><br><span class="line">System.out.println(result.isPresent()); <span class="comment">// Output: false</span></span><br></pre></td></tr></table></figure>
+
+<p>In this example, we create an Optional object that contains the string “hello”. We then use the filter() method to apply a lambda expression that filters out strings with length less than or equal to 5. Since “hello” has a length of 5, it does not pass the filter and the resulting Optional object is empty. We can then use the isPresent() method to check whether the Optional object contains a value and print the result to the console.</p>
+<p>例子中创建一个内容为“hello”的Optional对象，接着使用 filter() 函数应用一个<strong>过滤掉</strong>字符串长度小于等于5的值lambda表达式，这时候得到的Optional 对象是为空的，使用 <code>isPresent</code> 方法便可以检查是否包含一个值，最终打印结果到控制台。</p>
+<p>Here’s an example of using a lambda expression with the orElse() method of the Optional class:</p>
+<p>最后是一个<code>orElse()</code>的栗子。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; optional = Optional.empty();  </span><br><span class="line">String result = optional.orElseGet(() -&gt; <span class="string">"default"</span>);  </span><br><span class="line">System.out.println(result); <span class="comment">// Output: default</span></span><br></pre></td></tr></table></figure>
+
+<p>In this example, we create an empty Optional object and use the orElseGet() method to provide a default value if the Optional object is empty. We pass a lambda expression that returns the default value “default”. Since the Optional object is empty, the orElseGet() method returns the default value, which we then print to the console.</p>
+<p>这个例子中我们创建一个空的 <strong>Optional</strong> 对象并且使用<code>orElseGet()</code>方法在Optional 内部内容为空的的时候提供一个默认值。我们传递一个 lambda 表达式，返回默认值 “default”。由于 Optional 对象为空，orElseGet() 方法返回默认值，然后我们将其打印到控制台。</p>
+<p><em>Thanks for your Attention! Happy Learning!</em></p>
+<p>感谢您的关注！学习愉快！_</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/08/10/effectivelambda/" title="【Java】Effective Lambda Expressions in Java">https://whitestore.top/2023/08/10/effectivelambda/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/10/literallywhy/" rel="prev" title="【English】literally 到底是什么意思，为什么美国人老把 literally 挂嘴边？">
+      <i class="fa fa-chevron-left"></i> 【English】literally 到底是什么意思，为什么美国人老把 literally 挂嘴边？
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/08/10/curatorsource1/" rel="next" title="【Zookeeper】Apach Curator 框架源码分析：初始化过程（一）【Ver 4.3.0】">
+      【Zookeeper】Apach Curator 框架源码分析：初始化过程（一）【Ver 4.3.0】 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原文"><span class="nav-number">1.</span> <span class="nav-text">原文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introductory"><span class="nav-number">2.</span> <span class="nav-text">Introductory</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-create-functional-Interfaces-使用Lambda表达式创建功能接口"><span class="nav-number">3.</span> <span class="nav-text">Use Lambda expressions to create functional Interfaces 使用Lambda表达式创建功能接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-the-right-syntax-for-Lambda-Expressions-为Lambda表达式使用正确的语法"><span class="nav-number">4.</span> <span class="nav-text">Use the right syntax for Lambda Expressions 为Lambda表达式使用正确的语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-implement-Functional-Programming-使用-Lambda-表达式实现函数式编程"><span class="nav-number">5.</span> <span class="nav-text">Use Lambda expressions to implement Functional Programming 使用 Lambda 表达式实现函数式编程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-create-Anonymous-Classes-使用-Lambda-表达式创建匿名类"><span class="nav-number">6.</span> <span class="nav-text">Use Lambda expressions to create Anonymous Classes 使用 Lambda 表达式创建匿名类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-create-Event-Listeners-使用-Lambda-表达式创建事件监听器"><span class="nav-number">7.</span> <span class="nav-text">Use Lambda expressions to create Event Listeners 使用 Lambda 表达式创建事件监听器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-Iterate-over-Collections-使用-Lambda-表达式遍历集合"><span class="nav-number">8.</span> <span class="nav-text">Use Lambda expressions to Iterate over Collections 使用 Lambda 表达式遍历集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-Filter-Collections-使用-Lambda-表达式过滤集合"><span class="nav-number">9.</span> <span class="nav-text">Use Lambda expressions to Filter Collections 使用 Lambda 表达式过滤集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-Sort-Collections-使用-Lambda-表达式对集合进行排序"><span class="nav-number">10.</span> <span class="nav-text">Use Lambda expressions to Sort Collections 使用 Lambda 表达式对集合进行排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-Map-Collections"><span class="nav-number">11.</span> <span class="nav-text">Use Lambda expressions to Map Collections</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-Reduce-Collections-使用-Lambda-表达式精简集合"><span class="nav-number">12.</span> <span class="nav-text">Use Lambda expressions to Reduce Collections 使用 Lambda 表达式精简集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-Group-Collections-使用-Lambda-表达式对集合进行分组"><span class="nav-number">13.</span> <span class="nav-text">Use Lambda expressions to Group Collections  使用 Lambda 表达式对集合进行分组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-Handle-Exceptions-使用-Lambda-表达式处理异常"><span class="nav-number">14.</span> <span class="nav-text">Use Lambda expressions to Handle Exceptions 使用 Lambda 表达式处理异常</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-Handle-Null-Values-使用-Lambda-表达式处理空值"><span class="nav-number">15.</span> <span class="nav-text">Use Lambda expressions to Handle Null Values 使用 Lambda 表达式处理空值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-perform-Parallel-Operations-使用-Lambda-表达式执行并行操作"><span class="nav-number">16.</span> <span class="nav-text">Use Lambda expressions to perform Parallel Operations 使用 Lambda 表达式执行并行操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-create-Custom-Collectors-使用-Lambda-表达式创建自定义收集器"><span class="nav-number">17.</span> <span class="nav-text">Use Lambda expressions to create Custom Collectors  使用 Lambda 表达式创建自定义收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-create-Higher-order-Functions-使用-Lambda-表达式创建高阶函数"><span class="nav-number">18.</span> <span class="nav-text">Use Lambda expressions to create Higher-order Functions 使用 Lambda 表达式创建高阶函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-to-create-Closures-使用-Lambda-表达式创建闭包"><span class="nav-number">19.</span> <span class="nav-text">Use Lambda expressions to create Closures 使用 Lambda 表达式创建闭包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-with-Method-References-在方法引用中使用-Lambda-表达式"><span class="nav-number">20.</span> <span class="nav-text">Use Lambda expressions with Method References 在方法引用中使用 Lambda 表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-with-default-methods-in-Interfaces-在接口中使用带有默认方法的-Lambda-表达式"><span class="nav-number">21.</span> <span class="nav-text">Use Lambda expressions with default methods in Interfaces 在接口中使用带有默认方法的 Lambda 表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Lambda-expressions-with-the-Optional-Class-与可选类一起使用-Lambda-表达式"><span class="nav-number">22.</span> <span class="nav-text">Use Lambda expressions with the Optional Class 与可选类一起使用 Lambda 表达式</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">232</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">28:45</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
