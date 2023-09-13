@@ -37,15 +37,6 @@
         {{- next_inject('sidebar') }}
       </div>
 
-      <div class="wechat_OA">
-        <span>欢迎关注我的公众号</span>
-        <br>
-          <!-- 这里添加你的二维码图片 -->
-        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
-      </div>
-
-
-
       {%- if theme.back2top.enable and theme.back2top.sidebar %}
         <div class="back-to-top motion-element">
           <i class="fa fa-arrow-up"></i>
