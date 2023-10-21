@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Zookeeper使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Zookeeper】Introduction to Apache Curator">
+<meta property="og:url" content="https://whitestore.top/2023/09/11/zkapachcurator/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Zookeeper使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-09-11T02:23:18.000Z">
+<meta property="article:modified_time" content="2023-10-21T14:26:31.033Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Zookeeper">
+<meta property="article:tag" content="curator">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://whitestore.top/2023/09/11/zkapachcurator/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Zookeeper】Introduction to Apache Curator | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/09/11/zkapachcurator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Zookeeper】Introduction to Apache Curator
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-09-11 10:23:18" itemprop="dateCreated datePublished" datetime="2023-09-11T10:23:18+08:00">2023-09-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-10-21 22:26:31" itemprop="dateModified" datetime="2023-10-21T22:26:31+08:00">2023-10-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zookeeper/" itemprop="url" rel="index"><span itemprop="name">Zookeeper</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/09/11/zkapachcurator/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/09/11/zkapachcurator/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+            <div class="post-description">Zookeeper使用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>#zookeeper </p>
+<h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2FwYWNoZS1jdXJhdG9y" title="https://www.baeldung.com/apache-curator">https://www.baeldung.com/apache-curator<i class="fa fa-external-link"></i></span></p>
+<h2 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a><a href="https://www.baeldung.com/apache-curator#introduction" target="_blank" rel="noopener"><strong>1. Introduction</strong></a></h2><p><span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcv" title="https://curator.apache.org/">Apache Curator<i class="fa fa-external-link"></i></span> is a Java client for <span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy8=" title="https://zookeeper.apache.org/">Apache Zookeeper<i class="fa fa-external-link"></i></span>, the popular coordination service for distributed applications.</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcv" title="https://curator.apache.org/">Apache Curator<i class="fa fa-external-link"></i></span> 是 <span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy8=" title="https://zookeeper.apache.org/">Apache Zookeeper<i class="fa fa-external-link"></i></span> 的 Java 客户端，后者是分布式应用程序的流行协调服务。</p>
+<p>In this tutorial, we’ll introduce some of the most relevant features provided by Curator:</p>
+<ul>
+<li>Connection Management – managing connections and retry policies</li>
+<li>Async – enhancing existing client by adding async capabilities and the use of Java 8 lambdas</li>
+<li>Configuration Management – having a centralized configuration for the system</li>
+<li>Strongly-Typed Models – working with typed models</li>
+<li>Recipes – implementing leader election, distributed locks or counters</li>
+</ul>
+<p>在本文中，我们讲介绍一些Curator提供的最实用的功能实现：</p>
+<ul>
+<li>连接管理：管理连接和重试策略</li>
+<li>异步：通过添加异步功能和使用 Java 8 lambda 来增强现有客户端</li>
+<li>配置管理：系统集中配置。</li>
+<li>强类型模型：作用于类型模型上</li>
+<li>Recipes：实现领导选举，分布式锁或者计数器</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="2-Prerequisites"><a href="#2-Prerequisites" class="headerlink" title="2. Prerequisites"></a><a href="https://www.baeldung.com/apache-curator#prerequisites" target="_blank" rel="noopener"><strong>2. Prerequisites</strong></a></h2><p>To start with, it’s recommended to take a quick look at the <span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy8=" title="https://zookeeper.apache.org/">Apache Zookeeper<i class="fa fa-external-link"></i></span> and its features.</p>
+<p>首先，建议快速浏览一下 <span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy8=" title="https://zookeeper.apache.org/">Apache Zookeeper<i class="fa fa-external-link"></i></span> 及其功能。</p>
+<p>For this tutorial, we assume that there’s already a standalone Zookeeper instance running on <em>127.0.0.1:2181</em>; <span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy9kb2MvY3VycmVudC96b29rZWVwZXJTdGFydGVkLmh0bWw=" title="https://zookeeper.apache.org/doc/current/zookeeperStarted.html">here are<i class="fa fa-external-link"></i></span> instructions on how to install and run it, if you’re just getting started.</p>
+<p>对于本教程，我们假设已经有一个独立的 Zookeeper 实例在 <em>127.0.0.1:2181</em> 上运行；<span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy9kb2MvY3VycmVudC96b29rZWVwZXJTdGFydGVkLmh0bWw=" title="https://zookeeper.apache.org/doc/current/zookeeperStarted.html">这里<i class="fa fa-external-link"></i></span> 会介绍如何安装并且运行</p>
+<blockquote>
+<p>[[【Zookeeper】基于3台linux虚拟机搭建zookeeper集群]]</p>
+</blockquote>
+<p>First, we’ll need to add the <span class="exturl" data-url="aHR0cHM6Ly9zZWFyY2gubWF2ZW4ub3JnL2NsYXNzaWMvI3NlYXJjaCU3Q2dhdiU3QzElN0NnJTNBJTIyb3JnLmFwYWNoZS5jdXJhdG9yJTIyJTIwQU5EJTIwYSUzQSUyMmN1cmF0b3IteC1hc3luYyUyMg==" title="https://search.maven.org/classic/#search%7Cgav%7C1%7Cg%3A%22org.apache.curator%22%20AND%20a%3A%22curator-x-async%22">curator-x-async<i class="fa fa-external-link"></i></span> dependency to our <em>pom.xml</em>:</p>
+<p>首先，我们需要添加 [curator-x-async](<span class="exturl" data-url="aHR0cHM6Ly9zZWFyY2gubWF2ZW4ub3JnL2NsYXNzaWMvI3NlYXJjaCU3Q2dhdiU3QzElN0NnJTNBJTIyb3JnLmFwYWNoZS5jdXJhdG9yJTIyJTIwQU5EJQ==" title="https://search.maven.org/classic/#search%7Cgav%7C1%7Cg%3A%22org.apache.curator%22%20AND%">https://search.maven.org/classic/#search%7Cgav%7C1%7Cg%3A%22org.apache.curator%22%20AND%<i class="fa fa-external-link"></i></span> 20a%3A%22curator-x-async%22) 对我们的 <em>pom.xml</em> 的依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-x-async<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>The latest version of Apache Curator 4.X.X has a hard dependency with Zookeeper 3.5.X</strong> which is still in beta right now.</p>
+<p><strong>最新版本的 Apache Curator 4.X.X 与 Zookeeper 3.5.X 具有硬依赖性</strong>。</p>
+<p>And so, in this article, we’re going to use the currently latest stable <span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy9kb2MvcjMuNC4xMS9pbmRleC5odG1s" title="https://zookeeper.apache.org/doc/r3.4.11/index.html">Zookeeper 3.4.11<i class="fa fa-external-link"></i></span> instead.</p>
+<p>在本文中会使用文章编写时候的最后一个稳定版本 <span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy9kb2MvcjMuNC4xMS9pbmRleC5odG1s" title="https://zookeeper.apache.org/doc/r3.4.11/index.html">Zookeeper 3.4.11<i class="fa fa-external-link"></i></span> 替代</p>
+<p>So we need to exclude the Zookeeper dependency and add <span class="exturl" data-url="aHR0cHM6Ly9zZWFyY2gubWF2ZW4ub3JnL2NsYXNzaWMvI3NlYXJjaCU3Q2dhdiU3QzElN0NnJTNBJTIyb3JnLmFwYWNoZS56b29rZWVwZXIlMjIlMjBBTkQlMjBhJTNBJTIyem9va2VlcGVyJTIy" title="https://search.maven.org/classic/#search%7Cgav%7C1%7Cg%3A%22org.apache.zookeeper%22%20AND%20a%3A%22zookeeper%22">the dependency for our Zookeeper version<i class="fa fa-external-link"></i></span> to our <em>pom.xml</em>:</p>
+<p>因此，我们需要排除 Zookeeper 依赖项并添加[我们的 Zookeeper 版本的依赖项](<span class="exturl" data-url="aHR0cHM6Ly9zZWFyY2gubWF2ZW4ub3JnL2NsYXNzaWMvI3NlYXJjaCU3Q2dhdiU3QzElN0NnJTNBJTIyb3JnLmFwYWNoZS56b29rZWVwZXIlMjIl" title="https://search.maven.org/classic/#search%7Cgav%7C1%7Cg%3A%22org.apache.zookeeper%22%">https://search.maven.org/classic/#search%7Cgav%7C1%7Cg%3A%22org.apache.zookeeper%22%<i class="fa fa-external-link"></i></span> 20AND%20a%3A%22zookeeper%22) 到我们的 _pom.xml_：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.4.11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>For more information about compatibility, please refer to <span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvemstY29tcGF0aWJpbGl0eS0zNC5odG1s" title="https://curator.apache.org/zk-compatibility-34.html">this link<i class="fa fa-external-link"></i></span>.</p>
+<p>更多信息可以查看： <span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvemstY29tcGF0aWJpbGl0eS0zNC5odG1s" title="https://curator.apache.org/zk-compatibility-34.html">this link<i class="fa fa-external-link"></i></span></p>
+<h2 id="3-Connection-Management"><a href="#3-Connection-Management" class="headerlink" title="3. Connection Management"></a><a href="https://www.baeldung.com/apache-curator#connection_management" target="_blank" rel="noopener"><strong>3. Connection Management</strong></a></h2><p><strong>The basic use case of Apache Curator is connecting to a running Apache Zookeeper instance</strong>.</p>
+<p>最基础的使用案例，是使用Curator连接并且运行一个Apach Zk 实例。</p>
+<p>The tool provides a factory to build connections to Zookeeper using retry policies:</p>
+<p>工具提供了一个工厂构建ZK连接，并且需要手动指定重试器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sleepMsBetweenRetries = <span class="number">100</span>;</span><br><span class="line"><span class="keyword">int</span> maxRetries = <span class="number">3</span>;</span><br><span class="line">RetryPolicy retryPolicy = <span class="keyword">new</span> RetryNTimes(</span><br><span class="line">  maxRetries, sleepMsBetweenRetries);</span><br><span class="line"></span><br><span class="line">CuratorFramework client = CuratorFrameworkFactory</span><br><span class="line">  .newClient(<span class="string">"127.0.0.1:2181"</span>, retryPolicy);</span><br><span class="line">client.start();</span><br><span class="line"> </span><br><span class="line">assertThat(client.checkExists().forPath(<span class="string">"/"</span>)).isNotNull();</span><br></pre></td></tr></table></figure>
+
+<p>In this quick example, we’ll retry 3 times and will wait 100 ms between retries in case of connectivity issues.</p>
+<p>在这个快速使用案例中，我们指定了重试三次，并且每次重试的间隔等待100ms。</p>
+<p>Once connected to Zookeeper using the <em>CuratorFramework</em> client, we can now browse paths, get/set data and essentially interact with the server.</p>
+<p>使用 <em>CuratorFramework</em> 客户端连接到 Zookeeper 后，我们现在可以浏览路径、获取/设置数据并与服务器进行交互。</p>
+<h2 id="4-Async"><a href="#4-Async" class="headerlink" title="4. Async"></a><a href="https://www.baeldung.com/apache-curator#async" target="_blank" rel="noopener"><strong>4. Async</strong></a></h2><p><strong>The Curator Async module wraps the above <em>CuratorFramework</em> client to provide non-blocking capabilities</strong> using <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vZW4vamF2YS9qYXZhc2UvMTcvZG9jcy9hcGkvamF2YS5iYXNlL2phdmEvdXRpbC9jb25jdXJyZW50L0NvbXBsZXRpb25TdGFnZS5odG1s" title="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletionStage.html">the CompletionStage Java 8 API<i class="fa fa-external-link"></i></span>.</p>
+<p><strong>Curator Async 模块使用<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vZW4vamF2YS9qYXZhc2UvMTcvZG9jcy9hcGkvamF2YS5iYXNlL2phdmEvdXRpbC9jb25jdXJyZW50L0NvbXBsZXRpb25TdGFnZS5odG1s" title="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletionStage.html">CompletionStage Java 8 API<i class="fa fa-external-link"></i></span> 对上述 <em>CuratorFramework</em> 客户端进行封装，以提供非阻塞功能</strong>。</p>
+<p>Let’s see how the previous example looks like using the Async wrapper:</p>
+<p>让我们看看使用 Async 封装器的前一个示例是怎样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sleepMsBetweenRetries = <span class="number">100</span>;</span><br><span class="line"><span class="keyword">int</span> maxRetries = <span class="number">3</span>;</span><br><span class="line">RetryPolicy retryPolicy </span><br><span class="line">  = <span class="keyword">new</span> RetryNTimes(maxRetries, sleepMsBetweenRetries);</span><br><span class="line"></span><br><span class="line">CuratorFramework client = CuratorFrameworkFactory</span><br><span class="line">  .newClient(<span class="string">"127.0.0.1:2181"</span>, retryPolicy);</span><br><span class="line"></span><br><span class="line">client.start();</span><br><span class="line">AsyncCuratorFramework async = AsyncCuratorFramework.wrap(client);</span><br><span class="line"></span><br><span class="line">AtomicBoolean exists = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">async.checkExists()</span><br><span class="line">  .forPath(<span class="string">"/"</span>)</span><br><span class="line">  .thenAcceptAsync(s -&gt; exists.set(s != <span class="keyword">null</span>));</span><br><span class="line"></span><br><span class="line">await().until(() -&gt; assertThat(exists.get()).isTrue());</span><br></pre></td></tr></table></figure>
+
+<p>Now, the <em>checkExists()</em> operation works in asynchronous mode, not blocking the main thread. We can also chain actions one after each other using the <em>thenAcceptAsync()</em> method instead, which uses the <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vZW4vamF2YS9qYXZhc2UvMTcvZG9jcy9hcGkvamF2YS5iYXNlL2phdmEvdXRpbC9jb25jdXJyZW50L0NvbXBsZXRpb25TdGFnZS5odG1s" title="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletionStage.html">CompletionStage API<i class="fa fa-external-link"></i></span>.</p>
+<p>现在，<em>checkExists()</em> 操作以异步模式运行，不会阻塞主线程。我们还可以使用_thenAcceptAsync()_方法（该方法使用 <span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9yYWNsZS5jb20vZW4vamF2YS9qYXZhc2UvMTcvZG9jcy9hcGkvamF2YS5iYXNlL2phdmEvdXRpbC9jb25jdXJyZW50L0NvbXBsZXRpb25TdGFnZS5odG1s" title="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletionStage.html">CompletionStage API<i class="fa fa-external-link"></i></span>）将操作一个接一个地串联起来。</p>
+<h2 id="5-Configuration-Management"><a href="#5-Configuration-Management" class="headerlink" title="5. Configuration Management"></a><a href="https://www.baeldung.com/apache-curator#configuration_management" target="_blank" rel="noopener"><strong>5. Configuration Management</strong></a></h2><p>In a distributed environment, one of the most common challenges is to manage shared configuration among many applications. <strong>We can use Zookeeper as a data store where to keep our configuration.</strong></p>
+<p>在分布式环境中，最常见的挑战之一就是管理多个应用程序之间的共享配置。 **我们可以使用 Zookeeper 作为保存配置的数据存储。</p>
+<p>Let’s see an example using Apache Curator to get and set data:</p>
+<p>让我们来看一个使用 Apache Curator 获取和设置数据的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">CuratorFramework client = newClient();</span><br><span class="line">client.start();</span><br><span class="line">AsyncCuratorFramework async = AsyncCuratorFramework.wrap(client);</span><br><span class="line">String key = getKey();</span><br><span class="line">String expected = <span class="string">"my_value"</span>;</span><br><span class="line"></span><br><span class="line">client.create().forPath(key);</span><br><span class="line"></span><br><span class="line">async.setData()</span><br><span class="line">  .forPath(key, expected.getBytes());</span><br><span class="line"></span><br><span class="line">AtomicBoolean isEquals = <span class="keyword">new</span> AtomicBoolean();</span><br><span class="line">async.getData()</span><br><span class="line">  .forPath(key)</span><br><span class="line">  .thenAccept(data -&gt; isEquals.set(<span class="keyword">new</span> String(data).equals(expected)));</span><br><span class="line"></span><br><span class="line">await().until(() -&gt; assertThat(isEquals.get()).isTrue());</span><br></pre></td></tr></table></figure>
+
+<p>In this example, we create the node path, set the data in Zookeeper, and then we recover it checking that the value is the same. The <em>key</em> field could be a node path like <em>/config/dev/my_key</em>.</p>
+<p>在这个示例中，我们创建节点路径，在 Zookeeper 中设置数据，然后检查值是否相同，再恢复数据。<em>key</em> 字段可以是一个节点路径，如 _/config/dev/my_key_。</p>
+<h3 id="5-1-Watchers"><a href="#5-1-Watchers" class="headerlink" title="5.1. Watchers"></a><strong>5.1. Watchers</strong><a href="https://www.baeldung.com/apache-curator#1-watchers" target="_blank" rel="noopener"></a></h3><p>Another interesting feature in Zookeeper is the ability to watch keys or nodes. <strong>It allows us to listen to changes in the configuration and update our applications without needing to redeploy</strong>.</p>
+<p>Zookeeper 的另一个有趣功能是监视键或节点。 <strong>它允许我们监听配置中的变化并更新应用程序，而无需重新部署</strong>。</p>
+<p>Let’s see how the above example looks like when using watchers:</p>
+<p>让我们看看上面的示例在使用Watch时是什么样子的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">CuratorFramework client = newClient()</span><br><span class="line">client.start();</span><br><span class="line">AsyncCuratorFramework async = AsyncCuratorFramework.wrap(client);</span><br><span class="line">String key = getKey();</span><br><span class="line">String expected = <span class="string">"my_value"</span>;</span><br><span class="line"></span><br><span class="line">async.create().forPath(key);</span><br><span class="line"></span><br><span class="line">List&lt;String&gt; changes = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">async.watched()</span><br><span class="line">  .getData()</span><br><span class="line">  .forPath(key)</span><br><span class="line">  .event()</span><br><span class="line">  .thenAccept(watchedEvent -&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        changes.add(<span class="keyword">new</span> String(client.getData()</span><br><span class="line">          .forPath(watchedEvent.getPath())));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="comment">// fail ...</span></span><br><span class="line">    &#125;&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Set data value for our key</span></span><br><span class="line">async.setData()</span><br><span class="line">  .forPath(key, expected.getBytes());</span><br><span class="line"></span><br><span class="line">await()</span><br><span class="line">  .until(() -&gt; assertThat(changes.size()).isEqualTo(<span class="number">1</span>));</span><br></pre></td></tr></table></figure>
+
+<p>We configure the watcher, set the data, and then confirm the watched event was triggered. We can watch one node or a set of nodes at once.</p>
+<p>我们配置监视器、设置数据，然后确认被监视事件已触发。我们可以同时观察一个节点或一组节点。</p>
+<h2 id="6-Strongly-Typed-Models"><a href="#6-Strongly-Typed-Models" class="headerlink" title="6. Strongly Typed Models"></a><a href="https://www.baeldung.com/apache-curator#strongly_typed_models" target="_blank" rel="noopener"><strong>6. Strongly Typed Models</strong></a></h2><p>Zookeeper primarily works with byte arrays, so we need to serialize and deserialize our data. This allows us some flexibility to work with any serializable instance, but it can be hard to maintain.</p>
+<p>Zookeeper 主要使用字节数组，因此我们需要对数据进行序列化和反序列化。这让我们可以灵活地使用任何可序列化的实例，但也很难维护。</p>
+<p>To help here, Curator adds the concept of <span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci14LWFzeW5jL21vZGVsZWQuaHRtbA==" title="https://curator.apache.org/curator-x-async/modeled.html">typed models<i class="fa fa-external-link"></i></span> which <strong>delegates the serialization/deserialization and allows us to work with our types directly</strong>. Let’s see how that works.</p>
+<p>为了在这方面提供帮助，Curator 添加了<span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci14LWFzeW5jL21vZGVsZWQuaHRtbA==" title="https://curator.apache.org/curator-x-async/modeled.html">类型化模型<i class="fa fa-external-link"></i></span>的概念，它<strong>了序列化/反序列化，并允许我们直接</strong>我们的类型。让我们看看它是如何工作的。</p>
+<p>First, we need a serializer framework. Curator recommends using the Jackson implementation, so let’s add <span class="exturl" data-url="aHR0cHM6Ly9zZWFyY2gubWF2ZW4ub3JnL2NsYXNzaWMvI3NlYXJjaCU3Q2dhdiU3QzElN0NnJTNBJTIyY29tLmZhc3RlcnhtbC5qYWNrc29uLmNvcmUlMjIlMjBBTkQlMjBhJTNBJTIyamFja3Nvbi1kYXRhYmluZCUyMg==" title="https://search.maven.org/classic/#search%7Cgav%7C1%7Cg%3A%22com.fasterxml.jackson.core%22%20AND%20a%3A%22jackson-databind%22">the Jackson dependency<i class="fa fa-external-link"></i></span> to our <em>pom.xml</em>:</p>
+<p>首先，我们需要一个序列化框架。Curator 推荐使用 Jackson 实现，因此让我们在 <em>pom.xml</em> 中添加<span class="exturl" data-url="aHR0cHM6Ly9zZWFyY2gubWF2ZW4ub3JnL2NsYXNzaWMvI3NlYXJjaCU3Q2dhdiU3QzElN0NnJTNBJTIyY29tLmZhc3RlcnhtbC5qYWNrc29uLmNvcmUlMjIlMjBBTkQlMjBhJTNBJTIyamFja3Nvbi1kYXRhYmluZCUyMg==" title="https://search.maven.org/classic/#search%7Cgav%7C1%7Cg%3A%22com.fasterxml.jackson.core%22%20AND%20a%3A%22jackson-databind%22">Jackson 依赖项<i class="fa fa-external-link"></i></span>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-databind<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.13.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Now, let’s try to persist our custom class <em>HostConfig</em>:</p>
+<p>现在，让我们尝试持久化自定义类 _HostConfig_：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HostConfig</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String hostname;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> port;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// getters and setters</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>We need to provide the model specification mapping from the <em>HostConfig</em> class to a path, and use the modeled framework wrapper provided by Apache Curator:</p>
+<p>我们需要提供从 <em>HostConfig</em> 类到路径的模型规范映射，并使用 Apache Curator 提供的建模框架包装器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">ModelSpec&lt;HostConfig&gt; mySpec = ModelSpec.builder(</span><br><span class="line">  ZPath.parseWithIds(<span class="string">"/config/dev"</span>), </span><br><span class="line">  JacksonModelSerializer.build(HostConfig<span class="class">.<span class="keyword">class</span>))</span></span><br><span class="line"><span class="class">  .<span class="title">build</span>()</span>;</span><br><span class="line"></span><br><span class="line">CuratorFramework client = newClient();</span><br><span class="line">client.start();</span><br><span class="line"></span><br><span class="line">AsyncCuratorFramework async </span><br><span class="line">  = AsyncCuratorFramework.wrap(client);</span><br><span class="line">ModeledFramework&lt;HostConfig&gt; modeledClient </span><br><span class="line">  = ModeledFramework.wrap(async, mySpec);</span><br><span class="line"></span><br><span class="line">modeledClient.set(<span class="keyword">new</span> HostConfig(<span class="string">"host-name"</span>, <span class="number">8080</span>));</span><br><span class="line"></span><br><span class="line">modeledClient.read()</span><br><span class="line">  .whenComplete((value, e) -&gt; &#123;</span><br><span class="line">     <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">          fail(<span class="string">"Cannot read host config"</span>, e);</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          assertThat(value).isNotNull();</span><br><span class="line">          assertThat(value.getHostname()).isEqualTo(<span class="string">"host-name"</span>);</span><br><span class="line">          assertThat(value.getPort()).isEqualTo(<span class="number">8080</span>);</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>The <em>whenComplete()</em> method when reading the path <em>/config/dev</em> will return the <em>HostConfig</em> instance in Zookeeper.</p>
+<p>读取 <em>/config/dev</em> 路径时，<em>whenComplete()</em> 方法将返回 Zookeeper 中的 <em>HostConfig</em> 实例。</p>
+<h2 id="7-Recipes"><a href="#7-Recipes" class="headerlink" title="7. Recipes"></a><a href="https://www.baeldung.com/apache-curator#recipes" target="_blank" rel="noopener"><strong>7. Recipes</strong></a></h2><p>Zookeeper provides <span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy9kb2MvY3VycmVudC9yZWNpcGVzLmh0bWw=" title="https://zookeeper.apache.org/doc/current/recipes.html">this guideline<i class="fa fa-external-link"></i></span> to implement <strong>high-level solutions or recipes such as leader election, distributed locks or shared counters.</strong></p>
+<p>Zookeeper 提供了<span class="exturl" data-url="aHR0cHM6Ly96b29rZWVwZXIuYXBhY2hlLm9yZy9kb2MvY3VycmVudC9yZWNpcGVzLmh0bWw=" title="https://zookeeper.apache.org/doc/current/recipes.html">本指南<i class="fa fa-external-link"></i></span>来实现<strong>高层次的解决方案或秘诀，如领导者选举、分布式锁或共享计数器。</strong></p>
+<p>Apache Curator provides an implementation for most of these recipes. To see the full list, visit <span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci1yZWNpcGVzL2luZGV4Lmh0bWw=" title="https://curator.apache.org/curator-recipes/index.html">the Curator Recipes documentation<i class="fa fa-external-link"></i></span>.</p>
+<p>Apache Curator 提供了其中大部分方案的实现方法。要查看完整列表，请访问<span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci1yZWNpcGVzL2luZGV4Lmh0bWw=" title="https://curator.apache.org/curator-recipes/index.html">Curator Recipes 文档<i class="fa fa-external-link"></i></span>。</p>
+<p>All of these recipes are available in a separate module:</p>
+<p>所有这些API都可以在单独的模块中找到：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-recipes<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Let’s jump right in and start understanding these with some simple examples.</p>
+<p>让我们通过一些简单的例子，直接开始了解这些知识。</p>
+<h3 id="7-1-Leader-Election"><a href="#7-1-Leader-Election" class="headerlink" title="7.1. Leader Election"></a><a href="https://www.baeldung.com/apache-curator#1-leader-election" target="_blank" rel="noopener"><strong>7.1. Leader Election</strong></a></h3><p>In a distributed environment, we may need one master or leader node to coordinate a complex job.</p>
+<p>在分布式环境中，我们可能需要一个主节点或领导节点来协调复杂的工作。</p>
+<p>This is how the usage of <span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci1yZWNpcGVzL2xlYWRlci1lbGVjdGlvbi5odG1s" title="https://curator.apache.org/curator-recipes/leader-election.html">the Leader Election recipe<i class="fa fa-external-link"></i></span> in Curator looks like:</p>
+<p>这就是 <span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci1yZWNpcGVzL2xlYWRlci1lbGVjdGlvbi5odG1s" title="https://curator.apache.org/curator-recipes/leader-election.html">领导人选举配方<i class="fa fa-external-link"></i></span> 在 Curator 中的用法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">CuratorFramework client = newClient();</span><br><span class="line">client.start();</span><br><span class="line">LeaderSelector leaderSelector = <span class="keyword">new</span> LeaderSelector(client, </span><br><span class="line">  <span class="string">"/mutex/select/leader/for/job/A"</span>, </span><br><span class="line">  <span class="keyword">new</span> LeaderSelectorListener() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stateChanged</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        CuratorFramework client, </span></span></span><br><span class="line"><span class="function"><span class="params">        ConnectionState newState)</span> </span>&#123;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">takeLeadership</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        CuratorFramework client)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// join the members group</span></span><br><span class="line">leaderSelector.start();</span><br><span class="line"></span><br><span class="line"><span class="comment">// wait until the job A is done among all members</span></span><br><span class="line">leaderSelector.close();</span><br></pre></td></tr></table></figure>
+
+<p>When we start the leader selector, our node joins a members group within the path <em>/mutex/select/leader/for/job/A</em>. Once our node becomes the leader, the <em>takeLeadership</em> method will be invoked, and we as leaders can resume the job.</p>
+<p>当我们启动领导者选择器时，我们的节点会加入 <em>/mutex/select/leader/for/job/A</em> 路径下的成员组。一旦我们的节点成为领导者，<em>takeLeadership</em> 方法就会被调用，作为领导者的我们就可以继续执行任务。</p>
+<h3 id="7-2-Shared-Locks"><a href="#7-2-Shared-Locks" class="headerlink" title="7.2. Shared Locks"></a><a href="https://www.baeldung.com/apache-curator#2-shared-locks" target="_blank" rel="noopener"><strong>7.2. Shared Locks</strong></a></h3><p><span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci1yZWNpcGVzL3NoYXJlZC1sb2NrLmh0bWw=" title="https://curator.apache.org/curator-recipes/shared-lock.html">The Shared Lock recipe<i class="fa fa-external-link"></i></span> is about having a fully distributed lock:</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci1yZWNpcGVzL3NoYXJlZC1sb2NrLmh0bWw=" title="https://curator.apache.org/curator-recipes/shared-lock.html">共享锁配方<i class="fa fa-external-link"></i></span> 是关于完全分布式锁的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CuratorFramework client = newClient();</span><br><span class="line">client.start();</span><br><span class="line">InterProcessSemaphoreMutex sharedLock = <span class="keyword">new</span> InterProcessSemaphoreMutex(</span><br><span class="line">  client, <span class="string">"/mutex/process/A"</span>);</span><br><span class="line"></span><br><span class="line">sharedLock.acquire();</span><br><span class="line"></span><br><span class="line"><span class="comment">// do process A</span></span><br><span class="line"></span><br><span class="line">sharedLock.release();</span><br></pre></td></tr></table></figure>
+
+<p>When we acquire the lock, Zookeeper ensures that there’s no other application acquiring the same lock at the same time.</p>
+<p>当我们获取锁时，Zookeeper 会确保没有其他应用程序同时获取相同的锁。</p>
+<h3 id="7-3-Counters"><a href="#7-3-Counters" class="headerlink" title="7.3. Counters"></a><a href="https://www.baeldung.com/apache-curator#3-counters" target="_blank" rel="noopener"><strong>7.3. Counters</strong></a></h3><p><span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci1yZWNpcGVzL3NoYXJlZC1jb3VudGVyLmh0bWw=" title="https://curator.apache.org/curator-recipes/shared-counter.html">The Counters recipe<i class="fa fa-external-link"></i></span> coordinates a shared <em>Integer</em> among all the clients:</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jdXJhdG9yLmFwYWNoZS5vcmcvY3VyYXRvci1yZWNpcGVzL3NoYXJlZC1jb3VudGVyLmh0bWw=" title="https://curator.apache.org/curator-recipes/shared-counter.html">计数器配方<i class="fa fa-external-link"></i></span> 协调所有客户端共享的_整数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CuratorFramework client = newClient();</span><br><span class="line">client.start();</span><br><span class="line"></span><br><span class="line">SharedCount counter = <span class="keyword">new</span> SharedCount(client, <span class="string">"/counters/A"</span>, <span class="number">0</span>);</span><br><span class="line">counter.start();</span><br><span class="line"></span><br><span class="line">counter.setCount(counter.getCount() + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">assertThat(counter.getCount()).isEqualTo(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>In this example, Zookeeper stores the <em>Integer</em> value in the path <em>/counters/A</em> and initializes the value to <em>0</em> if the path has not been created yet.</p>
+<p>在此示例中，Zookeeper 将 <em>Integer</em> 值存储在 <em>/counters/A</em> 路径中，如果路径尚未创建，则将该值初始化为 <em>0</em>。</p>
+<h2 id="8-Conclusion"><a href="#8-Conclusion" class="headerlink" title="8. Conclusion"></a><strong>8. Conclusion</strong><a href="https://www.baeldung.com/apache-curator#conclusion" target="_blank" rel="noopener"></a></h2><p>In this article, we’ve seen how to use Apache Curator to connect to Apache Zookeeper and take benefit of its main features.</p>
+<p>在这篇文章中，我们介绍了如何使用Apach Curator连接Apach Zookeeper，并利用其主要功能。</p>
+<p>We’ve also introduced a few of the main recipes in Curator.</p>
+<p>我们还介绍了 Curator 中的一些主要不见。</p>
+<p>As usual, sources can be found <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2V1Z2VucC90dXRvcmlhbHMvdHJlZS9tYXN0ZXIvYXBhY2hlLWxpYnJhcmllcw==" title="https://github.com/eugenp/tutorials/tree/master/apache-libraries">over on GitHub<i class="fa fa-external-link"></i></span>.</p>
+<p>与往常一样，您可以在 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2V1Z2VucC90dXRvcmlhbHMvdHJlZS9tYXN0ZXIvYXBhY2hlLWxpYnJhcmllcw==" title="https://github.com/eugenp/tutorials/tree/master/apache-libraries">GitHub<i class="fa fa-external-link"></i></span> 上找到源代码。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/09/11/zkapachcurator/" title="【Zookeeper】Introduction to Apache Curator">https://whitestore.top/2023/09/11/zkapachcurator/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Zookeeper/" rel="tag"># Zookeeper</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/09/09/onebookpay/" rel="prev" title="【读书笔记】《一本书读懂支付》读书笔记（一）">
+      <i class="fa fa-chevron-left"></i> 【读书笔记】《一本书读懂支付》读书笔记（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/09/11/adaptg1gc/" rel="next" title="【JVM】Garbage First Garbage Collector Tuning">
+      【JVM】Garbage First Garbage Collector Tuning <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原文"><span class="nav-number">1.</span> <span class="nav-text">原文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Prerequisites"><span class="nav-number">1.2.</span> <span class="nav-text">2. Prerequisites</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Connection-Management"><span class="nav-number">1.3.</span> <span class="nav-text">3. Connection Management</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Async"><span class="nav-number">1.4.</span> <span class="nav-text">4. Async</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Configuration-Management"><span class="nav-number">1.5.</span> <span class="nav-text">5. Configuration Management</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-Watchers"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1. Watchers</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Strongly-Typed-Models"><span class="nav-number">1.6.</span> <span class="nav-text">6. Strongly Typed Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-Recipes"><span class="nav-number">1.7.</span> <span class="nav-text">7. Recipes</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-Leader-Election"><span class="nav-number">1.7.1.</span> <span class="nav-text">7.1. Leader Election</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-Shared-Locks"><span class="nav-number">1.7.2.</span> <span class="nav-text">7.2. Shared Locks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-Counters"><span class="nav-number">1.7.3.</span> <span class="nav-text">7.3. Counters</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-Conclusion"><span class="nav-number">1.8.</span> <span class="nav-text">8. Conclusion</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">238</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">29:31</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

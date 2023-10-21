@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="gc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【JVM】Garbage First Garbage Collector Tuning">
+<meta property="og:url" content="https://whitestore.top/2023/09/11/adaptg1gc/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="gc">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-09-11T02:39:56.000Z">
+<meta property="article:modified_time" content="2023-10-21T14:26:31.032Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="garbage">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://whitestore.top/2023/09/11/adaptg1gc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【JVM】Garbage First Garbage Collector Tuning | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/09/11/adaptg1gc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【JVM】Garbage First Garbage Collector Tuning
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-09-11 10:39:56" itemprop="dateCreated datePublished" datetime="2023-09-11T10:39:56+08:00">2023-09-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-10-21 22:26:31" itemprop="dateModified" datetime="2023-10-21T22:26:31+08:00">2023-10-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/09/11/adaptg1gc/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/09/11/adaptg1gc/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+            <div class="post-description">gc</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS90ZWNobmljYWwtcmVzb3VyY2VzL2FydGljbGVzL2phdmEvZzFnYy5odG1s" title="https://www.oracle.com/technical-resources/articles/java/g1gc.html">Garbage First Garbage Collector Tuning (oracle.com)<i class="fa fa-external-link"></i></span></p>
+<h1 id="Learn-about-how-to-adapt-and-tune-the-G1-GC-for-evaluation-analysis-and-performance-了解如何适应和调整G1-GC的评估、分析和性能"><a href="#Learn-about-how-to-adapt-and-tune-the-G1-GC-for-evaluation-analysis-and-performance-了解如何适应和调整G1-GC的评估、分析和性能" class="headerlink" title="Learn about how to adapt and tune the G1 GC for evaluation, analysis and performance. 了解如何适应和调整G1 GC的评估、分析和性能"></a><strong>Learn about how to adapt and tune the G1 GC for evaluation, analysis and performance.</strong> 了解如何适应和调整G1 GC的评估、分析和性能</h1><p>The <span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS9qYXZhL3RlY2hub2xvZ2llcy9qYXZhc2UvaG90c3BvdC1nYXJiYWdlLWNvbGxlY3Rpb24uaHRtbA==" title="https://www.oracle.com/java/technologies/javase/hotspot-garbage-collection.html">Garbage First Garbage Collector (G1 GC)<i class="fa fa-external-link"></i></span> is the low-pause, server-style generational garbage collector for Java HotSpot VM. The G1 GC uses concurrent and parallel phases to achieve its target pause time and to maintain good throughput. When G1 GC determines that a garbage collection is necessary, it collects the regions with the least live data first (garbage first).</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS9qYXZhL3RlY2hub2xvZ2llcy9qYXZhc2UvaG90c3BvdC1nYXJiYWdlLWNvbGxlY3Rpb24uaHRtbA==" title="https://www.oracle.com/java/technologies/javase/hotspot-garbage-collection.html">Garbage First Garbage Collector (G1 GC)<i class="fa fa-external-link"></i></span>是 Java HotSpot VM 的低等待、Server端垃圾收集器。G1 GC 使用并发和并行阶段来实现其目标暂停时间，并保持良好的吞吐量。当 G1 GC 确定有必要进行垃圾收集时，它会首先收集实时数据最少的区域（垃圾优先）。</p>
+<p>A garbage collector (GC) is a memory management tool. The G1 GC achieves automatic memory management through the following operations:</p>
+<p>垃圾收集器（GC）是一种内存管理工具。G1 GC 通过以下操作实现自动内存管理：</p>
+<ul>
+<li><p>Allocating objects to a young generation and promoting aged objects into an old generation.</p>
+</li>
+<li><p>Finding live objects in the old generation through a concurrent (parallel) marking phase. The Java HotSpot VM triggers the marking phase when the total Java heap occupancy exceeds the default threshold.</p>
+</li>
+<li><p>Recovering free memory by compacting live objects through parallel copying.</p>
+</li>
+<li><p>将对象分配到年轻一代，并将老化对象提升到老一代。</p>
+</li>
+<li><p>通过并发（并行）标记阶段，在旧一代中查找有效对象。Java HotSpot VM 会在 Java 堆总占用率超过默认阈值时触发标记阶段。</p>
+</li>
+<li><p>通过并行复制压缩活对象来恢复空闲内存。</p>
+</li>
+</ul>
+<a id="more"></a>
+
+<p>Here, we look at how to adapt and tune the G1 GC for evaluation, analysis and performance—we assume a basic understanding of Java garbage collection.</p>
+<p>在此，我们将探讨如何调整 G1 GC 并使其满足评估、分析和性能要求–我们假设您对 Java 垃圾回收有基本的了解。</p>
+<p>The G1 GC is a regionalized and generational garbage collector, which means that the Java object heap (heap) is divided into a number of equally sized regions. </p>
+<p>G1 GC 是一种区域化和世代垃圾收集器，这意味着 Java 对象堆（heap）被划分为多个大小相等的区域。</p>
+<p>Upon startup, the Java Virtual Machine (JVM) sets the region size. </p>
+<p>启动时，Java 虚拟机（JVM）会设置区域大小。</p>
+<p>The region sizes can vary from 1 MB to 32 MB depending on the heap size. </p>
+<p>根据堆的大小，区域大小从 1 MB 到 32 MB 不等。</p>
+<p>The goal is to have no more than 2048 regions. </p>
+<p>目标是不超过 2048 个区域。</p>
+<p>The eden, survivor, and old generations are logical sets of these regions and are not contiguous.</p>
+<p>伊甸园”、”幸存者 “和 “旧世代 “是这些区域的逻辑集合，并不连续。</p>
+<p>The G1 GC has a pause time-target that it tries to meet (soft real time).</p>
+<p>G1 GC 有一个试图达到的暂停时间目标（软实时）。</p>
+<p> During young collections, the G1 GC adjusts its young generation (eden and survivor sizes) to meet the soft real-time target. </p>
+<p>在幼年期收集期间，G1 GC 会调整其幼年期生成（eden 和 survivor 大小），以满足软实时目标。</p>
+<p>During mixed collections, the G1 GC adjusts the number of old regions that are collected based on a target number of mixed garbage collections, the percentage of live objects in each region of the heap, and the overall acceptable heap waste percentage.</p>
+<p>在混合收集期间，G1 GC 会根据混合垃圾收集的目标数量、堆中每个区域中活对象的百分比以及可接受的总体堆浪费百分比，调整旧区域的收集数量。</p>
+<p>The G1 GC reduces heap fragmentation by incremental parallel copying of live objects from one or more sets of regions (called Collection Set (CSet)) into different new region(s) to achieve compaction. </p>
+<p>G1 GC 通过将实时对象从一组或多组区域（称为集合集（CSet））增量并行复制到不同的新区域来实现压缩，从而减少堆碎片。</p>
+<p>The goal is to reclaim as much heap space as possible, starting with those regions that contain the most reclaimable space, while attempting to not exceed the pause time goal (garbage first).</p>
+<p>其目标是尽可能多地回收堆空间，从包含最多可回收空间的区域开始，同时尽量不超过暂停时间目标（垃圾优先）。</p>
+<p>The G1 GC uses independent Remembered Sets (RSets) to track references into regions. </p>
+<p>G1 GC 使用独立的记忆集 (RSets) 来跟踪对区域的引用。</p>
+<p>Independent RSets enable parallel and independent collection of regions because only a region’s RSet must be scanned for references into that region, instead of the whole heap. </p>
+<p>独立 <code>RSet</code> 可实现并行和独立的区域收集，因为只需扫描区域的 <code>RSet</code> 以查找对该区域的引用，而无需扫描整个堆。</p>
+<p>The G1 GC uses a post-write barrier to record changes to the heap and update the RSets.</p>
+<p>G1 GC 使用写后屏障来记录堆的变化并更新 <code>RSets</code>。</p>
+<h1 id="Garbage-Collection-Phases垃圾收集阶段"><a href="#Garbage-Collection-Phases垃圾收集阶段" class="headerlink" title="Garbage Collection Phases垃圾收集阶段"></a>Garbage Collection Phases垃圾收集阶段</h1><p>Apart from evacuation pauses (described below) that compose the stop-the-world (STW) young and mixed garbage collections, the G1 GC also has parallel, concurrent, and multiphase marking cycles. </p>
+<p>除了构成 “Stop-World”（STW）年轻模式和混合垃圾收集的疏散暂停（如下所述）外，G1 GC 还具有并行、并发和多阶段标记周期。</p>
+<p>G1 GC uses the Snapshot-At-The-Beginning (SATB) algorithm, which takes a snapshot of the set of live objects in the heap at the start of a marking cycle. </p>
+<p>G1 GC 使用 “<strong>开始时快照</strong>“（SATB）算法，在标记周期开始时对堆中的实时对象集进行快照。</p>
+<p>The set of live objects is composed of the live objects in the snapshot, and the objects allocated since the start of the marking cycle. </p>
+<p>实时对象集由快照中的实时对象和标记周期开始后分配的对象组成。</p>
+<p>The G1 GC marking algorithm uses a pre-write barrier to record and mark objects that are part of the logical snapshot.</p>
+<p>G1 GC 标记算法使用预写屏障来记录和标记逻辑快照中的对象。</p>
+<h1 id="Young-Garbage-Collections-年轻代垃圾手机"><a href="#Young-Garbage-Collections-年轻代垃圾手机" class="headerlink" title="Young Garbage Collections 年轻代垃圾手机"></a>Young Garbage Collections 年轻代垃圾手机</h1><p>The G1 GC satisfies most allocation requests from regions added to the eden set of regions. </p>
+<p>G1 GC 可满足大部分来自添加到 Eden 区域集的区域的分配请求。</p>
+<p>During a young garbage collection, the G1 GC collects both the eden regions and the survivor regions from the previous garbage collection. </p>
+<p>在一次新的垃圾回收过程中，G1 GC 会同时回收上一次垃圾回收中的 eden 区域和 survivor 区域。</p>
+<p>The live objects from the eden and survivor regions are copied, or evacuated, to a new set of regions. </p>
+<p>来自 eden 和 survivor 区域的实时对象会被复制或疏散到一组新的区域中。</p>
+<p>The destination region for a particular object depends upon the object’s age; an object that has aged sufficiently evacuates to an old generation region (that is, promoted); otherwise, the object evacuates to a survivor region and will be included in the CSet of the next young or mixed garbage collection.</p>
+<p>特定对象的目标区域取决于该对象的年龄；年龄足够大的对象会被移动到老一代区域（即晋升）；否则，该对象会被移动到存活区域，并被纳入下一次年轻代或混合垃圾收集的 CSet 中。</p>
+<h1 id="Mixed-Garbage-Collections"><a href="#Mixed-Garbage-Collections" class="headerlink" title="Mixed Garbage Collections"></a>Mixed Garbage Collections</h1><p>Upon successful completion of a concurrent marking cycle, the G1 GC switches from performing young garbage collections to performing mixed garbage collections. </p>
+<p>成功完成并发标记周期后，G1 GC 会从执行年轻垃圾收集切换到执行混合垃圾收集。</p>
+<p>In a mixed garbage collection, the G1 GC optionally adds some old regions to the set of eden and survivor regions that will be collected. </p>
+<p>在混合垃圾收集中，G1 GC 会选择性地将一些old region添加到将被收集的 Eden 和 survivor 区域集合中。</p>
+<p>The exact number of old regions added is controlled by a number of flags that will be discussed later (see “<span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS90ZWNobmljYWwtcmVzb3VyY2VzL2FydGljbGVzL2phdmEvZzFnYy5odG1sI1RhbWluZw==" title="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Taming">Taming Mixed GCs<i class="fa fa-external-link"></i></span>“). </p>
+<p>添加old region的具体数量由一些标志控制，稍后将讨论这些标志（参见”<span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS90ZWNobmljYWwtcmVzb3VyY2VzL2FydGljbGVzL2phdmEvZzFnYy5odG1sI1RhbWluZw==" title="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Taming">驯服混合 GC<i class="fa fa-external-link"></i></span>“）。</p>
+<p>After the G1 GC collects a sufficient number of old regions (over multiple mixed garbage collections), G1 reverts to performing young garbage collections until the next marking cycle completes.</p>
+<p>在 G1 GC 收集到足够数量的旧区域后（经过多次混合垃圾收集），G1 将恢复执行年轻垃圾收集，直到下一个标记周期完成。</p>
+<h1 id="Phases-of-the-Marking-Cycle"><a href="#Phases-of-the-Marking-Cycle" class="headerlink" title="Phases of the Marking Cycle"></a>Phases of the Marking Cycle</h1><p>The marking cycle has the following phases:</p>
+<ul>
+<li><strong>Initial mark phase</strong>: The G1 GC marks the roots during this phase. This phase is piggybacked on a normal (STW) young garbage collection.</li>
+<li><strong>Root region scanning phase</strong>: The G1 GC scans survivor regions of the initial mark for references to the old generation and marks the referenced objects. This phase runs concurrently with the application (not STW) and must complete before the next STW young garbage collection can start.</li>
+<li><strong>Concurrent marking phase</strong>: The G1 GC finds reachable (live) objects across the entire heap. This phase happens concurrently with the application, and can be interrupted by STW young garbage collections.</li>
+<li><strong>Remark phase</strong>: This phase is STW collection and helps the completion of the marking cycle. G1 GC drains SATB buffers, traces unvisited live objects, and performs reference processing.</li>
+<li><strong>Cleanup phase</strong>: In this final phase, the G1 GC performs the STW operations of accounting and RSet scrubbing. During accounting, the G1 GC identifies completely free regions and mixed garbage collection candidates. The cleanup phase is partly concurrent when it resets and returns the empty regions to the free list.</li>
+</ul>
+<p>垃圾回收的阶段如下：</p>
+<ul>
+<li><strong>初始标记阶段</strong>： G1 GC 在此阶段对root进行标记。该阶段是正常（STW）年轻垃圾回收的前置阶段。  </li>
+<li><strong>根区域扫描阶段</strong>： G1 GC 会扫描初始标记的<code>survivor</code>区域，查找对旧一代的引用，并标记引用对象。该阶段与应用程序（非 STW）同时运行，必须在下一次 STW 年轻垃圾收集开始前完成。  </li>
+<li><strong>并发标记阶段</strong>： G1 GC 会在整个堆中找到可触及的（活）对象。该阶段与应用程序同时进行，可能会被 STW 年轻垃圾收集中断。  </li>
+<li><strong>标记阶段</strong>： 此阶段为 STW 收集，有助于完成标记周期。G1 GC 会耗尽 SATB 缓冲区，跟踪未访问的实时对象，并执行引用处理。  </li>
+<li><strong>清理阶段</strong>： 在这一最后阶段，G1 GC 执行核算和 RSet 擦除的 STW 操作。在核算过程中，G1 GC 会识别完全空闲的区域和混合垃圾收集候选对象。清理阶段的部分并发操作是重置空区域并将其返回到空闲列表。  </li>
+</ul>
+<h1 id="Important-Defaults"><a href="#Important-Defaults" class="headerlink" title="Important Defaults"></a>Important Defaults</h1><p>The G1 GC is an adaptive garbage collector with defaults that enable it to work efficiently without modification. </p>
+<p>G1 GC 是一种自适应垃圾回收器，其默认值使其无需修改即可高效工作。</p>
+<p>Here is a list of important options and their default values. </p>
+<p>下面列出了重要选项及其默认值。</p>
+<p>This list applies to the latest Java HotSpot VM, build 24. </p>
+<p>此列表适用于最新的 Java HotSpot VM 第 24 版。</p>
+<p>You can adapt and tune the G1 GC to your application performance needs by entering the following options with changed settings on the JVM command line.</p>
+<p>您可以通过在 JVM 命令行中输入以下已更改设置的选项，调整 G1 GC 以满足您的应用程序性能需求。</p>
+<ul>
+<li><p><code>-XX:G1HeapRegionSize=n</code>  </p>
+<p>  Sets the size of a G1 region. The value will be a power of two and can range from 1MB to 32MB. The goal is to have around 2048 regions based on the minimum Java heap size.</p>
+<p>  设置 G1 region 的大小。该值是 2 的幂次，范围从 1MB 到 32MB。我们的目标是根据 Java 堆的最小大小，设置大约 2048 个区域。</p>
+</li>
+<li><p><code>-XX:MaxGCPauseMillis=200</code>  </p>
+<p>  Sets a target value for desired maximum pause time. The default value is 200 milliseconds. The specified value does not adapt to your heap size.<br>   设置所需<strong>最大暂停时间的目标值</strong>。默认值为 <strong>200</strong> 毫秒。指定值与堆大小无关。</p>
+</li>
+<li><p><code>-XX:G1NewSizePercent=5</code>  </p>
+<p>  Sets the percentage of the heap to use as the minimum for the young generation size. The default value is 5 percent of your Java heap. This is an experimental flag. See “<span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS90ZWNobmljYWwtcmVzb3VyY2VzL2FydGljbGVzL2phdmEvZzFnYy5odG1sI1VubG9jaw==" title="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Unlock">How to unlock experimental VM flags<i class="fa fa-external-link"></i></span>“ for an example. This setting replaces the <code>-XX:DefaultMinNewGenPercent</code> setting. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+<li><p><code>-XX:G1MaxNewSizePercent=60</code>  </p>
+<p>  Sets the percentage of the heap size to use as the maximum for young generation size. The default value is 60 percent of your Java heap. This is an experimental flag. See “<span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS90ZWNobmljYWwtcmVzb3VyY2VzL2FydGljbGVzL2phdmEvZzFnYy5odG1sI1VubG9jaw==" title="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Unlock">How to unlock experimental VM flags<i class="fa fa-external-link"></i></span>“ for an example. This setting replaces the <code>-XX:DefaultMaxNewGenPercent</code> setting. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+<li><p><code>-XX:ParallelGCThreads=n</code>  </p>
+<p>  Sets the value of the STW worker threads. Sets the value of n to the number of logical processors. The value of <code>n</code> is the same as the number of logical processors up to a value of 8.</p>
+<p>  If there are more than eight logical processors, sets the value of <code>n</code> to approximately 5/8 of the logical processors. This works in most cases except for larger SPARC systems where the value of <code>n</code> can be approximately 5/16 of the logical processors.</p>
+</li>
+<li><p><code>-XX:ConcGCThreads=n</code>  </p>
+<p>  Sets the number of parallel marking threads. Sets <code>n</code> to approximately 1/4 of the number of parallel garbage collection threads (<code>ParallelGCThreads</code>).</p>
+</li>
+<li><p><code>-XX:InitiatingHeapOccupancyPercent=45</code>  </p>
+<p>  Sets the Java heap occupancy threshold that triggers a marking cycle. The default occupancy is 45 percent of the entire Java heap.</p>
+</li>
+<li><p><code>-XX:G1MixedGCLiveThresholdPercent=65</code>  </p>
+<p>  Sets the occupancy threshold for an old region to be included in a mixed garbage collection cycle. The default occupancy is 65 percent. This is an experimental flag. See “<span class="exturl" data-url="aHR0cHM6Ly93d3cub3JhY2xlLmNvbS90ZWNobmljYWwtcmVzb3VyY2VzL2FydGljbGVzL2phdmEvZzFnYy5odG1sI1VubG9jaw==" title="https://www.oracle.com/technical-resources/articles/java/g1gc.html#Unlock">How to unlock experimental VM flags<i class="fa fa-external-link"></i></span>“ for an example. This setting replaces the <code>-XX:G1OldCSetRegionLiveThresholdPercent</code> setting. This setting is not available in Java HotSpot VM, build 23.</p>
+</li>
+<li><p><code>-XX:G1HeapWastePercent=10</code>  </p>
+<p>  Sets the percentage of heap that you are willing to waste. The Java HotSpot VM does not initiate the mixed garbage collection cycle when the reclaimable percentage is less than the heap waste percentage. The default is 10 percent. This setting is not available in Java HotSpot VM, build 23.</p>
+<p>  设置触发垃圾回收之后剩余可被回收的百分比触发Mixed GC的百分比。如果当存活的垃圾对象百分比小于此设置的百分比时，Java HotSpot VM 不会启动Mixed GC。默认值为 10%。此设置在 Java HotSpot VM 第 23 版中不可用。</p>
+</li>
+<li><p><code>-XX:G1MixedGCCountTarget=8</code>  </p>
+<p>  Sets the target number of mixed garbage collections after a marking cycle to collect old regions with at most <code>G1MixedGCLIveThresholdPercent</code> live data. The default is 8 mixed garbage collections. The goal for mixed collections is to be within this target number. This setting is not available in Java HotSpot VM, build 23.</p>
+<p>  设置标记周期后混合垃圾收集的目标次数，以收集最多具有 <code>G1MixedGCLIveThresholdPercent</code> 实时数据的旧区域。默认为 8 次混合垃圾收集。混合收集的目标是在此目标次数范围内。此设置在 Java HotSpot VM 第 23 版中不可用。</p>
+</li>
+<li><p><code>-XX:G1OldCSetRegionThresholdPercent=10</code>  </p>
+<p>  Sets an upper limit on the number of old regions to be collected during a mixed garbage collection cycle. The default is 10 percent of the Java heap. This setting is not available in Java HotSpot VM, build 23.</p>
+<p>  <strong>设置在混合垃圾收集周期内收集的旧区域数量上限</strong>。默认值为 Java 堆的 10%。此设置在 Java HotSpot VM 第 23 版中不可用。</p>
+</li>
+<li><p><code>-XX:G1ReservePercent=10</code>  （保留内存百分比）</p>
+<p>  Sets the percentage of reserve memory to keep free so as to reduce the risk of to-space overflows. The default is 10 percent. When you increase or decrease the percentage, make sure to adjust the total Java heap by the same amount. This setting is not available in Java HotSpot VM, build 23.</p>
+<p>  <strong>设置保留空闲内存的百分比</strong>，以降低空间溢出的风险。默认值为 10%。增加或减少该百分比时，请确保<strong>以相同的数量调整 Java 堆总数</strong>。此设置在 <strong>Java HotSpot VM 第 23 版中不可用</strong>。</p>
+</li>
+</ul>
+<h2 id="About-the-Author-关于作者"><a href="#About-the-Author-关于作者" class="headerlink" title="About the Author 关于作者"></a>About the Author 关于作者</h2><p>Monica Beckwith, Principal Member of Technical Staff at Oracle, is the performance lead for the Java HotSpot VM’s Garbage First Garbage Collector. </p>
+<p>Monica Beckwith 是甲骨文公司的首席技术人员，是 Java HotSpot 虚拟机垃圾优先垃圾收集器的性能负责人。</p>
+<p>She has worked in the performance and architecture industry for over 10 years. </p>
+<p>她在性能和架构行业工作了 10 多年。</p>
+<p>Prior to Oracle and Sun Microsystems, Monica lead the performance effort at Spansion Inc. </p>
+<p>在加入 Oracle 和 Sun Microsystems 之前，Monica 在 Spansion Inc. </p>
+<p>Monica has worked with many industry standard Java based benchmarks with a constant goal of finding opportunities for improvement in the Java HotSpot VM。</p>
+<p>Monica 曾参与过许多基于行业标准 Java 的基准测试，始终致力于寻找 Java HotSpot VM 的改进机会。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/09/11/adaptg1gc/" title="【JVM】Garbage First Garbage Collector Tuning">https://whitestore.top/2023/09/11/adaptg1gc/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/09/11/zkapachcurator/" rel="prev" title="【Zookeeper】Introduction to Apache Curator">
+      <i class="fa fa-chevron-left"></i> 【Zookeeper】Introduction to Apache Curator
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/09/13/passarguments/" rel="next" title="【Linux】Pass arguments into a function">
+      【Linux】Pass arguments into a function <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Source"><span class="nav-number">1.</span> <span class="nav-text">Source</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Learn-about-how-to-adapt-and-tune-the-G1-GC-for-evaluation-analysis-and-performance-了解如何适应和调整G1-GC的评估、分析和性能"><span class="nav-number">2.</span> <span class="nav-text">Learn about how to adapt and tune the G1 GC for evaluation, analysis and performance. 了解如何适应和调整G1 GC的评估、分析和性能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Garbage-Collection-Phases垃圾收集阶段"><span class="nav-number">3.</span> <span class="nav-text">Garbage Collection Phases垃圾收集阶段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Young-Garbage-Collections-年轻代垃圾手机"><span class="nav-number">4.</span> <span class="nav-text">Young Garbage Collections 年轻代垃圾手机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mixed-Garbage-Collections"><span class="nav-number">5.</span> <span class="nav-text">Mixed Garbage Collections</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Phases-of-the-Marking-Cycle"><span class="nav-number">6.</span> <span class="nav-text">Phases of the Marking Cycle</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Important-Defaults"><span class="nav-number">7.</span> <span class="nav-text">Important Defaults</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#About-the-Author-关于作者"><span class="nav-number">7.1.</span> <span class="nav-text">About the Author 关于作者</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">238</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">29:31</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

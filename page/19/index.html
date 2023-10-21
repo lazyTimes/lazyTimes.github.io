@@ -197,6 +197,630 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/11/22/mavenmodules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/22/mavenmodules/" class="post-title-link" itemprop="url">【Maven】Maven 多模块和依赖冲突问题汇总记录</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-22 19:46:50" itemprop="dateCreated datePublished" datetime="2020-11-22T19:46:50+08:00">2020-11-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Maven/" itemprop="url" rel="index"><span itemprop="name">Maven</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/22/mavenmodules/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/22/mavenmodules/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+            <div class="post-description">maven多模块如何在idea中创建，以及maven常见的依赖问题介绍和处理方法</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="【Maven】Maven-多模块和依赖冲突问题汇总记录"><a href="#【Maven】Maven-多模块和依赖冲突问题汇总记录" class="headerlink" title="【Maven】Maven 多模块和依赖冲突问题汇总记录"></a>【Maven】Maven 多模块和依赖冲突问题汇总记录</h1><h1 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h1><p><img src="https://gitee.com/lazyTimes/imageReposity/raw/master/img/20201122191750.png" alt=""></p>
+<p>[TOC]</p>
+<h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>今天学习和总结了一下maven的相关知识点，发现一些比较基础的东西居然也会忘记，这里对于一些日常工作中可能会遇到的问题进行了一下汇总。</p>
+<h1 id="idea怎么创建maven多module的项目"><a href="#idea怎么创建maven多module的项目" class="headerlink" title="idea怎么创建maven多module的项目"></a>idea怎么创建maven多module的项目</h1><h2 id="首先了解上面是多module？"><a href="#首先了解上面是多module？" class="headerlink" title="首先了解上面是多module？"></a>首先了解上面是多module？</h2><p>一句话概括就是：一个父模块作为版本控制多个子模块，子模块负责接入到父模块当中作为整个项目的过程。</p>
+<h2 id="多Module管理项目的几种方式："><a href="#多Module管理项目的几种方式：" class="headerlink" title="多Module管理项目的几种方式："></a>多Module管理项目的几种方式：</h2><ol>
+<li>按照单模块拆分为多个子模块，比如将MVC三层架构拆分为 xxx-service，xxx-dao，xxx-model，不过这种方式个人感觉比较二，目前以业务模块拆分比较多，迁移到微服务比如用springcloude或者dubbo 的时候非常好用。</li>
+<li>按照业务模块拆分，这种模式使用的比较多，也比较多见。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/11/22/mavenmodules/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/11/21/note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/21/note/" class="post-title-link" itemprop="url">Redis学习 - Redis发布订阅</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-21 22:52:22" itemprop="dateCreated datePublished" datetime="2020-11-21T22:52:22+08:00">2020-11-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/21/note/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/21/note/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+            <div class="post-description">redis发布订阅的一些应用以及一些命令的学习</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>消息通信模式，发送者发送消息，接受者接受消息，微信，微博，关注系统</p>
+<p>redis客户端可以订阅任意数量的频道</p>
+<p>订阅/发布消息：</p>
+<ol>
+<li>消息发送者</li>
+<li>频道</li>
+<li>消息内容</li>
+<li>消息接受者</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/11/21/note/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/11/21/redis-chijiu/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/21/redis-chijiu/" class="post-title-link" itemprop="url">redis学习 - redis 持久化</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-21 22:24:47" itemprop="dateCreated datePublished" datetime="2020-11-21T22:24:47+08:00">2020-11-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/21/redis-chijiu/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/21/redis-chijiu/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+            <div class="post-description">关于redis持久化的一些学习了解，以及一些拓展知识的了解</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>无论面试和工作，持久化都是重点。</p>
+<p>一般情况下,redis占用内存超过20GB以上的时候，必须考虑主从多redis实例进行数据同步和备份保证可用性。</p>
+<p>rbd保存的文件都是 <code>dump.rdb</code>，都是配置文件当中的快照配置进行生成的。一般业务情况只需要用rdb即可。</p>
+<p>aof默认是不开启的，因为aof非常容易产生大文件，虽然官方提供重写但是在文件体积过大的时候还是容易造成阻塞，谨慎考虑使用</p>
+<p>rbd和aof在大数据量分别有各种不同情况的系统性能影响，具体使用何种解决策略需要根据系统资源以及业务的实际情况决定。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/11/21/redis-chijiu/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/11/15/note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/15/note/" class="post-title-link" itemprop="url">记一次阿里云安装mysql （rpm安装）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-15 15:55:50" itemprop="dateCreated datePublished" datetime="2020-11-15T15:55:50+08:00">2020-11-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/15/note/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/15/note/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+            <div class="post-description">使用rpm进行mysql安装</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="下载mysql源安装包"><a href="#下载mysql源安装包" class="headerlink" title="下载mysql源安装包"></a>下载mysql源安装包</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http:&#x2F;&#x2F;dev.mysql.com&#x2F;get&#x2F;mysql57-community-release-el7-8.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="安装mysql源"><a href="#安装mysql源" class="headerlink" title="安装mysql源"></a>安装mysql源</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum localinstall mysql57-community-release-el7-8.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="检测是否安装完成"><a href="#检测是否安装完成" class="headerlink" title="检测是否安装完成"></a>检测是否安装完成</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum repolist enabled | grep &quot;mysql.*-community.*&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install mysql-community-server</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="设置开启启动mysql服务"><a href="#设置开启启动mysql服务" class="headerlink" title="设置开启启动mysql服务"></a>设置开启启动mysql服务</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable mysqld</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="查看安装的mysql版本"><a href="#查看安装的mysql版本" class="headerlink" title="查看安装的mysql版本"></a>查看安装的mysql版本</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -aq | grep -i mysql</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="启动MySQL服务"><a href="#启动MySQL服务" class="headerlink" title="启动MySQL服务"></a>启动MySQL服务</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="查看MySQL初始密码"><a href="#查看MySQL初始密码" class="headerlink" title="查看MySQL初始密码"></a>查看MySQL初始密码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep &#39;A temporary password&#39; &#x2F;var&#x2F;log&#x2F;mysqld.log</span><br></pre></td></tr></table></figure>
+
+<p>执行上面步骤可以获得mysql初始数据库密码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获取到初始密码：.DhtciCJ?3rg</span><br></pre></td></tr></table></figure>
+
+<p>根据此密码就可以在第一次root登录的时候修改密码</p>
+<h2 id="更改MySQL密码"><a href="#更改MySQL密码" class="headerlink" title="更改MySQL密码"></a>更改MySQL密码</h2><p><code>mysqladmin -u root -p&#39;旧密码&#39; password &#39;新密码&#39;</code></p>
+<h3 id="初始化更改密码的案例"><a href="#初始化更改密码的案例" class="headerlink" title="初始化更改密码的案例"></a>初始化更改密码的案例</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin  -u root -p &#39;xxx&#39; password &#39;xxxxx&#39;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter user &#39;root&#39;@&#39;localhost&#39; identified by &#39;.DhtciCJ?3rg&#39; # 这里用刚刚到随机初始密码</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>这里会可能出现<font color='red'>更改失败</font>的问题</p>
+<p>方法一：把密码设置复杂点（这是最直接的方法）</p>
+<p>方法二：关闭mysql密码强度验证(validate_password)</p>
+<p>　　　　编辑配置文件：vim /etc/my.cnf， 增加这么一行validate_password=off</p>
+<p>　　　　编辑后重启mysql服务：systemctl restart mysqld</p>
+</blockquote>
+<h2 id="设置mysql能够远程访问（不建议使用root）"><a href="#设置mysql能够远程访问（不建议使用root）" class="headerlink" title="设置mysql能够远程访问（不建议使用root）"></a>设置mysql能够远程访问（不建议使用root）</h2><h3 id="1-登录进MySQL：mysql-uroot-p密码"><a href="#1-登录进MySQL：mysql-uroot-p密码" class="headerlink" title="1. 登录进MySQL：mysql -uroot -p密码"></a>1. 登录进MySQL：mysql -uroot -p密码</h3><p>注意只有root用户才可以操作</p>
+<h3 id="2-在阿里云当中增加一个用户给予访问权限："><a href="#2-在阿里云当中增加一个用户给予访问权限：" class="headerlink" title="2. 在阿里云当中增加一个用户给予访问权限："></a>2. 在阿里云当中增加一个用户给予访问权限：</h3><p>具体查看阿里云配置安全组</p>
+<h3 id="开放用户远程访问"><a href="#开放用户远程访问" class="headerlink" title="开放用户远程访问:"></a>开放用户远程访问:</h3><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vaG9nZS9wLzQ5NTgyMTQuaHRtbA==" title="https://www.cnblogs.com/hoge/p/4958214.html">https://www.cnblogs.com/hoge/p/4958214.html<i class="fa fa-external-link"></i></span></p>
+<p>mysql中添加一个和root一样的用户用于远程连接：</p>
+<p>大家在拿站时应该碰到过。root用户的mysql，只可以本地连，对外拒绝连接。</p>
+<p>下面语句添加一个新用户<code>administrtor</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 创建新用户</span><br><span class="line">CREATE USER &#39;monitor&#39;@&#39;%&#39; IDENTIFIED BY &#39;admin&#39;;</span><br><span class="line"></span><br><span class="line">-- 给用户分配root并且支持远程访问</span><br><span class="line">GRANT ALL PRIVILEGES ON *.* TO &#39;monitor&#39;@&#39;%&#39; IDENTIFIED BY &#39;admin&#39; WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;</span><br></pre></td></tr></table></figure>
+
+<p>删除这个用户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-- 删除用户</span><br><span class="line">DROP USER &#39;monitor&#39;@&#39;%&#39;;</span><br><span class="line">-- 删除具体分配表</span><br><span class="line">DROP DATABASE IF EXISTS &#96;monitor&#96; ;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-阿里云的安全组设置里面选择添加安全组规则，开启3306端口。授权对象选择0-0-0-0-0所有ip可访问，如果添加限制可以点击旁面的小叹号。"><a href="#3-阿里云的安全组设置里面选择添加安全组规则，开启3306端口。授权对象选择0-0-0-0-0所有ip可访问，如果添加限制可以点击旁面的小叹号。" class="headerlink" title="3. 阿里云的安全组设置里面选择添加安全组规则，开启3306端口。授权对象选择0.0.0.0/0所有ip可访问，如果添加限制可以点击旁面的小叹号。"></a>3. 阿里云的安全组设置里面选择添加安全组规则，开启3306端口。授权对象选择<code>0.0.0.0/0</code>所有ip可访问，如果添加限制可以点击旁面的小叹号。</h3><h3 id="4-最后：建议重启一下mysqld的服务"><a href="#4-最后：建议重启一下mysqld的服务" class="headerlink" title="4. 最后：建议重启一下mysqld的服务"></a><font color='red'>4. 最后：建议重启一下mysqld的服务</font></h3><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/11/11/word-export/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/11/word-export/" class="post-title-link" itemprop="url">如何使用java代码导出word</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-11 23:03:01" itemprop="dateCreated datePublished" datetime="2020-11-11T23:03:01+08:00">2020-11-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/11/word-export/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/11/word-export/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>17k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>16 分钟</span>
+            </span>
+            <div class="post-description">如何使用java代码导出word</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>导出word的需求其实在日常工作中用到的地方还不少，于是想写一篇文章好好记录一下，在导出之前，需要了解一下关于浏览器如何处理servlet的后台数据。具体可以了解一下http通信下载行为在servlet的实现。</p>
+<p>==导出的工具类代码来源于网络，如有侵权可以联系我删除文章==</p>
+<p><strong>个人使用==ftl==作为word导出模板引擎，有很多模板引擎可以选，个人经过查阅资料发现ftl用的比较多，所以选择这一种</strong></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/11/11/word-export/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/11/03/note/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -739,562 +1363,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/10/27/goidea/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/27/goidea/" class="post-title-link" itemprop="url">使用Go语言+IDEA+mysql 逆向生成dao 和 domain 的方法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-27 22:53:01" itemprop="dateCreated datePublished" datetime="2020-10-27T22:53:01+08:00">2020-10-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/10/27/goidea/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/27/goidea/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>15k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>14 分钟</span>
-            </span>
-            <div class="post-description">学习数据结构的内容-韩顺平</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="参考地址："><a href="#参考地址：" class="headerlink" title="参考地址："></a>参考地址：</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vZ2FvbWFuaXRvL3AvMTA2ODIyNjAuaHRtbA==" title="https://www.cnblogs.com/gaomanito/p/10682260.html">https://www.cnblogs.com/gaomanito/p/10682260.html<i class="fa fa-external-link"></i></span></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/27/goidea/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/10/22/jar-resource/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/22/jar-resource/" class="post-title-link" itemprop="url">如何访问jar包下面的资源文件</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-22 21:17:45" itemprop="dateCreated datePublished" datetime="2020-10-22T21:17:45+08:00">2020-10-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/10/22/jar-resource/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/22/jar-resource/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>618</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-            <div class="post-description">内嵌页面的做法</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="如何访问jar包下面的资源文件"><a href="#如何访问jar包下面的资源文件" class="headerlink" title="如何访问jar包下面的资源文件"></a>如何访问jar包下面的资源文件</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些时候，我们需要通用一些功能页面，比如maven中公用的core的jar包内需要增加一些通用的功能，现在总结一下自己从中学到的一些东西</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/22/jar-resource/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/10/20/note35/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/20/note35/" class="post-title-link" itemprop="url">面试规划</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-20 21:13:43" itemprop="dateCreated datePublished" datetime="2020-10-20T21:13:43+08:00">2020-10-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-02 18:09:46" itemprop="dateModified" datetime="2022-06-02T18:09:46+08:00">2022-06-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/10/20/note35/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/20/note35/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-            <div class="post-description">所以打铁还是需要自身硬啊</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>待在一个小公司天天做CRUD，习惯了安逸，这不是什么好事，一出来找工作看到招聘要求感觉自己凉了半截。但是都知道面试是一个成本很高的事情，所以端正心态，重新开始。</p>
-<p>总结起来就是一个字：<strong>真特么累</strong></p>
-<p>不过有什么办法呢，我是对待所有的事情都抱持着学习的态度，所以把面试本身也作为技术来学了，不得不说，把个人简历写好的重要性，是直接决定你能不能找到工作的关键。</p>
-<p>最后就是说一句，非常推荐在职找工作，没有顾虑，可以放下心来好好准备面试，没有硬实力千万不要裸辞。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/20/note35/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/10/13/note34/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/13/note34/" class="post-title-link" itemprop="url">我还是输给了免费富文本编辑器</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-13 23:38:28" itemprop="dateCreated datePublished" datetime="2020-10-13T23:38:28+08:00">2020-10-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/frontend/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/10/13/note34/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/13/note34/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-            <div class="post-description">最后还是换了编辑器，也算是一种解脱</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前因后果"><a href="#前因后果" class="headerlink" title="前因后果"></a>前因后果</h1><h2 id="说说我做的一些努力"><a href="#说说我做的一些努力" class="headerlink" title="说说我做的一些努力"></a>说说我做的一些努力</h2><ol>
-<li>考虑给百度编辑器开发的一个二次插件，等下会进行说明如何使用改源码的方式开发二次插件</li>
-<li>后端增加接口，接受word文档，转为html返回前台，前台再根据html内容对于富文本编辑框继续赋值和一些处理</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/13/note34/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2020/10/13/note33/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/13/note33/" class="post-title-link" itemprop="url">终于把百度编辑器的一个坑填了</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-13 23:04:48" itemprop="dateCreated datePublished" datetime="2020-10-13T23:04:48+08:00">2020-10-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/frontend/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/10/13/note33/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/13/note33/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-            <div class="post-description">我修复了百度编辑器上的一个BUG</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>上文说道，我被百度编辑器上了套，今天，说下我的个人进展，因为我把截图粘贴的功能兼容到IE了，算是给自己的鼓励。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/10/13/note33/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1364,7 +1432,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">233</span>
+          <span class="site-state-item-count">238</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1456,7 +1524,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">28:48</span>
+    <span title="站点阅读时长">29:31</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>

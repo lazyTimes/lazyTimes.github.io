@@ -197,6 +197,586 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/09/04/engctojava/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/09/04/engctojava/" class="post-title-link" itemprop="url">【Java】Garbage Collection Logging to a File in Java</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-09-04 14:35:23" itemprop="dateCreated datePublished" datetime="2023-09-04T14:35:23+08:00">2023-09-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/09/04/engctojava/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/09/04/engctojava/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+            <div class="post-description">gc</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtZ2MtbG9nZ2luZy10by1maWxl" title="https://www.baeldung.com/java-gc-logging-to-file">https://www.baeldung.com/java-gc-logging-to-file<i class="fa fa-external-link"></i></span></p>
+<h2 id="1-Overview"><a href="#1-Overview" class="headerlink" title="1. Overview"></a><span class="exturl" data-url="aHR0cHM6Ly93d3cuYmFlbGR1bmcuY29tL2phdmEtZ2MtbG9nZ2luZy10by1maWxlI292ZXJ2aWV3" title="https://www.baeldung.com/java-gc-logging-to-file#overview">1. Overview<i class="fa fa-external-link"></i></span></h2><p>Garbage collection is a marvel of the Java programming language providing us with automatic memory management. </p>
+<p>垃圾回收是 Java 编程语言的一个奇迹，它为我们提供了自动内存管理功能。</p>
+<p>Garbage collection hides the details of having to manually allocate and deallocate memory. </p>
+<p>垃圾回收隐藏了手动分配和删除内存的细节。</p>
+<p>While this mechanism is fantastic, sometimes it doesn’t work the way we want. </p>
+<p>虽然这种机制非常好，但有时并不能如我们所愿。</p>
+<p>In this tutorial, we’ll explore Java’s <strong>logging options for garbage collection statistics</strong> and discover how to <strong>redirect these statistics to a file</strong>.</p>
+<p>在本教程中，我们将探索 Java 的<strong>垃圾收集统计日志选项</strong>，并了解如何<strong>将这些统计信息重定向到文件</strong>。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/09/04/engctojava/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/08/10/curatorsource2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/10/curatorsource2/" class="post-title-link" itemprop="url">【Zookeeper】Apach Curator 框架源码分析：后台构造器和节点操作相关源码分析（二）【Ver 4.3.0】</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-08-10 17:00:47" itemprop="dateCreated datePublished" datetime="2023-08-10T17:00:47+08:00">2023-08-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zookeeper/" itemprop="url" rel="index"><span itemprop="name">Zookeeper</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/08/10/curatorsource2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/08/10/curatorsource2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>25k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>23 分钟</span>
+            </span>
+            <div class="post-description">源码分析Curator的使用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本文介绍后台任务延迟队列的“元素” <strong>后台任务构造器</strong> 以及Curator 对于常见的ZK节点操作封装API。<strong>后台任务构造器</strong>对应了和ZK交互的常见”后台“操作，比如创建和销毁Watch，而ZK节点操作API涉及各种建造者模式的应用。可以说，Curator 整个框架各种地方都有建造者模式的身影。</p>
+<p><code>Curator</code> 除了对于ZK本身交互和操作封装之外，还引入了<strong>Cache</strong>的概念来实现对ZooKeeper服务器端进行事件监听，本质上就是构建本地缓存，在远程节点出现”状态“变动的时候进行”联动“触发各种事件。</p>
+<p>不过，<code>Cache</code> 的部分个人认为并不是很重要的内容，更多重心还是在分布式锁，再加上查询各种资料本身应用场景也比较少，因此放到了文章最后分析，读者可以按需阅读。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/08/10/curatorsource2/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/08/10/curatorsource1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/10/curatorsource1/" class="post-title-link" itemprop="url">【Zookeeper】Apach Curator 框架源码分析：初始化过程（一）【Ver 4.3.0】</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-08-10 16:57:00" itemprop="dateCreated datePublished" datetime="2023-08-10T16:57:00+08:00">2023-08-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zookeeper/" itemprop="url" rel="index"><span itemprop="name">Zookeeper</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/08/10/curatorsource1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/08/10/curatorsource1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>36k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>32 分钟</span>
+            </span>
+            <div class="post-description">Zookeeper的客户端Curator使用</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Curator是netflix公司开源的一套zookeeper客户端，目前是Apache的顶级项目。</p>
+<p>和ZK的原生客户端相比，Curator的抽象层次要更高，同时简化了ZK的常用功能开发量，比如Curator自带连接重试、反复注册Watcher、NodeExistsException 异常处理等等。</p>
+<p>根据官方的介绍，我们可以了解到它是一个用于分布式的Java客户端API工具。它基于<code>high-level API</code>，拥有它可以更简单易懂的指挥Zookeeper实现分布式安全应用程序开发。</p>
+<p>Curator由一系列的模块构成，对于一般开发者而言，常用的是<strong>curator-framework</strong>和<strong>curator-recipes</strong>，以及广为熟知的 <strong>分布式锁</strong>。</p>
+<p>Curator 当然也包括许多扩展，比如<strong>服务发现</strong>和<strong>基于Java 8异步DSL</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Apache Curator is a Java&#x2F;JVM client library for [Apache ZooKeeper](https:&#x2F;&#x2F;zookeeper.apache.org&#x2F;), a distributed coordination service.</span><br><span class="line"></span><br><span class="line">Apache Curator includes a high-level API framework and utilities to make using Apache ZooKeeper much easier and more reliable. It also includes recipes for common use cases and extensions such as service discovery and a Java 8 asynchronous DSL.</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>用官方的介绍来说就是：guava之于java就像curator之于zookeeper </p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/08/10/curatorsource1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/08/10/effectivelambda/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/10/effectivelambda/" class="post-title-link" itemprop="url">【Java】Effective Lambda Expressions in Java</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-08-10 16:53:42" itemprop="dateCreated datePublished" datetime="2023-08-10T16:53:42+08:00">2023-08-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/08/10/effectivelambda/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/08/10/effectivelambda/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>48k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>43 分钟</span>
+            </span>
+            <div class="post-description">Effective Lambda Expressions</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h2><p><span class="exturl" data-url="aHR0cHM6Ly9tZWRpdW0uY29tL0BidWJ1LnRyaXBhdGh5L2VmZmVjdGl2ZS1sYW1iZGEtZXhwcmVzc2lvbnMtaW4tamF2YS0yZDQwNjFkZGU3N2E=" title="https://medium.com/@bubu.tripathy/effective-lambda-expressions-in-java-2d4061dde77a">Effective Lambda Expressions in Java | by Bubu Tripathy | Medium<i class="fa fa-external-link"></i></span></p>
+<h2 id="Introductory"><a href="#Introductory" class="headerlink" title="Introductory"></a>Introductory</h2><p>Lambda expressions were introduced in Java 8 to allow functional programming in Java. They are a concise way to express functions that can be used as data and provide a more functional approach to programming. Lambda expressions can be used in a variety of ways, from simple expressions to complex functions. In this article, we will discuss 20 best practices of using lambda expressions in Java with examples for each.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/08/10/effectivelambda/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/08/10/literallywhy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/10/literallywhy/" class="post-title-link" itemprop="url">【English】literally 到底是什么意思，为什么美国人老把 literally 挂嘴边？</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-08-10 16:51:14" itemprop="dateCreated datePublished" datetime="2023-08-10T16:51:14+08:00">2023-08-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/08/10/literallywhy/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/08/10/literallywhy/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>901</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+            <div class="post-description">literally 到底是什么意思</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>事情的起因是《Who moved my cheese》这本书的一段话：</p>
+<blockquote>
+<p>But when the Cheese story was shared with <strong>literally</strong> everyone in our organization ….</p>
+</blockquote>
+<p>但是，当《奶酪》的故事在我们组织的每个人中流传开来时…. 这里有一个【literally】单词经过查阅之后，发现它的含义基本上都是”按字面上“，这种说法显然说不通，所以它有另一种含义，那就是 <strong>真的</strong>。</p>
+<p>渣渣英语的我，对于这段话的理解是强调<strong>事情本身是事实，实际发生的</strong>，抱着验证的疑问，这里去翻了翻知乎的说法：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuemhpaHUuY29tL3F1ZXN0aW9uLzYyNTE4MDEx" title="https://www.zhihu.com/question/62518011">literally 到底是什么意思，为什么美国人老把 literally 挂嘴边？ - 知乎 (zhihu.com)<i class="fa fa-external-link"></i></span></p>
+<blockquote>
+<p>关于这个单词的讨论挺有意思的</p>
+</blockquote>
+<p>下面是个人对于【literally】单词含义这种奇怪的变化做一个归档整理。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/08/10/literallywhy/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/08/10/httpclientjdk11/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -782,569 +1362,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/07/27/sittingposition/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/07/27/sittingposition/" class="post-title-link" itemprop="url">【健康】你的坐姿真的正確嗎？</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-07-27 11:26:16" itemprop="dateCreated datePublished" datetime="2023-07-27T11:26:16+08:00">2023-07-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2023/07/27/sittingposition/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/27/sittingposition/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-            <div class="post-description">坐姿正确</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>今天早上閑逛YTB的時候，偶然發現推送的一個討論坐姿的視頻，看完之後才知道，原來自己很多日常認爲“對”的事情都是錯的。</p>
-<blockquote>
-<p>特意搞成繁體可以在閲讀上增加一點障礙，讓記憶更深刻一點點。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/07/27/sittingposition/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/07/27/devshmread/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/07/27/devshmread/" class="post-title-link" itemprop="url">【Linux】What Is dev shm And Its Practical Usage</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-07-27 11:21:58" itemprop="dateCreated datePublished" datetime="2023-07-27T11:21:58+08:00">2023-07-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-09-09 08:53:49" itemprop="dateModified" datetime="2023-09-09T08:53:49+08:00">2023-09-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2023/07/27/devshmread/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/27/devshmread/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-            <div class="post-description">/dev/shm使用和实现</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY3liZXJjaXRpLmJpei90aXBzL3doYXQtaXMtZGV2c2htLWFuZC1pdHMtcHJhY3RpY2FsLXVzYWdlLmh0bWw=" title="https://www.cyberciti.biz/tips/what-is-devshm-and-its-practical-usage.html">What Is /dev/shm And Its Practical Usage - nixCraft (cyberciti.biz)<i class="fa fa-external-link"></i></span></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/07/27/devshmread/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/07/16/doPrivileged/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/07/16/doPrivileged/" class="post-title-link" itemprop="url">【Java】关于 AccessController.doPrivileged 方法的个人理解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-07-16 17:39:37 / 修改时间：17:40:58" itemprop="dateCreated datePublished" datetime="2023-07-16T17:39:37+08:00">2023-07-16</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2023/07/16/doPrivileged/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/16/doPrivileged/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-            <div class="post-description">特权访问的相关内容</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p><strong>AccessController.doPrivileged</strong> 这个方法调用通常存在于JDK的一些源码中，但是查阅相关资料介绍大差不差，比较难理解，这里简单整理资料做一个笔记，待日后有更深层次实践和理解之后回顾。</p>
-<blockquote>
-<p>当然更多情况这个方法的作用大概率会被遗忘，不过根据英文单词一知半解也无伤大雅。</p>
-</blockquote>
-<h1 id="什么是特权访问？"><a href="#什么是特权访问？" class="headerlink" title="什么是特权访问？"></a>什么是特权访问？</h1><p>从<code>Privileged</code>单词，个人联想到有关Java的安全管理的知识点，于是上网做了个科普。</p>
-<p>在Java中执行应用程序分为<strong>本地执行</strong>和<strong>远程执行</strong>。本地代码调用执行是访问安全的，因为它受限于机器的JVM，同样它也可以获取JVM并且可以访问一切本地资源。而远程代码则不同，它基于<strong>沙箱机制</strong>，只能访问限定在JVM特定的运行范围中的资源。</p>
-<p>与其说是“授权”，不如说是在JVM中进行一些敏感操作的时候，实际上还需要一层“黑盒”来加限制。Java的安全管理基本上可以理解为JVM的<strong>防火墙</strong>，运行一些“可接受”的操作，但是禁止“越权”访问。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/07/16/doPrivileged/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/07/14/spring-total/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/07/14/spring-total/" class="post-title-link" itemprop="url">【Spring】Spring 事务机制的个人总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-07-14 10:44:26" itemprop="dateCreated datePublished" datetime="2023-07-14T10:44:26+08:00">2023-07-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-07-16 14:28:09" itemprop="dateModified" datetime="2023-07-16T14:28:09+08:00">2023-07-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2023/07/14/spring-total/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/14/spring-total/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>56k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>51 分钟</span>
-            </span>
-            <div class="post-description">Spring事务机制个人总结</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="【Spring】Spring-事务机制的个人总结"><a href="#【Spring】Spring-事务机制的个人总结" class="headerlink" title="【Spring】Spring 事务机制的个人总结"></a>【Spring】Spring 事务机制的个人总结</h1><h1 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h1><p>​    Spring的事务机制虽然已经有非常多的资料介绍了，但是实际使用的时候还是常常栽坑里，相信这是大部分程序员的目前或者曾经的使用感受，所以这篇文章将会做一个完整的总结，用理论结合实际的代码实战的方式来弄懂Spring事务的机制到底应该如何使用以及内部是如何进行设计的。</p>
-<p>​    在介绍正文之前，希望这篇教程不单单是能让读者避开Spring事务的陷阱，更多的是希望能够从Spring的事务设计上锻炼自己的架构思维，如果你一开始完全不懂，可以像我一样进行一比一复刻用在<strong>自己的开源工具或者项目上</strong>，不要管为什么这么设计，只管模仿再去思考，多想想自己用起来有什么便利性，然后再反推思考。</p>
-<p>​    另外如果你完全不懂JDBC或者数据库的话，这篇文章可能就不太适合你看了，笔者也并不想浪费读者时间，可以看看下面这本老外写的JDBC入门文档，粗略翻了一下发现还是挺适合新手的，顺带磨练下英语阅读水平（实在不行还有谷歌娘兜底不是）：</p>
-<blockquote>
-<p>《jdbc》（简单粗暴的名字）</p>
-<p>链接：<span class="exturl" data-url="aHR0cHM6Ly9wYW4uYmFpZHUuY29tL3MvMUNPVmlzeTlEeUpSNXVqOWhzQjRXb1E=" title="https://pan.baidu.com/s/1COVisy9DyJR5uj9hsB4WoQ">https://pan.baidu.com/s/1COVisy9DyJR5uj9hsB4WoQ<i class="fa fa-external-link"></i></span><br>提取码：x5tz<br>–来自百度网盘超级会员V7的分享</p>
-</blockquote>
-<p>如果觉得文章写得不错，欢迎点赞收藏支持一波。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/07/14/spring-total/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/07/11/nettychatimpl/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="阿东">
-      <meta itemprop="description" content="随遇而安">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="爱看书的阿东">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/07/11/nettychatimpl/" class="post-title-link" itemprop="url">《跟闪电侠学Netty》阅读笔记 - 聊天系统实现</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-07-11 16:50:48" itemprop="dateCreated datePublished" datetime="2023-07-11T16:50:48+08:00">2023-07-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-07-16 14:24:10" itemprop="dateModified" datetime="2023-07-16T14:24:10+08:00">2023-07-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2023/07/11/nettychatimpl/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/11/nettychatimpl/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>26k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>24 分钟</span>
-            </span>
-            <div class="post-description">Netty聊天系统</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本部分整合聊天系统有关的章节，内容主要是介绍关键功能的实现逻辑和部分代码实现为主，建议读者先看看作者的博客项目，切换到不同的分支看看各个细节功能如何实现。这里仅仅记录一些个人学习过程的重点部分。</p>
-<h1 id="思维导图"><a href="#思维导图" class="headerlink" title="思维导图"></a>思维导图</h1><p><span class="exturl" data-url="aHR0cHM6Ly93d3cubXVidS5jb20vZG9jLzFkdW5OXzdMdXps" title="https://www.mubu.com/doc/1dunN_7Luzl">https://www.mubu.com/doc/1dunN_7Luzl<i class="fa fa-external-link"></i></span></p>
-<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/%E3%80%8A%E8%B7%9F%E9%97%AA%E7%94%B5%E4%BE%A0%E5%AD%A6Netty%E3%80%8B%20-%20%E8%81%8A%E5%A4%A9%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0.png" alt="《跟闪电侠学Netty》 - 聊天系统实现.png"></p>
-<h1 id="项目代码"><a href="#项目代码" class="headerlink" title="项目代码"></a>项目代码</h1><p>作者的仓库代码地址：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xpZ2h0bmluZ01hbi9mbGFzaC1uZXR0eQ==" title="https://github.com/lightningMan/flash-netty">https://github.com/lightningMan/flash-netty<i class="fa fa-external-link"></i></span></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/07/11/nettychatimpl/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1414,7 +1431,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">233</span>
+          <span class="site-state-item-count">238</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1506,7 +1523,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">28:48</span>
+    <span title="站点阅读时长">29:31</span>
 </div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
   </div>

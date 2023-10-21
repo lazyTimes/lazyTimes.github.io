@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Mysql的日期工作机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Mysql】Working with time zones, timestamps and datetimes in Laravel and MySQL">
+<meta property="og:url" content="https://whitestore.top/2023/10/21/worktimestampmysql/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="Mysql的日期工作机制">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231020075820.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231020075841.png">
+<meta property="article:published_time" content="2023-10-21T14:24:58.000Z">
+<meta property="article:modified_time" content="2023-10-21T14:26:20.053Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Mysql的日期工作机制">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231020075820.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/10/21/worktimestampmysql/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Mysql】Working with time zones, timestamps and datetimes in Laravel and MySQL | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/10/21/worktimestampmysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Mysql】Working with time zones, timestamps and datetimes in Laravel and MySQL
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-10-21 22:24:58 / 修改时间：22:26:20" itemprop="dateCreated datePublished" datetime="2023-10-21T22:24:58+08:00">2023-10-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/10/21/worktimestampmysql/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/10/21/worktimestampmysql/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+            <div class="post-description">Mysql的日期工作机制</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h1><p><span class="exturl" data-url="aHR0cHM6Ly9laWRlYXN5LmNvbS93b3JraW5nLXdpdGgtdGltZS16b25lcy10aW1lc3RhbXBzLWFuZC1kYXRldGltZXMtaW4tbGFyYXZlbC1hbmQtbXlzcWwv" title="https://eideasy.com/working-with-time-zones-timestamps-and-datetimes-in-laravel-and-mysql/">Working with time zones, timestamps and datetimes in Laravel and MySQL - Advanced and Qualified electronic signature marketplace (eideasy.com)<i class="fa fa-external-link"></i></span></p>
+<p>There seems to be quite a bit of confusion around how timestamps, datetimes and time zones really work. This article aims to demystify these concepts and give some recommendations and best practices on how to handle dates and time zones in a sane way in your Laravel app and MySQL.</p>
+<a id="more"></a>
+
+<p>关于时间戳、日期和时区的真正工作原理，似乎存在不少困惑。本文旨在揭开这些概念的神秘面纱，并就如何在 Laravel 应用程序和 MySQL 中以合理的方式处理日期和时区给出一些建议和最佳实践。</p>
+<blockquote>
+<p>补充：Laravel 是PHP生态的框架，Java 开发人员可以忽略</p>
+</blockquote>
+<h2 id="How-the-TIMESTAMP-type-works-in-MySQL"><a href="#How-the-TIMESTAMP-type-works-in-MySQL" class="headerlink" title="How the TIMESTAMP type works in MySQL"></a>How the TIMESTAMP type works in MySQL</h2><p><span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2RhdGV0aW1lLmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/datetime.html">The official documentation of MySQL<i class="fa fa-external-link"></i></span> explains it as follows:</p>
+<blockquote>
+<p> MySQL converts TIMESTAMP values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. </p>
+<p>  MySQL 会将 TIMESTAMP 值从当前时区转换到 UTC 以进行存储，并在检索时从 UTC 转换回当前时区。</p>
+<p> (This does not occur for other types such as DATETIME.) By default, the current time zone for each connection is the server’s time. </p>
+<p>(默认情况下，每个连接的当前时区是服务器时间。</p>
+<p> The time zone can be set on a per-connection basis. As long as the time zone setting remains constant, you get back the same value you store. </p>
+<p>时区可根据每个连接进行设置。只要时区设置保持不变，就会返回存储的相同值。</p>
+<p> If you store a TIMESTAMP value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. </p>
+<p> 如果存储了 <strong>TIMESTAMP</strong> 值，然后更改时区并检索该值，则检索到的值与存储的值不同。</p>
+<p> This occurs because the same time zone was not used for conversion in both directions. </p>
+<p>出现这种情况是因为在两个方向的转换中没有使用相同的时区。</p>
+<p> The current time zone is available as the value of the <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3NlcnZlci1zeXN0ZW0tdmFyaWFibGVzLmh0bWwjc3lzdmFyX3RpbWVfem9uZQ==" title="https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_time_zone">time_zone<i class="fa fa-external-link"></i></span> system variable. </p>
+<p> 当前时区可以通过 <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3NlcnZlci1zeXN0ZW0tdmFyaWFibGVzLmh0bWwjc3lzdmFyX3RpbWVfem9uZQ==" title="https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_time_zone">time_zone<i class="fa fa-external-link"></i></span> 系统变量的值获得。</p>
+<p> For more information, see <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3RpbWUtem9uZS1zdXBwb3J0Lmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html">Section 5.1.15, “MySQL Server Time Zone Support”<i class="fa fa-external-link"></i></span>.</p>
+<p> 更多信息，请参阅 <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3RpbWUtem9uZS1zdXBwb3J0Lmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html">第 5.1.15 节，”MySQL 服务器时区支持”<i class="fa fa-external-link"></i></span>。</p>
+</blockquote>
+<p>This explanation is perhaps a little bit abstract. So, let’s add some context and see what is really happening behind the scenes.</p>
+<p>这种解释可能有点抽象。因此，让我们补充一些背景知识，看看幕后到底发生了什么。</p>
+<h3 id="Current-time-zone"><a href="#Current-time-zone" class="headerlink" title="Current time zone"></a>Current time zone</h3><p>In order to understand how the timestamp conversions work we first need to know what’s meant by <strong>current time zone.</strong></p>
+<p>要了解时间戳转换的工作原理，我们首先需要了解<strong>当前时区</strong>的含义。</p>
+<p>In short, <strong>current time zone</strong> is the value of the SESSION time_zone. By default this is the SYSTEM time of the server that the database is running on. Let’s run some queries to illustrate this.</p>
+<p>简而言之，<strong>当前时区</strong>就是 <code>Session</code> 时区的值。默认情况下，这是数据库所运行服务器的系统时间。让我们运行一些查询来说明这一点。</p>
+<p>Running <code>SELECT @@SESSION.time_zone;</code> will return the current SESSSION time_zone like this:</p>
+<p>运行 “<strong>SELECT @@SESSION.time_zone;</strong> “将返回当前的 SESSSION 时区，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+---------------------+</span><br><span class="line">| @@SESSION.time_zone |</span><br><span class="line">+---------------------+</span><br><span class="line">| SYSTEM              |</span><br><span class="line">+---------------------+</span><br></pre></td></tr></table></figure>
+
+<p>Let’s change the SESSION time_zone to “+02:00” by running: <code>SET SESSION time_zone = &#39;+02:00&#39;;</code></p>
+<p>运行 <code>SET SESSION time_zone = &#39;+02:00&#39;;</code> 将 SESSION 时区更改为 “<strong>+02:00</strong>“。</p>
+<p><code>SELECT @@SESSION.time_zone;</code> will now return:</p>
+<p>现在将返回 <code>SELECT @@SESSION.time_zone;</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+---------------------+</span><br><span class="line">| @@SESSION.time_zone |</span><br><span class="line">+---------------------+</span><br><span class="line">| +02:00              |</span><br><span class="line">+---------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="Practical-examples-of-how-timestamp-works-时间戳工作原理实例"><a href="#Practical-examples-of-how-timestamp-works-时间戳工作原理实例" class="headerlink" title="Practical examples of how timestamp works 时间戳工作原理实例"></a>Practical examples of how timestamp works 时间戳工作原理实例</h2><p>Let’s now go through some examples with specific dates and times to see how the timestamp storage and retrieval works in real life.</p>
+<p>现在，让我们用具体的日期和时间举几个例子，看看时间戳的存储和检索在实际生活中是如何工作的。</p>
+<p>We’ll start by creating a table with a TIMESTAMP column to store our test data.</p>
+<p>首先，我们将创建一个带有 <code>TIMESTAMP</code> 列的表来存储测试数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE timestamp_test (</span><br><span class="line">    &#96;timestamp&#96; TIMESTAMP,</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>We’ll now set our session time_zone to +02:00 and store some data</p>
+<p>现在，我们要将 <code>Session</code> 时区设置为 <code>+02:00</code>，并存储一些数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SET SESSION time_zone &#x3D; &#39;+02:00&#39;;</span><br><span class="line"></span><br><span class="line">INSERT INTO timestamp_test VALUES (&#39;1970-01-01 03:00:00&#39;);</span><br></pre></td></tr></table></figure>
+
+<p>Check that the value got stored:</p>
+<p>检查数值是否已存储：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> timestamp_test;</span><br></pre></td></tr></table></figure>
+
+<p>We’ll see:</p>
+<p>我们拭目以待：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+---------------------+</span><br><span class="line">| timestamp           |</span><br><span class="line">+---------------------+</span><br><span class="line">| 1970-01-01 03:00:00 |</span><br><span class="line">+---------------------+</span><br></pre></td></tr></table></figure>
+
+<p>Schematic representation of the storage process:</p>
+<p>下面是存储过程示意图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231020075820.png" alt="image.png"></p>
+<p>So far so good. But what happens if we change the session time_zone?</p>
+<p>到目前为止一切顺利。但如果我们更改会话时区，会发生什么呢？</p>
+<p>Let’s set our session time_zone to <code>+00:00</code> and retrieve the data again.</p>
+<p>让我们把会话时区设置为 “+00:00”，然后再次检索数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SET SESSION time_zone &#x3D; &#39;+00:00&#39;;</span><br><span class="line">SELECT * FROM timestamp_test;</span><br></pre></td></tr></table></figure>
+
+<p>We’ll see:</p>
+<p>我们拭目以待：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+---------------------+</span><br><span class="line">| timestamp           |</span><br><span class="line">+---------------------+</span><br><span class="line">| 1970-01-01 01:00:00 |</span><br><span class="line">+---------------------+</span><br></pre></td></tr></table></figure>
+
+<p>Schematic representation of the retrieval process:</p>
+<p>检索过程示意图：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231020075841.png" alt="image.png"></p>
+<p><strong>Key takeaways:</strong></p>
+<p><strong>主要收获：</strong></p>
+<ol>
+<li><p>MySQL stores the timestamp value as a <strong><span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvVW5peF90aW1l" title="https://en.wikipedia.org/wiki/Unix_time">Unix timestamp<i class="fa fa-external-link"></i></span></strong> in seconds.</p>
+</li>
+<li><p>MySQL does <strong>not</strong> store any information about the timezone.</p>
+</li>
+<li><p>Every time you store a value as a timestamp, it is converted to the Unix timestamp according to the current session time_zone.</p>
+</li>
+<li><p>Every time you retrieve a timestamp, it is converted to the datetime value according to the current session time_zone.</p>
+</li>
+<li><p>MySQL 将时间戳值存储为 <strong><span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvVW5peF90aW1l" title="https://en.wikipedia.org/wiki/Unix_time">Unix时间戳<i class="fa fa-external-link"></i></span></strong>，单位为秒。</p>
+</li>
+<li><p>MySQL <strong>不存储任何有关时区的信息</strong>。</p>
+</li>
+<li><p>每次以时间戳存储值时，都会根据当前会话时区将其转换为 Unix 时间戳。</p>
+</li>
+<li><p>每次检索时间戳时，都会根据当前会话时区将其转换为日期时间值。</p>
+</li>
+</ol>
+<p><strong>Note</strong> A simple algorithm to convert dates to timestamps according to a specific timezone might look something like this (in case you’re interested how that’s actually done):</p>
+<p><strong>注意</strong>，根据特定时区将日期转换为时间戳的简单算法可能是这样的（如果你对实际操作感兴趣的话）：</p>
+<ol>
+<li><p>Get the difference between the datetime and the Unix epoch (1970-01-01 00:00:00) in seconds.</p>
+</li>
+<li><p>Convert your current timezone offset to seconds</p>
+</li>
+<li><p>Subtract your current timezone offset from the value you got in step 1.</p>
+</li>
+<li><p>获取日期时间与 Unix 时间（1970-01-01 00:00:00）之间的差值（以秒为单位）。</p>
+</li>
+<li><p>将当前时区偏移转换为秒</p>
+</li>
+<li><p>用步骤 1 中得到的值减去当前时区偏移。</p>
+</li>
+</ol>
+<p>For example, let’s say our time zone offset is +02:00 and we wish to convert 1970-01-01 03:00:00 to a Unix timestamp.</p>
+<ol>
+<li>1970-01-01 03:00:00 – 1970-01-01 00:00:00 = 3h = 3 * 60 * 60 = 10800</li>
+<li>+02:00 in seconds is: 2 * 60 * 60 = 7200</li>
+<li>10800 – 7200 = 3600</li>
+</ol>
+<p>例如，假设我们的时区偏移为 +02:00，我们希望将 1970-01-01 03:00:00 转换为 Unix 时间戳。</p>
+<ol>
+<li>1970-01-01 03:00:00 - 1970-01-01 00:00:00 = 3h = 3 * 60 * 60 = 10800</li>
+<li>+02:00（秒）为： 2 * 60 * 60 = 7200 3.</li>
+<li>10800 - 7200 = 3600</li>
+</ol>
+<p>Another example, let’s say our time zone offset is -03:00 and we wish to convert 1970-01-01 08:00:00 to a Unix timestamp.</p>
+<ol>
+<li>1970-01-01 08:00:00 – 1970-01-01 00:00:00 = 8h = 8 * 60 * 60 = 28800</li>
+<li>-03:00 in seconds is: -3 * 60 * 60 = -10800</li>
+<li>28800 – – 10800 = 39600 (note that we actually add the values as double minuses give a +)</li>
+</ol>
+<p>再比如，我们的时区偏移是 -03:00，我们希望将 1970-01-01 08:00:00 转换为 Unix 时间戳。</p>
+<ol>
+<li>1970-01-01 08:00:00 - 1970-01-01 00:00:00 = 8h = 8 * 60 * 60 = 28800</li>
+<li>-03:00 的秒数为： -3 * 60 * 60 = -10800</li>
+<li>28800 - - 10800 = 39600（注意，我们实际上是将这些值相加，因为双减得到的是 +）<h2 id="How-the-TIMESTAMP-type-differs-from-the-DATE-and-DATETIME-types-TIMESTAMP-类型与-DATE-和-DATETIME-类型的区别"><a href="#How-the-TIMESTAMP-type-differs-from-the-DATE-and-DATETIME-types-TIMESTAMP-类型与-DATE-和-DATETIME-类型的区别" class="headerlink" title="How the TIMESTAMP type differs from the DATE and DATETIME types TIMESTAMP 类型与 DATE 和 DATETIME 类型的区别"></a>How the TIMESTAMP type differs from the DATE and DATETIME types <strong>TIMESTAMP 类型与 DATE 和 DATETIME 类型的区别</strong></h2></li>
+</ol>
+<p>In case of TIMESTAMP, the actual value that is stored and retrieved depends on the session time_zone whereas DATE and DATETIME are always retrieved as the exact same values that were stored. </p>
+<p>就 <code>TIMESTAMP</code> 而言，存储和检索的实际值取决于<strong>Session 时区</strong>，而 DATE 和 DATETIME 的检索值始终与存储值完全相同。</p>
+<p>You can imagine the DATE and DATETIME values as static strings. </p>
+<p>您可以将 DATE 和 DATETIME 值想象成<strong>静态字符串</strong>。</p>
+<p>The string you store does not change upon retrieval. </p>
+<p>您存储的字符串在检索时不会改变。</p>
+<p>You’ll always get back the exact same value that you stored no matter the database’s or session’s time zone.</p>
+<p>无论数据库或会话的时区如何，您都将返回所存储的<strong>完全相同的值</strong>。</p>
+<p>TIMESTAMP can only store values from 1970-01-01 00:00:00 to 2038-01-19 03:14:17. The reason for this is how the Unix time is encoded: <span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvWWVhcl8yMDM4X3Byb2JsZW0=" title="https://en.wikipedia.org/wiki/Year_2038_problem">https://en.wikipedia.org/wiki/Year_2038_problem<i class="fa fa-external-link"></i></span></p>
+<p>TIMESTAMP 只能存储 1970-01-01 00:00:00 至 2038-01-19 03:14:17 的值。</p>
+<p><strong>原因在于 Unix 时间的编码方式： <span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvWWVhcl8yMDM4X3Byb2JsZW0=" title="https://en.wikipedia.org/wiki/Year_2038_problem">https://en.wikipedia.org/wiki/Year_2038_problem<i class="fa fa-external-link"></i></span></strong></p>
+<p>DATETIME and DATE do not have such a limit.</p>
+<p><code>DATETIME</code> 和 <code>DATE</code> 就没有这种限制。</p>
+<h2 id="How-Laravel-handles-dates-and-times-Laravel-如何处理日期和时间"><a href="#How-Laravel-handles-dates-and-times-Laravel-如何处理日期和时间" class="headerlink" title="How Laravel handles dates and times Laravel 如何处理日期和时间"></a>How Laravel handles dates and times Laravel <strong>如何处理日期和时间</strong></h2><p>We’ve seen how the timestamp works on MySQL’s side. Let’s now see how dates and times are handled by Laravel.</p>
+<p>我们已经了解了 MySQL 如何处理时间戳。现在让我们看看 Laravel 是如何处理日期和时间的。</p>
+<p>Laravel uses <span class="exturl" data-url="aHR0cHM6Ly9jYXJib24ubmVzYm90LmNvbS9kb2NzLw==" title="https://carbon.nesbot.com/docs/">Carbon<i class="fa fa-external-link"></i></span> for generating dates (<span class="exturl" data-url="aHR0cHM6Ly9sYXJhdmVsLmNvbS9kb2NzLzEwLngvaGVscGVycyNkYXRlcw==" title="https://laravel.com/docs/10.x/helpers#dates">https://laravel.com/docs/10.x/helpers#dates<i class="fa fa-external-link"></i></span>). </p>
+<p>Laravel 使用 <span class="exturl" data-url="aHR0cHM6Ly9jYXJib24ubmVzYm90LmNvbS9kb2NzLw==" title="https://carbon.nesbot.com/docs/">Carbon<i class="fa fa-external-link"></i></span> 生成日期（<span class="exturl" data-url="aHR0cHM6Ly9sYXJhdmVsLmNvbS9kb2NzLzEwLngvaGVscGVycyNkYXRlcw==" title="https://laravel.com/docs/10.x/helpers#dates">https://laravel.com/docs/10.x/helpers#dates<i class="fa fa-external-link"></i></span>）。</p>
+<p>Carbon in turn uses PHPs Date/Time functions <span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vcmVmLmRhdGV0aW1lLnBocA==" title="https://www.php.net/manual/en/ref.datetime.php">https://www.php.net/manual/en/ref.datetime.php<i class="fa fa-external-link"></i></span>. </p>
+<p>而 Carbon 又使用 PHP 的日期/时间函数 <span class="exturl" data-url="aHR0cHM6Ly93d3cucGhwLm5ldC9tYW51YWwvZW4vcmVmLmRhdGV0aW1lLnBocA==" title="https://www.php.net/manual/en/ref.datetime.php">https://www.php.net/manual/en/ref.datetime.php<i class="fa fa-external-link"></i></span>。</p>
+<p>This means that when we generate a current date then that’s done according to PHP’s timezone. </p>
+<p>这意味着当我们生成当前日期时，是根据 PHP 的时区来生成的。</p>
+<p>But what determines PHP’s timezone? </p>
+<p>但 PHP 的时区是由什么决定的呢？</p>
+<p>Well, Laravel conveniently does that for you via the config/app.php timezone setting.</p>
+<p>Laravel 可以通过配置/app.php 中的时区设置为您实现这一功能。</p>
+<p>What kind of implications does the above have on how the dates are saved to our database? We can bring an example to illustrate this.</p>
+<p>上述情况对如何将日期保存到数据库有什么影响？我们可以举例说明。</p>
+<p>Let’s consider the following situation:</p>
+<ul>
+<li>timezone in our app’s config/app.php is set to <code>Europe/Berlin</code></li>
+<li>our database session time_zone is <code>Europe/Tallinn</code> The mysql.timezone setting in config/database.php. If you do not specifically set it, then the database will probably use the system time of the server that it’s running on.</li>
+</ul>
+<ol>
+<li>We generate a date in our Laravel app using the <code>now()</code> helper function which returns us the following date: “2023-10-13 16:00:00”. This is the current datetime in <code>Europe/Berlin</code></li>
+<li>We then send “2023-10-13 16:00:00” to our MySQL database for storage in a timestamp column (for example by creating a Model and calling save() on it)</li>
+<li>Our database takes “2023-10-13 16:00:00” and converts it to a Unix timestamp according to <code>Europe/Tallinn</code> timezone and then stores it. Notice what’s happening here? We generated the datetime according to <code>Europe/Berlin</code> but our database converted it to a timestamp according to <code>Europe/Tallinn</code></li>
+<li>When we retrieve the timestamp, our database converts the timestamp back to datetime according to <code>Europe/Tallinn</code> (session time_zone). Which results in “2023-10-13 16:00:00” (the original datetime we generated) So, at a glance everything seems to be ok. However, what happens if we change our app’s timezone to also be <code>Europe/Tallinn</code> ?</li>
+<li>On retrieval, nothing changes, we still get back 2023-10-13 16:00:00 as the conversion depends on the database session time_zone and not on our app timezone.</li>
+<li>Real issues arise when we start doing date comparisons in our app. Let’s say the date we originally saved was the creation date of a token and 30 minutes have passed since we generated it. We now wish to see whether the token is expired. For that:<ol>
+<li>we get our current time with <code>now()</code> (which now generates dates according to <code>Europe/Tallinn</code> timezone as we changed our app’s timezone), we get 2023-10-13 17:30:00</li>
+<li>we get the token’s creation time from the database: 2023-10-13 16:00:00</li>
+<li>token should be valid for 1h, so we subtract the creation date from the current time and get a difference of 1.5h which seems to indicate that the token has expired. However in reality, only 30 minutes have passed.</li>
+</ol>
+</li>
+</ol>
+<p>让我们考虑一下下面的情况：</p>
+<ul>
+<li>应用程序配置<code>/app.php</code> 中的时区设置为  <code>Europe/Berlin</code>。</li>
+<li>我们的数据库会话时区是<code>欧洲/塔林</code> config/database.php 中的 mysql.timezone 设置。如果没有特别设置，数据库可能会使用运行服务器的系统时间。</li>
+</ul>
+<ol start="7">
+<li>我们在 <strong>Laravel</strong> 应用程序中使用 <code>now()</code> 辅助函数生成一个日期，返回如下日期：”<code>2023-10-13 16:00:00</code>“。这是当前在 <code>Europe/Berlin</code> 的日期时间。  </li>
+<li>然后，我们将 “<code>2023-10-13 16:00:00</code> “发送到 MySQL 数据库的时间戳列中（例如，通过创建一个模型并调用 <code>save()</code> 函数）。  </li>
+<li>我们的数据库接收 “<code>2023-10-13 16:00:00</code>“，并根据 <code>Europe/Berlin</code>  时区将其转换为 <strong>Unix</strong> 时间戳，然后将其存储起来。注意到这里发生了什么吗？我们根据 <code>Europe/Berlin</code> 生成了日期时间，但我们的数据库根据 <code>Europe/Berlin</code> 将其转换为时间戳。</li>
+<li>当我们检索时间戳时，我们的数据库又将时间戳转换成了 “<code>Europe/Tallinn</code>“（会话时区）的日期时间。结果是 “<code>2023-10-13 16:00:00</code>“（我们生成的原始日期时间）。因此，乍一看一切似乎都没问题。但是，如果我们将应用程序的时区也改为 “<code>Europe/Tallinn</code>“，会发生什么情况呢？  </li>
+<li>在检索时，没有任何变化，我们仍然得到 <code>2023-10-13 16:00:00</code>，因为转换取决于数据库会话的时区，而不是应用程序的时区。  </li>
+<li>当我们开始在应用程序中进行日期比较时，真正的问题就出现了。假设我们最初保存的日期是令牌的创建日期，而生成令牌后已经过去了 30 分钟。我们现在希望查看令牌是否过期。</li>
+</ol>
+<p>为此：  </p>
+<ol>
+<li>我们使用 <code>now()</code> 获取当前时间（由于我们更改了应用程序的时区，因此现在根据 <code>Europe/Tallinn</code> 时区生成日期），得到 <code>2023-10-13 17:30:00</code></li>
+<li>我们从数据库中得到令牌的创建时间：<code>2023-10-13 16:00:00</code></li>
+<li>令牌的有效期应为 1 小时，因此我们将创建日期减去当前时间，得到 1.5 小时的差值，这似乎表明令牌已过期。但实际上只过了 30 分钟。<h2 id="Key-takeaways-and-best-practices-主要收获和最佳做法"><a href="#Key-takeaways-and-best-practices-主要收获和最佳做法" class="headerlink" title="Key takeaways and best practices 主要收获和最佳做法"></a>Key takeaways and best practices 主要收获和最佳做法</h2></li>
+</ol>
+<p>It might seem that running the database and the Laravel app in different timezones is pretty safe if you never change the timezone configs. However, this is a risky bet to make.</p>
+<p>如果不更改时区配置，在不同时区运行数据库和 <code>Laravel</code> 应用程序似乎很安全。然而，这样做是有风险的。</p>
+<p>Timezone changes might easily happen if you are running many instances of your apps and databases. The majority of cloud providers set their instance timezones to UTC by default so if you are running a different timezone you need to be extra careful to always set the instances to that sepcific timezone.</p>
+<p>如果您正在运行多个应用程序和数据库实例，时区变化就很容易发生。大多数云提供商默认将实例时区设置为 UTC，因此如果您运行的是不同的时区，则需要格外小心，始终将实例设置为该特定时区。</p>
+<p>You’ll also need to consider daylight saving times. For example if your database session time_zone is UTC and your app timezone is <code>Europe/Berlin</code> then you’ll end up with a plethora of issues on the last Sunday of October when the offset of <code>Europe/Berlin</code> changes due to daylight saving time change.</p>
+<p>您还需要考虑夏令时。例如，如果您的<strong>数据库会话时区是 UTC，而应用程序时区是 <code>Europe/Tallinn</code></strong>，那么在十月的最后一个星期天，当 <code>Europe/Tallinn</code>的偏移量因夏令时变化而改变时，您就会遇到大量问题。</p>
+<p>All this considered, the sanest way to handle dates in Laravel and MySQL is as follows:</p>
+<ol>
+<li>Always set the timezones of your apps and databases to UTC. This way you’ll not have to deal with any conversion and timezone issues.</li>
+<li>If you wish to display dates according to your end-user’s timezone then convert the date to end-user’s timezone just before displaying it. Avoid storing it in a different timezone.</li>
+</ol>
+<p>综上所述，在 <code>Laravel</code> 和 <code>MySQL</code> 中处理日期的最合理方法如下：</p>
+<ol>
+<li>始终将应用程序和数据库的时区设置为 UTC。这样就不必处理任何转换和时区问题。</li>
+<li>如果您希望<strong>根据最终用户的时区显示日期</strong>，那么<strong>在显示之前将日期转换为最终用户的时区</strong>。避免将日期存储在不同的时区。</li>
+</ol>
+<p>As for whether to use DATETIME or TIMESTAMP – that decision is up to you and is use case dependent.</p>
+<p>至于是使用 DATETIME 还是 TIMESTAMP，这取决于您的使用情况。</p>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/10/21/worktimestampmysql/" title="【Mysql】Working with time zones, timestamps and datetimes in Laravel and MySQL">https://whitestore.top/2023/10/21/worktimestampmysql/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/09/13/zerocopy/" rel="prev" title="【Linux】Linux Zero-Copy Using sendfile">
+      <i class="fa fa-chevron-left"></i> 【Linux】Linux Zero-Copy Using sendfile
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Source"><span class="nav-number">1.</span> <span class="nav-text">Source</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-the-TIMESTAMP-type-works-in-MySQL"><span class="nav-number">1.1.</span> <span class="nav-text">How the TIMESTAMP type works in MySQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Current-time-zone"><span class="nav-number">1.1.1.</span> <span class="nav-text">Current time zone</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Practical-examples-of-how-timestamp-works-时间戳工作原理实例"><span class="nav-number">1.2.</span> <span class="nav-text">Practical examples of how timestamp works 时间戳工作原理实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-the-TIMESTAMP-type-differs-from-the-DATE-and-DATETIME-types-TIMESTAMP-类型与-DATE-和-DATETIME-类型的区别"><span class="nav-number">1.3.</span> <span class="nav-text">How the TIMESTAMP type differs from the DATE and DATETIME types TIMESTAMP 类型与 DATE 和 DATETIME 类型的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-Laravel-handles-dates-and-times-Laravel-如何处理日期和时间"><span class="nav-number">1.4.</span> <span class="nav-text">How Laravel handles dates and times Laravel 如何处理日期和时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Key-takeaways-and-best-practices-主要收获和最佳做法"><span class="nav-number">1.5.</span> <span class="nav-text">Key takeaways and best practices 主要收获和最佳做法</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">238</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.9m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">29:31</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
