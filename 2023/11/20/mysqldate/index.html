@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/dute_favicon_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/dute_favicon_16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="manifest" href="/images/manifest.json">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="google-site-verification" content="mpI5dkydstZXl6UcDCppqktXK0bbvqdZ6LkZ3KNk4Iw">
+  <meta name="baidu-site-verification" content="code-a1LksZX2Ds">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"whitestore.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="官方文档阅读加个人理解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Mysql】The DATE, DATETIME, and TIMESTAMP Types">
+<meta property="og:url" content="https://whitestore.top/2023/11/20/mysqldate/index.html">
+<meta property="og:site_name" content="爱看书的阿东">
+<meta property="og:description" content="官方文档阅读加个人理解">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231022142509.png">
+<meta property="og:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231017141245.png">
+<meta property="article:published_time" content="2023-11-20T05:31:29.000Z">
+<meta property="article:modified_time" content="2023-11-20T05:32:46.152Z">
+<meta property="article:author" content="阿东">
+<meta property="article:tag" content="Mysql">
+<meta property="article:tag" content="Mysql时间相关参考">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231022142509.png">
+
+<link rel="canonical" href="https://whitestore.top/2023/11/20/mysqldate/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Mysql】The DATE, DATETIME, and TIMESTAMP Types | 爱看书的阿东</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="爱看书的阿东" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">爱看书的阿东</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">赐他一块白色石头，石头上写着新名</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-fw fa-sitemap"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://whitestore.top/2023/11/20/mysqldate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="阿东">
+      <meta itemprop="description" content="随遇而安">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱看书的阿东">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Mysql】The DATE, DATETIME, and TIMESTAMP Types
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-11-20 13:31:29 / 修改时间：13:32:46" itemprop="dateCreated datePublished" datetime="2023-11-20T13:31:29+08:00">2023-11-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/11/20/mysqldate/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/11/20/mysqldate/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>21k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>19 分钟</span>
+            </span>
+            <div class="post-description">官方文档阅读加个人理解</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h1><p><span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2RhdGV0aW1lLmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/datetime.html">https://dev.mysql.com/doc/refman/8.0/en/datetime.html<i class="fa fa-external-link"></i></span></p>
+<h1 id="Mysql-官方文档解释"><a href="#Mysql-官方文档解释" class="headerlink" title="Mysql 官方文档解释"></a>Mysql 官方文档解释</h1><p>The <code>DATE</code>, <code>DATETIME</code>, and <code>TIMESTAMP</code> types are related. </p>
+<p>DATE”、”DATETIME “和 “TIMESTAMP “类型是相关的。</p>
+<p>This section describes their characteristics,  how they are similar, and how they differ. MySQL recognizes <code>DATE</code>, <code>DATETIME</code>, and <code>TIMESTAMP</code> values in several formats, described in <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2RhdGUtYW5kLXRpbWUtbGl0ZXJhbHMuaHRtbA==" title="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-literals.html">Section 9.1.3, “Date and Time Literals”<i class="fa fa-external-link"></i></span>. </p>
+<p>本节将介绍它们的特点、相似之处和不同之处。MySQL以几种格式识别<code>DATE</code>、<code>DATETIME</code>和<code>TIMESTAMP</code>值，在<span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2RhdGUtYW5kLXRpbWUtbGl0ZXJhbHMuaHRtbA==" title="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-literals.html">第9.1.3节，”日期和时间字面”<i class="fa fa-external-link"></i></span>中描述。</p>
+<p>For the <code>DATE</code> and <code>DATETIME</code> range descriptions, “supported” means that although earlier values might work, there is no guarantee.</p>
+<p>对于 <code>DATE</code> 和 <code>DATETIME</code> 范围描述，”支持 “表示虽然早期值可能有效，但不能保证。</p>
+<p>The <code>DATE</code> type is used for values with a date part but no time part. MySQL retrieves and displays <code>DATE</code> values in <code>&#39;_`YYYY-MM-DD`_&#39;</code> format. The supported range is <code>&#39;1000-01-01&#39;</code> to <code>&#39;9999-12-31&#39;</code>.</p>
+<p><code>Date</code> “类型用于包含日期部分但不包含时间部分的值。MySQL 以 <code>&#39;_`YYY-MM-DD`_&#39;</code> 格式检索和显示 <code>DATE</code> 值。支持的范围是<code>1000-01-01</code> 至 <code>9999-12-31</code>。</p>
+<p>The <code>DATETIME</code> type is used for values that contain both date and time parts. </p>
+<a id="more"></a>
+
+<p>DATETIME “类型用于包含日期和时间部分的值。</p>
+<p>MySQL retrieves and displays <code>DATETIME</code> values in <code>&#39;_`YYYY-MM-DD hh:mm:ss`_&#39;</code> format. </p>
+<p>MySQL 以<code>YYYY-MM-DD hh:mm:ss</code>格式检索和显示<code>DATETIME</code>值。</p>
+<p>The supported range is <code>&#39;1000-01-01 00:00:00&#39;</code> to <code>&#39;9999-12-31 23:59:59&#39;</code>.</p>
+<p>支持的范围是<code>&#39;1000-01-01 00:00:00&#39;</code> 至<code>&#39;9999-12-31 23:59:59&#39;</code>。</p>
+<p>The <code>TIMESTAMP</code> data type is used for values that contain both date and time parts. <code>TIMESTAMP</code> has a range of <code>&#39;1970-01-01 00:00:01&#39;</code> UTC to <code>&#39;2038-01-19 03:14:07&#39;</code> UTC.</p>
+<p>“<code>TIMESTAMP</code>”数据类型用于包含日期和时间部分的值。 “TIMESTAMP”的范围为“1970-01-01 00:00:01”UTC 到“2038-01-19 03:14:07”UTC。</p>
+<p>A <code>DATETIME</code> or <code>TIMESTAMP</code> value can include a trailing fractional seconds part in up to microseconds (6 digits) precision. </p>
+<p>数据时间 “或 “时间戳 “值可包括尾部小数秒部分，精度可达微秒（6 位）。</p>
+<p>In particular, any fractional part in a value inserted into a <code>DATETIME</code> or <code>TIMESTAMP</code> column is stored rather than discarded. </p>
+<p>特别是，插入<code>DATETIME</code>或<code>TIMESTAMP</code>列的值中的<strong>任何小数部分</strong>都会被存储而不是被丢弃。</p>
+<p>With the fractional part included, the format for these values is <code>&#39;_`YYYY-MM-DD hh:mm:ss`_[._`fraction`_]&#39;</code>, the range for <code>DATETIME</code> values is <code>&#39;1000-01-01 00:00:00.000000&#39;</code> to <code>&#39;9999-12-31 23:59:59.499999&#39;</code>, and the range for <code>TIMESTAMP</code> values is <code>&#39;1970-01-01 00:00:01.000000&#39;</code> to <code>&#39;2038-01-19 03:14:07.499999&#39;</code>. </p>
+<p>如果包含小数部分，这些值的格式是 <code>&#39;_`YYY-MM-DD hh:mm:ss`_[._`fraction`_]&#39;</code>, </p>
+<ul>
+<li><code>DATETIME</code>值的范围是 ``’1000-01-01 00:00:00. 000000’<code>到</code>‘9999-12-31 23:59:59.499999’`</li>
+<li><code>TIMESTAMP</code>值的范围是<code>&#39;1970-01-01 00:00:01.000000&#39;</code>到<code>&#39;2038-01-19 03:14:07.499999&#39;</code>。</li>
+</ul>
+<p>The fractional part should always be separated from the rest of the time by a decimal point; no other fractional seconds delimiter is recognized. </p>
+<p>For information about fractional seconds support in MySQL, see <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2ZyYWN0aW9uYWwtc2Vjb25kcy5odG1s" title="https://dev.mysql.com/doc/refman/8.0/en/fractional-seconds.html">Section 11.2.6, “Fractional Seconds in Time Values”<i class="fa fa-external-link"></i></span>.</p>
+<p>The <code>TIMESTAMP</code> and <code>DATETIME</code> data types offer automatic initialization and updating to the current date and time. For more information, see <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3RpbWVzdGFtcC1pbml0aWFsaXphdGlvbi5odG1s" title="https://dev.mysql.com/doc/refman/8.0/en/timestamp-initialization.html">Section 11.2.5, “Automatic Initialization and Updating for TIMESTAMP and DATETIME”<i class="fa fa-external-link"></i></span>.</p>
+<p>小数部分应始终用小数点与时间的其余部分分隔；不识别其他小数秒分隔符。有关 MySQL 支持小数秒的信息，请参阅 <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2ZyYWN0aW9uYWwtc2Vjb25kcy5odG1s" title="https://dev.mysql.com/doc/refman/8.0/en/fractional-seconds.html">第 11.2.6 节，”时间值中的小数秒”<i class="fa fa-external-link"></i></span>。</p>
+<p>MySQL converts <code>TIMESTAMP</code> values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. </p>
+<p>MySQL 将 <code>TIMESTAMP</code> 值从当前时区转换到 UTC 以进行存储，并从 UTC 返回到当前时区以进行检索。</p>
+<p>(This does not occur for other types such as <code>DATETIME</code>.) </p>
+<p>(这不会发生在其他类型，如 <code>DATETIME</code>）。</p>
+<p>By default, the current time zone for each connection is the server’s time. </p>
+<p>默认情况下，每个连接的当前时区是<strong>服务器</strong>时间。</p>
+<p>The time zone can be set on a per-connection basis. </p>
+<p>时区可按<strong>每个连接</strong>设置。</p>
+<p>As long as the time zone setting remains constant, you get back the same value you store. </p>
+<p><strong>只要时区设置保持不变，就会返回存储的相同值。</strong></p>
+<p>If you store a <code>TIMESTAMP</code> value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. </p>
+<p>如果存储了一个 <code>TIMESTAMP</code> 值，然后更改时区并检索该值，检索到的值将与存储的值不同。</p>
+<p>This occurs because the same time zone was not used for conversion in both directions. </p>
+<p>出现这种情况是因为在两个方向的转换中没有使用相同的时区。</p>
+<p>The current time zone is available as the value of the <a href="https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_time_zone" target="_blank" rel="noopener"><code>time_zone</code></a> system variable. For more information, see <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3RpbWUtem9uZS1zdXBwb3J0Lmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html">Section 5.1.15, “MySQL Server Time Zone Support”<i class="fa fa-external-link"></i></span>.</p>
+<p>当前时区可作为 <a href="https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_time_zone" target="_blank" rel="noopener"><code>time_zone</code></a> 系统变量的值。更多信息，请参阅<span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3RpbWUtem9uZS1zdXBwb3J0Lmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html">第 5.1.15 节，”MySQL 服务器时区支持”<i class="fa fa-external-link"></i></span>。</p>
+<p>In MySQL 8.0.19 and later, you can specify a time zone offset when inserting a <code>TIMESTAMP</code> or <code>DATETIME</code> value into a table. See <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2RhdGUtYW5kLXRpbWUtbGl0ZXJhbHMuaHRtbA==" title="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-literals.html">Section 9.1.3, “Date and Time Literals”<i class="fa fa-external-link"></i></span>, for more information and examples.</p>
+<p>在 MySQL 8.0.19 及更高版本中，在表中插入 <code>TIMESTAMP</code> 或 <code>DATETIME</code> 值时，可以指定时区偏移。更多信息和示例请参阅 <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL2RhdGUtYW5kLXRpbWUtbGl0ZXJhbHMuaHRtbA==" title="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-literals.html">第 9.1.3 节 “日期和时间字串”<i class="fa fa-external-link"></i></span>。</p>
+<p>Invalid <code>DATE</code>, <code>DATETIME</code>, or <code>TIMESTAMP</code> values are converted to the “zero” value of the appropriate type (<code>&#39;0000-00-00&#39;</code> or <code>&#39;0000-00-00 00:00:00&#39;</code>), if the SQL mode permits this conversion. </p>
+<p>如果 SQL 模式允许转换，无效的 <code>DATE</code>、<code>DATETIME</code> 或 <code>TIMESTAMP</code> 值会被转换为相应类型的 “零 “值（<code>&#39;0000-00-00&#39;</code> 或 <code>&#39;0000-00-00 00:00:00&#39;</code>）。</p>
+<p>The precise behavior depends on which if any of strict SQL mode and the <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_no_zero_date" target="_blank" rel="noopener"><code>NO_ZERO_DATE</code></a> SQL mode are enabled; see <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3NxbC1tb2RlLmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html">Section 5.1.11, “Server SQL Modes”<i class="fa fa-external-link"></i></span>.</p>
+<p>确切的行为取决于启用了严格 SQL 模式和 <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_no_zero_date" target="_blank" rel="noopener"><code>NO_ZERO_DATE</code></a> SQL 模式中的哪一种；请参阅 <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3NxbC1tb2RlLmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html">5.1.11 节，”服务器 SQL 模式”<i class="fa fa-external-link"></i></span>。</p>
+<p>In MySQL 8.0.22 and later, you can convert <code>TIMESTAMP</code> values to UTC <code>DATETIME</code> values when retrieving them using <a href="https://dev.mysql.com/doc/refman/8.0/en/cast-functions.html#function_cast" target="_blank" rel="noopener"><code>CAST()</code></a> with the <code>AT TIME ZONE</code> operator, as shown here:</p>
+<p>在 MySQL 8.0.22 及更高版本中，使用带有 <code>AT TIME ZONE</code> 操作符的 <a href="https://dev.mysql.com/doc/refman/8.0/en/cast-functions.html#function_cast" target="_blank" rel="noopener"><code>CAST()</code></a>检索时，可以将 <code>TIMESTAMP</code> 值转换为 UTC <code>DATETIME</code> 值，如下所示：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SELECT col,</span><br><span class="line">     &gt;     CAST(col AT TIME ZONE INTERVAL '+00:00' AS DATETIME) AS ut</span><br><span class="line">     &gt;     FROM ts ORDER BY id;</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| col                 | ut                  |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| 2020-01-01 10:10:10 | 2020-01-01 15:10:10 |</span><br><span class="line">| 2019-12-31 23:40:10 | 2020-01-01 04:40:10 |</span><br><span class="line">| 2020-01-01 13:10:10 | 2020-01-01 18:10:10 |</span><br><span class="line">| 2020-01-01 10:10:10 | 2020-01-01 15:10:10 |</span><br><span class="line">| 2020-01-01 04:40:10 | 2020-01-01 09:40:10 |</span><br><span class="line">| 2020-01-01 18:10:10 | 2020-01-01 23:10:10 |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br></pre></td></tr></table></figure>
+
+<p>For complete information regarding syntax and additional examples, see the description of the <a href="https://dev.mysql.com/doc/refman/8.0/en/cast-functions.html#function_cast" target="_blank" rel="noopener"><code>CAST()</code></a> function.</p>
+<p>有关语法和其他示例的完整信息，请参阅 <a href="https://dev.mysql.com/doc/refman/8.0/en/cast-functions.html#function_cast" target="_blank" rel="noopener"><code>CAST()</code></a> 函数的说明。</p>
+<p>Be aware of certain properties of date value interpretation in MySQL:</p>
+<p>注意 MySQL 中日期值解释的某些属性：</p>
+<p>MySQL permits a “relaxed” format for values specified as strings, in which any punctuation character may be used as the delimiter between date parts or time parts.</p>
+<p>对于指定为字符串的值，MySQL 允许使用一种 <strong>“宽松 “格式</strong>，其中日期部分或时间部分之间可以使用任何标点符号作为分隔符。</p>
+<p>In some cases, this syntax can be deceiving. </p>
+<p>在某些情况下，这种语法可能具有欺骗性。</p>
+<p>For example, a value such as <code>&#39;10:11:12&#39;</code> might look like a time value because of the <code>:</code>, but is interpreted as the year <code>&#39;2010-11-12&#39;</code> if used in date context.     </p>
+<p>例如，”‘10:11:12’”这样的值可能因为”: “而看起来像一个时间值，但如果在日期上下文中使用，则会被解释为 <strong>年份”‘2010-11-12’”</strong>。    </p>
+<p>The value <code>&#39;10:45:15&#39;</code> is converted to <code>&#39;0000-00-00&#39;</code> because <code>&#39;45&#39;</code> is not a valid month.</p>
+<p>值<code>&#39;10:45:15&#39;</code>被转换为<code>&#39;0000-00-00&#39;</code>，因为<code>&#39;45&#39;</code>不是有效的月份。</p>
+<p>The only delimiter recognized between a date and time part and a fractional seconds part is the decimal point.</p>
+<p>日期和时间部分与小数秒钟部分之间的<strong>唯一分隔符</strong>是<strong>小数点</strong>。</p>
+<p>The server requires that month and day values be valid, and not merely in the range 1 to 12 and 1 to 31, respectively. </p>
+<p>服务器要求月份和日期值必须有效，包括但不限于 1 至 12 和 1 至 31 的范围内。</p>
+<p>With strict mode disabled, invalid dates such as <code>&#39;2004-04-31&#39;</code> are converted to <code>&#39;0000-00-00&#39;</code> and a warning is generated. </p>
+<p>服务器要求月份和日期值必须有效，包括但不限于 1 至 12 和 1 至 31 的范围内。</p>
+<p>With strict mode enabled, invalid dates generate an error. </p>
+<p>启用严格模式后，存储无效日期会产生错误。</p>
+<p>To permit such dates, enable <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates" target="_blank" rel="noopener"><code>ALLOW_INVALID_DATES</code></a>. </p>
+<p>要允许此类日期，请启用 <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates" target="_blank" rel="noopener"><code>ALLOW_INVALID_DATES</code></a>。</p>
+<blockquote>
+<ul>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates" target="_blank" rel="noopener"><code>ALLOW_INVALID_DATES</code></a><pre><code>Do not perform full checking of dates. Check only that the month is in the range from 1 to 12 and the day is in the range from 1 to 31. This may be useful for Web applications that obtain year, month, and day in three different fields and store exactly what the user inserted, without date validation. This mode applies to [`DATE`](https://dev.mysql.com/doc/refman/8.0/en/datetime.html &quot;11.2.2 The DATE, DATETIME, and TIMESTAMP Types&quot;) and [`DATETIME`](https://dev.mysql.com/doc/refman/8.0/en/datetime.html &quot;11.2.2 The DATE, DATETIME, and TIMESTAMP Types&quot;) columns. It does not apply to [`TIMESTAMP`](https://dev.mysql.com/doc/refman/8.0/en/datetime.html &quot;11.2.2 The DATE, DATETIME, and TIMESTAMP Types&quot;) columns, which always require a valid date.</code></pre></li>
+</ul>
+</blockquote>
+<pre><code>如果启用 [`ALLOW_INVALID_DATES`](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates)，则不会对日期进行严格检查。
+
+非严格模式只检查**月是否在 1 至 12 的范围内，日是否在 1 至 31 的范围内**。这对于在三个不同字段中获取年、月、日，并准确存储用户插入的内容而不进行日期验证的网络应用程序可能很有用。这种模式适用于 [`DATE`](https://dev.mysql.com/doc/refman/8.0/en/datetime.html &quot;11.2.2 日期、数据时间和 TIMESTAMP 类型&quot;) 和 [`DATETIME`](https://dev.mysql.com/doc/refman/8.0/en/datetime.html &quot;11.2.2 日期、数据时间和 TIMESTAMP 类型&quot;) 列。它不适用于 [`TIMESTAMP`](https://dev.mysql.com/doc/refman/8.0/en/datetime.html &quot;11.2.2 DATE、DATETIME 和 TIMESTAMP 类型&quot;) 列，这些列**始终需要有效日期**。</code></pre><p>​<br>      With <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates" target="_blank" rel="noopener"><code>ALLOW_INVALID_DATES</code></a> disabled, the server requires that month and day values be legal, and not merely in the range 1 to 12 and 1 to 31, respectively. With strict mode disabled, invalid dates such as <code>&#39;2004-04-31&#39;</code> are converted to <code>&#39;0000-00-00&#39;</code> and a warning is generated. With strict mode enabled, invalid dates generate an error. To permit such dates, enable <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates" target="_blank" rel="noopener"><code>ALLOW_INVALID_DATES</code></a>.</p>
+<p>​<br>      如果禁用 <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates" target="_blank" rel="noopener"><code>ALLOW_INVALID_DATES</code></a>，服务器会要求月和日的值必须是合法的，而不只是分别在 1 至 12 和 1 至 31 的范围内。禁用严格模式后，<strong>诸如<code>&#39;2004-04-31&#39;</code>之类的无效日期会被转换为<code>&#39;0000-00-00&#39;</code></strong>，并产生警告。启用严格模式后，无效日期会产生错误。</p>
+<pre><code>要允许使用此类日期，请启用 [`ALLOW_INVALID_DATES`](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_allow_invalid_dates)。</code></pre><p>See <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3NxbC1tb2RlLmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html">Section 5.1.11, “Server SQL Modes”<i class="fa fa-external-link"></i></span>, for more information.</p>
+<p>更多信息，请参见第 <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3NxbC1tb2RlLmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html">Section 5.1.11, “Server SQL Modes”<i class="fa fa-external-link"></i></span>。</p>
+<ul>
+<li>MySQL does not accept <code>TIMESTAMP</code> values that include a zero in the day or month column or values that are not a valid date. </li>
+</ul>
+<p>MySQL 不接受在日或月列中包含零的 <code>TIMESTAMP</code> 值，也不接受不是有效日期的值。</p>
+<p>The sole exception to this rule is the special “zero” value <code>&#39;0000-00-00 00:00:00&#39;</code>, if the SQL mode permits this value. </p>
+<p>这一规则的唯一例外是特殊的 “零 “值<code>&#39;0000-00-00 00:00:00&#39;</code>，如果 SQL 模式允许该值的话。</p>
+<p>The precise behavior depends on which if any of strict SQL mode and the <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_no_zero_date" target="_blank" rel="noopener"><code>NO_ZERO_DATE</code></a> SQL mode are enabled; see <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3NxbC1tb2RlLmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html">Section 5.1.11, “Server SQL Modes”<i class="fa fa-external-link"></i></span>.</p>
+<p>具体行为取决于是否启用了<strong>严格 SQL 模式</strong>和 <a href="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_no_zero_date" target="_blank" rel="noopener"><code>NO_ZERO_DATE</code></a> SQL 模式；请参阅 <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3NxbC1tb2RlLmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html">5.1.11 节，”服务器 SQL 模式”<i class="fa fa-external-link"></i></span>。</p>
+<p>Dates containing 2-digit year values are ambiguous because the century is unknown. MySQL interprets 2-digit year values using these rules:</p>
+<p>包含 2 位数年份值的日期是模糊的，因为世纪不明。MySQL 使用这些规则解释两位数的年份值：</p>
+<p>Year values in the range <code>00-69</code> become <code>2000-2069</code></p>
+<p>00-69 “范围内的年份值变为 “<strong>2000-2069</strong>“。</p>
+<p>Year values in the range <code>70-99</code> become <code>1970-1999</code>.</p>
+<p>年份范围<code>70-99</code>中的数值变为<code>1970-1999</code>。</p>
+<p>See also <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3R3by1kaWdpdC15ZWFycy5odG1s" title="https://dev.mysql.com/doc/refman/8.0/en/two-digit-years.html">Section 11.2.9, “2-Digit Years in Dates”<i class="fa fa-external-link"></i></span>.</p>
+<p>另请参见 <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3R3by1kaWdpdC15ZWFycy5odG1s" title="https://dev.mysql.com/doc/refman/8.0/en/two-digit-years.html">第 11.2.9 节，”日期中的两位数年份”<i class="fa fa-external-link"></i></span>。</p>
+<h1 id="Linux系统如何查看设置所在的时区？"><a href="#Linux系统如何查看设置所在的时区？" class="headerlink" title="Linux系统如何查看设置所在的时区？"></a>Linux系统如何查看设置所在的时区？</h1><p>下面是查看设置所在时区的方法：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date -R</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost alexxander]# date -R</span><br><span class="line">Fri, 21 Jul 2023 16:29:07 -0400</span><br></pre></td></tr></table></figure>
+
+<p>可以看到这里使用的是美国的时区，个人安装Linux系统的时候选择的时区未做修改就会出现这样的情况。</p>
+<blockquote>
+<p>-0400 就是西四区。</p>
+</blockquote>
+<p>那么我们应该如何设置Linux的所在时区？</p>
+<p><strong>方法一：使用tzselect设置时区</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost conf]# tzselect </span><br><span class="line">Please identify a location so that time zone rules can be set correctly.</span><br><span class="line">Please select a continent or ocean.</span><br><span class="line"> 1) Africa</span><br><span class="line"> 2) Americas</span><br><span class="line"> 3) Antarctica</span><br><span class="line"> 4) Arctic Ocean</span><br><span class="line"> 5) Asia</span><br><span class="line"> 6) Atlantic Ocean</span><br><span class="line"> 7) Australia</span><br><span class="line"> 8) Europe</span><br><span class="line"> 9) Indian Ocean</span><br><span class="line">10) Pacific Ocean</span><br><span class="line">11) none - I want to specify the time zone using the Posix TZ format.</span><br><span class="line"></span><br><span class="line">#? 5</span><br><span class="line">Please select a country.</span><br><span class="line"> 1) Afghanistan		  18) Israel		    35) Palestine</span><br><span class="line"> 2) Armenia		  19) Japan		    36) Philippines</span><br><span class="line"> 3) Azerbaijan		  20) Jordan		    37) Qatar</span><br><span class="line"> 4) Bahrain		  21) Kazakhstan	    38) Russia</span><br><span class="line"> 5) Bangladesh		  22) Korea (North)	    39) Saudi Arabia</span><br><span class="line"> 6) Bhutan		  23) Korea (South)	    40) Singapore</span><br><span class="line"> 7) Brunei		  24) Kuwait		    41) Sri Lanka</span><br><span class="line"> 8) Cambodia		  25) Kyrgyzstan	    42) Syria</span><br><span class="line"> 9) China		  26) Laos		    43) Taiwan</span><br><span class="line">10) Cyprus		  27) Lebanon		    44) Tajikistan</span><br><span class="line">11) East Timor		  28) Macau		    45) Thailand</span><br><span class="line">12) Georgia		  29) Malaysia		    46) Turkmenistan</span><br><span class="line">13) Hong Kong		  30) Mongolia		    47) United Arab Emirates</span><br><span class="line">14) India		  31) Myanmar (Burma)	    48) Uzbekistan</span><br><span class="line">15) Indonesia		  32) Nepal		    49) Vietnam</span><br><span class="line">16) Iran		  33) Oman		    50) Yemen</span><br><span class="line">17) Iraq		  34) Pakistan</span><br><span class="line"></span><br><span class="line">#? 9</span><br><span class="line">Please select one of the following time zone regions.</span><br><span class="line">1) Beijing Time</span><br><span class="line">2) Xinjiang Time</span><br><span class="line"></span><br><span class="line">#? 1</span><br><span class="line"></span><br><span class="line">The following information has been given:</span><br><span class="line"></span><br><span class="line">	China</span><br><span class="line">	Beijing Time</span><br><span class="line"></span><br><span class="line">Therefore TZ&#x3D;&#39;Asia&#x2F;Shanghai&#39; will be used.</span><br><span class="line">Local time is now:	Sat Jul 22 05:28:59 CST 2023.</span><br><span class="line">Universal Time is now:	Fri Jul 21 21:28:59 UTC 2023.</span><br><span class="line">Is the above information OK?</span><br><span class="line">1) Yes</span><br><span class="line">2) No</span><br><span class="line"></span><br><span class="line">#? yes</span><br><span class="line">Please enter 1 for Yes, or 2 for No.</span><br><span class="line"></span><br><span class="line">#? 1</span><br><span class="line"></span><br><span class="line">You can make this change permanent for yourself by appending the line</span><br><span class="line">	TZ&#x3D;&#39;Asia&#x2F;Shanghai&#39;; export TZ</span><br><span class="line">to the file &#39;.profile&#39; in your home directory; then log out and log in again.</span><br><span class="line"></span><br><span class="line">Here is that TZ value again, this time on standard output so that you</span><br><span class="line">can use the &#x2F;usr&#x2F;bin&#x2F;tzselect command in shell scripts:</span><br><span class="line">Asia&#x2F;Shanghai</span><br></pre></td></tr></table></figure>
+
+<p><strong>tzselect命令只告诉你选择的时区的写法，并不会生效</strong>，我们可以在各种诸如<code>.profile</code>、<code>.bash_profile</code>或者<code>/etc/profile</code>中设置正确的<strong>TZ</strong>环境变量并导出，例如在<code>/etc/profile</code>里面设置 <code>TZ=&#39;Asia/Shanghai&#39;</code>：</p>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231022142509.png" alt="image.png"></p>
+<p>修改完成之后，我们执行<code>source /etc/profile</code>让配置生效，并且使用<code>date -R</code>查看当前时间：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost conf]<span class="comment"># date -R</span></span><br><span class="line">Sat, 22 Jul 2023 05:34:56 +0800</span><br></pre></td></tr></table></figure>
+
+<p>这里发现时间还是存在偏差问题，现在我们要让docker中的Mysql实时同步当前硬件的 clock时间，需要注意的是设置系统时间<strong>需要root的权限</strong>。 </p>
+<p><code>hwclock</code>命令用于访问服务器的硬件CMOS时间，无论读取还是设置都需要root权限，例如：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取系统硬件时间</span></span><br><span class="line">$ sudo hwclock</span><br><span class="line">Fri 23 Jan 2015 03:33:17 PM CST  -0.567492 seconds</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置操作系统的软件时间，与系统硬件时间同步</span></span><br><span class="line">$ sudo hwclock -s</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置系统硬件时间，与操作系统的软件时间同步</span></span><br><span class="line">$ sudo hwclock -w</span><br></pre></td></tr></table></figure>
+
+<p>通过执行<code>hwclock -s</code>，我们可以将Linux设置为一个“近似当前时间”的时间，<strong>Linux操作系统维护的软件时间随着服务器的长时间运行会出现漂移，最终会越来越不准确。</strong></p>
+<p><strong>方法2：复制相应的时区文件，替换系统时区文件；或者创建链接文件</strong></p>
+<p>在<code>/usr/share/zoneinfo/</code>下面有很多时区文件，可以复制这些时区文件覆盖<code>/etc/localtime</code>文件，或修改符号链接<code>/etc/locatime</code>对应的文件。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span><br></pre></td></tr></table></figure>
+<h1 id="CST-UTC-GMT-是什么？"><a href="#CST-UTC-GMT-是什么？" class="headerlink" title="CST/UTC/GMT 是什么？"></a>CST/UTC/GMT 是什么？</h1><p><strong>CST</strong>：中国标准时间（China Standard Time），这个解释可能是针对<strong>RedHat Linux</strong>。</p>
+<p><strong>UTC</strong>：协调世界时，又称世界标准时间，简称UTC，从英文国际时间/法文协调时间”<code>Universal Time/Temps Cordonné</code>”而来。中国大陆、香港、澳门、台湾、蒙古国、新加坡、马来西亚、菲律宾、澳洲西部的时间与UTC的时差均为+8，也就是UTC+8。</p>
+<p><strong>GMT</strong>：格林尼治标准时间（旧译格林威治平均时间或格林威治标准时间；英语：Greenwich Mean Time，GMT）是指位于英国伦敦郊区的皇家格林尼治天文台的标准时间，因为本初子午线被定义在通过那里的经线。</p>
+<h1 id="个人验证1：timestamp-是如何工作的"><a href="#个人验证1：timestamp-是如何工作的" class="headerlink" title="个人验证1：timestamp 是如何工作的"></a>个人验证1：timestamp 是如何工作的</h1><p>注意下面的所有实验均在控制台进行，<strong>请不要使用Navicat进行测试</strong>，看到的结果和控制台结果存在差异。</p>
+<blockquote>
+<p>MySQL converts <code>TIMESTAMP</code> values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. </p>
+</blockquote>
+<p>MySQL 将 <code>TIMESTAMP</code> 值从当前时区转换到 <strong>UTC</strong> 以进行存储，并从 UTC 返回到当前时区以进行检索。</p>
+<p>在Mysql中可以通过下的语句查看当前的时区信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">SHOW VARIABLES LIKE &#39;%time_zone%&#39;</span><br></pre></td></tr></table></figure>
+
+<p>这里解释下<strong>UTC</strong>以及<strong>SYSTEM</strong>的含义：</p>
+<ul>
+<li><code>system_time_zone</code>：表明使用系统时间。</li>
+<li><code>time_zone</code>：相对于 UTC 时间的偏移，比如 ‘+08:00’ 或者 ‘-6:00’。</li>
+</ul>
+<p><img src="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/20231017141245.png" alt="image.png"></p>
+<p><strong>全局参数 <code>system_time_zone</code></strong></p>
+<p>系统时区，在MySQL启动时，会检查当前系统的时区，根据系统时区设置全局参数<code>system_time_zone</code>的值。</p>
+<blockquote>
+<p>The system time zone. When the server starts, it attempts to determine the time zone of the host machine automatically and uses it to set the<a href="https://dev.mysql.com/doc/refman/5.5/en/server-system-variables.html#sysvar_system_time_zone" target="_blank" rel="noopener"><code>system_time_zone</code></a> system variable. The value does not change thereafter.</p>
+<p>系统时区。服务器启动时，会尝试自动确定主机的时区，并以此设置<a href="https://dev.mysql.com/doc/refman/5.5/en/server-system-variables.html#sysvar_system_time_zone" target="_blank" rel="noopener"><code>system_time_zone</code></a> 系统变量。此后，该值不会改变。</p>
+</blockquote>
+<p>注意，<code>system_time_zone</code> 变量只有全局值没有会话值，不能动态修改，MySQL 启动时，将尝试自动确定服务器的时区，并使用它来设置 system_time_zone 系统变量。</p>
+<p><strong>全局参数 <code>time_zone</code></strong></p>
+<p>用来设置每个连接会话的时区，默认为<code>system</code>时，使用全局参数<code>system_time_zone</code>的值。</p>
+<blockquote>
+<p>The current time zone. This variable is used to initialize the time zone for each client that connects. By default, the initial value of this is ‘SYSTEM’ (which means, “use the value of system_time_zone”).</p>
+<p>当前时区。该变量用于为每个连接的客户端初始化时区。默认情况下，初始值为 “SYSTEM”（即 “使用 system_time_zone 的值”）。</p>
+</blockquote>
+<p>需要注意，在一些系统中，<code>system_time_zone</code>的值是CST，中国标准时间=CST(China Standard Time) UT+8:00 ，<strong>mysql的时区=system_time_zone+time_zone</strong>。</p>
+<p>下面是在<code>Session</code>当中通过更改时区对应<code>timestamp</code>的影响。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">-- 时间戳测试表和数据</span><br><span class="line">CREATE TABLE &#96;timestamp_test&#96;  (</span><br><span class="line">  &#96;id&#96; varchar(50) NOT NULL COMMENT &#39;主键&#39;,</span><br><span class="line">  &#96;time&#96; timestamp NULL COMMENT &#39;时间戳&#39;,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">-- 存入 + 8 时区</span><br><span class="line">INSERT INTO &#96;timestamp_test&#96; (&#96;id&#96;, &#96;time&#96;) VALUES (&#39;1&#39;, &#39;2023-10-17 13:48:55&#39;);</span><br><span class="line">INSERT INTO &#96;timestamp_test&#96; (&#96;id&#96;, &#96;time&#96;) VALUES (&#39;2&#39;, &#39;2023-10-17 13:10:55&#39;);</span><br><span class="line">INSERT INTO &#96;timestamp_test&#96; (&#96;id&#96;, &#96;time&#96;) VALUES (&#39;3&#39;, &#39;2023-10-17 13:22:55&#39;);</span><br><span class="line"></span><br><span class="line">-- 查看时区</span><br><span class="line">show variables like &#39;%time_zone%&#39;;</span><br><span class="line">-- system_time_zone	UTC</span><br><span class="line">-- time_zone	SYSTEM</span><br><span class="line"></span><br><span class="line">-- 更改时区</span><br><span class="line">set session time_zone &#x3D; &#39;+8:00&#39;;</span><br><span class="line">-- 查看时间</span><br><span class="line">select id,&#96;time&#96; from timestamp_test;</span><br><span class="line">-- 1	2023-10-17 13:48:55</span><br><span class="line">-- 2	2023-10-17 13:10:55</span><br><span class="line">-- 3	2023-10-17 13:22:55</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">set session time_zone &#x3D; &#39;+2:00&#39;;</span><br><span class="line">-- 查看时间</span><br><span class="line">select id,&#96;time&#96; from timestamp_test;</span><br><span class="line">-- +----+---------------------+</span><br><span class="line">-- | id | time                |</span><br><span class="line">-- +----+---------------------+</span><br><span class="line">-- | 1  | 2023-10-17 15:48:55 |</span><br><span class="line">-- | 2  | 2023-10-17 15:10:55 |</span><br><span class="line">-- | 3  | 2023-10-17 15:22:55 |</span><br><span class="line">-- +----+---------------------+</span><br></pre></td></tr></table></figure>
+
+<p>在当前session修改时区之后，对应的<code>timestamp</code>读取时间也出现变化。</p>
+<h1 id="个人验证2：时区设置影响"><a href="#个人验证2：时区设置影响" class="headerlink" title="个人验证2：时区设置影响"></a>个人验证2：时区设置影响</h1><p>参考：<span class="exturl" data-url="aHR0cHM6Ly9vcGVuc291cmNlLmFjdGlvbnNreS5jb20vMjAyMTEyMTQtdGltZV96b25lLw==" title="https://opensource.actionsky.com/20211214-time_zone/">https://opensource.actionsky.com/20211214-time_zone/<i class="fa fa-external-link"></i></span></p>
+<h2 id="1-NOW-和-CURTIME-系统函数的返回值受当前-session-的时区影响"><a href="#1-NOW-和-CURTIME-系统函数的返回值受当前-session-的时区影响" class="headerlink" title="1.NOW() 和 CURTIME() 系统函数的返回值受当前 session 的时区影响"></a>1.<code>NOW()</code> 和 <code>CURTIME()</code> 系统函数的返回值受当前 <strong>session</strong> 的时区影响</h2><p><code>select now()</code>，包括<code>insert .. values(now())</code>、以及字段的 <code>DEFAULT CURRENT_TIMESTAMP</code> 属性也受此影响。这里依旧使用上面的案例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-- 时间戳测试表和数据</span><br><span class="line">CREATE TABLE &#96;timestamp_test&#96;  (</span><br><span class="line">  &#96;id&#96; varchar(50) NOT NULL COMMENT &#39;主键&#39;,</span><br><span class="line">  &#96;time&#96; timestamp NULL COMMENT &#39;时间戳&#39;,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">-- 存入 + 8 时区</span><br><span class="line">INSERT INTO &#96;timestamp_test&#96; (&#96;id&#96;, &#96;time&#96;) VALUES (&#39;1&#39;, &#39;2023-10-17 13:48:55&#39;);</span><br><span class="line">INSERT INTO &#96;timestamp_test&#96; (&#96;id&#96;, &#96;time&#96;) VALUES (&#39;2&#39;, &#39;2023-10-17 13:10:55&#39;);</span><br><span class="line">INSERT INTO &#96;timestamp_test&#96; (&#96;id&#96;, &#96;time&#96;) VALUES (&#39;3&#39;, &#39;2023-10-17 13:22:55&#39;);</span><br></pre></td></tr></table></figure>
+
+<p>更改数据库时区为<code>+02:00</code>之后，对应结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%time_zone%&#39;;</span><br><span class="line">+------------------+--------+</span><br><span class="line">| Variable_name    | Value  |</span><br><span class="line">+------------------+--------+</span><br><span class="line">| system_time_zone | UTC    |</span><br><span class="line">| time_zone        | +02:00 |</span><br><span class="line">+------------------+--------+</span><br><span class="line">2 rows in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select now();</span><br><span class="line">+---------------------+</span><br><span class="line">| now()               |</span><br><span class="line">+---------------------+</span><br><span class="line">| 2023-07-21 21:51:48 |</span><br><span class="line">+---------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，修改<code>time_zone</code>会对函数的结果产生影响。</p>
+<h2 id="2-timestamp-数据类型字段存储的数据受时区影响"><a href="#2-timestamp-数据类型字段存储的数据受时区影响" class="headerlink" title="2.timestamp 数据类型字段存储的数据受时区影响"></a>2.timestamp 数据类型字段存储的数据受时区影响</h2><p>根据Mysql文档的描述，<code>timestamp</code> 数据类型会存储<strong>当前session的时区信息</strong>，读取时会根据当前 session 的时区进行转换，而<code>date</code>和<code>datetime</code>则不会因为时区的变更而出现数据变更。</p>
+<h1 id="国内安装Mysql的时区问题避坑"><a href="#国内安装Mysql的时区问题避坑" class="headerlink" title="国内安装Mysql的时区问题避坑"></a>国内安装Mysql的时区问题避坑</h1><h2 id="1-明确指定时区"><a href="#1-明确指定时区" class="headerlink" title="1.明确指定时区"></a>1.明确指定时区</h2><p>在 <code>my.cnf</code> 写入 <code>default-time-zone=&#39;+08:00&#39;</code>，其他地区和开发确认取对应时区即可。</p>
+<p>至于为什么要明确指明时区，一方面是Mysql 在很多没有DBA的公司都是全部由运维负责，运维如果没有设置时区，在数据库迁移到海外服务器的时候可能会出现时区变更的各种问题，另一方面是这样明确的设置可以<strong>减少系统计算的开销</strong>，如果系统大量使用timestamp的数据类型，这也是一个不小的优化点。</p>
+<h2 id="2-JAVA应用读取到的时间和北京时间差了14个小时，为什么？怎么解决？"><a href="#2-JAVA应用读取到的时间和北京时间差了14个小时，为什么？怎么解决？" class="headerlink" title="2.JAVA应用读取到的时间和北京时间差了14个小时，为什么？怎么解决？"></a>2.JAVA应用读取到的时间和北京时间差了14个小时，为什么？怎么解决？</h2><p>基于<code>mysql-connector-java-8.0.19</code> 进行分析，使用 <code>com.mysql.cj.jdbc.Driver</code>，在获取<code>java.sql.Connection</code>的过程会确定时区，调用如下方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">com.mysql.cj.protocol.a.NativeProtocol#configureTimezone</span><br><span class="line">  </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Configures the client's timezone if required.</span></span><br><span class="line"><span class="comment">    * </span></span><br><span class="line"><span class="comment">    * <span class="doctag">@throws</span> CJException</span></span><br><span class="line"><span class="comment">    *             if the timezone the server is configured to use can't be</span></span><br><span class="line"><span class="comment">    *             mapped to a Java timezone.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configureTimezone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">String configuredTimeZoneOnServer = <span class="keyword">this</span>.serverSession.getServerVariable(<span class="string">"time_zone"</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (<span class="string">"SYSTEM"</span>.equalsIgnoreCase(configuredTimeZoneOnServer)) &#123;</span><br><span class="line">	configuredTimeZoneOnServer = <span class="keyword">this</span>.serverSession.getServerVariable(<span class="string">"system_time_zone"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	String canonicalTimezone = getPropertySet().getStringProperty(PropertyKey.serverTimezone).getValue();</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (configuredTimeZoneOnServer != <span class="keyword">null</span>) &#123;</span><br><span class="line">	<span class="comment">// user can override this with driver properties, so don't detect if that's the case</span></span><br><span class="line">	<span class="keyword">if</span> (canonicalTimezone == <span class="keyword">null</span> || StringUtils.isEmptyOrWhitespaceOnly(canonicalTimezone)) &#123;</span><br><span class="line">	    <span class="keyword">try</span> &#123;</span><br><span class="line">	    canonicalTimezone = TimeUtil.getCanonicalTimezone(configuredTimeZoneOnServer, getExceptionInterceptor());</span><br><span class="line">	    &#125; <span class="keyword">catch</span> (IllegalArgumentException iae) &#123;</span><br><span class="line">	    <span class="keyword">throw</span> ExceptionFactory.createException(WrongArgumentException<span class="class">.<span class="keyword">class</span>, <span class="title">iae</span>.<span class="title">getMessage</span>(), <span class="title">getExceptionInterceptor</span>())</span>;</span><br><span class="line">	    &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (canonicalTimezone != <span class="keyword">null</span> &amp;&amp; canonicalTimezone.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">	<span class="keyword">this</span>.serverSession.setServerTimeZone(TimeZone.getTimeZone(canonicalTimezone));</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">// The Calendar class has the behavior of mapping unknown timezones to 'GMT' instead of throwing an exception, so we must check for this...</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="keyword">if</span> (!canonicalTimezone.equalsIgnoreCase(<span class="string">"GMT"</span>) &amp;&amp; <span class="keyword">this</span>.serverSession.getServerTimeZone().getID().equals(<span class="string">"GMT"</span>)) &#123;</span><br><span class="line">	    throw ExceptionFactory.createException(WrongArgumentException.class, Messages.getString("Connection.9", new Object[] &#123; canonicalTimezone &#125;),</span><br><span class="line">	                                            getExceptionInterceptor());</span><br><span class="line">	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">this</span>.serverSession.setDefaultTimeZone(<span class="keyword">this</span>.serverSession.getServerTimeZone());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码大致逻辑如下：</p>
+<ol>
+<li><p>从mysql的<code>time_zone</code>读取值。</p>
+</li>
+<li><p>如果值是<code>SYSTEM</code>则使用<code>system_time_zone</code>的值.</p>
+</li>
+<li><p>如果<code>jdbc url</code>配置了时区则使用url里的，如 <code>jdbc:mysql://localhost:3306/test?useSSL=true&amp;serverTimezone=Asia/Shanghai</code>，则最优先使用URL设置的时区。</p>
+</li>
+</ol>
+<p>那么为什么JAVA应用读取到的时间和北京时间差了14个小时？通常是因为<strong>没有在URL里面设置时区属性</strong>，某些系统下，MySQL默认使用的是系统时区<strong>CST</strong>（CST 在 <strong>RedHat</strong> 上是 +08:00 时区），而应用和MySQL 建立的连接的<code>session time_zone</code>为<code>CST</code>。</p>
+<p>实际上，<code>CST</code> 一共能代表4个时区：</p>
+<ul>
+<li><code>Central Standard Time (USA) UT-6:00</code> 美国标准时间</li>
+<li><code>Central Standard Time (Australia) UT+9:30</code>澳大利亚标准时间</li>
+<li><code>China Standard Time UT+8:00</code> 中国标准时间</li>
+<li><code>Cuba Standard Time UT-4:00</code> 古巴标准时间</li>
+</ul>
+<p>虽然Mysql正确认识了CST是中国标准时间，但是JDBC却没有认识这个时间，<strong>JDBC在解析CST时使用了美国标准时间，这就会导致时区错误</strong>。</p>
+<p>具体可以看下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimeTest</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 这里的CST指的是美国中部时间，  </span></span><br><span class="line">        TimeZone tz = TimeZone.getTimeZone(<span class="string">"CST"</span>);  </span><br><span class="line">        System.out.println(<span class="string">"tz =&gt; "</span>+ tz);<span class="comment">// 可以看到偏移量是offset=-21600000，-21600000微秒=-6小时，所以这里的CST指美国  </span></span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 建议创建 TimeZone 用 ZoneId，因为ZoneId 不允许 CST、JST 这种简称，能提前预防进坑，如下  </span></span><br><span class="line">    <span class="comment">// ZoneId zoneId = ZoneId.of("CST");// 抛异常  </span></span><br><span class="line">        ZoneId zoneId = ZoneId.of(<span class="string">"GMT+8"</span>);<span class="comment">// 明确指定，是OK的，或者 "区域/城市" 的写法如 Asia/Shanghai        TimeZone tz1 = TimeZone.getTimeZone(zoneId);  </span></span><br><span class="line">        System.out.println(<span class="string">"tz1 =&gt; "</span>+ tz1);  </span><br><span class="line">    &#125;<span class="comment">/**运行结果：  </span></span><br><span class="line"><span class="comment">     tz =&gt; sun.util.calendar.ZoneInfo[id="CST",offset=-21600000,dstSavings=3600000,useDaylight=true,transitions=235,lastRule=java.util.SimpleTimeZone[id=CST,offset=-21600000,dstSavings=3600000,useDaylight=true,startYear=0,startMode=3,startMonth=2,startDay=8,startDayOfWeek=1,startTime=7200000,startTimeMode=0,endMode=3,endMonth=10,endDay=1,endDayOfWeek=1,endTime=7200000,endTimeMode=0]]  </span></span><br><span class="line"><span class="comment">  </span></span><br><span class="line"><span class="comment">     tz1 =&gt; sun.util.calendar.ZoneInfo[id="GMT+08:00",offset=28800000,dstSavings=0,useDaylight=false,transitions=0,lastRule=null]      */</span>&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-修改MySQL的时区会影响已经存储的时间类型数据吗？"><a href="#3-修改MySQL的时区会影响已经存储的时间类型数据吗？" class="headerlink" title="3.修改MySQL的时区会影响已经存储的时间类型数据吗？"></a>3.修改MySQL的时区会影响已经存储的时间类型数据吗？</h2><p>答案是<strong>只会影响对 timestamp 数据类型的读取</strong>。</p>
+<h2 id="4-迁移数据时会有导致时间类型数据时区错误的可能吗？"><a href="#4-迁移数据时会有导致时间类型数据时区错误的可能吗？" class="headerlink" title="4.迁移数据时会有导致时间类型数据时区错误的可能吗？"></a>4.迁移数据时会有导致时间类型数据时区错误的可能吗？</h2><p>这一点依然是<strong>针对 timestamp 数据类型</strong>，比如使用 mysqldump 导出 csv 格式的数据，默认这种导出方式会使用 UTC 时区读取 <code>timestamp</code> 类型数据，这意味导入时必须手工设置 <code>session.time_zone=’+00:00’</code>才能保证时间准确。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">--将 test.t 导出成 csv</span><br><span class="line">mysqldump -S &#x2F;data&#x2F;mysql&#x2F;data&#x2F;3306&#x2F;mysqld.sock --single-transaction \</span><br><span class="line">--master-data&#x3D;2 -t -T &#x2F;data&#x2F;backup&#x2F;test3 --fields-terminated-by&#x3D;&#39;,&#39; test t</span><br><span class="line"></span><br><span class="line">--查看导出数据</span><br><span class="line">cat &#x2F;data&#x2F;backup&#x2F;test3&#x2F;t.txt</span><br><span class="line">2021-12-02 08:45:39,2021-12-02 16:45:39</span><br></pre></td></tr></table></figure>
+
+<p>为了避免这些繁琐的操作，mysqldump 也提供了一个参数 <code>--skip-tz-utc</code>，意思就是导出数据的那个连接不设置 UTC 时区，使用 MySQL 的 <strong>gloobal time_zone 系统变量值</strong>。</p>
+<p>当然这个设置也算是告诉我们，<strong>mysqldump 导出默认也是使用 UTC 时区</strong>，为了确保导出和导入的时区正确，会在导出的 sql 文件头部带有 <strong>session time_zone 信息</strong>。</p>
+<blockquote>
+<p>需要注意 <code>--compact</code> 参数会去掉 sql 文件的所有头信息，所以<code>--compact</code> 参数得和 <code>--skip-tz-utc</code> 一起使用。</p>
+</blockquote>
+<h1 id="为什么mysql有system-time-zone和time-zone两个"><a href="#为什么mysql有system-time-zone和time-zone两个" class="headerlink" title="为什么mysql有system_time_zone和time_zone两个?"></a>为什么mysql有system_time_zone和time_zone两个?</h1><p>见 <span class="exturl" data-url="aHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vOC4wL2VuL3RpbWUtem9uZS1zdXBwb3J0Lmh0bWw=" title="https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html">https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html<i class="fa fa-external-link"></i></span></p>
+<ol>
+<li>Mysql 服务的时候会读取Linux宿主机所在的时区，固定值之后这个值不再改变。（简单说 <code>system_time_zone</code> 是Mysql系统算出来的值）。</li>
+<li>默认情况 <code>time_zone</code> 值为 <strong>SYSTEM</strong>，也就是说它跟随<code>system_time_zone</code>的值。</li>
+<li>注意<code>system_time_zone</code>的值固定下来后，数据库宿主机的时区再改变，<code>time_zone</code>的值都是不变的，因为它是跟随<code>system_time_zone</code>变量的，不是实时跟随操作系统的，如果想要让他跟随操作系统，最简单的方法就是重启Mysql。</li>
+<li>有时候我们会发现，<strong>Linux时区是对的，但是mysql的时区是错</strong>，这时候我们把Linux的时区改对，但是发现Mysql还是错的，原因是<strong>Linux时区改对之后没有重启Mysql服务器重新读取Linux系统时区</strong>。</li>
+</ol>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kity@2.0.4/dist/kity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text/javascript" src="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/hexo-simple-mindmap@0.2.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>lazytime
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://whitestore.top/2023/11/20/mysqldate/" title="【Mysql】The DATE, DATETIME, and TIMESTAMP Types">https://whitestore.top/2023/11/20/mysqldate/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLzQuMC96aC1DTg=="><i class="fa fa-fw fa-creative-commons"></i>BY-NC</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/10/21/worktimestampmysql/" rel="prev" title="【Mysql】Working with time zones, timestamps and datetimes in Laravel and MySQL">
+      <i class="fa fa-chevron-left"></i> 【Mysql】Working with time zones, timestamps and datetimes in Laravel and MySQL
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Source"><span class="nav-number">1.</span> <span class="nav-text">Source</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mysql-官方文档解释"><span class="nav-number">2.</span> <span class="nav-text">Mysql 官方文档解释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux系统如何查看设置所在的时区？"><span class="nav-number">3.</span> <span class="nav-text">Linux系统如何查看设置所在的时区？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CST-UTC-GMT-是什么？"><span class="nav-number">4.</span> <span class="nav-text">CST&#x2F;UTC&#x2F;GMT 是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#个人验证1：timestamp-是如何工作的"><span class="nav-number">5.</span> <span class="nav-text">个人验证1：timestamp 是如何工作的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#个人验证2：时区设置影响"><span class="nav-number">6.</span> <span class="nav-text">个人验证2：时区设置影响</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-NOW-和-CURTIME-系统函数的返回值受当前-session-的时区影响"><span class="nav-number">6.1.</span> <span class="nav-text">1.NOW() 和 CURTIME() 系统函数的返回值受当前 session 的时区影响</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-timestamp-数据类型字段存储的数据受时区影响"><span class="nav-number">6.2.</span> <span class="nav-text">2.timestamp 数据类型字段存储的数据受时区影响</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#国内安装Mysql的时区问题避坑"><span class="nav-number">7.</span> <span class="nav-text">国内安装Mysql的时区问题避坑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-明确指定时区"><span class="nav-number">7.1.</span> <span class="nav-text">1.明确指定时区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-JAVA应用读取到的时间和北京时间差了14个小时，为什么？怎么解决？"><span class="nav-number">7.2.</span> <span class="nav-text">2.JAVA应用读取到的时间和北京时间差了14个小时，为什么？怎么解决？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-修改MySQL的时区会影响已经存储的时间类型数据吗？"><span class="nav-number">7.3.</span> <span class="nav-text">3.修改MySQL的时区会影响已经存储的时间类型数据吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-迁移数据时会有导致时间类型数据时区错误的可能吗？"><span class="nav-number">7.4.</span> <span class="nav-text">4.迁移数据时会有导致时间类型数据时区错误的可能吗？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么mysql有system-time-zone和time-zone两个"><span class="nav-number">8.</span> <span class="nav-text">为什么mysql有system_time_zone和time_zone两个?</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">阿东</p>
+  <div class="site-description" itemprop="description">随遇而安</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">239</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xhenlUaW1lcw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lazyTimes"><i class="fa fa-fw fa-github"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOjEwOTc0ODM1MDhAcXEuY29t" title="E-Mail → mailto:1097483508@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly93d3cuNTJwb2ppZS5jbi9ob21lLnBocD9tb2Q9c3BhY2UmdWlkPTE0OTc3MTgmZG89dGhyZWFkJnZpZXc9bWUmZnJvbT1zcGFjZQ==" title="https:&#x2F;&#x2F;www.52pojie.cn&#x2F;home.php?mod&#x3D;space&amp;uid&#x3D;1497718&amp;do&#x3D;thread&amp;view&#x3D;me&amp;from&#x3D;space">吾爱破解</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci8yOTk5MTIzNDUyNjI2MzY2" title="https:&#x2F;&#x2F;juejin.im&#x2F;user&#x2F;2999123452626366">掘金</span>
+        </li>
+        <li class="links-of-blogroll-item">
+          <span class="exturl" data-url="aHR0cHM6Ly9zZWdtZW50ZmF1bHQuY29tL3UvbGF6eXRpbWVz" title="https:&#x2F;&#x2F;segmentfault.com&#x2F;u&#x2F;lazytimes">思否</span>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+      <div class="wechat_OA">
+        <span>欢迎关注我的公众号</span>
+        <br>
+          <!-- 这里添加你的二维码图片 -->
+        <img src ="https://adong-picture.oss-cn-shenzhen.aliyuncs.com/adong/wechat_channel.jpg">
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿东</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">29:50</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qMUpEEvBgXaMDD1b0ftgi9xr-gzGzoHsz',
+      appKey     : 'UCdfT4Rfih6MO6y8DI4fstf6',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-CN' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
